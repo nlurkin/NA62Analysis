@@ -1,0 +1,2 @@
+analyzers = Pi0Reconstruction VertexCDA
+exec = examplePi0

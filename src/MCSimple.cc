@@ -1,0 +1,218 @@
+#include "MCSimple.hh"
+#include "KinePart.hh"
+#include <iostream>
+#include <map>
+#include <list>
+#include "functions.hh"
+#include "ParticleTree.hh"
+using namespace std;
+
+
+MCSimple::MCSimple(){
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
+
+	fStatus = kEmpty;
+	fParticleInterface = ParticleInterface::GetParticleInterface();
+}
+
+void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose){
+	/// \MemberDescr
+	/// \param MCTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
+	/// \param verbose : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
+	/// \todo Possibility to get random event types and just specify the number of generation we want
+	///
+	/// Extract informations from current Event and store them internally for later easy access
+	/// \EndMemberDescr
+
+	multimap<pair<int,int>,int>::iterator it;
+	vector<KinePart*> tempPart;
+	vector<KinePart*>::iterator itList;
+	multimap<pair<int,int>,int> testStruct(fStruct);
+
+	fVerbosity = verbose;
+
+	ClearParticles();
+
+	//Loop over particles and keep them if correspond to the asked signatures (Parent,PDGcode)
+	if(verbose>=AnalysisFW::kDebug) cout << MCTruthEvent->GetNKineParts() << " MC particles found" << endl;
+	for (Int_t i=0; i < MCTruthEvent->GetNKineParts(); i++)	{
+		KinePart* kinePart = (KinePart*)MCTruthEvent->GetKineParts()->At(i);
+
+		if(verbose>=AnalysisFW::kDebug) cout << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << endl;
+		//Test signature
+		if((it = testStruct.find(pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
+			//Signature found. Keep particle and remove from searched signature
+			tempPart.push_back(kinePart);
+			ReplaceID(testStruct, (*it).second, kinePart->GetID());
+			testStruct.erase(it);
+		}
+	}
+
+	//If testStruct is empty, we found all the particles we wanted. Event is complete.
+	//Else, print which particle is missing
+	if(testStruct.size()==0) fStatus = kComplete;
+	else{
+		fStatus = kMissing;
+		for(it=testStruct.begin(); it!=testStruct.end(); it++){
+			if(verbose>=AnalysisFW::kNormal) cout << "Missing particle " << (*it).first.second << " with parent " << (*it).first.first << endl;
+		}
+	}
+
+	//From the kept particles, populate kaon, pip, pi0 and gamma lists.
+	for(itList = tempPart.begin(); itList!=tempPart.end(); itList++){
+		KinePart *kinePart = *itList;
+
+		if(kinePart!=NULL){
+			//Kaon
+			if(fParticles.count(kinePart->GetPDGcode())==0) fParticles[kinePart->GetPDGcode()] = new vector<KinePart*>;
+			fParticles[kinePart->GetPDGcode()]->push_back(kinePart);
+		}
+	}
+}
+
+int MCSimple::AddParticle(int parent, int type){
+	/// \MemberDescr
+	/// \param parent : id of the parent particle. This id is not the MC id found in the root file but the sequence id of the parent particle\
+	/// \param type : PDG code of the particle
+	///
+	/// Insert a new particle signature. Insertion has to be done generation by generation.\n
+	/// The sequence id are inserted with a minus sign to later avoid confusion between sequence id and MC id.\n
+	/// \n
+	/// Example : you want to retrieve the kaon from the beam, the pi0 an pi+ from the beam kaon and the 2 photons coming from the previous pi0 decay :\n
+	/// AddParticle(0, 321) //Ask beam kaon (sequence ID=1)\n
+	/// AddParticle(1, 211) //Ask pi+ from previous kaon (sequence ID=2)\n
+	/// AddParticle(1, 111) //Ask pi0 from previous kaon (sequence ID=3)\n
+	/// AddParticle(3, 22) //Ask first gamma from previous pi0 (sequence ID=4)\n
+	/// AddParticle(3, 22) //Ask second gamma from previous pi0 (sequence ID=4)
+	/// \EndMemberDescr
+
+	fStruct.insert(pair<pair<int,int>, int>(pair<int,int>(-parent,type), fStruct.size()+1));
+	return fStruct.size();
+}
+
+void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particleID){
+	/// \MemberDescr
+	/// \param s : structure in which the change is made
+	/// \param seqID : sequence id to be replaced
+	/// \param particleID : MC id to replace with
+	///
+	/// Replace the sequence ID by the MC ID in the structure
+	/// \EndMemberDescr
+
+	multimap<pair<int,int>,int>::iterator it;
+
+	for(it=s.begin(); it != s.end(); it++){
+		if((*it).first.first == -seqID){
+			s.insert(pair<pair<int,int>, int>(pair<int,int>(particleID,it->first.second), it->second));
+			s.erase(it);
+		}
+	}
+}
+
+TString MCSimple::GetParticleName(int pdgID){
+	/// \MemberDescr
+	/// \param pdgID : PDG ID of the particle
+	///
+	/// Return the name of the particle corresponding to the given PDG ID.
+	/// \EndMemberDescr
+
+	TString name;
+	name = fParticleInterface->GetParticleName(pdgID);
+	if((name.CompareTo("")==0) && (fVerbosity>=AnalysisFW::kNormal)) cout << "Unknown particle PDG ID : " << pdgID << endl;
+	return name;
+}
+
+int MCSimple::GetPdgID(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the particle
+	///
+	/// Return the PDG ID of the particle corresponding to the given name.
+	/// \EndMemberDescr
+
+	int id;
+
+	id = fParticleInterface->GetParticlePDGid(name);
+	if((id==0) && (fVerbosity>=AnalysisFW::kNormal)) cout << "Unknown particle name : " << name << endl;
+	return id;
+}
+
+void MCSimple::ClearParticles(){
+	/// \MemberDescr
+	/// Clear all the output vectors
+	/// \EndMemberDescr
+
+	map<int, vector<KinePart*>* >::iterator it;
+
+	for(it=fParticles.begin(); it != fParticles.end(); it++){
+		it->second->clear();
+	}
+}
+
+vector<KinePart*> MCSimple::operator [](TString name){
+	/// \MemberDescr
+	/// \param name : name of the requested particle
+	///
+	/// Return the corresponding particle vector
+	/// \EndMemberDescr
+
+	int pdgID;
+
+	pdgID=GetPdgID(name);
+	return *fParticles[pdgID];
+}
+
+vector<KinePart*> MCSimple::operator [](int pdgCode){
+	/// \MemberDescr
+	/// \param pdgCode : PDG id of the requested particle
+	///
+	/// Return the corresponding particle vector
+	/// \EndMemberDescr
+
+	return *fParticles[pdgCode];
+}
+
+int MCSimple::Size(int pdgID){
+	/// \MemberDescr
+	/// \param pdgID : pdg ID of the particle
+	///
+	/// Return the number of particles
+	/// \EndMemberDescr
+
+	if(fParticles.count(pdgID)==0) return 0;
+	else return fParticles[pdgID]->size();
+}
+
+int MCSimple::Size(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the particle
+	///
+	/// Return the number of particles
+	/// \EndMemberDescr
+
+	return Size(GetPdgID(name));
+}
+
+void MCSimple::PrintInit(){
+	/// \MemberDescr
+	/// Do some printing of the requested structure
+	/// \EndMemberDescr
+
+	map<pair<int,int>, int >::reverse_iterator it;
+
+	ParticleTree root;
+
+	for(it=fStruct.rbegin(); it!=fStruct.rend(); it++){
+		if(it->first.first==0) root.SetParticleProperties(1, it->first.second, GetParticleName(it->first.second));
+		else{
+			root.GetChildren(-it->first.first)->AddChildren(new ParticleTree(it->second, it->first.second, GetParticleName(it->first.second)));
+		}
+	}
+
+	if(fStruct.size()>0){
+		cout << "\tRequested MCSimple structure: " << endl << endl << "\t\t";
+		while(root.PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
+		cout << endl;
+	}
+}

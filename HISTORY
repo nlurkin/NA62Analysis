@@ -1,0 +1,32 @@
+################################################################
+NA62Analysis Project
+################################################################
+
+2013-10-04	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev. 288
+		- New sections added in the documentation (online + README)
+		- Code documentation modified to match NA62 doxygen syntax 
+
+2013-09-19	Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev. 287
+		- Some improvement in the input file management 
+                - Modified command line options to match NA62Reconstruction
+                - Executable usage prompted if no command line option is given
+                - Another detail added to the documentation
+
+2013-09-19	Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev. 286
+		- Fixed csh environment scripts and improved documentation
+
+2013-09-18	Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev. 285
+		- Fixed environment scripts
+
+2013-09-11	Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev. 284
+		- First public version of the analysis framework developed by Nicolas Lurkin,
+                  with some examples and a test module
+		- This first version is intended to give the possibility
+		  to developers to test the framework and to begin to implement 
+                  analysis modules that, after being validated, will become part 
+                  of the framework.
