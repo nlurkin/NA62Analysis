@@ -13,7 +13,6 @@
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
 
-
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
 	/// Constructor
