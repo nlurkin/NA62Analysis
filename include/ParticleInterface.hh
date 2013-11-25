@@ -31,7 +31,6 @@ public:
 	int GetParticlePDGid(TString name);
 	TString GetParticleName(int pdgID);
 
-	void PrintTable();
 private:
 	ParticleInterface();
 

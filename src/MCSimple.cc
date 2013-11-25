@@ -13,6 +13,7 @@ MCSimple::MCSimple(){
 	/// Constructor
 	/// \EndMemberDescr
 
+	fVerbosity = AnalysisFW::kNo;
 	fStatus = kEmpty;
 	fParticleInterface = ParticleInterface::GetParticleInterface();
 }
@@ -30,36 +31,17 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 	vector<KinePart*> tempPart;
 	vector<KinePart*>::iterator itList;
 	multimap<pair<int,int>,int> testStruct(fStruct);
-	vector<ParticleTree*> tempParticleTree;
-	vector<ParticleTree*>::iterator itPTree;
-	vector<ParticleTree*>::reverse_iterator ritPTree;
-	ParticleTree *pTreeNode;
 
 	fVerbosity = verbose;
 
 	ClearParticles();
+
 	//Loop over particles and keep them if correspond to the asked signatures (Parent,PDGcode)
 	if(verbose>=AnalysisFW::kDebug) cout << MCTruthEvent->GetNKineParts() << " MC particles found" << endl;
 	for (Int_t i=0; i < MCTruthEvent->GetNKineParts(); i++)	{
 		KinePart* kinePart = (KinePart*)MCTruthEvent->GetKineParts()->At(i);
+
 		if(verbose>=AnalysisFW::kDebug) cout << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << endl;
-
-		//Building particle tree.
-		//Loop over all the existing trees (first is the main tree)
-		pTreeNode = NULL;
-		for(itPTree=tempParticleTree.begin(); itPTree!=tempParticleTree.end(); itPTree++){
-			pTreeNode = (*itPTree)->GetChildren(kinePart->GetParentID());
-			if(pTreeNode!=NULL){
-				//Parent found in one of the existing tree. Add this particle as children.
-				pTreeNode->AddChildren(new ParticleTree(kinePart));
-				break;
-			}
-		}
-		if(pTreeNode==NULL){
-			//Parent not found in existing trees. Create a new tree with this particle
-			tempParticleTree.push_back(new ParticleTree(kinePart));
-		}
-
 		//Test signature
 		if((it = testStruct.find(pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
 			//Signature found. Keep particle and remove from searched signature
@@ -68,27 +50,6 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 			testStruct.erase(it);
 		}
 	}
-
-	//Merge temporary trees
-	for(ritPTree=tempParticleTree.rbegin(); (ritPTree!=tempParticleTree.rend()) && (tempParticleTree.size()>1);){
-		for(itPTree=tempParticleTree.begin(); itPTree!=tempParticleTree.end(); itPTree++){
-			pTreeNode = (*itPTree)->GetChildren((*ritPTree)->GetParentID());
-			if(pTreeNode!=NULL){
-				//Parent found, add the ritPTree as children of itPTree
-				(*itPTree)->AddChildren(*ritPTree);
-				tempParticleTree.pop_back();
-				ritPTree=tempParticleTree.rbegin();
-				break;
-			}
-			else{
-				//Parent not found. Should not happen
-				if(verbose>=AnalysisFW::kNormal) cout << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << endl;
-				ritPTree++;
-			}
-		}
-	}
-	fDecayTree = tempParticleTree[0];
-	tempParticleTree.clear();
 
 	//If testStruct is empty, we found all the particles we wanted. Event is complete.
 	//Else, print which particle is missing
@@ -114,7 +75,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 
 int MCSimple::AddParticle(int parent, int type){
 	/// \MemberDescr
-	/// \param parent : id of the parent particle. This id is not the MC id found in the root file but the sequence id of the parent particle.
+	/// \param parent : id of the parent particle. This id is not the MC id found in the root file but the sequence id of the parent particle\
 	/// \param type : PDG code of the particle
 	///
 	/// Insert a new particle signature. Insertion has to be done generation by generation.\n
@@ -188,7 +149,6 @@ void MCSimple::ClearParticles(){
 	for(it=fParticles.begin(); it != fParticles.end(); it++){
 		it->second->clear();
 	}
-	delete fDecayTree;
 }
 
 vector<KinePart*> MCSimple::operator [](TString name){
@@ -256,40 +216,4 @@ void MCSimple::PrintInit(){
 		while(root.PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
 		cout << endl;
 	}
-}
-
-void MCSimple::PrintDecayTree(){
-	/// \MemberDescr
-	/// Print the current decay tree.
-	/// \EndMemberDescr
-
-	cout << endl << "\t\t";
-	while(fDecayTree->PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
-	cout << endl;
-	fDecayTree->ResetPrint();
-}
-
-vector<KinePart*> MCSimple::GetFinalState(){
-	/// \MemberDescr
-	/// Return a vector containing a pointer to every KinePart with no daughters (Final State)
-	/// \EndMemberDescr
-
-	vector<KinePart*> v;
-
-	fDecayTree->GetFinalState(v);
-	return v;
-}
-
-vector<KinePart*> MCSimple::GetGeneration(int generation, bool full){
-	/// \MemberDescr
-	/// \param generation : Number of the generationto fetch in the decay tree
-	/// \param full : If true, will also return the final particles that did not reach the 'generation' level.
-	///
-	/// Return a vector containing a pointer to every KinePart at level 'generation' in the decay tree.
-	/// \EndMemberDescr
-
-	vector<KinePart*> v;
-
-	fDecayTree->GetLevel(v, generation, full);
-	return v;
 }

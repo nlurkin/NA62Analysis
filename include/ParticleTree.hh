@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <TString.h>
-#include "KinePart.hh"
 
 using namespace std;
 
@@ -29,29 +28,21 @@ public:
 
 	ParticleTree();
 	ParticleTree(int id, int pdgID, TString name);
-	ParticleTree(KinePart *ptr);
-	~ParticleTree();
+	virtual ~ParticleTree();
 
 	void SetParticleProperties(int id, int pdgID, TString name);
-	int GetID();
-	KinePart *GetKinePart();
-	int GetParentID();
 
 	void AddChildren(ParticleTree *child);
 	ParticleTree *GetChildren(int id);
-	bool GetFinalState(vector<KinePart*> &array);
-	bool GetLevel(vector<KinePart*> &array, int level, bool full);
 
 	ParticleTree *operator[](unsigned int i);
 	state PrintNext();
-	void ResetPrint();
 
 private:
 	vector<ParticleTree*> fChildrens; ///< Children nodes
 	int fpdgID; ///< PDG id of the particle
 	int fId; ///< Sequence id of the particle
 	TString fName; ///< Name of the particle
-	KinePart *fParticle; ///< Pointer to kinePart
 
 	unsigned int fGiven, fPrevGiven; ///< Internal mess
 };

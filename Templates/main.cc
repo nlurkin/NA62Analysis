@@ -47,26 +47,26 @@ int main(int argc, char** argv){
 
 	int NEvt = 0;
 	int evtNb = -1;
-        Int_t NFiles = 0;
+	Int_t NFiles = 0;
 	bool graphicMode = false;
 	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
 
 	// Browsing arguments
 	int opt;
-        int n_options_read = 0;
+	int n_options_read = 0;
 	while ((opt = getopt(argc, argv, "hgB:n:i:l:N:o:v:p:c:")) != -1) {
-                n_options_read++;
+		n_options_read++;
 		switch (opt) {
-                    case 'B':
-                        NFiles = TString(optarg).Atoi();
-                        break;
-                    case 'i':
+		case 'B':
+			NFiles = TString(optarg).Atoi();
+			break;
+		case 'i':
 			//Input file
 			inFileName = TString(optarg);
 			break;
 		case 'l':
 			//Input files list
-                        if(!NFiles) NFiles = 1;
+			if(!NFiles) NFiles = 1;
 			inFileName = TString(optarg);
 			break;
 		case 'n':
@@ -109,12 +109,12 @@ int main(int argc, char** argv){
 		}
 	}
 
-        if (!n_options_read) {
-            usage(argv[0]);
-            return 0;
-        }
+	if (!n_options_read) {
+		usage(argv[0]);
+		return 0;
+	}
 
-        TApplication *theApp = 0;
+	TApplication *theApp = 0;
 	if(graphicMode) theApp = new TApplication("RecoAnalysis", &argc, argv);
 
 

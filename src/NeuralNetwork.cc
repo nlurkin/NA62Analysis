@@ -12,6 +12,8 @@ NeuralNetwork::NeuralNetwork() {
 	/// Constructor
 	/// \EndMemberDescr
 
+	fVerbosity = AnalysisFW::kNo;
+	fMlp = 0;
 	fTrainingTree = new TTree("fTrainingTree", "Tree for NN training");
 	fTrainingTree->Branch("NNOutputResult", &fNNOutputResult, "NNOutputResult/I");
 

@@ -13,16 +13,21 @@
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
 
+
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
 
+	fOutFile = 0;
+	fMCTruthTree = 0;
+
 	fCurrentFileNumber = 0;
 	fMCTruthEvent = new Event();
-        fWithMC = 0;
+	fWithMC = 0;
 	fEventNb = 0;
 	fVerbosity = AnalysisFW::kNo;
+	fGraphicMode = false;
 
 	gStyle->SetOptFit(1);
 
@@ -120,28 +125,28 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fGraphicMode = graphicMode;
 	if(NFiles == 0){
 		if(fVerbosity >= AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inFileName << endl;
-                checkInputFile(inFileName);
-                if(fWithMC)
-                    fMCTruthTree->AddFile(inFileName);
-                for(it=fTree.begin(); it!=fTree.end(); it++){
-                    it->second->AddFile(inFileName);
-                }
-        }else{
+		checkInputFile(inFileName);
+		if(fWithMC)
+			fMCTruthTree->AddFile(inFileName);
+		for(it=fTree.begin(); it!=fTree.end(); it++){
+			it->second->AddFile(inFileName);
+		}
+	}else{
 		TString inputFileName;
 		ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && inputFileNumber < NFiles){
 			if(fVerbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
-                        if(!inputChecked && checkInputFile(inputFileName))
-                            inputChecked = kTRUE;
-                        if(fWithMC){
-                            fMCTruthTree->AddFile(inputFileName);
-                            inputFileNumber = fMCTruthTree->GetNtrees();
-                            cout << "----------- " << inputFileNumber << endl;
-                        }
-                        for(it=fTree.begin(); it!=fTree.end(); it++){
-                            it->second->AddFile(inputFileName);
-                            inputFileNumber = it->second->GetNtrees();
-                        }
+			if(!inputChecked && checkInputFile(inputFileName))
+				inputChecked = kTRUE;
+			if(fWithMC){
+				fMCTruthTree->AddFile(inputFileName);
+				inputFileNumber = fMCTruthTree->GetNtrees();
+				cout << "----------- " << inputFileNumber << endl;
+			}
+			for(it=fTree.begin(); it!=fTree.end(); it++){
+				it->second->AddFile(inputFileName);
+				inputFileNumber = it->second->GetNtrees();
+			}
 		}
 		if(inputFileNumber==0){
 			cerr << "AnalysisFW: No input file in the list " << inFileName << endl;
@@ -189,8 +194,8 @@ Bool_t BaseAnalysis::checkInputFile(TString fileName){
 
 	TFile *fd = TFile::Open(fileName.Data(), "R");
 
-    if(!fd)
-    	return kFALSE;
+	if(!fd)
+		return kFALSE;
 
 	TList* keys = fd->GetListOfKeys();
 
@@ -203,7 +208,7 @@ Bool_t BaseAnalysis::checkInputFile(TString fileName){
 		fWithMC = false;
 	}
 	fd->Close();
-        return kTRUE;
+	return kTRUE;
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -410,7 +415,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->EndOfBurst();
 		fAnalyzerList[j]->EndOfRun();
 		fAnalyzerList[j]->ExportPlot();
-		fAnalyzerList[j]->DrawPlot();
+		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
@@ -515,7 +520,6 @@ void *BaseAnalysis::GetObject(TString name){
 	///
 	/// Return the pointer to the object corresponding to the given tree
 	/// \EndMemberDescr
-
 	return fObject[name]->fObject;
 }
 

@@ -184,7 +184,7 @@ protected:
 	void printIncompleteMCWarning(int i);
 
 	void* GetObjectVoid(TString name);
-	void* GetOutputVoid(TString name, OutputState &state);
+	const void* GetOutputVoid(TString name, OutputState &state);
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
 
 	bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?

@@ -38,8 +38,6 @@ class VertexCDA : public Analyzer
 		void Publish();
 		TVector3 GetIntersection(TVector3 pos1, TVector3 p1, TVector3 pos2, TVector3 p2);
 	protected:
-		DetectorAcceptance *fGeom;
-
 		//Add the variables that should be registered as output
 		TVector3 fVertex;
 };

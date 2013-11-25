@@ -9,7 +9,6 @@
 #include "functions.hh"
 #include "FWEnums.hh"
 #include "ParticleInterface.hh"
-#include "ParticleTree.hh"
 using namespace std;
 
 /// \class MCSimple
@@ -40,12 +39,9 @@ public:
 	vector<KinePart*> operator[](int);
 	int Size(int pdgID);
 	int Size(TString name);
-	vector<KinePart*> GetFinalState();
-	vector<KinePart*> GetGeneration(int generation, bool full);
 
 	//Printing
 	void PrintInit();
-	void PrintDecayTree();
 
 	MCSimpleStatus fStatus; ///< Status after collecting particles.
 private:
@@ -58,8 +54,6 @@ private:
 	multimap<pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 	ParticleInterface *fParticleInterface; ///< Pointer to the particle interface
-
-	ParticleTree *fDecayTree; ///< Sorting of the particles in tree
 };
 
 #endif

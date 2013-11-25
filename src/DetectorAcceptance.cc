@@ -14,11 +14,12 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
 	/// Constructor. Imports the geometry.
 	/// \EndMemberDescr
 
+	fCanvas = 0;
+	fVerbosity = AnalysisFW::kNo;
+	
 	//fGeoManager = new TGeoManager();
 	fGeoManager = TGeoManager::Import(GeometryFile);
 	//fGeoManager->CloseGeometry();
-
-	buildDetectorsDictionaries();
 	for (int i = 0; i < 13; i++) fDetPath[i] = false;
 	fTrackNumber=0;
 
@@ -145,24 +146,33 @@ void DetectorAcceptance::CleanDetPath(){
 }
 
 
+void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum){
+	/// \MemberDescr
+	/// \param position : Initial position of the particle
+	/// \param momentum : Momentum of the particle
+	///
+	/// Set true for each crossed detector and each station and plane in GTK, LAV, Spectrometer.\n
+	/// Set also the corresponding position.
+	/// \EndMemberDescr
+	FillPath(position, momentum, 0.1);
+}
+
 void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double precision){
 	/// \MemberDescr
 	/// \param position : Initial position of the particle
 	/// \param momentum : Momentum of the particle
-	/// \param precision : precision for each step (default: 0 - optimized)s
+	/// \param precision : precision for each step
 	///
 	/// Set true for each crossed detector and each station and plane in GTK, LAV, Spectrometer.\n
 	/// Set also the corresponding position.
 	/// \EndMemberDescr
 
-	TVirtualGeoTrack *track;
-	double mm = 10.;
 	//Clean for a new path
 	CleanDetPath();
 
 	//Define the "track"
-	TVector3 norMom = momentum.Unit();
-	fGeoManager->InitTrack(position.X()/mm, position.Y()/mm, position.Z()/mm, norMom.X(),norMom.Y(),norMom.Z());
+	fGeoManager->SetCurrentPoint(position.X()/10.,position.Y()/10.,position.Z()/10.);
+	fGeoManager->SetCurrentDirection(momentum.X()/10.,momentum.Y()/10.,momentum.Z()/10.);
 
 	const char *path;
 	string str;
@@ -172,18 +182,16 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 		//Find next crossed volume and get its name
 
 		if(first){
-			fGeoManager->FindNode(position.X()/mm, position.Y()/mm, position.Z()/mm);
+			fGeoManager->FindNode(position.X()/10., position.Y()/10., position.Z()/10.);
 			first = false;
 		}
 		else{
-			if(precision>0) fGeoManager->FindNextBoundaryAndStep(precision, kFALSE);
-			else fGeoManager->FindNextBoundaryAndStep();
+			fGeoManager->FindNextBoundaryAndStep(precision, kFALSE);
 		}
 
 		path = fGeoManager->GetPath();
 		point = fGeoManager->GetCurrentPoint();
 		str = path;
-
 		//Parse volume name to find if it correspond to a sensitive part of a detector
 		volume det = ParseDetector(str);
 		//If it's GTK, check stations
@@ -191,7 +199,7 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 			GTKVol gtk = ParseGTK(str);
 			if(!fGTKPath[gtk]){
 				fGTKPath[gtk] = true;
-				fGTKPos[gtk].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
+				fGTKPos[gtk].SetXYZ(point[0]*10.,point[1]*10.,point[2]*10.);
 			}
 		}
 		//If it's Spectrometer, check planes
@@ -199,7 +207,7 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 			StrawVol straw = ParseStraw(str);
 			if(!fStrawPath[straw]){
 				fStrawPath[straw] = true;
-				fStrawPos[straw].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
+				fStrawPos[straw].SetXYZ(point[0]*10.,point[1]*10.,point[2]*10.);
 			}
 		}
 		//If it's LAV, check stations
@@ -210,17 +218,17 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 			}
 			else if(!fLAVPath[lav]){
 				fLAVPath[lav] = true;
-				fLAVPos[lav].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
+				fLAVPos[lav].SetXYZ(point[0]*10.,point[1]*10.,point[2]*10.);
 			}
 		}
 		if(det==kLKr){
 			if ( (int) (str.find("/lkrvolume_")) < 0)
-				det = kVOID;
+			det = kVOID;
 		}
 		//Fill path if not already filled
 		if(!fDetPath[det]){
 			fDetPath[det] = true;
-			fVolumePos[det].SetXYZ(point[0]*mm, point[1]*mm, point[2]*mm);
+			fVolumePos[det].SetXYZ(point[0]*10., point[1]*10., point[2]*10.);
 		}
 	}
 	while ( str.length() > 1);
@@ -317,64 +325,46 @@ DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str){
 	/// \EndMemberDescr
 
 	if ( (int) (str.find("/LKr_")) > 1)
-		return kLKr;
+	return kLKr;
 	else if ((int) (str.find("/CHANTI_")) > 1)
-		return kCHANTI;
+	return kCHANTI;
 	else if ((int) (str.find("/Cedar_")) > 1)
-		return kCEDAR;
+	return kCEDAR;
 	else if ((int) (str.find("/CHOD_")) > 1)
-		return kCHOD;
-	else if ((int) (str.find("/GigaTrackerStation_")) > 1)
-		return kGTK;
+	return kCHOD;
+	else if ((int) (str.find("/GigaTracker_")) > 1)
+	return kGTK;
 	else if ((int) (str.find("/IRCModule_")) > 1)
-		return kIRC;
-	//  else if ((int) (str.find("/LAVStation_")) > 1)
+	return kIRC;
+ //  else if ((int) (str.find("/LAVStation_")) > 1)
 	else if ((int) (str.find("/Banana_")) > 1)
-		return kLAV;
+	return kLAV;
 	else if ((int) (str.find("/Spectrometer-Region")) > 1)
-		return kSpectrometer;
+	return kSpectrometer;
 	else if ((int) (str.find("/SAC_")) > 1)
-		return kSAC;
+	return kSAC;
 	else if ((int) (str.find("/MUV1_")) > 1)
-		return kMUV1;
+	return kMUV1;
 	else if ((int) (str.find("/MUV2_")) > 1)
-		return kMUV2;
+	return kMUV2;
 	else if ((int) (str.find("/MUV3_")) > 1)
-		return kMUV3;
+	return kMUV3;
 	else
-		return kVOID;
+	return kVOID;
 }
 
 DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str){
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \todo How to do it?
 	///
 	/// Parse detector string to know which GTK station it correspond.
 	/// \EndMemberDescr
-	int stationID, index;
-	int startSearch, endSearch;
-
-	if((startSearch = str.find("/GigaTrackerStation_")) > 1){
-		endSearch = str.find("/", startSearch+20);
-		stationID = atoi(str.substr(startSearch+20, endSearch-startSearch-20).data());
-		index = fGTKDictionary[stationID];
-
-		switch(index){
-		case 0:
-			return kGTK0;
-			break;
-		case 1:
-			return kGTK1;
-			break;
-		case 2:
-			return kGTK2;
-			break;
-		default:
-			return kNOGTK;
-		}
-	}
+	
+	if((int) (str.find("/GigaTracker")) > 1)
+	return kGTK0;
 	else
-		return kNOGTK;
+	return kNOGTK;
 }
 
 DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str){
@@ -385,75 +375,29 @@ DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str){
 	/// \EndMemberDescr
 
 	if((int) (str.find("/Spectrometer-Region0")) > 1)
-		return kSTRAW0;
+	return kSTRAW0;
 	else if((int) (str.find("/Spectrometer-Region1")) > 1)
-		return kSTRAW1;
+	return kSTRAW1;
 	else if((int) (str.find("/Spectrometer-Region2")) > 1)
-		return kSTRAW2;
+	return kSTRAW2;
 	else if((int) (str.find("/Spectrometer-Region3")) > 1)
-		return kSTRAW3;
+	return kSTRAW3;
 	else
-		return kNOSTRAW;
+	return kNOSTRAW;
 }
 
 DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str){
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \todo How to do it?
 	///
 	/// Parse detector string to know which LAV station it corresponds
 	/// \EndMemberDescr
 
-	int stationID, index;
-	int startSearch, endSearch;
-
-	if((startSearch = str.find("/LAVStation_")) > 1){
-		endSearch = str.find("/", startSearch+12);
-		stationID = atoi(str.substr(startSearch+12, endSearch-startSearch-12).data());
-		index = fLAVDictionary[stationID];
-
-		switch(index){
-		case 0:
-			return kLAV0;
-			break;
-		case 1:
-			return kLAV1;
-			break;
-		case 2:
-			return kLAV2;
-			break;
-		case 3:
-			return kLAV3;
-			break;
-		case 4:
-			return kLAV4;
-			break;
-		case 5:
-			return kLAV5;
-			break;
-		case 6:
-			return kLAV6;
-			break;
-		case 7:
-			return kLAV7;
-			break;
-		case 8:
-			return kLAV8;
-			break;
-		case 9:
-			return kLAV9;
-			break;
-		case 10:
-			return kLAV10;
-			break;
-		case 11:
-			return kLAV11;
-			break;
-		default:
-			return kNOLAV;
-		}
-	}
+	if((int) (str.find("/LAVStation_qqch")) > 1)
+	return kLAV0;
 	else
-		return kNOLAV;
+	return kNOLAV;
 }
 
 DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z)
@@ -562,46 +506,5 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 }
 
 TGeoManager* DetectorAcceptance::GetGeoManager(){
-	/// \MemberDescr
-	/// Return the pointer to the TGeoManager instance.
-	/// \EndMemberDescr
-
 	return fGeoManager;
-}
-
-void DetectorAcceptance::buildDetectorsDictionaries(){
-	/// \MemberDescr
-	/// Build the dictionary between LAV and GTK station names in the Geometry file (different each time
-	/// the Geometry file is generated) and the station index (0-11 for LAV, 0-2 for GTK).
-	/// \EndMemberDescr
-
-	TGeoNode *top = (TGeoNode*)fGeoManager->GetListOfNodes()->At(0);
-	TGeoNode *daughter, *subStation;
-	int indexLAV = 0;
-	int indexGTK = 0;
-	TString name;
-
-	for(int i=0; i<top->GetNdaughters(); i++){
-		daughter = top->GetDaughter(i);
-		if(TString(daughter->GetName()).BeginsWith("LAV_RR_")){
-			for(int j=0; j<daughter->GetNdaughters(); j++){
-				subStation = daughter->GetDaughter(j);
-				if(TString(subStation->GetName()).BeginsWith("LAVStation_")){
-					name = subStation->GetName();
-					fLAVDictionary.insert(pair<int, int>(name.Remove(0, 11).Atoi(), indexLAV));
-					indexLAV++;
-				}
-			}
-		}
-		else if(TString(daughter->GetName()).BeginsWith("GigaTracker_")){
-			for(int j=0; j<daughter->GetNdaughters(); j++){
-				subStation = daughter->GetDaughter(j);
-				if(TString(subStation->GetName()).BeginsWith("GigaTrackerStation_")){
-					name = subStation->GetName();
-					fGTKDictionary.insert(pair<int, int>(name.Remove(0, 19).Atoi(), indexGTK));
-					indexGTK++;
-				}
-			}
-		}
-	}
 }

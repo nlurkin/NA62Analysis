@@ -24,6 +24,7 @@ Analyzer::Analyzer(BaseAnalysis *ba){
 	/// Constructor
 	/// \EndMemberDescr
 
+	fExportEvent = false;
 	fState = kUninit;
 	fParent = ba;
 
@@ -981,12 +982,12 @@ void* Analyzer::GetObjectVoid(TString name){
 	return fParent->GetObject(name);
 }
 
-void* Analyzer::GetOutputVoid(TString name, OutputState &state){
+const void* Analyzer::GetOutputVoid(TString name, OutputState &state){
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for GetOutput method
 	/// \EndMemberDescr
 
-	return fParent->GetObject(name);
+	return fParent->GetOutput(name, state);
 }
 
 bool Analyzer::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){

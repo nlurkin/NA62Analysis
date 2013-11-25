@@ -195,7 +195,7 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
         ///  fMCSimple["particleName"]\n
         ///  fMCSimple[pdgID]\n
         /// Example\n
-        /// 	fMCSimple["k+"][index] for the kaon\n
+        /// 	fMCSimple["K+"][index] for the kaon\n
         /// 	fMCSimple["pi+"][index] for the positive pion\n
         /// 	fMCSimple["gamma"][index] for the photon\n
         /// The number in the brackets is the index of the particle (if you asked for two photons in the set, you can ask fMCSimple["gamma"][0] for the first one and fMCSimple["gamma"][1] for the second)\n
@@ -256,7 +256,7 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	//	fMCSimple["particleName"]
 	//	fMCSimple[pdgID]
 	//Example
-	//	fMCSimple["k+"][index] for the kaon
+	//	fMCSimple["K+"][index] for the kaon
 	//	fMCSimple["pi+"][index] for the positive pion
 	//	fMCSimple["gamma"][index] for the photon
 	//The number in the brackets is the index of the particle (if you asked for two photons in the set, you can ask fMCSimple["gamma"][0] for the first one and fMCSimple["gamma"][1] for the second)

@@ -135,7 +135,7 @@ def checkDependence(depsGraph, name, prefix):
 				inComment = False
 		if inComment == False:
 			if line.find("//")<0:
-				m = re.search("[^/+].*GetOutput\(\"(.*)\..*\",.*\);", line)
+				m = re.search("(?:[^/+].*)?GetOutput(?:<.*>)?\(\"(.*)\..*\",.*\);", line)
 				if m:
 					depsGraph.addDependency(name, m.group(1))
 
@@ -155,8 +155,6 @@ def readAndReplace(iPath, oPath, searchMap):
 	inComment = False
 	
 	for line in f1:
-		if "///" in line:
-			continue
 		if "/**" in line:
 			inComment=True
 		if inComment and ("*/" in line):
@@ -339,7 +337,7 @@ def prepareUserFolder(path, FWPath):
 			print "The destination path is not empty. If you continue, the folder structure will be checked and eventually updated."
 			print "The env.(c)sh and config files will be regenerated."
 			answer = raw_input("Are you sure you want to continue [Y/N]?")
-			if answer != "Y":
+			if answer.lower() != "y":
 				return
 				
 	

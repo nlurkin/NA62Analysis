@@ -35,6 +35,7 @@ using namespace std;
 
 SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analyzer(ba)
 {
+	useMUV = false;
 	fAnalyzerName = "SkimmingNoStrawMuonsTracks";
 
 	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
