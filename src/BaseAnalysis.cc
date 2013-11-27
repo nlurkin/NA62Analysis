@@ -337,6 +337,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	int i_offset;
 	clock_t timing;
 	map<TString, TChain*>::iterator it;
+	bool exportEvent = false;
 
 	if(!fInitialized) return;
 
@@ -381,6 +382,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 		PreProcess();
 		//Process event in Analyzer
+		exportEvent = false;
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
@@ -388,14 +390,13 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 			fAnalyzerList[j]->Process(i, *fMCSimple[j], fMCTruthEvent);
 			fAnalyzerList[j]->UpdatePlots(i);
-			fAnalyzerList[j]->FillTrees();
+			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd();
 		}
 
-		bool exportEvent = false;
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
+			if(exportEvent) fAnalyzerList[j]->FillTrees();
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}

@@ -61,37 +61,42 @@ Analyzer::~Analyzer(){
 	}
 }
 
-void Analyzer::BookHisto(TString name, TH1* histo, bool refresh){
+void Analyzer::BookHisto(TString name, TH1* histo, bool refresh, TString directory){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
+	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
 	fHisto.insert(pair<TString,TH1*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
-void Analyzer::BookHisto(TString name, TH2* histo, bool refresh){
+void Analyzer::BookHisto(TString name, TH2* histo, bool refresh, TString directory){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
+	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
 	fHisto2.insert(pair<TString,TH2*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
-void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh){
+void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh, TString directory){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
+	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
@@ -100,6 +105,7 @@ void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh){
 	fGraph[name]->SetNameTitle(name, name);
 	fPoint.insert(pair<TString,int>(name,0));
 	if(refresh) SetPlotAutoUpdate(name);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
 void Analyzer::FillHisto(TString name, TString x, int w){
@@ -421,17 +427,37 @@ void Analyzer::SaveAllPlots(){
 	map<TString,TH2*>::iterator it2;
 	map<TString,TGraph*>::iterator it3;
 	TString name;
+	map<TString, TString>::iterator itDirectory;
 
 	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
 		name = (*it1).second->GetName();
+		itDirectory = fPlotsDirectory.find(name);
+		if(itDirectory != fPlotsDirectory.end()){
+			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			gFile->Cd(itDirectory->second);
+		}
 		(*it1).second->Write();
+		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
 	}
 	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
 		name = (*it2).second->GetName();
+		itDirectory = fPlotsDirectory.find(name);
+		if(itDirectory != fPlotsDirectory.end()){
+			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			gFile->Cd(itDirectory->second);
+		}
 		(*it2).second->Write();
+		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
 	}
 	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
+		name = (*it3).second->GetName();
+		itDirectory = fPlotsDirectory.find(name);
+		if(itDirectory != fPlotsDirectory.end()){
+			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			gFile->Cd(itDirectory->second);
+		}
 		(*it3).second->Write();
+		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
 	}
 }
 
@@ -494,7 +520,9 @@ DetectorAcceptance *Analyzer::GetDetectorAcceptanceInstance(){
 
 void Analyzer::ExportEvent(){
 	/// \MemberDescr
-	/// Ask BaseAnalysis to store the event in the output file
+	/// Ask BaseAnalysis to store the event in the output file.
+	/// Acts on all output TTrees (copy from inputs as well as custom and standard TTrees created with
+	/// OpenNewTree() and CreateStandardTree()
 	/// \EndMemberDescr
 
 	fExportEvent = true;
@@ -834,7 +862,7 @@ void Analyzer::OpenNewTree(TString name, TString title){
 
 void Analyzer::FillTrees(){
 	/// \MemberDescr
-	/// Fill the TTrees created via OpenNewTree()
+	/// Fill the TTrees created via OpenNewTree() or CreateStandardTree()
 	/// \EndMemberDescr
 
 	map<TString, TTree*>::iterator it;

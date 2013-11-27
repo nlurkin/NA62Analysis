@@ -39,9 +39,9 @@ public:
 	virtual ~Analyzer();
 
 	//Histogram booking methods
-	void BookHisto(TString name, TH1* histo, bool refresh=false);
-	void BookHisto(TString name, TH2* histo, bool refresh=false);
-	void BookHisto(TString name, TGraph* histo, bool refresh=false);
+	void BookHisto(TString name, TH1* histo, bool refresh=false, TString directory="");
+	void BookHisto(TString name, TH2* histo, bool refresh=false, TString directory="");
+	void BookHisto(TString name, TGraph* histo, bool refresh=false, TString directory="");
 
 	//Histogram filling methods
 	void FillHisto(TString name, TString x, int w);
@@ -201,6 +201,7 @@ protected:
 	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 
 	set<TString> fAutoUpdateList;
+	map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name
 
 	//Parameters container
 	map<TString,param_t> fParams; ///< Container for parameters
