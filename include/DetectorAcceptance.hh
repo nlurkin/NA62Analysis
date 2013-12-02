@@ -7,6 +7,7 @@
 #include <TGeoManager.h>
 #include <TVector3.h>
 #include <TCanvas.h>
+#include <map>
 #include "FWEnums.hh"
 using namespace std;
 
@@ -32,8 +33,7 @@ public:
 
 	TGeoManager *GetGeoManager();
 	volume CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z);
-	void FillPath(TVector3 position, TVector3 momentum, double precision);
-	void FillPath(TVector3 position, TVector3 momentum);
+	void FillPath(TVector3 position, TVector3 momentum, double precision=0);
 	void DrawDetector();
 	void DrawTracks();
 	void ClearTracks();
@@ -53,6 +53,8 @@ public:
 
 private:
 	bool MagPropagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum );
+
+	void buildDetectorsDictionaries();
 
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 
@@ -75,6 +77,8 @@ private:
 
 	TCanvas *fCanvas;
 
+	map<int, int> fLAVDictionary;
+	map<int, int> fGTKDictionary;
 };
 
 #endif

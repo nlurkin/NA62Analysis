@@ -155,6 +155,8 @@ def readAndReplace(iPath, oPath, searchMap):
 	inComment = False
 	
 	for line in f1:
+		if "///" in line:
+			continue
 		if "/**" in line:
 			inComment=True
 		if inComment and ("*/" in line):

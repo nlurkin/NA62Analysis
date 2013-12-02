@@ -82,3 +82,7 @@ int ParticleInterface::GetParticlePDGid(TString name){
 	}
 	return 0;
 }
+
+void ParticleInterface::PrintTable(){
+	fTable->Print();
+}

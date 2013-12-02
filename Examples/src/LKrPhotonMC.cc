@@ -40,7 +40,6 @@ LKrPhotonMC::LKrPhotonMC(BaseAnalysis *ba) : Analyzer(ba)
 
 	fCandidates = new TClonesArray("TRecoLKrCandidateMC", 10);
 	RequestTree("LKr", new TRecoLKrEvent);
-
 	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
 	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
 	//Specify the trees you want to use and the event class corresponding
