@@ -1,5 +1,5 @@
 //Mandatory includes
-#include "templateAnalyzer.hh"
+#include "Test.hh"
 #include <stdlib.h>
 #include <iostream>
 #include "MCSimple.hh"
@@ -8,31 +8,11 @@
 #include <TChain.h>
 using namespace std;
 
-//Include the hh files for events kinds you will use
-/*#include "TRecoGigaTrackerEvent.hh"
-#include "TRecoRICHEvent.hh"
-#include "TRecoCHANTIEvent.hh"
-#include "TRecoCedarEvent.hh"
-#include "TRecoCHODEvent.hh"
-#include "TRecoMUV1Event.hh"
-#include "TRecoMUV2Event.hh"
-#include "TRecoMUV3Event.hh"
-#include "TRecoMUV0Event.hh"
-#include "TRecoHACEvent.hh"
-#include "TRecoIRCEvent.hh"
-#include "TRecoLAVEvent.hh"
-#include "TRecoSACEvent.hh"
 #include "TRecoLKrEvent.hh"
-#include "TRecoSpectrometerEvent.hh"*/
+#include "TRecoGigaTrackerEvent.hh"
+#include "TRecoSpectrometerEvent.hh"
 
-//Additional includes
-/*#include <TString.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TGraph.h>
-#include <TCanvas.h>*/
-
-/// \class templateAnalyzer
+/// \class Test
 /// \Brief 
 /// Describe your Analyzer
 /// \EndBrief
@@ -41,7 +21,7 @@ using namespace std;
 /// Describe your Analyzer
 /// \EndDetailed
 
-templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
+Test::Test(BaseAnalysis *ba) : Analyzer(ba)
 {
 	/// \MemberDescr
 	/// \param ba : parent BaseAnalysis
@@ -50,16 +30,17 @@ templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
 	/// Select the trees you want to get\n
 	/// If you want to use DetectorAcceptance, initialize it.
 
-	fAnalyzerName = "templateAnalyzer";
+	fAnalyzerName = "Test";
 
 	//Specify the trees you want to use and the event class corresponding
 	//Don't try to load MCTruth tree (RUN_0 or Event). Use the MCTruthEvent in Process function instead. Problems when opening twice the same tree.
 	//Example with RecoEvent
-	//	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
+	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
 	//Example with MC Event
 	//	RequestTree("GigaTracker", new TGigaTrackerEvent);
 	//Example with generic tree
-	//	RequestTree<MyClass>("MyTree", "BranchName", "MyClass", new MyClass);
+	RequestTree<TClonesArray>("LKrPhotonMC/LKrMCAssociated", "fCandidates", "TClonesArray", new TClonesArray("TRecoLKrCandidateMC", 10));
+	RequestTree<TClonesArray>("LKrPhotonMC/LKrCandidates", "fCandidates", "TClonesArray", new TClonesArray("KinePart", 10));
 
 	//Initialize DetectorAcceptance if needed
 	//use of global instance
@@ -68,7 +49,7 @@ templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
 	//	fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 }
 
-void templateAnalyzer::InitOutput(){
+void Test::InitOutput(){
 	/// \MemberDescr
 	/// Register the output variables of the analyzer.\n
 	/// Call\n
@@ -101,7 +82,7 @@ void templateAnalyzer::InitOutput(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::InitHist(){
+void Test::InitHist(){
 	/// \MemberDescr
 	/// Book and Initialize histograms in this function.\n
 	/// Same function to Book TH1, TH2, TGraph and TGraphAsymmErrors (anything derived from TH1 or TGraph)\n
@@ -140,7 +121,7 @@ void templateAnalyzer::InitHist(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::DefineMCSimple(MCSimple *fMCSimple){
+void Test::DefineMCSimple(MCSimple *fMCSimple){
 	/// \MemberDescr
 	/// \param fMCSimple : MCSimple
 	///
@@ -160,30 +141,28 @@ void templateAnalyzer::DefineMCSimple(MCSimple *fMCSimple){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::StartOfRunUser(){
+void Test::StartOfRunUser(){
 	/// \MemberDescr
 	/// This method is called at the beginning of the processing (corresponding to a start of run in the normal NA62 data taking)\n
 	/// Do here your start of run processing if any
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::StartOfBurstUser(){
+void Test::StartOfBurstUser(){
 	/// \MemberDescr
 	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the beginning of the first file\n
 	/// Do here your start/end of burst processing if any
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::EndOfBurstUser(){
+void Test::EndOfBurstUser(){
 	/// \MemberDescr
 	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the end of the last file\n
 	/// Do here your start/end of burst processing if any
 	/// \EndMemberDescr
 }
 
-/**
- */
-void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
+void Test::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
 	/// \param fMCSimple : MCSimple
@@ -308,7 +287,7 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	//and fill the properties of your candidate. It will be automatically written in the output tree.
 }
 
-void templateAnalyzer::PostProcess(){
+void Test::PostProcess(){
 	/// \MemberDescr
 	/// This function is called after an event has been processed by all analyzers. It could be used to free some memory allocated
 	/// during the Process.
@@ -316,7 +295,7 @@ void templateAnalyzer::PostProcess(){
 
 }
 
-void templateAnalyzer::EndOfRunUser(){
+void Test::EndOfRunUser(){
 	/// \MemberDescr
 	/// This method is called at the end of the processing (corresponding to a end of run in the normal NA62 data taking\n)
 	/// Do here your end of run processing if any
@@ -324,7 +303,7 @@ void templateAnalyzer::EndOfRunUser(){
 
 }
 
-void templateAnalyzer::ExportPlot(){
+void Test::ExportPlot(){
 	/// \MemberDescr
 	/// This method is called at the end of processing to save plots.\n
 	/// If you want to save them all, just call\n
@@ -334,7 +313,7 @@ void templateAnalyzer::ExportPlot(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::DrawPlot(){
+void Test::DrawPlot(){
 	/// \MemberDescr
 	/// This method is called at the end of processing to draw plots.
 	/// If you want to draw all the plots, just call

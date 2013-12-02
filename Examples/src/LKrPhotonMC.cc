@@ -40,6 +40,9 @@ LKrPhotonMC::LKrPhotonMC(BaseAnalysis *ba) : Analyzer(ba)
 
 	fCandidates = new TClonesArray("TRecoLKrCandidateMC", 10);
 	RequestTree("LKr", new TRecoLKrEvent);
+
+	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
+	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
 	//Specify the trees you want to use and the event class corresponding
 	//Don't try to load MCTruth tree (RUN_0 or Event). Use the MCTruthEvent in Process function instead. Problems when opening twice the same tree.
 	//Example with RecoEvent
