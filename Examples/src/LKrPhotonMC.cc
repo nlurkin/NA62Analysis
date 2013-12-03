@@ -9,7 +9,7 @@
 using namespace std;
 
 //Include the hh files for events kinds you will use
-/*#include "TRecoGigaTrackerEvent.hh"
+/*
 #include "TRecoRICHEvent.hh"
 #include "TRecoCHANTIEvent.hh"
 #include "TRecoCedarEvent.hh"
@@ -23,7 +23,9 @@ using namespace std;
 #include "TRecoLAVEvent.hh"
 #include "TRecoSACEvent.hh"
 #include "TRecoLKrEvent.hh"
-#include "TRecoSpectrometerEvent.hh"*/
+*/
+#include "TRecoSpectrometerEvent.hh"
+#include "TRecoGigaTrackerEvent.hh"
 #include "TRecoLKrEvent.hh"
 #include "TRecoLKrCandidateMC.hh"
 
@@ -171,7 +173,7 @@ void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 
 	TVector3 vertex, direction;
 	OutputState state;
-	vertex = *(TVector3*)GetOutput("VertexCDA.vertex", state);
+	vertex = *(TVector3*)GetOutput("VertexCDA.Vertex", state);
 
 	//Positions on LKr
 	vector<double> clusterEnergy, tempVDouble;
@@ -220,9 +222,9 @@ void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 		tempRecoLKr.erase(tempRecoLKr.begin()+vId);
 		tempVTV3.erase(tempVTV3.begin()+vId);
 		lkrCandMC = (TRecoLKrCandidateMC*)fCandidates->ConstructedAt(candidatesNumber);
-		cout << lkrCandMC->ClassName() << endl;
 		lkrCandMC->copy(sortedCandidates.back());
 		lkrCandMC->SetMCParticleID(-1);
+		candidatesNumber++;
 	}
 
 	//Project MC photons on LKr plane
@@ -258,6 +260,7 @@ void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 		}
 	}
 
+	ExportEvent();
 	//You can retrieve MC particles from the fMCSimple Set with (return a vector<KinePart*>
 	//	fMCSimple["particleName"]
 	//	fMCSimple[pdgID]

@@ -74,6 +74,16 @@ void VertexCDA::InitHist(){
 	for(int i=0; i<20; i++){
 		BookHisto(TString("BeamXY") + (Long_t)i, new TH2I(TString("BeamXY") + (Long_t)i, TString("BeamXY ") + (Long_t)(100+i*5) + TString("->") + (Long_t)(100+(i+1)*5), 100, -100, 100, 100, -100, 100));
 	}
+
+	BookCounter("Total_Events");
+	BookCounter("Good_GTK_Mult");
+	BookCounter("Good_Straw_Mult");
+
+	NewEventFraction("Selection");
+	AddCounterToEventFraction("Selection", "Total_Events");
+	AddCounterToEventFraction("Selection", "Good_GTK_Mult");
+	AddCounterToEventFraction("Selection", "Good_Straw_Mult");
+	DefineSampleSizeCounter("Selection", "Total_Events");
 }
 
 //#####################################################
@@ -129,11 +139,13 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	bool badEvent = false;
 	TVector3 KaonPosition, KaonMomentum;
 
+	IncrementCounter("Total_Events");
 	FillHisto("GTKMultiplicity", GTKEvent->GetNCandidates());
 	if(GTKEvent->GetNCandidates()==1){
 		KaonPosition = ((TRecoGigaTrackerCandidate*)GTKEvent->GetCandidate(0))->GetPosition(2);
 		KaonPosition.SetZ(KaonPosition.Z()+90932.5);
 		KaonMomentum = ((TRecoGigaTrackerCandidate*)GTKEvent->GetCandidate(0))->GetMomentum().Vect();
+		IncrementCounter("Good_GTK_Mult");
 	}
 	else badEvent = true;
 
@@ -143,6 +155,7 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	if(SpectrometerEvent->GetNCandidates()==1){
 		PipPosition = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetPosition();
 		PipMomentum = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetMomentum().Vect();
+		IncrementCounter("Good_Straw_Mult");
 	}
 	else badEvent = true;
 

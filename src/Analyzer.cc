@@ -66,7 +66,7 @@ void Analyzer::BookHisto(TString name, TH1* histo, bool refresh, TString directo
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
-	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
@@ -81,7 +81,7 @@ void Analyzer::BookHisto(TString name, TH2* histo, bool refresh, TString directo
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
-	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
@@ -96,7 +96,7 @@ void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh, TString dire
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
-	/// \param direcotry : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
 	///
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr

@@ -766,6 +766,10 @@ void BaseAnalysis::FindAndGetTree(TChain* tree, TString branchName, TString bran
 	Int_t jMax;
 
 	branchesList = tree->GetListOfBranches();
+	if(!branchesList){
+		cerr << "Unable to find TTree " << tree->GetName() << ". Aborting.";
+		raise(SIGABRT);
+	}
 	jMax = branchesList->GetEntries();
 	for (Int_t j=0; j < jMax; j++){
 		if ( TString(branchName).CompareTo( branchesList->At(j)->GetName() ) == 0 )
@@ -773,10 +777,9 @@ void BaseAnalysis::FindAndGetTree(TChain* tree, TString branchName, TString bran
 			if ( TString(branchClass).CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
 				cerr  << "Input file corrupted, bad Event class (" << ((TBranch*)branchesList->At(j))->GetClassName() << ") found for " << tree->GetTree()->GetName() << endl;
-				raise(138);
+				raise(SIGABRT);
 			}
 			cout << "Found " << branchName << " (" << tree->GetEntries() << ") of class " << branchClass << endl;
-			cout << evt << endl;
 			tree->SetBranchAddress(branchName, evt);
 			if ( eventNb < 0 )
 			{
@@ -785,7 +788,7 @@ void BaseAnalysis::FindAndGetTree(TChain* tree, TString branchName, TString bran
 			else if (eventNb != tree->GetEntries())
 			{
 				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetEntries() << endl;
-				raise( 138 );
+				raise(SIGABRT);
 			}
 		}
 	}

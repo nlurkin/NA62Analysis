@@ -41,7 +41,7 @@ public:
 	int Size(int pdgID);
 	int Size(TString name);
 	vector<KinePart*> GetFinalState();
-	vector<KinePart*> GetGeneration(int generation, bool full);
+	vector<KinePart*> GetDecayLevel(int level, bool full);
 
 	//Printing
 	void PrintInit();

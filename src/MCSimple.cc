@@ -16,6 +16,7 @@ MCSimple::MCSimple(){
 	fVerbosity = AnalysisFW::kNo;
 	fStatus = kEmpty;
 	fParticleInterface = ParticleInterface::GetParticleInterface();
+	fDecayTree = NULL;
 }
 
 void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose){
@@ -189,7 +190,7 @@ void MCSimple::ClearParticles(){
 	for(it=fParticles.begin(); it != fParticles.end(); it++){
 		it->second->clear();
 	}
-	delete fDecayTree;
+	if(fDecayTree) delete fDecayTree;
 }
 
 vector<KinePart*> MCSimple::operator [](TString name){
@@ -264,6 +265,7 @@ void MCSimple::PrintDecayTree(){
 	/// Print the current decay tree.
 	/// \EndMemberDescr
 
+	if(fDecayTree==NULL) return;
 	cout << endl << "\t\t";
 	while(fDecayTree->PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
 	cout << endl;
@@ -281,16 +283,16 @@ vector<KinePart*> MCSimple::GetFinalState(){
 	return v;
 }
 
-vector<KinePart*> MCSimple::GetGeneration(int generation, bool full){
+vector<KinePart*> MCSimple::GetDecayLevel(int level, bool full){
 	/// \MemberDescr
-	/// \param generation : Number of the generationto fetch in the decay tree
-	/// \param full : If true, will also return the final particles that did not reach the 'generation' level.
+	/// \param level : Level to fetch in the decay tree
+	/// \param full : If true, will also return the final particles that did not reach the requested level.
 	///
-	/// Return a vector containing a pointer to every KinePart at level 'generation' in the decay tree.
+	/// Return a vector containing a pointer to every KinePart at the requested level in the decay tree.
 	/// \EndMemberDescr
 
 	vector<KinePart*> v;
 
-	fDecayTree->GetLevel(v, generation, full);
+	fDecayTree->GetLevel(v, level, full);
 	return v;
 }

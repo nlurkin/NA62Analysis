@@ -77,7 +77,7 @@ private:
 	void PreProcess();
 	void GetTree(int &eventNb);
 	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
-	void FindAndGetTree(TString dir, TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
+	//void FindAndGetTree(TString dir, TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
 	Bool_t checkInputFile(TString fileName);
 protected:
 	class ObjectTriplet{

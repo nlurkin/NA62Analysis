@@ -194,11 +194,11 @@ void Pi0Reconstruction::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthE
 				g1EnergyFrac = g1->GetInitialEnergy()/fMCSimple["gamma"][iLead]->GetInitialEnergy();
 				g2EnergyFrac = g2->GetInitialEnergy()/fMCSimple["gamma"][iTrail]->GetInitialEnergy();
 
-				fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iLead]->GetProdPos().Vect(), fMCSimple["gamma"][iLead]->GetInitialMomentum(), 0.001);
+				fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iLead]->GetProdPos().Vect(), fMCSimple["gamma"][iLead]->GetInitialMomentum());
 				g1Vol = fDetectorAcceptanceInstance->FirstTouchedDetector();
 				g1LKr = fDetectorAcceptanceInstance->GetDetAcceptance(DetectorAcceptance::kLKr);
 				fDetectorAcceptanceInstance->CleanDetPath();
-				fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iTrail]->GetProdPos().Vect(), fMCSimple["gamma"][iTrail]->GetInitialMomentum(), 0.001);
+				fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iTrail]->GetProdPos().Vect(), fMCSimple["gamma"][iTrail]->GetInitialMomentum());
 				g2Vol = fDetectorAcceptanceInstance->FirstTouchedDetector();
 				g2LKr = fDetectorAcceptanceInstance->GetDetAcceptance(DetectorAcceptance::kLKr);
 

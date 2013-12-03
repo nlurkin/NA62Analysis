@@ -47,6 +47,7 @@ int main(int argc, char** argv){
 	signal(SIGXCPU, sighandler);
 	signal(SIGTERM, sighandler);
 	signal(SIGINT, sighandler);
+	signal(SIGABRT, sighandler);
 
 	TString inFileName;
 	TString outFileName = "outFile.root";
