@@ -130,14 +130,15 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	//If the analyzer can run without MC data, comment the line
 	//if(fMCSimple.fStatus == MCSimple::kEmpty) return;
 
+	bool badEvent = false;
+	TVector3 KaonPosition, KaonMomentum;
+	TVector3 PipPosition, PipMomentum;
+
 	bool withMC = true;
 	if(fMCSimple.fStatus != MCSimple::kComplete) withMC = false;
 
 	TRecoGigaTrackerEvent *GTKEvent = (TRecoGigaTrackerEvent*)GetEvent("GigaTracker");
 	TRecoSpectrometerEvent *SpectrometerEvent = (TRecoSpectrometerEvent*)GetEvent("Spectrometer");
-
-	bool badEvent = false;
-	TVector3 KaonPosition, KaonMomentum;
 
 	IncrementCounter("Total_Events");
 	FillHisto("GTKMultiplicity", GTKEvent->GetNCandidates());
@@ -149,8 +150,6 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	}
 	else badEvent = true;
 
-	TVector3 PipPosition, PipMomentum;
-
 	FillHisto("StrawMultiplicity", SpectrometerEvent->GetNCandidates());
 	if(SpectrometerEvent->GetNCandidates()==1){
 		PipPosition = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetPosition();
@@ -160,21 +159,21 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	else badEvent = true;
 
 
-	if(badEvent || !withMC){
+	if(badEvent){
 		SetOutputState("Vertex", kOInvalid);
 	}
 	else{
-		//fVertex = GetIntersection(KaonPosition, KaonMomentum, PipPosition, PipMomentum);
 		fVertex = GetIntersection(KaonPosition, KaonMomentum, PipPosition, PipMomentum);
 		SetOutputState("Vertex", kOValid);
 
 		FillHisto("VertexX", fVertex.X());
 		FillHisto("VertexY", fVertex.Y());
 		FillHisto("VertexZ", fVertex.Z());
-		FillHisto("DiffVertexX", fVertex.X()-fMCSimple["pi+"][0]->GetProdPos().X());
-		FillHisto("DiffVertexY", fVertex.Y()-fMCSimple["pi+"][0]->GetProdPos().Y());
-		FillHisto("DiffVertexZ", fVertex.Z()-fMCSimple["pi+"][0]->GetProdPos().Z());
+
 		if(withMC){
+			FillHisto("DiffVertexX", fVertex.X()-fMCSimple["pi+"][0]->GetProdPos().X());
+			FillHisto("DiffVertexY", fVertex.Y()-fMCSimple["pi+"][0]->GetProdPos().Y());
+			FillHisto("DiffVertexZ", fVertex.Z()-fMCSimple["pi+"][0]->GetProdPos().Z());
 			FillHisto("VertexRecoRealX", fVertex.X(), fMCSimple["pi+"][0]->GetProdPos().X());
 			FillHisto("VertexRecoRealY", fVertex.Y(), fMCSimple["pi+"][0]->GetProdPos().Y());
 			FillHisto("VertexRecoRealZ", fVertex.Z(), fMCSimple["pi+"][0]->GetProdPos().Z());
