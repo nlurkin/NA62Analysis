@@ -156,8 +156,6 @@ void Pi0Reconstruction::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthE
 
 	//Get vertex from VertexCDA analyzer
 	vertex = *(TVector3*)GetOutput("VertexCDA.Vertex", state);
-	SetOutputState("pi0", kOInvalid);
-
 	//Check we got the vertex. We cannot work without the vertex
 	if(state!=kOValid) return;
 
