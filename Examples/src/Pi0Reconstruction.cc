@@ -292,47 +292,45 @@ void Pi0Reconstruction::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthE
 		}
 	}
 
-}
+	//Delete all the created KinePart
+	while(photons.size()>0){
+		delete photons.back();
+		photons.pop_back();
+	}
 
-//Delete all the created KinePart
-while(photons.size()>0){
-	delete photons.back();
-	photons.pop_back();
-}
+	//You can retrieve MC particles from the fMCSimple Set with
+	//	fMCSimple.fKaon[0] for the kaons
+	//	fMCSimple.fPip[0] for the positive pions
+	//	fMCSimple.fGamma[0] for the photons
+	//The number in the brackets is the index of the particle (if you asked for two photons in the set, you can ask fMCSimple.fGamma[0] for the first one and fMCSimple.fGamma[1] for the second)
 
-//You can retrieve MC particles from the fMCSimple Set with
-//	fMCSimple.fKaon[0] for the kaons
-//	fMCSimple.fPip[0] for the positive pions
-//	fMCSimple.fGamma[0] for the photons
-//The number in the brackets is the index of the particle (if you asked for two photons in the set, you can ask fMCSimple.fGamma[0] for the first one and fMCSimple.fGamma[1] for the second)
+	//You can retrieve the events from the trees with
+	//	(eventClass*)fEvent["treeName"];
 
-//You can retrieve the events from the trees with
-//	(eventClass*)fEvent["treeName"];
+	//You can retrieve the histograms you booked (for drawing, changing, filling, ...) with
+	//	fHisto["histoName"] for TH1
+	//	fHisto2["histoName"] for TH2
+	//	fGraph["graphName"] for TGraph and TGraphAsymmErrors
+	//Be carefull !! If the histogram you ask for doesn't exist or you ask for an existing histogram
+	//in the wrong recipient (e.g. th2 in fHisto), program will segfault.
+	//To fill the histograms without risk of segfault, you can use
+	//	FillHisto("histoName", values)
+	//where values are the same parameters as if you call histogram->Fill(values) (x,y,weight,...)
+	//Instead of segfault, this function print an error message
 
-//You can retrieve the histograms you booked (for drawing, changing, filling, ...) with
-//	fHisto["histoName"] for TH1
-//	fHisto2["histoName"] for TH2
-//	fGraph["graphName"] for TGraph and TGraphAsymmErrors
-//Be carefull !! If the histogram you ask for doesn't exist or you ask for an existing histogram
-//in the wrong recipient (e.g. th2 in fHisto), program will segfault.
-//To fill the histograms without risk of segfault, you can use
-//	FillHisto("histoName", values)
-//where values are the same parameters as if you call histogram->Fill(values) (x,y,weight,...)
-//Instead of segfault, this function print an error message
+	//For use of fGeom, read DetectorAcceptance class
 
-//For use of fGeom, read DetectorAcceptance class
+	//To use the output of a different analyzer, use
+	//outputType var = *(outputType*)GetOutput("analyzerName.outputName", state);
+	//Where outputType is the variable type and state is of type outputState
+	//This function returns a void* and you have to explicitly cast it to the real object type
+	//State is set with the state of the variable (kOUninit, kOInvalid ,kOValid). The value of the output should only be trusted if state == kOValid
+	//example : TLorentzVector vertex = *(TLorentzVector*)GetOutput("simpleVertexAnalyzer.vertex", state);
 
-//To use the output of a different analyzer, use
-//outputType var = *(outputType*)GetOutput("analyzerName.outputName", state);
-//Where outputType is the variable type and state is of type outputState
-//This function returns a void* and you have to explicitly cast it to the real object type
-//State is set with the state of the variable (kOUninit, kOInvalid ,kOValid). The value of the output should only be trusted if state == kOValid
-//example : TLorentzVector vertex = *(TLorentzVector*)GetOutput("simpleVertexAnalyzer.vertex", state);
-
-//Before starting the processing of an event, the state flag of each output variable is reset to kOUninit
-//When setting the value of an output variable, don't forget to set appropriately the state flag to either kOValid or kOInvalid
-//to indicate if the value can/can't be used in other analyzer
-//SetOutputState("outputName", kOValid);
+	//Before starting the processing of an event, the state flag of each output variable is reset to kOUninit
+	//When setting the value of an output variable, don't forget to set appropriately the state flag to either kOValid or kOInvalid
+	//to indicate if the value can/can't be used in other analyzer
+	//SetOutputState("outputName", kOValid);
 }
 
 void Pi0Reconstruction::PostProcess(){
