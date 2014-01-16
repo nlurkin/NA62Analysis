@@ -199,7 +199,7 @@ Bool_t BaseAnalysis::checkInputFile(TString fileName){
 	TList* keys = fd->GetListOfKeys();
 
 	fWithMC = true;
-	if(keys->FindObject("Run_0")) fMCTruthTree = new TChain("Run_0");
+	if(keys->FindObject("Generated")) fMCTruthTree = new TChain("Generated");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
 		fEventNb = -1;

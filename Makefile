@@ -112,7 +112,7 @@ clean:
 #Compilation of additional library for example analyzer
 $(FWLIBDIR)/libTRecoLKrCandidateMC.so: $(FWOBJDIR)/TRecoLKrCandidateMCDICT.o $(FWOBJDIR)/TRecoLKrCandidateMC.o
 	@echo "Creating library $@ ..."
-	$(CC) -Wl,-soname,libTRecoLKrCandidateMC.so -o $@ $(FWOBJDIR)/TRecoLKrCandidateMCDICT.o $(FWOBJDIR)/TRecoLKrCandidateMC.o $(SOFLAGS) $(ROOTLIBS)
+	@$(CC) -Wl,-soname,libTRecoLKrCandidateMC.so -o $@ $(FWOBJDIR)/TRecoLKrCandidateMCDICT.o $(FWOBJDIR)/TRecoLKrCandidateMC.o $(SOFLAGS) $(ROOTLIBS)
 
 $(FWOBJDIR)/TRecoLKrCandidateMC.o: Examples/TRecoLKrCandidateMC/TRecoLKrCandidateMC.cc Examples/TRecoLKrCandidateMC/TRecoLKrCandidateMC.hh
 	@echo "Compiling analyzer object $@ ..."
@@ -122,7 +122,7 @@ $(FWOBJDIR)/TRecoLKrCandidateMC.o: Examples/TRecoLKrCandidateMC/TRecoLKrCandidat
 #Dictionnaires ROOT
 $(FWOBJDIR)/TRecoLKrCandidateMCDICT.cc: Examples/TRecoLKrCandidateMC/TRecoLKrCandidateMC.hh Examples/TRecoLKrCandidateMC/LinkDef.h
 	@echo "Generating dictionary for TRecoLKrCandidate ..."
-	rootcint -f $@ -c $(CFLAGS) $(NA62HEADERS) -IExamples/TRecoLKrCandidateMC TRecoLKrCandidateMC.hh LinkDef.h
+	@rootcint -f $@ -c $(CFLAGS) $(NA62HEADERS) -IExamples/TRecoLKrCandidateMC TRecoLKrCandidateMC.hh LinkDef.h
 
 $(FWOBJDIR)/TRecoLKrCandidateMCDICT.o: $(FWOBJDIR)/TRecoLKrCandidateMCDICT.cc Examples/TRecoLKrCandidateMC/TRecoLKrCandidateMC.hh
 	@echo "Compiling dictionary for TRecoLKrCandidate..."

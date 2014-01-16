@@ -186,6 +186,7 @@ protected:
 	void* GetObjectVoid(TString name);
 	const void* GetOutputVoid(TString name, OutputState &state);
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
+	void Mkdir(TString name);
 
 	bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?
 	bool fIncompleteMCWarned; ///< Has the user been warned that the MC event does not match the requested one in fMCSimple and that he can change this behavior?

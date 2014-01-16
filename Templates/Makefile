@@ -75,27 +75,27 @@ all:	$(EXEC)
 
 test: test_main.cc $(MAINHH) $(USRANSLIBS)
 	@echo "Compiling test executable $@ ..."
-	$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS)  $(NA62LIBS) -I$(ROOTINCDIR) $(FWHEADERS) $(NA62HEADERS)
+	@$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS)  $(NA62LIBS) -I$(ROOTINCDIR) $(FWHEADERS) $(NA62HEADERS)
 
 #Compilation de l'executable
 $(EXEC): $(USROBJDIR)/main.o $(USRANSLIBS)
 	@echo "Compiling executable $(EXEC) ..."
-	$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(EXTRALIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS) $(NA62LIBS) $(EXTRALIBS) 
+	@$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(EXTRALIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS) $(NA62LIBS) $(EXTRALIBS) 
 
 #Compilation des user analyzer
 $(USROBJDIR)/%.o: $(USR_SRC)/%.cc $(USR_INCLUDE)/%.hh $(MAINHH)
 	@echo "Compiling user analyzer object $@ ..."
-	$(CC) -o $@ -c $< $(CFLAGS) $(FWHEADERS) $(NA62HEADERS) -I$(ROOTINCDIR) $(EXTRAHEADERS)
+	@$(CC) -o $@ -c $< $(CFLAGS) $(FWHEADERS) $(NA62HEADERS) -I$(ROOTINCDIR) $(EXTRAHEADERS)
 
 #Compilation du main
 $(USROBJDIR)/main.o: main.cc $(MAINHH) $(USRANSHH)
 	@echo "Compiling object $@ ..."
-	$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR) $(FWHEADERS) $(NA62HEADERS) $(EXTRAHEADERS)
+	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR) $(FWHEADERS) $(NA62HEADERS) $(EXTRAHEADERS)
 
 #creation des libraries
 $(USRLIBDIR)/lib%.so: $(USROBJDIR)/%.o
 	@echo "Creating library $@ ..."
-	$(CC) -Wl,-soname,$(patsubst $(USRLIBDIR)/%,%,$@) -o $@ $< $(SOFLAGS) 
+	@$(CC) -Wl,-soname,$(patsubst $(USRLIBDIR)/%,%,$@) -o $@ $< $(SOFLAGS) 
 	
 #Clean
 .PHONY: clean cleanall

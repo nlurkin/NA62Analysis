@@ -52,7 +52,7 @@ void Pi0Reconstruction::InitHist(){
 	BookHisto("g2pz", new TH2I("g2pz", "g2 pz Reco vs. Real", 10, 240000, 250000, 10, 240000, 250000));
 	BookHisto("pi0Energy", new TH1I("pi0Energy", "Energy of pi0", 100, 0, 75000));
 	BookHisto("pi0Mass", new TH1I("pi0Mass", "Reconstructed mass of pi0", 200, 0, 200));
-	BookHisto("pi0MCMass", new TH1I("pi0MCMass", "MC mass of pi0", 200, 0, 200));
+	//BookHisto("pi0MCMass", new TH1I("pi0MCMass", "MC mass of pi0", 200, 0, 200));
 	BookHisto("clusterPosition", new TH2I("clusterPosition", "Cluster position on LKr", 500, -2000, 2000, 500, -2000, 2000));
 	BookHisto("photonsNbr", new TH1I("photonsNbr", "Photons multiplicity/event", 10, 0, 10));
 	BookHisto("g1EnergyFraction", new TH1I("g1EnergyFraction", "Fraction between real energy and reco energy", 1000, 0, 100));
@@ -286,7 +286,7 @@ void Pi0Reconstruction::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthE
 			//Fill the pi0 histograms
 			FillHisto("pi0Energy", pi0.GetInitialEnergy());
 			FillHisto("pi0Mass", sqrt(pow(pi0.GetInitialEnergy(),2) - pi0.GetInitialMomentum().Mag2()));
-			FillHisto("pi0MCMass", sqrt(pow(fMCSimple[22][iLead]->GetInitialEnergy() + fMCSimple[22][iTrail]->GetInitialEnergy(), 2) - (fMCSimple[22][iLead]->GetInitialMomentum() + fMCSimple[22][iTrail]->GetInitialMomentum()).Mag2()));
+			//FillHisto("pi0MCMass", sqrt(pow(fMCSimple[22][iLead]->GetInitialEnergy() + fMCSimple[22][iTrail]->GetInitialEnergy(), 2) - (fMCSimple[22][iLead]->GetInitialMomentum() + fMCSimple[22][iTrail]->GetInitialMomentum()).Mag2()));
 		}
 	}
 

@@ -42,6 +42,7 @@ ParticleTree::ParticleTree(KinePart *ptr) {
 	/// Constructor setting particle properties
 	/// \EndMemberDescr
 
+	fPrevGiven = 0;
 	fGiven = 0;
 	fParticle = ptr;
 	fId = fParticle->GetID();

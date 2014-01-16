@@ -2,6 +2,13 @@
 NA62Analysis Project
 ################################################################
 
+2014-01-14      Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev. 298
+                - Few modifications for compatibility with the latest
+                  revision of NA62MC, in preparation for the release of
+                  MC Overlay
+                - Fixed a typo in scripts/env.csh
+
 2013-10-04	Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev. 288
 		- New sections added in the documentation (online + README)

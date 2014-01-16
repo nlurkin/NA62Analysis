@@ -607,7 +607,7 @@ DetectorID detection_gtk(int part, TGigaTrackerEvent* gtkEvent, bool& gtk1){
 	for(int m=0; m<hit_nb; m++){
 		gtkHit = (TGigaTrackerHit*)gtkEvent->Hit(m);
 		if(part == gtkHit->GetMCTrackID()){
-			planeID[gtkHit->GetStationID()] = true;
+			planeID[gtkHit->GetStationNo()] = true;
 		}
 	}
 

@@ -183,6 +183,18 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 			else fGeoManager->FindNextBoundaryAndStep();
 		}
 
+		/*************
+		 *
+		 *
+		 */
+
+		TGeoMedium *m = fGeoManager->GetCurrentVolume()->GetMedium();
+		m->Dump();
+		/**********
+		 *
+		 *
+		 */
+
 		path = fGeoManager->GetPath();
 		point = fGeoManager->GetCurrentPoint();
 		str = path;

@@ -155,7 +155,7 @@ def readAndReplace(iPath, oPath, searchMap):
 	inComment = False
 	
 	for line in f1:
-		if "///" in line:
+		if "//" in line and not "///" in line:
 			continue
 		if "/**" in line:
 			inComment=True
@@ -172,10 +172,10 @@ def readAndReplace(iPath, oPath, searchMap):
 	f2.close()
 	f1.close()
 
-def createAnalyzer(name, FWPath, UserPath):
+def generateNewAnalyzer(name, FWPath, UserPath, inputs):
 	if os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, name)):
 		answer = raw_input("This analyzer already exists. Do you want to overwrite it [Y/N] ? ")
-		if answer == 'Y':
+		if answer.lower() == 'y':
 			os.remove("%s/Analyzers/include/%s.hh" % (UserPath, name))
 			os.remove("%s/Analyzers/src/%s.cc" % (UserPath, name))
 		else:
@@ -189,8 +189,45 @@ def createAnalyzer(name, FWPath, UserPath):
 		return
 	
 	readAndReplace("%s/Templates/templateAnalyzer.hh" % FWPath, "%s/Analyzers/include/%s.hh" % (UserPath, name), {'templateAnalyzer':name, 'TEMPLATEANALYZER':name.upper()})
+	readAndReplace("%s/Templates/templateAnalyzer.cc" % FWPath, "%s/Analyzers/src/%s.cc" % (UserPath, name), {'templateAnalyzer':name, '/*$$TREEINCLUDES$$*/':inputs[0], '/*$$TREEREQUEST$$*/':inputs[1], '/*$$GETEVENTS$$*/':inputs[2]})
+
+def parseAnalyzerDef(name):
+	m = re.findall("(.*?)\((.*)\)", name)
+	if not m:
+		return [name,0]
+	else:
+		anName = m[0][0]
+		inputs = m[0][1].split(",")
 	
-	readAndReplace("%s/Templates/templateAnalyzer.cc" % FWPath, "%s/Analyzers/src/%s.cc" % (UserPath, name), {'templateAnalyzer':name})
+	return [anName,inputs]
+
+def createAnalyzer(name, FWPath, UserPath):
+	[anName, inputs] = parseAnalyzerDef(name)
+	
+	if inputs==0:
+		#No analyzer inputs specified. Old style new.
+		generateNewAnalyzer(name, FWPath, UserPath, ['','',''])
+		return
+	
+	treeInclude = ""
+	treeRequest = ""
+	getEvents = ""
+	for i in inputs:
+		i = i.strip()
+		if not " " in i:
+			print "Error while creating new analyzer %s: input type not specified for %s. Please add 'MC' or 'Reco' identifier before tree name." % (anName, i)
+			return
+		[type, tree] = i.split(" ")
+		if type=="MC":
+			className = "T%sEvent" % (tree)
+		else:
+			className = "TReco%sEvent" % (tree)
+		
+		treeInclude = "%s#include \"%s.hh\"\n" % (treeInclude,className)
+		treeRequest = "%s\tRequestTree(\"%s\",new %s);\n" % (treeRequest,tree,className)
+		getEvents = "%s\t%s *%sEvent = (%s*)GetEvent(\"%s\");\n" % (getEvents,className,tree,className,tree)
+	
+	generateNewAnalyzer(anName, FWPath, UserPath, [treeInclude,treeRequest,getEvents])
 	
 def renameAnalyzer(oldName, newName, FWPath, UserPath):
 	if not os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, oldName)):
@@ -199,7 +236,7 @@ def renameAnalyzer(oldName, newName, FWPath, UserPath):
 
 	if os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, newName)):
 		answer = raw_input("This analyzer (%) already exists. Do you want to overwrite it [Y/N] ? " % newName)
-		if answer == 'Y':
+		if answer.lower() == 'y':
 			os.remove("%s/Analyzers/include/%s.hh" % (UserPath, newName))
 			os.remove("%s/Analyzers/src/%s.cc" % (UserPath, newName))
 		else:
@@ -250,7 +287,9 @@ def build(filename, FWPath, UserPath):
 	
 	depsGraph = dependencyGraph.DependencyGraph()
 	
-	analyzers = analyzersList.split()
+	#analyzers = analyzersList.split()
+	analyzers = re.findall(" ?(.+?(?:\(.+?\)|[ ]|$)) ?", analyzersList)
+	print analyzers
 	usrAnList = ""
 	fwAnList = ""
 	exAnList = ""
@@ -258,11 +297,15 @@ def build(filename, FWPath, UserPath):
 	ordered = []
 	missing = False
 	
-	for an in analyzers:
+	for anDef in analyzers:
+		an = parseAnalyzerDef(anDef)[0]
 		anType = checkAnalyzerExists(an, FWPath, UserPath)
 		if(anType==0):
-			print "Analyzer %s does not exists" % (an)
-			missing = True
+			answer = raw_input("Analyzer %s does not exists. Do you want to create it [Y/N]" % (an))
+			if answer.lower()=="y":
+				createAnalyzer(anDef, FWPath, UserPath)
+			else:
+				missing = True
 		else:
 			if anType==1:
 				prefix = "%s/Analyzers" % FWPath

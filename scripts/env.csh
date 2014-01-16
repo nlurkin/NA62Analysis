@@ -14,7 +14,7 @@ else
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/LAV/Persistency/lib
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/IRC/Persistency/lib
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/CHANTI/Persistency/lib
-        setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/CEDAR/Persistency/lib
+        setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/Cedar/Persistency/lib
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/CHOD/Persistency/lib
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/MUV1/Persistency/lib
         setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/MUV2/Persistency/lib

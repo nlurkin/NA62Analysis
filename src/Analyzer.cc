@@ -418,6 +418,18 @@ void Analyzer::UpdatePlots(int evtNbr){
 	}
 }
 
+void Analyzer::Mkdir(TString name){
+	/// \MemberDescr
+	/// \param name: Name of the directory to create
+	///
+	/// Check if the directory name already exists in the analyzer subdirectory. If not create it.
+	/// \EndMemberDescr
+
+	if(gFile->GetDirectory(fAnalyzerName + "/" + name)==NULL){
+		gFile->mkdir(fAnalyzerName + "/" + name);
+	}
+}
+
 void Analyzer::SaveAllPlots(){
 	/// \MemberDescr
 	/// Write all the booked histograms into the output file
@@ -433,7 +445,7 @@ void Analyzer::SaveAllPlots(){
 		name = (*it1).second->GetName();
 		itDirectory = fPlotsDirectory.find(name);
 		if(itDirectory != fPlotsDirectory.end()){
-			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			Mkdir(itDirectory->second);
 			gFile->Cd(itDirectory->second);
 		}
 		(*it1).second->Write();
@@ -443,7 +455,7 @@ void Analyzer::SaveAllPlots(){
 		name = (*it2).second->GetName();
 		itDirectory = fPlotsDirectory.find(name);
 		if(itDirectory != fPlotsDirectory.end()){
-			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			Mkdir(itDirectory->second);
 			gFile->Cd(itDirectory->second);
 		}
 		(*it2).second->Write();
@@ -453,7 +465,7 @@ void Analyzer::SaveAllPlots(){
 		name = (*it3).second->GetName();
 		itDirectory = fPlotsDirectory.find(name);
 		if(itDirectory != fPlotsDirectory.end()){
-			gFile->mkdir(fAnalyzerName + "/" + itDirectory->second);
+			Mkdir(itDirectory->second);
 			gFile->Cd(itDirectory->second);
 		}
 		(*it3).second->Write();

@@ -9,6 +9,7 @@
 using namespace std;
 
 //Include the hh files for events kinds you will use
+/*$$TREEINCLUDES$$*/
 /*#include "TRecoGigaTrackerEvent.hh"
 #include "TRecoRICHEvent.hh"
 #include "TRecoCHANTIEvent.hh"
@@ -46,9 +47,20 @@ templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
 	/// \MemberDescr
 	/// \param ba : parent BaseAnalysis
 	///
-	/// Set the name of your analyzer\n
-	/// Select the trees you want to get\n
-	/// If you want to use DetectorAcceptance, initialize it.
+	///Specify the trees you want to use and the event class corresponding\n
+	///Don't try to load MCTruth tree (RUN_0 or Event). Use the MCTruthEvent in Process function instead. Problems when opening twice the same tree.\n
+	///Example with RecoEvent\n
+	///	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);\n
+	///Example with MC Event\n
+	///	RequestTree("GigaTracker", new TGigaTrackerEvent);\n
+	///Example with generic tree\n
+	///	RequestTree<MyClass>("MyTree", "BranchName", "MyClass", new MyClass);\n
+	////\n
+	///Initialize DetectorAcceptance if needed\n
+	///use of global instance\n
+	///	fDetectorAcceptanceInstance = GetDetectorAcceptanceInstance();\n
+	///use of local instance\n
+	///	fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 
 	fAnalyzerName = "templateAnalyzer";
 
@@ -60,6 +72,7 @@ templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
 	//	RequestTree("GigaTracker", new TGigaTrackerEvent);
 	//Example with generic tree
 	//	RequestTree<MyClass>("MyTree", "BranchName", "MyClass", new MyClass);
+/*$$TREEREQUEST$$*/
 
 	//Initialize DetectorAcceptance if needed
 	//use of global instance
@@ -181,8 +194,6 @@ void templateAnalyzer::EndOfBurstUser(){
 	/// \EndMemberDescr
 }
 
-/**
- */
 void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
@@ -190,7 +201,7 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	/// \param MCTruthEvent : Complete set of MC particles
 	///
 	/// Main process method. Called on each event. Write you analysis here.\n
-	/// 	Ask the fMCSimple to have the complete set of particles we specified\n
+	/// Ask the fMCSimple to have the complete set of particles we specified\n
 	/// You can retrieve MC particles from the fMCSimple Set with (return a vector<KinePart*>\n
 	///  fMCSimple["particleName"]\n
 	///  fMCSimple[pdgID]\n
@@ -265,6 +276,7 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	//	(eventClass*)GetEvent("treeName");
 	//You can retrieve data from generic TTrees with
 	//	GetObject<MyClass>("treeName");
+/*$$GETEVENTS$$*/
 
 	//You can retrieve the histograms you booked (for drawing, changing, filling, ...) with
 	//	fHisto["histoName"] for TH1
