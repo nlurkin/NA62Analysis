@@ -163,11 +163,11 @@ void templateAnalyzer::DefineMCSimple(MCSimple *fMCSimple){
 	/// parentID : 	0=no parent (=beam particle)\n
 	/// 	...\n
 	/// Example : you want to retrieve the kaon from the beam, the pi0 an pi+ from the beam kaon and the 2 photons coming from the previous pi0 decay :\n
-	/// 	int kaonID = AddParticle(0, 321) //Ask beam kaon (sequence ID=1)\n
-	/// 	AddParticle(kaonID, 211) //Ask pi+ from previous kaon (sequence ID=2)\n
-	/// 	int pi0ID = AddParticle(kaonID, 111) //Ask pi0 from previous kaon (sequence ID=3)\n
-	/// 	AddParticle(pi0ID, 22) //Ask first gamma from previous pi0 (sequence ID=4)\n
-	/// 	AddParticle(pi0ID, 22) //Ask second gamma from previous pi0 (sequence ID=4)
+	/// 	int kaonID = fMCSimple->AddParticle(0, 321) //Ask beam kaon (sequence ID=1)\n
+	/// 	fMCSimple->AddParticle(kaonID, 211) //Ask pi+ from previous kaon (sequence ID=2)\n
+	/// 	int pi0ID = fMCSimple->AddParticle(kaonID, 111) //Ask pi0 from previous kaon (sequence ID=3)\n
+	/// 	fMCSimple->AddParticle(pi0ID, 22) //Ask first gamma from previous pi0 (sequence ID=4)\n
+	/// 	fMCSimple->AddParticle(pi0ID, 22) //Ask second gamma from previous pi0 (sequence ID=4)
 	///
 	/// @see ROOT TDatabasePDG for a list of PDG codes and particle naming convention
 	/// \EndMemberDescr

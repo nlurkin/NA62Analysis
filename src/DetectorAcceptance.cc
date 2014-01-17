@@ -14,9 +14,8 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
 	/// Constructor. Imports the geometry.
 	/// \EndMemberDescr
 
-	//fGeoManager = new TGeoManager();
+	fMagnetEffect = false;
 	fGeoManager = TGeoManager::Import(GeometryFile);
-	//fGeoManager->CloseGeometry();
 	fCanvas = 0;
 	fVerbosity = AnalysisFW::kNo;
 
@@ -55,12 +54,6 @@ TVector3 DetectorAcceptance::GetDetPosition(volume det){
 	return fVolumePos[det];
 }
 
-/// \MemberDescr
-/// \param det : GTK station to check
-///
-/// Return true if the GTK station det has been crossed by particle\n
-/// WARNING : need to call FillPath before to be populated
-/// \EndMemberDescr
 bool DetectorAcceptance::GetGTKAcceptance(GTKVol det){
 	/// \MemberDescr
 	/// \param det : GTK station to check
@@ -145,20 +138,75 @@ void DetectorAcceptance::CleanDetPath(){
 		fLAVPath[i] = false;
 		fLAVPos[i].SetXYZ(0.,0.,0.);
 	}
+	fMagnetEffect = false;
+	fPositionAfterMagnet = TVector3();
+	fMomentumAfterMagnet = TVector3();
+	fPositionCenterMagnet = TVector3();
+	fMomentumCenterMagnet = TVector3();
 }
 
+void DetectorAcceptance::UpdateTrackingMomentum(double precision, int q, TVector3 currPos, TVector3 startMomentum){
+	/// \MemberDescr
+	/// \param precision : precision for each step (default: 0 - optimized)
+	/// \param q : particle charge
+	/// \param currPos : Current position of the particle
+	/// \param startMomentum : Initial momentum of the particle
+	///
+	/// Check if the particle is passing through the magnet.\n
+	/// If yes, update the momentum (only when entering the magnet and leaving it).
+	/// \EndMemberDescr
+	double zStep, endZ;
+	TVector3 tempEndPos, tempEndMomentum;
+	double magnetStart = 19645.0;
+	double magnetEnd = 19775.0;
+	double mm = 10.;
 
-void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double precision){
+	//If particle is neutral, don't bother taking care of the magnetic field
+	if(q!= 0){
+		//Estimate next step
+		if(precision>0) fGeoManager->FindNextBoundary(precision);
+		else fGeoManager->FindNextBoundary();
+		zStep = fGeoManager->GetStep();
+		endZ = currPos.Z() + zStep*fGeoManager->GetCurrentDirection()[2];
+
+		//If magnetic field not yet reached or already passed, don't bother either
+		if((endZ>magnetStart) && (currPos.Z()<magnetEnd)){
+			//If not yet done, get intermediate and final position and momenta
+			if(!fMagnetEffect){
+				MagnetEffect(currPos*mm, startMomentum, q, fPositionCenterMagnet, fMomentumCenterMagnet, fPositionAfterMagnet, fMomentumAfterMagnet);
+				fPositionCenterMagnet = fPositionCenterMagnet*(1/mm);
+				fPositionAfterMagnet = fPositionAfterMagnet*(1/mm);
+				fMagnetEffect = true;
+			}
+
+			//Change momentum if crossing the magnetStart or the magnetEnd
+			if((endZ>magnetStart) && (currPos.Z()<magnetStart)){
+				fGeoManager->SetCurrentPoint(fPositionCenterMagnet.X(), fPositionCenterMagnet.Y(), fPositionCenterMagnet.Z());
+				fGeoManager->SetCurrentDirection(fMomentumCenterMagnet.X(), fMomentumCenterMagnet.Y(), fMomentumCenterMagnet.Z());
+				currPos = fPositionCenterMagnet;
+				//Step has been done manually -> re-execute this method in case we  are now going to pass the end of the magnet
+				UpdateTrackingMomentum(precision, q, currPos, startMomentum);
+			}
+			else if((endZ>magnetEnd) && (currPos.Z()<magnetEnd)){
+				fGeoManager->SetCurrentPoint(fPositionAfterMagnet.X(), fPositionAfterMagnet.Y(), fPositionAfterMagnet.Z());
+				fGeoManager->SetCurrentDirection(fMomentumAfterMagnet.X(), fMomentumAfterMagnet.Y(), fMomentumAfterMagnet.Z());
+				currPos = fPositionAfterMagnet;
+			}
+		}
+	}
+}
+
+void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double precision, int q){
 	/// \MemberDescr
 	/// \param position : Initial position of the particle
 	/// \param momentum : Momentum of the particle
 	/// \param precision : precision for each step (default: 0 - optimized)
+	/// \param q : particle charge
 	///
 	/// Set true for each crossed detector and each station and plane in GTK, LAV, Spectrometer.\n
 	/// Set also the corresponding position.
 	/// \EndMemberDescr
 
-	TVirtualGeoTrack *track;
 	double mm = 10.;
 	//Clean for a new path
 	CleanDetPath();
@@ -171,32 +219,26 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 	string str;
 	const Double_t* point;
 	bool first = true;
+
+	TVector3 currPos = position;
+
 	do{
 		//Find next crossed volume and get its name
-
 		if(first){
 			fGeoManager->FindNode(position.X()/mm, position.Y()/mm, position.Z()/mm);
 			first = false;
 		}
 		else{
+			//Check with magnetic field
+			UpdateTrackingMomentum(precision, q, currPos, momentum);
+
 			if(precision>0) fGeoManager->FindNextBoundaryAndStep(precision, kFALSE);
 			else fGeoManager->FindNextBoundaryAndStep();
 		}
 
-		/*************
-		 *
-		 *
-		 */
-
-		TGeoMedium *m = fGeoManager->GetCurrentVolume()->GetMedium();
-		m->Dump();
-		/**********
-		 *
-		 *
-		 */
-
 		path = fGeoManager->GetPath();
 		point = fGeoManager->GetCurrentPoint();
+		currPos.SetXYZ(point[0],point[1],point[2]);
 		str = path;
 
 		//Parse volume name to find if it correspond to a sensitive part of a detector
@@ -500,43 +542,115 @@ DetectorAcceptance::volume DetectorAcceptance::FirstTouchedDetector(){
 	return kVOID;
 }
 
-bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum ){
+bool DetectorAcceptance::MagnetEffect(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, TVector3 &middlePosition, TVector3 &middleMomentum, TVector3 &endPosition, TVector3 &endMomentum){
 	/// \MemberDescr
 	/// \param StartPosition : Initial position of the particle
+	/// \param StartMomentum : InitialMomentum of the particle
+	/// \param fQ : Charge of the particle
+	/// \param middlePosition : Position of the particle at Z of the beginning of the spectrometer
+	/// \param middleMomentum : Momentum of the particle at Z of the beginning of the spectrometer
+	/// \param endPosition : Final Position of the particle
+	/// \param endMomentum : Final momentum of the particle
+	///
+	/// Compute the positions and momenta of particle at the start and at the end of the spectrometer magnet.
+	/// \EndMemberDescr
+
+	double endZ = 197850.;
+
+	//Propagate to the start of the magnet
+	if(!MagPropagateBefore(StartPosition, StartMomentum, fQ, endZ, middlePosition)) return false;
+	//Continue until after the magnet (19850 for the method to get the correct endMomentum)
+	MagPropagateMagnet(middlePosition, StartMomentum, fQ, endZ, endPosition, endMomentum);
+	//Move the endPosition back to magnetEnd
+	endPosition = propagate(endPosition, endMomentum, 197750.);
+
+	middleMomentum = (endPosition - middlePosition).Unit();
+	return true;
+}
+
+void DetectorAcceptance::MagPropagateMagnet(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum){
+	/// \MemberDescr
+	/// \param StartPosition : Position of the particle at Z of the center of the spectrometer
 	/// \param StartMomentum : InitialMomentum of the particle
 	/// \param fQ : Charge of the particle
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Final position of the particle
 	/// \param EndMomentum : Final momentum of the particle
 	///
-	/// ---------------- spec_propagate ------------------------------------------\n
-	/// Analytic propagation of a charged particle. It takes into account the\n
-	/// presence of the bending magnet of the Spectrometer if fZEnd is greater\n
-	/// than the Z coordinate of the center of the spectrometer.\n
+	/// Analytic propagation of a charged particle in and after the magnet\n
 	/// \EndMemberDescr
 
-	const Double_t fMagnetZLength = 1300;
-	const Double_t fMagnetZPosition = 0.5*(196450+197750);      // magnet center position
 	const Double_t fMagnetFieldStrength = -0.6928;
 	Double_t fEC = TMath::C() * 1.e-9 * 1.e-4 * 1.e-3;
 
-	Double_t fStartX = StartPosition.X();
-	Double_t fStartY = StartPosition.Y();
-	Double_t fStartZ = StartPosition.Z();
-
-	if ( StartMomentum.Z() == 0){
-		cerr << "[spec_propagate] Error : Perpendicular momentum." << endl;
-		return false;
-	}
+	TVector3 TempPosition;
+	TVector3 B, fP;
+	Int_t qb;
+	Double_t rho, delta, sint, cost, dx, fThetaXAfter;
 
 	Double_t fThetaX = StartMomentum.X() / StartMomentum.Z();
 	Double_t fThetaY = StartMomentum.Y() / StartMomentum.Z();
 
-	Double_t dMag = fMagnetZLength;
-	Double_t zMag = fMagnetZPosition - dMag / 2.0 ;
+	Double_t dMag = 1300;
+
+	B.SetXYZ( 0.0, fMagnetFieldStrength * 10000.0, 0.0 );
+	fP = StartMomentum;
+
+	qb = B.Y()>0 ? 1 : -1;
+
+	rho = (fP.Cross(B)).Mag() / (fQ * fEC * B.Mag2() );
+	delta = dMag / rho;
+	sint = sin( atan(fThetaX) );
+	cost = cos( atan(fThetaX) );
+	dx = qb * rho * ( -cost + sqrt( 1 - (delta - qb*sint)*(delta - qb*sint) ) );
+
+	TempPosition.SetX( StartPosition.X() + dx );
+	TempPosition.SetY( StartPosition.Y() + fThetaY*dMag );
+	TempPosition.SetZ( StartPosition.Z() + dMag );
+	fThetaXAfter = -qb * (delta - qb*sint) / sqrt( 1.0 - (delta - qb*sint)*(delta - qb*sint) );
+	EndPosition.SetX( TempPosition.X() + fThetaXAfter * (fEndZ - TempPosition.Z()) );
+	EndPosition.SetY( TempPosition.Y() + fThetaY * (fEndZ - TempPosition.Z()) );
+	EndPosition.SetZ( fEndZ );
+
+	EndMomentum = (EndPosition - TempPosition).Unit();
+}
+
+bool DetectorAcceptance::MagPropagateBefore(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition){
+	/// \MemberDescr
+	/// \param StartPosition : Initial position of the particle
+	/// \param StartMomentum : InitialMomentum of the particle
+	/// \param fQ : Charge of the particle
+	/// \param fEndZ : End z coordinate of the track
+	/// \param EndPosition : Position of the particle at Z of the beginning start of the magnet
+	/// \param EndMomentum : Momentum of the particle at Z of the beginning of the magnet
+	///
+	/// Analytic propagation of a charged particle to the beginning of the spectrometer\n
+	/// \EndMemberDescr
+
+	Double_t fThetaX, fThetaY, dMag, zMag;
+	Double_t fStartX, fStartY, fStartZ;
+
+	const Double_t fMagnetZLength = 1300;
+	const Double_t fMagnetZPosition = 0.5*(196450+197750);      // magnet center position
+
+	if ( StartMomentum.Z() == 0){
+		cerr << "[MagPropagate] Error : Perpendicular momentum." << endl;
+		return false;
+	}
+
+	fStartX = StartPosition.X();
+	fStartY = StartPosition.Y();
+	fStartZ = StartPosition.Z();
+
+	fThetaX = StartMomentum.X() / StartMomentum.Z();
+	fThetaY = StartMomentum.Y() / StartMomentum.Z();
+
+	dMag = fMagnetZLength;
+	zMag = fMagnetZPosition - dMag / 2.0 ;
 
 	// fZEnd before magnet
 	if (fEndZ <= zMag){
+		//Propagate to fEndZ
 		EndPosition.SetX( fStartX + fThetaX * (fEndZ - fStartZ) );
 		EndPosition.SetY( fStartY + fThetaY * (fEndZ - fStartZ) );
 		EndPosition.SetZ( fEndZ );
@@ -544,37 +658,41 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 	}
 
 	// fZEnd after MNP33
+	// Propagate to the beginning of MNP33
 	EndPosition.SetX( fStartX + fThetaX * (zMag - fStartZ) );
 	EndPosition.SetY( fStartY + fThetaY * (zMag - fStartZ) );
 	EndPosition.SetZ( zMag );
 
-	TVector3 B, fP;
-	B.SetXYZ( 0.0, fMagnetFieldStrength * 10000.0, 0.0 );
-	fP = StartMomentum;
-	//    fP.SetZ( StartMomentum.Mag() / sqrt( 1 + fThetaX*fThetaX + fThetaY*fThetaY ) );
-	//    fP.SetX( fP.Z() * fThetaX );
-	//    fP.SetY( fP.Z() * fThetaY );
+	return true;
+}
 
-	Int_t qb = B.Y()>0 ? 1 : -1;
+bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum ){
+	/// \MemberDescr
+	/// \param StartPosition : Initial position of the particle
+	/// \param StartMomentum : InitialMomentum of the particle
+	/// \param fQ : Charge of the particle
+	/// \param fEndZ : End z coordinate of the track
+	/// \param EndPosition : Final Position of the particle
+	/// \param EndMomentum : Final momentum of the particle
+	///
+	/// Analytic propagation of a charged particle. It takes into account the\n
+	/// presence of the bending magnet of the Spectrometer.\n
+	/// \EndMemberDescr
 
-	Double_t rho = (fP.Cross(B)).Mag() / (fQ * fEC * B.Mag2() );
-	Double_t delta = dMag / rho;
-	Double_t sint = sin( atan(fThetaX) );
-	Double_t cost = cos( atan(fThetaX) );
-	Double_t dx = qb * rho * ( -cost + sqrt( 1 - (delta - qb*sint)*(delta - qb*sint) ) );
-	EndPosition.SetX( EndPosition.X() + dx );
-	EndPosition.SetY( EndPosition.Y() + fThetaY*dMag );
-	EndPosition.SetZ( EndPosition.Z() + dMag );
-	TVector3 TempPosition = EndPosition;
-	Double_t fThetaXAfter = -qb * (delta - qb*sint) / sqrt( 1.0 - (delta - qb*sint)*(delta - qb*sint) );
-	EndPosition.SetX( EndPosition.X() + fThetaXAfter * (fEndZ - EndPosition.Z()) );
-	EndPosition.SetY( EndPosition.Y() + fThetaY * (fEndZ - EndPosition.Z()) );
-	EndPosition.SetZ( fEndZ );
+	const double fMagnetEndPosition = 197750;
+	TVector3 MiddlePosition;
 
-	EndMomentum = (EndPosition - TempPosition).Unit();
+	if(fEndZ<fMagnetEndPosition){
+		cerr << "[MagPropagate] Error : EndPos must be after magnet: " << fEndZ << endl;
+		return false;
+	}
+	if(!MagPropagateBefore(StartPosition, StartMomentum, fQ, fEndZ, MiddlePosition)) return false;
+
+	MagPropagateMagnet(MiddlePosition, StartMomentum, fQ, fEndZ, EndPosition, EndMomentum);
 
 	return true;
 }
+
 
 TGeoManager* DetectorAcceptance::GetGeoManager(){
 	/// \MemberDescr

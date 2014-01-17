@@ -33,7 +33,7 @@ public:
 
 	TGeoManager *GetGeoManager();
 	volume CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z);
-	void FillPath(TVector3 position, TVector3 momentum, double precision=0);
+	void FillPath(TVector3 position, TVector3 momentum, double precision=0, int q=0);
 	void DrawDetector();
 	void DrawTracks();
 	void ClearTracks();
@@ -51,8 +51,14 @@ public:
 
 	volume FirstTouchedDetector();
 
-private:
 	bool MagPropagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum );
+
+private:
+	void MagPropagateMagnet( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum );
+	bool MagPropagateBefore( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition);
+	bool MagnetEffect(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, TVector3 &middlePosition, TVector3 &middleMomentum, TVector3 &endPosition, TVector3 &endMomentum);
+
+	void UpdateTrackingMomentum(double precision, int q, TVector3 currPos, TVector3 startMomentum);
 
 	void buildDetectorsDictionaries();
 
@@ -79,6 +85,10 @@ private:
 
 	map<int, int> fLAVDictionary;
 	map<int, int> fGTKDictionary;
+
+	TVector3 fMomentumAfterMagnet, fMomentumCenterMagnet;
+	TVector3 fPositionAfterMagnet, fPositionCenterMagnet;
+	bool fMagnetEffect;
 };
 
 #endif
