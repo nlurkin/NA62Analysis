@@ -21,12 +21,16 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
 
 	buildDetectorsDictionaries();
 
-	for (int i = 0; i < 13; i++) fDetPath[i] = false;
+	for (int i = 0; i < 15; i++){
+		fDetPath[i] = false;
+		fVolumePos[i] = TVector3(0.,0.,0.);
+		fDetLength[i] = 0.;
+	}
 	fTrackNumber=0;
 
 	if(fVerbosity>=AnalysisFW::kNormal){
 		cout << "Detector acceptance enum definitions: " << endl << "CEDAR:" << kCEDAR << "\tGTK:" << kGTK << "\tCHANTI:" << kCHANTI << "\tLAV:" << kLAV << "\tSpectrometer:" << kSpectrometer << "\tIRC:" << kIRC << endl;
-		cout << "CHOD:" << kCHOD << "\tLKr:" << kLKr << "\tSAC:" << kSAC << "\tMUV1:" << kMUV1 << "\tMUV2:" << kMUV2 << "\tMUV3:" << kMUV3 << "\t\tVOID:" << kVOID << endl;
+		cout << "CHOD:" << kCHOD << "\tLKr:" << kLKr << "\tSAC:" << kSAC << "\tMUV0:" << kMUV0 << "\tMUV1:" << kMUV1 << "\tMUV2:" << kMUV2 << "\tMUV3:" << kMUV3 << "\tHAC:" << kHAC << "\t\tVOID:" << kVOID << endl;
 	}
 }
 
@@ -53,6 +57,16 @@ TVector3 DetectorAcceptance::GetDetPosition(volume det){
 
 	return fVolumePos[det];
 }
+double DetectorAcceptance::GetDetLength(volume det){
+	/// \MemberDescr
+	/// \param det : Detector part to check
+	///
+	/// Return the path length in detector det in mm.\n
+	/// WARNING : need to call FillPath before to be populated
+	/// \EndMemberDescr
+
+	return fDetLength[det];
+}
 
 bool DetectorAcceptance::GetGTKAcceptance(GTKVol det){
 	/// \MemberDescr
@@ -73,6 +87,16 @@ TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det){
 	/// \EndMemberDescr
 
 	return fGTKPos[det];
+}
+double DetectorAcceptance::GetGTKLength(GTKVol det){
+	/// \MemberDescr
+	/// \param det : GTK station to check
+	///
+	/// Return the path length in GTK station det in mm.\n
+	/// WARNING : need to call FillPath before to be populated
+	/// \EndMemberDescr
+
+	return fGTKLength[det];
 }
 
 bool DetectorAcceptance::GetStrawAcceptance(StrawVol det){
@@ -95,6 +119,16 @@ TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det){
 
 	return fStrawPos[det];
 }
+double DetectorAcceptance::GetStrawLength(StrawVol det){
+	/// \MemberDescr
+	/// \param det : Straw station to check
+	///
+	/// Return the path length in Straw station det in mm.\n
+	/// WARNING : need to call FillPath before to be populated
+	/// \EndMemberDescr
+
+	return fStrawLength[det];
+}
 
 bool DetectorAcceptance::GetLAVAcceptance(LAVVol det){
 	/// \MemberDescr
@@ -116,27 +150,41 @@ TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det){
 
 	return fLAVPos[det];
 }
+double DetectorAcceptance::GetLAVLength(LAVVol det){
+	/// \MemberDescr
+	/// \param det : LAV station to check
+	///
+	/// Return the path length in LAV station det in mm.\n
+	/// WARNING : need to call FillPath before to be populated
+	/// \EndMemberDescr
+
+	return fLAVLength[det];
+}
 
 void DetectorAcceptance::CleanDetPath(){
 	/// \MemberDescr
 	/// Reset the path for a new FillPath
 	/// \EndMemberDescr
 
-	for (int i = 0; i < 13; i++){
+	for (int i = 0; i < 15; i++){
 		fDetPath[i] = false;
 		fVolumePos[i].SetXYZ(0.,0.,0.);
-	}
-	for (int i = 0; i < 3; i++){
-		fGTKPath[i] = false;
-		fGTKPos[i].SetXYZ(0.,0.,0.);
+		fDetLength[i] = 0.;
 	}
 	for (int i = 0; i < 4; i++){
+		fGTKPath[i] = false;
+		fGTKPos[i].SetXYZ(0.,0.,0.);
+		fGTKLength[i] = 0.;
+	}
+	for (int i = 0; i < 5; i++){
 		fStrawPath[i] = false;
 		fStrawPos[i].SetXYZ(0.,0.,0.);
+		fStrawLength[i] = 0.;
 	}
 	for (int i = 0; i < 13; i++){
 		fLAVPath[i] = false;
 		fLAVPos[i].SetXYZ(0.,0.,0.);
+		fLAVLength[i] = 0.;
 	}
 	fMagnetEffect = false;
 	fPositionAfterMagnet = TVector3();
@@ -208,19 +256,22 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 	/// \EndMemberDescr
 
 	double mm = 10.;
-	//Clean for a new path
-	CleanDetPath();
-
-	//Define the "track"
-	TVector3 norMom = momentum.Unit();
-	fGeoManager->InitTrack(position.X()/mm, position.Y()/mm, position.Z()/mm, norMom.X(),norMom.Y(),norMom.Z());
 
 	const char *path;
 	string str;
+
 	const Double_t* point;
+	double stepLength;
+	TVector3 currPos = position;
+	TVector3 norMom = momentum.Unit();
+
+	volume det;
 	bool first = true;
 
-	TVector3 currPos = position;
+	//Clean for a new path
+	CleanDetPath();
+	//Define the "track"
+	fGeoManager->InitTrack(position.X()/mm, position.Y()/mm, position.Z()/mm, norMom.X(),norMom.Y(),norMom.Z());
 
 	do{
 		//Find next crossed volume and get its name
@@ -239,10 +290,11 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 		path = fGeoManager->GetPath();
 		point = fGeoManager->GetCurrentPoint();
 		currPos.SetXYZ(point[0],point[1],point[2]);
+		stepLength = fGeoManager->GetStep();
 		str = path;
 
 		//Parse volume name to find if it correspond to a sensitive part of a detector
-		volume det = ParseDetector(str);
+		det = ParseDetector(str);
 		//If it's GTK, check stations
 		if(det==kGTK){
 			GTKVol gtk = ParseGTK(str);
@@ -250,6 +302,7 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 				fGTKPath[gtk] = true;
 				fGTKPos[gtk].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
 			}
+			fGTKLength[gtk] += stepLength*mm;
 		}
 		//If it's Spectrometer, check planes
 		if(det==kSpectrometer){
@@ -258,29 +311,25 @@ void DetectorAcceptance::FillPath(TVector3 position, TVector3 momentum, double p
 				fStrawPath[straw] = true;
 				fStrawPos[straw].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
 			}
+			fStrawLength[straw] += stepLength*mm;
 		}
 		//If it's LAV, check stations
 		if(det==kLAV){
 			LAVVol lav = ParseLAV(str);
-			if(lav==kNOLAV){
-				//det=kVOID;
-			}
-			else if(!fLAVPath[lav]){
+			if(!fLAVPath[lav]){
 				fLAVPath[lav] = true;
 				fLAVPos[lav].SetXYZ(point[0]*mm,point[1]*mm,point[2]*mm);
 			}
-		}
-		if(det==kLKr){
-			if ( (int) (str.find("/lkrvolume_")) < 0)
-				det = kVOID;
+			fLAVLength[lav] += stepLength*mm;
 		}
 		//Fill path if not already filled
 		if(!fDetPath[det]){
 			fDetPath[det] = true;
 			fVolumePos[det].SetXYZ(point[0]*mm, point[1]*mm, point[2]*mm);
 		}
+		fDetLength[det] += stepLength*mm;
 	}
-	while ( str.length() > 1);
+	while(str.length() > 1);
 }
 
 void DetectorAcceptance::DrawDetector(){
@@ -329,23 +378,46 @@ void DetectorAcceptance::CreateTrack(int pdgID, TVector3 pos, TVector3 momentum,
 	double step = 1000;
 	int nstep = (zmax-zmin)/step;
 
-	TVector3 prop, EndMom;
+	TVector3 prop, currPos, currMomentum;
 	TVirtualGeoTrack *track;
-	bool ret = false;
 	double z;
+
+	double magnetStart = 19645.0;
+	double magnetEnd = 19775.0;
+
+	TVector3 positionCenterMagnet, positionAfterMagnet;
+	TVector3 momentumCenterMagnet, momentumAfterMagnet;
 
 	fGeoManager->AddTrack(fTrackNumber, pdgID);
 	fTrackNumber++;
 	track = fGeoManager->GetLastTrack();
 
+	if(charge!=0) MagnetEffect(pos, momentum, charge, positionCenterMagnet, momentumCenterMagnet, positionAfterMagnet, momentumAfterMagnet);
+
+	currPos = pos;
+	currMomentum = momentum;
+	z = 0;
 	for(int i=0; i<nstep; i++){
-		z = zmin+i*step;
+		z += step;
 		if(charge==0) {
-			prop = propagate(pos, momentum, z);
-			ret = true;
+			prop = propagate(currPos, currMomentum, z);
 		}
-		else ret = MagPropagate(pos, momentum, charge, z, prop, EndMom);
-		if(ret) track->AddPoint(prop.X()/10., prop.Y()/10., prop.Z()/10., 0);
+		else{
+			//Change momentum if crossing the magnetStart or the magnetEnd
+			if((z>magnetStart) && (currPos.Z()<magnetStart)){
+				prop = positionCenterMagnet;
+				currMomentum = momentumCenterMagnet;
+			}
+			else if((z>magnetEnd) && (currPos.Z()<magnetEnd)){
+				prop = positionAfterMagnet;
+				currMomentum = momentumAfterMagnet;
+			}
+			else{
+				prop = propagate(currPos, currMomentum, z);
+			}
+		}
+		track->AddPoint(prop.X()/10., prop.Y()/10., prop.Z()/10., 0);
+		currPos = prop;
 	}
 }
 
@@ -373,31 +445,40 @@ DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str){
 	/// Parse the volume string to know to which detector it correspond.
 	/// \EndMemberDescr
 
-	if ( (int) (str.find("/LKr_")) > 1)
+	if (((int) (str.find("/Parameterised_IrregularElectrode_")) > 1)
+			&& ((int) (str.find("/lkrvolume_")) > 1))
 		return kLKr;
-	else if ((int) (str.find("/CHANTI_")) > 1)
+	else if (((int) (str.find("/CHANTI_")) > 1)
+			&& ((int) (str.find("/Strip_")) > 1))
 		return kCHANTI;
-	else if ((int) (str.find("/Cedar_")) > 1)
+	else if ((int) (str.find("/CedarPMTCathode")) > 1)
 		return kCEDAR;
-	else if ((int) (str.find("/CHOD_")) > 1)
+	else if ((int) (str.find("/CHODScintillatorCounter_")) > 1)
 		return kCHOD;
-	else if ((int) (str.find("/GigaTrackerStation_")) > 1)
+	else if ((int) (str.find("/GigaTrackerSensorActiveArea_")) > 1)
 		return kGTK;
-	else if ((int) (str.find("/IRCModule_")) > 1)
+	else if ((int) (str.find("/IRCScintillatorLayer_")) > 1)
 		return kIRC;
-	//  else if ((int) (str.find("/LAVStation_")) > 1)
-	else if ((int) (str.find("/Banana_")) > 1)
+	else if (((int) (str.find("/PbGl_")) > 1)
+			&& ((int) (str.find("/LAVStation_")) > 1))
 		return kLAV;
-	else if ((int) (str.find("/Spectrometer-Region")) > 1)
+	else if ((int) (str.find("/StrawGas")) > 1)
 		return kSpectrometer;
-	else if ((int) (str.find("/SAC_")) > 1)
+	else if ((int) (str.find("/SACScintillatorLayer_")) > 1)
 		return kSAC;
-	else if ((int) (str.find("/MUV1_")) > 1)
+	else if ((int) (str.find("/MUV0ScintillatorCounter_")) > 1)
+		return kMUV0;
+	else if (((int) (str.find("/MUV1Fiver_log_")) > 1)
+			|| ((int) (str.find("/MUV1PMTAir_")) > 1)
+			|| ((int) (str.find("/MUV1Scintillator_Scint_")) > 1))
 		return kMUV1;
-	else if ((int) (str.find("/MUV2_")) > 1)
+	else if ((int) (str.find("/MUV2Counter_")) > 1)
 		return kMUV2;
-	else if ((int) (str.find("/MUV3_")) > 1)
+	else if (((int) (str.find("/Scintillator_")) > 1)
+			&& ((int) (str.find("/MUV3Module_")) > 1))
 		return kMUV3;
+	else if (((int) (str.find("/HACScintillatorLayer_")) > 1))
+		return kHAC;
 	else
 		return kVOID;
 }
@@ -547,8 +628,8 @@ bool DetectorAcceptance::MagnetEffect(const TVector3 StartPosition, const TVecto
 	/// \param StartPosition : Initial position of the particle
 	/// \param StartMomentum : InitialMomentum of the particle
 	/// \param fQ : Charge of the particle
-	/// \param middlePosition : Position of the particle at Z of the beginning of the spectrometer
-	/// \param middleMomentum : Momentum of the particle at Z of the beginning of the spectrometer
+	/// \param middlePosition : Position of the particle at Z of the beginning of the magnet
+	/// \param middleMomentum : Momentum of the particle at Z of the beginning of the magnet
 	/// \param endPosition : Final Position of the particle
 	/// \param endMomentum : Final momentum of the particle
 	///
@@ -570,7 +651,7 @@ bool DetectorAcceptance::MagnetEffect(const TVector3 StartPosition, const TVecto
 
 void DetectorAcceptance::MagPropagateMagnet(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum){
 	/// \MemberDescr
-	/// \param StartPosition : Position of the particle at Z of the center of the spectrometer
+	/// \param StartPosition : Position of the particle at Z of the beginning of the magnet
 	/// \param StartMomentum : InitialMomentum of the particle
 	/// \param fQ : Charge of the particle
 	/// \param fEndZ : End z coordinate of the track

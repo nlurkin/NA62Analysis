@@ -70,10 +70,7 @@ void VertexCDA::InitHist(){
 	BookHisto("GTKMultiplicity", new TH1I("GTKMultiplicity", "Multiplicity in GTK", 11, -0.5, 10.5));
 	BookHisto("StrawMultiplicity", new TH1I("StrawMultiplicity", "Multiplicity in Straw", 11, -0.5, 10.5));
 
-
-	for(int i=0; i<20; i++){
-		BookHisto(TString("BeamXY") + (Long_t)i, new TH2I(TString("BeamXY") + (Long_t)i, TString("BeamXY ") + (Long_t)(100+i*5) + TString("->") + (Long_t)(100+(i+1)*5), 100, -100, 100, 100, -100, 100));
-	}
+	BookHistoArray("BeamXY", new TH2I("BeamXY", "BeamXY", 100, -100, 100, 100, -100, 100), 20);
 
 	BookCounter("Total_Events");
 	BookCounter("Good_GTK_Mult");
@@ -178,7 +175,7 @@ void VertexCDA::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
 			FillHisto("VertexRecoRealY", fVertex.Y(), fMCSimple["pi+"][0]->GetProdPos().Y());
 			FillHisto("VertexRecoRealZ", fVertex.Z(), fMCSimple["pi+"][0]->GetProdPos().Z());
 			int cat = ((fMCSimple["pi+"][0]->GetProdPos().Z()/1000)-100)/5;
-			FillHisto(TString("BeamXY") + (Long_t)cat, fMCSimple["pi+"][0]->GetProdPos().X(), fMCSimple["pi+"][0]->GetProdPos().Y());
+			FillHistoArray("BeamXY", cat, fMCSimple["pi+"][0]->GetProdPos().X(), fMCSimple["pi+"][0]->GetProdPos().Y());
 		}
 	}
 
@@ -253,8 +250,6 @@ TVector3 VertexCDA::GetIntersection(TVector3 pos1, TVector3 p1, TVector3 pos2, T
 	double t = (a*e-b*d)/(a*c-b*b);
 
 	TVector3 vdist = d0 + (s*p1 - t*p2);
-
-	// dist = vdist.Mag();
 
 	return pos1 + s*p1 - 0.5*vdist;
 }

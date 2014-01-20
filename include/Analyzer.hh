@@ -42,6 +42,9 @@ public:
 	void BookHisto(TString name, TH1* histo, bool refresh=false, TString directory="");
 	void BookHisto(TString name, TH2* histo, bool refresh=false, TString directory="");
 	void BookHisto(TString name, TGraph* histo, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH1* histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH2* histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh=false, TString directory="");
 
 	//Histogram filling methods
 	void FillHisto(TString name, TString x, int w);
@@ -51,6 +54,14 @@ public:
 	void FillHisto(TString name, double x);
 	void FillHisto(TString name, double x, double y, int w);
 	void FillHisto(TString name, double x, double y);
+
+	void FillHistoArray(TString baseName, int index, TString x, int w);
+	void FillHistoArray(TString name, int index, TString x, double y, int w);
+	void FillHistoArray(TString name, int index, TString x, TString y, int w);
+	void FillHistoArray(TString name, int index, double x, int w);
+	void FillHistoArray(TString name, int index, double x);
+	void FillHistoArray(TString name, int index, double x, double y, int w);
+	void FillHistoArray(TString name, int index, double x, double y);
 
 	//EventFraction methods
 	void NewEventFraction(TString name);
