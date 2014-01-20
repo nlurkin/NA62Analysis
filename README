@@ -95,6 +95,13 @@ QuickStart
 
   o NA62AnalysisBuilder.py new AnalyzerName
         will create a new analyzer with name AnalyzerName in the user directory
+        Alternatively AnalyzerName can be replaced by the following syntax: 
+        	AnalyzerName(InputType TreeName, ...)
+        This will already include the correct persistency headers, request the input tree and 
+        retrieve the input events.
+        Example: Creating an analyzer named toto using as input the GigaTracker MonteCarlo and 
+        LKr and Spectrometer RECO
+        	NA62AnalysisBuilder.py new "toto(MC GigaTracker, Reco LKr, Reco Spectrometer)"
 
   o NA62AnalysisBuilder.py rename oldName newName
         will rename a user analyzer
@@ -131,6 +138,11 @@ If you want to run the program with a set of analyzers
       libs = List-Of-Additional-Libraries-To-Link-With
       libsdirs = List-Of-Additional-Directories-To-Search-For-Libraries
       incdirs = List-Of-Additional-Directories-To-Search-For-Include-Files
+      
+      If one of the analyzer specified in the list does not exist, a prompt will propose you
+      to create it. For this reason, the syntax 
+      	AnalyzerName(InputType TreeName, ...)
+      is valid in the config file as well.
 
   o Compile in the user directory with
       NA62AnalysisBuilder.py configFileName
@@ -155,6 +167,7 @@ The runtime configuration file will advantageously replace long list of command 
 
 The following parameters exist by default for all analyzers:
   o Verbose (default=kNo, possible kNo, kUser, kNormal, kDebug)
-  o AutoUpdate (takes a list of plots names. They will be drawn on screen during processing and refreshed at regular interval)
+  o AutoUpdate (takes a list of plots names. They will be drawn on screen during processing
+  	and refreshed at regular interval)
   o UpdateInterval (default=10, refresh interval for AutoUpdate plots in number of events)
 
