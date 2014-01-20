@@ -108,6 +108,99 @@ void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh, TString dire
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
+void Analyzer::BookHistoArray(TString baseName, TH1* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param baseName : Name of the histogram. The index will be appended
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	string name, title;
+	name = histo->GetName();
+	title = histo->GetTitle();
+	TH1* h;
+
+	histo->SetName(TString(name + "_0").Data());
+	histo->SetTitle(TString(title + "_0").Data());
+	fHisto.insert(pair<TString,TH1*>(baseName + "_0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "_0");
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	for(int i=1; i<number; i++){
+		h = (TH1*)histo->Clone();
+		h->SetName(TString(name + "_" + (Long_t)i).Data());
+		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
+		fHisto.insert(pair<TString,TH1*>(baseName + "_" + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+	}
+}
+
+void Analyzer::BookHistoArray(TString baseName, TH2* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param baseName : Name of the histogram. The index will be appended
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	string name, title;
+	name = histo->GetName();
+	title = histo->GetTitle();
+	TH2* h;
+
+	histo->SetName(TString(name + "_0").Data());
+	histo->SetTitle(TString(title + "_0").Data());
+	fHisto2.insert(pair<TString,TH2*>(baseName + "_0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "_0");
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	for(int i=1; i<number; i++){
+		h = (TH2*)histo->Clone();
+		h->SetName(TString(name + "_" + (Long_t)i).Data());
+		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
+		fHisto2.insert(pair<TString,TH2*>(baseName + "_" + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+	}
+}
+
+void Analyzer::BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param baseName : Name of the histogram. The index will be appended
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	string name, title;
+	name = histo->GetName();
+	title = histo->GetTitle();
+	TGraph* h;
+
+	histo->SetName(TString(name + "_0").Data());
+	histo->SetTitle(TString(title + "_0").Data());
+	fGraph.insert(pair<TString,TGraph*>(baseName + "_0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "_0");
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	for(int i=1; i<number; i++){
+		h = (TGraph*)histo->Clone();
+		h->SetName(TString(name + "_" + (Long_t)i).Data());
+		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
+		fGraph.insert(pair<TString,TGraph*>(baseName + "_" + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+	}
+}
+
 void Analyzer::FillHisto(TString name, TString x, int w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
@@ -184,6 +277,7 @@ void Analyzer::FillHisto(TString name, double x, int w){
 	}
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
+
 void Analyzer::FillHisto(TString name, double x){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
@@ -221,6 +315,7 @@ void Analyzer::FillHisto(TString name, double x, double y, int w){
 	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double,double,int)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
+
 void Analyzer::FillHisto(TString name, double x, double y){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
@@ -241,6 +336,93 @@ void Analyzer::FillHisto(TString name, double x, double y){
 	}
 	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
+}
+
+//########################################
+void Analyzer::FillHistoArray(TString baseName, int index, TString x, int w){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param w : weight
+	///
+	/// Fill a previously booked histogram
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x, w);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, TString x, double y, int w){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param y : ordinate
+	/// \param w : weight
+	///
+	/// Fill a previously booked histogram
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, TString x, TString y, int w){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param y : ordinate
+	/// \param w : weight
+	///
+	/// Fill a previously booked histogram with a weight of 1
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, double x, int w){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param w : weight
+	//
+	/// Fill a previously booked histogram
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x, w);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, double x){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	///
+	/// Fill a previously booked histogram with a weight of 1
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, double x, double y, int w){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param y : ordinate
+	/// \param w : weight
+	///
+	/// Fill a previously booked histogram
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index,x,y,w);
+}
+
+void Analyzer::FillHistoArray(TString baseName, int index, double x, double y){
+	/// \MemberDescr
+	/// \param name : Name of the histogram
+	/// \param x : abscissa
+	/// \param y : ordinate
+	///
+	/// Fill a previously booked histogram
+	/// \EndMemberDescr
+
+	FillHisto(baseName + "_" + (Long_t)index, x, y);
 }
 
 void Analyzer::BookCounter(TString name){
