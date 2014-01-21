@@ -15,7 +15,8 @@ TApplication *theApp = 0;
 void usage(char* name)
 {
 	cout << "Usage: \t"<< name << " [-hg] < -i InputFile.root | -l InputFilesList.txt > [-B #MaxFiles] [-n #FirstEvent]" << endl;
-	cout << "\t\t[-N #Events] [-o OutputFile.root] [-v verbosity] [-p \"analyzerName:param=val;param=val&analyzerName:param=val&...\"]" << endl;
+	cout << "\t\t[-N #Events] [-o OutputFile.root] [-r ReferenceFile.root] [-v verbosity] [-c configFile]" << endl;
+	cout << "[-p \"analyzerName:param=val;param=val&analyzerName:param=val&...\"]" << endl;
 	cout << "\t -h : Display this help" << endl;
 	cout << "\t -g : Graphical mode. Starts a ROOT application for display. Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
 	cout << "\t -i : Path to an input ROOT file." << endl;
@@ -24,8 +25,10 @@ void usage(char* name)
 	cout << "\t -n : Index of the first event to process. The n-1 first events will be skipped." << endl;
 	cout << "\t -N : Maximum number of events to process." << endl;
 	cout << "\t -o : Path to output ROOT file. Will be overwritten if already exists." << endl;
+	cout << "\t -r : Path to a file containing reference plots." << endl;
 	cout << "\t -v : Verbosity level." << endl;
 	cout << "\t -p : List of parameters to pass to analyzers." << endl;
+	cout << "\t -c : Path to a configuration file containing analyzers parameters." << endl;
 }
 
 void sighandler(int sig)
@@ -51,6 +54,7 @@ int main(int argc, char** argv){
 
 	TString inFileName;
 	TString outFileName = "outFile.root";
+	TString refFileName;
 	TString params;
 	TString configFile;
 	TString argTS;
@@ -64,7 +68,7 @@ int main(int argc, char** argv){
 	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
-	while ((opt = getopt(argc, argv, "hgB:n:i:l:N:o:v:p:c:")) != -1) {
+	while ((opt = getopt(argc, argv, "hgB:n:i:l:N:o:v:p:c:r:")) != -1) {
 		n_options_read++;
 		switch (opt) {
 		case 'B':
@@ -110,6 +114,9 @@ int main(int argc, char** argv){
 			//Config file to parse
 			configFile = TString(optarg);
 			break;
+		case 'r':
+			refFileName = TString(optarg);
+			break;
 		case 'g':
 			graphicMode = true;
 			break;
@@ -124,7 +131,7 @@ int main(int argc, char** argv){
 		return 0;
 	}
 
-	if(graphicMode) theApp = new TApplication("RecoAnalysis", &argc, argv);
+	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
 
 	ban = new BaseAnalysis();
@@ -132,7 +139,7 @@ int main(int argc, char** argv){
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode);
+	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();

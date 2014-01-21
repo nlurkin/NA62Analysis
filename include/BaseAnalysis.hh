@@ -28,7 +28,7 @@ public:
 
 	void AddAnalyzer(Analyzer *an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool textonly);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool textonly, TString refFile);
 	void Process(int beginEvent, int maxEvent);
 
 	//Output methods
@@ -53,6 +53,7 @@ public:
 
 	//Histogram Retrieving methods
 	TH1* GetInputHistogram(TString directory, TString name, bool append);
+	TH1* GetReferenceHistogram(TString name);
 
 	//Writing methods
 	void WriteEvent();
@@ -123,6 +124,8 @@ protected:
 	bool fWithMC; ///< Do we have MC in the file?
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
+
+	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
 };
 
 #endif

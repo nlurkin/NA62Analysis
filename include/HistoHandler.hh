@@ -72,6 +72,12 @@ public:
 	void PrintInitSummary();
 	void SetPlotAutoUpdate(TString name, TString analyzerName);
 
+	double compareToReferencePlot(TH1* hRef, bool hRefWeighted, TH1* h2, bool h2Weighted);
+
+	TH1* GetTH1(TString name);
+	TH2* GetTH2(TString name);
+	TGraph* GetTGraph(TString name);
+
 private:
 	void Mkdir(TString name, TString analyzerName);
 

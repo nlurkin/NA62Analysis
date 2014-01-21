@@ -622,6 +622,57 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	fAutoUpdateList.insert(name);
 }
 
+double HistoHandler::compareToReferencePlot(TH1* hRef, bool hRefWeighted, TH1* h2, bool h2Weighted) {
+	int nBins = h2->GetNbinsX();
+	double *res = new double[nBins];
+	TString params = "U";
+	TString name = hRef->GetName();
+	double probability;
+
+	BookHisto(name, hRef);
+	BookHisto(name + "_res", new TGraph());
+
+	if(h2Weighted) params += "W";
+	else params += "U";
+	probability = hRef->Chi2Test(h2, params + " P", res);
+	for(int i=0;i<hRef->GetNbinsX();i++){
+		FillHisto(name+"_res", hRef->GetBinCenter(i+1), res[i]);
+	}
+
+	delete[] res;
+	return probability;
+}
+
+TH1* HistoHandler::GetTH1(TString name) {
+	if(fHisto.count(name)>0){
+		return fHisto[name];
+	}
+	else{
+		cerr << "1D Plot " << name << " does not exist." << endl;
+		return NULL;
+	}
+}
+
+TH2* HistoHandler::GetTH2(TString name) {
+	if(fHisto2.count(name)>0){
+		return fHisto2[name];
+	}
+	else{
+		cerr << "2D Plot " << name << " does not exist." << endl;
+		return NULL;
+	}
+}
+
+TGraph* HistoHandler::GetTGraph(TString name) {
+	if(fGraph.count(name)>0){
+		return fGraph[name];
+	}
+	else{
+		cerr << "Graph " << name << " does not exist." << endl;
+		return NULL;
+	}
+}
+
 void HistoHandler::Mkdir(TString name, TString analyzerName){
 	/// \MemberDescr
 	/// \param name: Name of the directory to create

@@ -40,6 +40,7 @@ public:
 	UserMethods(BaseAnalysis *ba);
 	virtual ~UserMethods();
 
+	//###### Histograms related
 	//Histogram booking methods
 	void BookHisto(TString name, TH1* histo, bool refresh=false, TString directory="");
 	void BookHisto(TString name, TH2* histo, bool refresh=false, TString directory="");
@@ -65,19 +66,19 @@ public:
 	void FillHistoArray(TString name, int index, double x, double y, int w);
 	void FillHistoArray(TString name, int index, double x, double y);
 
-	//Export all histograms into output trees
-	void ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches);
-
 	//Methods for drawing plots on screen
 	void DrawAllPlots();
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
-
+	//Export all histograms into output trees
+	void ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches);
 	//Save all plots into output file
 	void SaveAllPlots();
 
-	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove);
+	//Request input histogram
+	TH1* RequestHistogram(TString directory, TString name, bool appendOnNewFile);
 
+	//###### Event fraction related
 	//EventFraction methods
 	void NewEventFraction(TString name);
 	void AddCounterToEventFraction(TString efName, TString cName);
@@ -93,6 +94,7 @@ public:
 	void DecrementCounter(TString cName);
 	int GetCounterValue(TString cName);
 
+	//###### Output related
 	//Methods for setting output
 	void RegisterOutput(TString name, void* address);
 	void SetOutputState(TString name, OutputState state);
@@ -104,15 +106,7 @@ public:
 		return (T*)GetOutputVoid(name, state);
 	};
 
-	//Method to get an event
-		template <class T>
-		T* GetObject(TString name){
-			return (T*)GetObjectVoid(name);
-		};
-
-	//Get global DetectorAcceptance instance
-	DetectorAcceptance *GetDetectorAcceptanceInstance();
-
+	//###### Input (Event/TTree) related
 	//Request new tree to analyze
 	void RequestTree(TString name, TDetectorVEvent *evt);
 	template <class T>
@@ -124,8 +118,13 @@ public:
 
 	TDetectorVEvent *GetEvent(TString name);
 
-	//Request input histogram
-	TH1* RequestHistogram(TString directory, TString name, bool appendOnNewFile);
+	//###### Other methods
+	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove);
+	DetectorAcceptance *GetDetectorAcceptanceInstance();
+	template <class T>
+	T* GetObject(TString name){
+		return (T*)GetObjectVoid(name);
+	};
 
 protected:
 	const void* GetOutputVoid(TString name, OutputState &state);

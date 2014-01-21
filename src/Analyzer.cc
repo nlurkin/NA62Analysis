@@ -318,6 +318,16 @@ void Analyzer::printNoMCWarning(){
 	}
 }
 
+double Analyzer::compareToReferencePlot(TString h1, bool h1Weighted) {
+	TH1* h = fHisto.GetTH1(h1);
+	TString name = h->GetName();
+
+	TH1* hRef = fParent->GetReferenceHistogram(name);
+
+	if(!hRef) return -1.;
+	return fHisto.compareToReferencePlot(hRef, false, h, h1Weighted);
+}
+
 void Analyzer::printIncompleteMCWarning(int i){
 	/// \MemberDescr
 	/// Print a warning message when MC event is not complete.

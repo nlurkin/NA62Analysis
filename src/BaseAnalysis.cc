@@ -96,12 +96,13 @@ void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
 	fVerbosity = v;
 }
 
-void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode){
+void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
 	/// \param mutipleFiles : Indicating if inFileName is the input file or the list of input files
 	/// \param textOnly : If yes the plots are printed on screen, in no only producing output file
+	/// \param refFile : Eventual name of a file containing reference plots
 	///
 	/// Add all the input files to TChains and to Analyzers and create branches.\n
 	/// Initialize the output trees (Histograms) and create branches.
@@ -156,6 +157,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fOutFileName = outFileName;
 	fOutFileName.ReplaceAll(".root", "");
 	fOutFile = new TFile(outFileName, "RECREATE");
+	fReferenceFileName = refFile;
 
 	FillMCTruth();
 
@@ -855,6 +857,37 @@ void BaseAnalysis::checkNewFileOpened(){
 			fAnalyzerList[i]->StartOfBurst();
 		}
 	}
+}
+
+TH1* BaseAnalysis::GetReferenceHistogram(TString name) {
+	TFile *fd;
+	TH1* tempHisto, *returnHisto=NULL;
+
+	TString oldDirectory = gDirectory->GetName();
+
+	if(fReferenceFileName.IsNull()) return NULL;
+
+	fd = TFile::Open(fReferenceFileName, "READ");
+	if(!fd){
+		cerr << "Error: unable to open reference file " << fReferenceFileName << endl;
+		return NULL;
+	}
+
+	tempHisto = (TH1*)fd->Get(name);
+	if(!tempHisto){
+		//Not found in the root directory of the ROOT file
+		//Try in the analyzer subdirectory if exists
+		tempHisto = (TH1*)fd->Get(oldDirectory + "/" + name);
+	}
+
+	fOutFile->cd(oldDirectory);
+	if(tempHisto){
+		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
+		delete tempHisto;
+	}
+	fd->Close();
+	delete fd;
+	return returnHisto;
 }
 
 TH1* BaseAnalysis::GetInputHistogram(TString directory, TString name, bool append){
