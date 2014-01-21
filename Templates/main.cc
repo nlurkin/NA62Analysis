@@ -130,14 +130,14 @@ int main(int argc, char** argv){
 	ban = new BaseAnalysis();
 	ban->SetVerbosity(verbosity);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
-	$$ANALYZERSNEW$$
+/*$$ANALYZERSNEW$$*/
 
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
 
-	$$ANALYZERSDELETE$$
+/*$$ANALYZERSDELETE$$*/
 	delete ban;
 
 	return 0;

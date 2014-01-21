@@ -28,7 +28,7 @@ FWHEADERS	= -I$(MAIN_INCLUDE) -I$(AN_INCLUDE) -I$(EXAMPLE_INCLUDE)# -I$(G4INCLUD
 MAIN		= Analyzer BaseAnalysis DetectorAcceptance MCSimple 	\
 				functions NeuralNetwork EventFraction ConfigParser	\
 				StringTable StringBalancedTable ParticleTree 		\
-				ParticleInterface #ROOTDICT
+				ParticleInterface HistoHandler UserMethods #ROOTDICT
 MAINO		= $(addprefix $(FWOBJDIR)/,$(addsuffix .o,$(MAIN)))
 MAINLIBS	= $(FWLIBDIR)/libAnalysisFW.so
 

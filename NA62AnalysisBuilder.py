@@ -362,7 +362,7 @@ def build(filename, FWPath, UserPath):
 		instancesAnalyzer += "\tban->AddAnalyzer(an_%s);\n" % an
 		deleteAnalyzer += "\tdelete an_%s;\n" % an
 	
-	readAndReplace("%s/Templates/main.cc" % FWPath, "%s/main.cc" % UserPath, {"$$ANALYZERSINCLUDE$$":includesList, "$$ANALYZERSNEW$$":instancesAnalyzer, "$$ANALYZERSDELETE$$":deleteAnalyzer})
+	readAndReplace("%s/Templates/main.cc" % FWPath, "%s/main.cc" % UserPath, {"$$ANALYZERSINCLUDE$$":includesList, "/*$$ANALYZERSNEW$$*/":instancesAnalyzer, "/*$$ANALYZERSDELETE$$*/":deleteAnalyzer})
 	
 	#Check if FW needs to be recompiled
 	if not error:

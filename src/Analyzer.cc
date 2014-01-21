@@ -1,35 +1,17 @@
 #include "Analyzer.hh"
-
-#include <TString.h>
-#include <TChain.h>
-#include <TDetectorVEvent.hh>
-#include <TTree.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TH2F.h>
-#include <TGraph.h>
-#include <TCanvas.h>
-#include <TFile.h>
-
-#include "MCSimple.hh"
-#include <iostream>
 #include "BaseAnalysis.hh"
-#include "functions.hh"
 #include "StringTable.hh"
 
 using namespace std;
 
-Analyzer::Analyzer(BaseAnalysis *ba){
+Analyzer::Analyzer(BaseAnalysis *ba) : UserMethods(ba){
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
 
 	fExportEvent = false;
 	fState = kUninit;
-	fParent = ba;
 
-	fVerbosity = AnalysisFW::kNo;
-	fUpdateRate = 10;
 	fDetectorAcceptanceInstance = NULL;
 	fParticleInterface = ParticleInterface::GetParticleInterface();
 
@@ -41,618 +23,6 @@ Analyzer::~Analyzer(){
 	/// \MemberDescr
 	/// Destructor
 	/// \EndMemberDescr
-
-	/*map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
-	vector<TCanvas*>::iterator it4;
-
-	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
-		delete it1->second;
-	}
-	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		delete it2->second;
-	}
-	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
-		delete it3->second;
-	}
-	for(it4=fCanvas.begin(); it4!=fCanvas.end(); it4++){
-		delete (*it4);
-	}*/
-}
-
-void Analyzer::BookHisto(TString name, TH1* histo, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param histo : Pointer to the histogram
-	/// \param refresh : Set the plot as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
-	///
-	/// Book a new histogram and make it available in the whole analyzer
-	/// \EndMemberDescr
-
-	fHisto.insert(pair<TString,TH1*>(name, histo));
-	if(refresh) SetPlotAutoUpdate(name);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
-}
-
-void Analyzer::BookHisto(TString name, TH2* histo, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param histo : Pointer to the histogram
-	/// \param refresh : Set the plot as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
-	///
-	/// Book a new histogram and make it available in the whole analyzer
-	/// \EndMemberDescr
-
-	fHisto2.insert(pair<TString,TH2*>(name, histo));
-	if(refresh) SetPlotAutoUpdate(name);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
-}
-
-void Analyzer::BookHisto(TString name, TGraph* histo, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param histo : Pointer to the histogram
-	/// \param refresh : Set the plot as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
-	///
-	/// Book a new histogram and make it available in the whole analyzer
-	/// \EndMemberDescr
-
-	fGraph.insert(pair<TString,TGraph*>(name, histo));
-	fGraph[name]->SetNameTitle(name, name);
-	fPoint.insert(pair<TString,int>(name,0));
-	if(refresh) SetPlotAutoUpdate(name);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
-}
-
-void Analyzer::BookHistoArray(TString baseName, TH1* histo, int number, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param baseName : Name of the histogram. The index will be appended
-	/// \param histo : Pointer to the histogram to replicate
-	///	\param number : Number of histograms to create
-	/// \param refresh : Set the plots as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
-	///
-	/// Book an array of similar histograms and make it available in the whole analyzer.
-	/// \EndMemberDescr
-
-	string name, title;
-	name = histo->GetName();
-	title = histo->GetTitle();
-	TH1* h;
-
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fHisto.insert(pair<TString,TH1*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0");
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
-	for(int i=1; i<number; i++){
-		h = (TH1*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fHisto.insert(pair<TString,TH1*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
-	}
-}
-
-void Analyzer::BookHistoArray(TString baseName, TH2* histo, int number, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param baseName : Name of the histogram. The index will be appended
-	/// \param histo : Pointer to the histogram to replicate
-	///	\param number : Number of histograms to create
-	/// \param refresh : Set the plots as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
-	///
-	/// Book an array of similar histograms and make it available in the whole analyzer.
-	/// \EndMemberDescr
-
-	string name, title;
-	name = histo->GetName();
-	title = histo->GetTitle();
-	TH2* h;
-
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fHisto2.insert(pair<TString,TH2*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0");
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
-	for(int i=1; i<number; i++){
-		h = (TH2*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fHisto2.insert(pair<TString,TH2*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
-	}
-}
-
-void Analyzer::BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param baseName : Name of the histogram. The index will be appended
-	/// \param histo : Pointer to the histogram to replicate
-	///	\param number : Number of histograms to create
-	/// \param refresh : Set the plots as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
-	///
-	/// Book an array of similar histograms and make it available in the whole analyzer.
-	/// \EndMemberDescr
-
-	string name, title;
-	name = histo->GetName();
-	title = histo->GetTitle();
-	TGraph* h;
-
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fGraph.insert(pair<TString,TGraph*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0");
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
-	for(int i=1; i<number; i++){
-		h = (TGraph*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fGraph.insert(pair<TString,TGraph*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
-	}
-}
-
-void Analyzer::FillHisto(TString name, TString x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-
-	if(th1>0) fHisto[name]->Fill(x,w);
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, TString x, double y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,double,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,double,int)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, TString x, TString y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram with a weight of 1
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,TString,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,int)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, double x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	//
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th1>0) fHisto[name]->Fill(x,w);
-	else if(th2>0) fHisto2[name]->Fill(x,w);
-	else if(tgraph>0) {
-		fPoint[name]++;
-		fGraph[name]->SetPoint(fPoint[name], x, w);
-	}
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, double x){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	///
-	/// Fill a previously booked histogram with a weight of 1
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th1>0) fHisto[name]->Fill(x,1);
-	else if(th2>0) cerr << name << " is a TH2. Cannot call with (double)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, double x, double y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double,double,int)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void Analyzer::FillHisto(TString name, double x, double y){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th2>0) fHisto2[name]->Fill(x,y,1);
-	else if(tgraph>0) {
-		fPoint[name]++;
-		fGraph[name]->SetPoint(fPoint[name], x, y);
-	}
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-//########################################
-void Analyzer::FillHistoArray(TString baseName, int index, TString x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, w);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, TString x, double y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, TString x, TString y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram with a weight of 1
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, double x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	//
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, w);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, double x){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	///
-	/// Fill a previously booked histogram with a weight of 1
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, double x, double y, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	/// \param w : weight
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index,x,y,w);
-}
-
-void Analyzer::FillHistoArray(TString baseName, int index, double x, double y){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, y);
-}
-
-void Analyzer::BookCounter(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the Counter
-	///
-	/// Book a new counter
-	/// \EndMemberDescr
-
-	fParent->BookCounter(fAnalyzerName + TString(".") + name);
-}
-
-void Analyzer::AddCounterToEventFraction(TString efName, TString cName){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param cName : Name of the Counter
-	///
-	/// Add a counter in the specified EventFraction table
-	/// \EndMemberDescr
-
-	fParent->AddCounterToEventFraction(efName, fAnalyzerName + TString(".") + cName);
-}
-void Analyzer::NewEventFraction(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the eventFraction table
-	///
-	/// Create a new EventFraction table
-	/// \EndMemberDescr
-
-	fParent->NewEventFraction(name);
-}
-void Analyzer::DefineSampleSizeCounter(TString efName, TString cName){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param cName : Name of the Counter
-	///
-	/// Define counter as SampleSize in the specified EventFraction table
-	/// \EndMemberDescr
-
-	fParent->DefineSampleSizeCounter(efName, fAnalyzerName + TString(".") + cName);
-}
-void Analyzer::SetSignificantDigits(TString efName, int v){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param v : Number of significant digits
-	///
-	/// Set the number of significant digits for the specified EventFraction table
-	/// \EndMemberDescr
-
-	fParent->SetSignificantDigits(efName, v);
-}
-
-void Analyzer::SetCounterValue(TString cName, int v){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	/// \param v : value
-	///
-	/// Set the value of a previously booked counter
-	/// \EndMemberDescr
-
-	fParent->SetCounterValue(fAnalyzerName + TString(".") + cName, v);
-}
-void Analyzer::IncrementCounter(TString cName, int delta){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	/// \param delta : value
-	///
-	/// Increment a previously booked counter by delta
-	/// \EndMemberDescr
-
-	fParent->IncrementCounter(fAnalyzerName + TString(".") + cName, delta);
-}
-void Analyzer::DecrementCounter(TString cName, int delta){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	/// \param delta : value
-	///
-	/// Decrement a previously booked counter by delta
-	/// \EndMemberDescr
-
-	fParent->DecrementCounter(fAnalyzerName + TString(".") + cName, delta);
-}
-void Analyzer::IncrementCounter(TString cName){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	///
-	/// Increment a previously booked counter by 1
-	/// \EndMemberDescr
-
-	fParent->IncrementCounter(fAnalyzerName + TString(".") + cName);
-}
-void Analyzer::DecrementCounter(TString cName){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	///
-	/// Decrement a previously booked counter by 1
-	/// \EndMemberDescr
-
-	fParent->DecrementCounter(fAnalyzerName + TString(".") + cName);
-}
-int Analyzer::GetCounterValue(TString cName){
-	/// \MemberDescr
-	/// \param cName : Name of the counter
-	///
-	/// Get counter value
-	/// \EndMemberDescr
-
-	return fParent->GetCounterValue(fAnalyzerName + TString(".") + cName);
-}
-
-void Analyzer::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches){
-	/// \MemberDescr
-	/// \param trees : pointer to the list of TTrees
-	/// \param branches : point to the list of branches
-	///
-	/// Export all booked histograms into the output file histograms trees
-	/// \EndMemberDescr
-
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
-
-	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
-		branches[(*it1).second->ClassName()] = (*it1).second;
-		trees[(*it1).second->ClassName()]->Fill();
-	}
-	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		branches[(*it2).second->ClassName()] = (*it2).second;
-		trees[(*it2).second->ClassName()]->Fill();
-	}
-	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
-		branches[(*it3).second->ClassName()] = (*it3).second;
-		trees[(*it3).second->ClassName()]->Fill();
-	}
-};
-
-void Analyzer::DrawAllPlots(){
-	/// \MemberDescr
-	/// Draw all booked histograms on the screen
-	/// \EndMemberDescr
-
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
-
-	for(it1 = fHisto.begin(); it1!=fHisto.end(); it1++){
-		new TCanvas(TString("c_" + fAnalyzerName + "_") + it1->first);
-		cout << "Drawing " << (*it1).second->GetName() << endl;
-		(*it1).second->Draw();
-	}
-
-	for(it2 = fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		new TCanvas(TString("c_" + fAnalyzerName + "_") + it2->first);
-		(*it2).second->Draw("COLZ");
-	}
-
-	for(it3 = fGraph.begin(); it3!=fGraph.end(); it3++){
-		new TCanvas(TString("c_" + fAnalyzerName + "_") + it3->first);
-		(*it3).second->Draw("A*");
-	}
-}
-
-void Analyzer::UpdatePlots(int evtNbr){
-	/// \MemberDescr
-	/// Update all plots with refresh
-	/// \EndMemberDescr
-
-	vector<TCanvas*>::iterator it;
-
-	if((evtNbr % fUpdateRate) == 0){
-		for(it = fCanvas.begin(); it!=fCanvas.end(); it++){
-			(*it)->Update();
-			(*it)->Draw();
-		}
-	}
-}
-
-void Analyzer::Mkdir(TString name){
-	/// \MemberDescr
-	/// \param name: Name of the directory to create
-	///
-	/// Check if the directory name already exists in the analyzer subdirectory. If not create it.
-	/// \EndMemberDescr
-
-	if(gFile->GetDirectory(fAnalyzerName + "/" + name)==NULL){
-		gFile->mkdir(fAnalyzerName + "/" + name);
-	}
-}
-
-void Analyzer::SaveAllPlots(){
-	/// \MemberDescr
-	/// Write all the booked histograms into the output file
-	/// \EndMemberDescr
-
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
-	TString name;
-	map<TString, TString>::iterator itDirectory;
-
-	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
-		name = (*it1).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second);
-			gFile->Cd(itDirectory->second);
-		}
-		(*it1).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
-	}
-	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		name = (*it2).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second);
-			gFile->Cd(itDirectory->second);
-		}
-		(*it2).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
-	}
-	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
-		name = (*it3).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second);
-			gFile->Cd(itDirectory->second);
-		}
-		(*it3).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + fAnalyzerName);
-	}
 }
 
 void Analyzer::PrintName(){
@@ -671,47 +41,6 @@ TString Analyzer::GetAnalyzerName(){
 	return fAnalyzerName;
 }
 
-void Analyzer::RegisterOutput(TString name, void* address){
-	/// \MemberDescr
-	/// \param name : name of the output
-	/// \param address : pointer to the variable that is registered
-	///
-	/// Register a variable as output of the analyzer
-	/// \EndMemberDescr
-
-	fParent->RegisterOutput(fAnalyzerName + TString(".") + name, address);
-}
-
-void Analyzer::SetOutputState(TString name, OutputState state){
-	/// \MemberDescr
-	/// \param name : name of the output
-	/// \param state : state to be set
-	///
-	/// Set the state of the output variable
-	/// \EndMemberDescr
-
-	fParent->SetOutputState(fAnalyzerName + TString(".") + name, state);
-}
-
-const void *Analyzer::GetOutput(TString name, OutputState &state){
-	/// \MemberDescr
-	/// \param name : name of the output
-	/// \param state : is filled with the current state of the output
-	///
-	/// Return an output variable and the corresponding state
-	/// \EndMemberDescr
-
-	return fParent->GetOutput(name, state);
-}
-
-DetectorAcceptance *Analyzer::GetDetectorAcceptanceInstance(){
-	/// \MemberDescr
-	/// Return the global instance of DetectorAcceptance
-	/// \EndMemberDescr
-
-	return fParent->GetDetectorAcceptanceInstance();
-}
-
 void Analyzer::ExportEvent(){
 	/// \MemberDescr
 	/// Ask BaseAnalysis to store the event in the output file.
@@ -728,27 +57,6 @@ bool Analyzer::GetExportEvent(){
 	/// \EndMemberDescr
 
 	return fExportEvent;
-}
-
-void Analyzer::RequestTree(TString name, TDetectorVEvent *evt){
-	/// \MemberDescr
-	/// \param name : Name of the TTree to open
-	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
-	///
-	/// Request to open a tree in the input file
-	/// \EndMemberDescr
-
-	fParent->RequestTree(name, evt);
-}
-
-TDetectorVEvent *Analyzer::GetEvent(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the tree from which the event is read
-	///
-	/// Get the event from input file
-	/// \EndMemberDescr
-
-	return fParent->GetEvent(name);
 }
 
 void Analyzer::PreProcess(){
@@ -882,10 +190,11 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 
 	if(paramName.CompareTo("AutoUpdate", TString::kIgnoreCase)==0){
 		//Add AutoUpdate plot
-		SetPlotAutoUpdate(paramValue);
+		fHisto.SetPlotAutoUpdate(paramValue,fAnalyzerName);
+		if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting plot " << paramValue << " as AutoUpdate." << endl;
 	}
 	else if(paramName.CompareTo("UpdateInterval", TString::kIgnoreCase)==0){
-		SetUpdateInterval(paramValue.Atoi());
+		fHisto.SetUpdateInterval(paramValue.Atoi());
 	}
 	else if(paramName.CompareTo("Verbose", TString::kIgnoreCase)==0){
 		if(paramValue.IsDec()) SetVerbosity((AnalysisFW::VerbosityLevel)paramValue.Atoi());
@@ -899,51 +208,6 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	else SetParamValue(paramName, paramValue);
 }
 
-void Analyzer::SetUpdateInterval(int interval){
-	/// \MemberDescr
-	/// \param interval : Events interval at which the plots should be updated
-	//
-	/// Set the update interval for the plots
-	/// \EndMemberDescr
-
-	if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting plot update interval to " << interval << endl;
-	fUpdateRate = interval;
-}
-
-void Analyzer::SetPlotAutoUpdate(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the plot
-	///
-	/// Define the plot as AutoUpdate. Create the corresponding Canvas and Draw the plot
-	/// \EndMemberDescr
-
-	TCanvas *c;
-	TString canvasName = TString("c_" + fAnalyzerName + "_") + name;
-	if(fHisto.count(name)>0){
-		c = new TCanvas(canvasName, canvasName);
-		c->Draw();
-		fHisto[name]->Draw();
-	}
-	else if(fHisto2.count(name)>0){
-		c = new TCanvas(canvasName, canvasName);
-		c->Draw();
-		fHisto2[name]->Draw();
-	}
-	else if(fGraph.count(name)>0){
-		c = new TCanvas(canvasName, canvasName);
-		c->Draw();
-		fGraph[name]->Draw();
-	}
-	else{
-		cerr << "Plot " << name << " does not exist. Unable to set AutoUpdate." << endl;
-		return;
-	}
-
-	fCanvas.push_back(c);
-	fAutoUpdateList.insert(name);
-	if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting plot " << name << " as AutoUpdate." << endl;
-}
-
 void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	/// \MemberDescr
 	/// \param fMCSimple : MCSimple instance corresponding to this Analyzer
@@ -952,12 +216,8 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	/// \EndMemberDescr
 
 	map<TString, param_t>::iterator it;
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator itGraph;
 
 	StringTable paramTable("List of parameters");
-	StringTable histoTable("List of booked histograms");
 
 	TString sDetAcc;
 
@@ -971,35 +231,11 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	paramTable << fVerbosity;
 	paramTable << "AutoUpdate Rate";
 	paramTable << "int";
-	paramTable << fUpdateRate;
+	paramTable << fHisto.GetUpdateInterval();
 	for(it=fParams.begin(); it!=fParams.end(); it++){
 		paramTable << it->first;
 		paramTable << it->second.first;
 		paramTable << StringFromParam(it->first);
-	}
-
-	//Fill histograms table
-	histoTable.AddColumn("th1", "1D Histograms");
-	histoTable.AddColumn("auth1", "AU");
-	histoTable.AddColumn("th2", "2D Histograms");
-	histoTable.AddColumn("auth2", "AU");
-	histoTable.AddColumn("gr", "Graphs");
-	histoTable.AddColumn("augr", "AU");
-	histoTable << sepr;
-	for(it1 = fHisto.begin(); it1 != fHisto.end(); it1++){
-		histoTable.AddValue(0, it1->first);
-		if(fAutoUpdateList.count(it1->first)>0) histoTable.AddValue(1, "x");
-		else histoTable.AddValue(1, "");
-	}
-	for(it2 = fHisto2.begin(); it2 != fHisto2.end(); it2++){
-		histoTable.AddValue(2, it2->first);
-		if(fAutoUpdateList.count(it1->first)>0) histoTable.AddValue(3, "x");
-		else histoTable.AddValue(3, "");
-	}
-	for(itGraph = fGraph.begin(); itGraph != fGraph.end(); itGraph++){
-		histoTable.AddValue(4, itGraph->first);
-		if(fAutoUpdateList.count(it1->first)>0) histoTable.AddValue(5, "x");
-		else histoTable.AddValue(5, "");
 	}
 
 	//About DetectorAcceptance
@@ -1013,7 +249,7 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	cout << endl << "\t *** Settings for Analyzer: " << fAnalyzerName << " ***" << endl << endl;
 
 	paramTable.Print("\t");
-	histoTable.Print("\t");
+	fHisto.PrintInitSummary();
 
 	cout << "\tDetector acceptance requested ? " << sDetAcc << endl << endl;
 
@@ -1026,30 +262,13 @@ void Analyzer::SetVerbosity(AnalysisFW::VerbosityLevel l){
 	fVerbosity = l;
 }
 
-bool Analyzer::PrintVerbose(AnalysisFW::VerbosityLevel printAbove){
-	/// \MemberDescr
-	/// \param printAbove : Verbosity level threshold
-	///
-	/// Check if the verbosity level is high enough to print
-	/// \EndMemberDescr
-
-	if(fVerbosity >= printAbove){
-		cout << fAnalyzerName << ": ";
-		return true;
-	}
-	return false;
-}
-
-
-/// \MemberDescr
-/// Create a new TTree in the output file
-/// \EndMemberDescr
-/// \Detailed
-/// Create a new TTree in the output file
-/// \EndDetailed
-/// \param name : Name of the TTree
-/// \param title : Title of the TTree
 void Analyzer::OpenNewTree(TString name, TString title){
+	/// \MemberDescr
+	/// \param name : Name of the TTree
+	/// \param title : Title of the TTree
+	///
+	/// Create a new TTree in the output file
+	/// \EndMemberDescr
 	TTree *outTree = new TTree(name, title);
 	fOutTree.insert(pair<TString, TTree*>(name, outTree));
 }
@@ -1151,24 +370,6 @@ void Analyzer::EndOfRun(){
 	EndOfRunUser();
 }
 
-TH1* Analyzer::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
-	/// \MemberDescr
-	/// \param directory : Directory in the input ROOT file where this histogram will be searched
-	/// \param name : Name of the searched histogram
-	/// \param appendOnNewFile : <br>
-	///  - If set to true : When a new file is opened by the TChain the value of the new histogram extracted from this file will be appended to the existing histogram.
-	///  - If set to false : When a new file is opened by the TChain the current histogram will be replaced by the new one.
-	/// \return A pointer to the requested histogram if it was found, else a null pointer.
-	///
-	/// Request histograms from input file.
-	/// \EndMemberDescr
-
-	TH1* histo = fParent->GetInputHistogram(directory, name, appendOnNewFile);
-
-	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
-	return histo;
-}
-
 void Analyzer::CreateStandardTree(TString name, TString title){
 	/// \MemberDescr
 	/// \param name : name of the TTree (for future reference in the code)
@@ -1194,28 +395,4 @@ KinePart* Analyzer::CreateStandardCandidate(TString treeName){
 	KinePart * p = (KinePart*)fExportCandidates[treeName].ConstructedAt(fExportCandidatesNumber[treeName]);
 	fExportCandidatesNumber[treeName]++;
 	return p;
-}
-
-void* Analyzer::GetObjectVoid(TString name){
-	/// \MemberDescr
-	/// Internal interface to BaseAnalysis for GetObject method
-	/// \EndMemberDescr
-
-	return fParent->GetObject(name);
-}
-
-const void* Analyzer::GetOutputVoid(TString name, OutputState &state){
-	/// \MemberDescr
-	/// Internal interface to BaseAnalysis for GetOutput method
-	/// \EndMemberDescr
-
-	return fParent->GetOutput(name, state);
-}
-
-bool Analyzer::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
-	/// \MemberDescr
-	/// Internal interface to BaseAnalysis for RequestTree method
-	/// \EndMemberDescr
-
-	return fParent->RequestTree(name, branchName, className, obj);
 }
