@@ -42,7 +42,7 @@ Analyzer::~Analyzer(){
 	/// Destructor
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
+	/*map<TString,TH1*>::iterator it1;
 	map<TString,TH2*>::iterator it2;
 	map<TString,TGraph*>::iterator it3;
 	vector<TCanvas*>::iterator it4;
@@ -58,7 +58,7 @@ Analyzer::~Analyzer(){
 	}
 	for(it4=fCanvas.begin(); it4!=fCanvas.end(); it4++){
 		delete (*it4);
-	}
+	}*/
 }
 
 void Analyzer::BookHisto(TString name, TH1* histo, bool refresh, TString directory){

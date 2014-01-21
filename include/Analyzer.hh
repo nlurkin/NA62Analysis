@@ -188,7 +188,7 @@ protected:
 	TString StringFromParam(TString name);
 
 	//Internal method to draw the plot and allow auto-update
-	void SetPlotAutoUpdate(TString name);
+	//void SetPlotAutoUpdate(TString name);
 
 	//Collection of warning messages
 	void printNoMCWarning();
@@ -197,14 +197,14 @@ protected:
 	void* GetObjectVoid(TString name);
 	const void* GetOutputVoid(TString name, OutputState &state);
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
-	void Mkdir(TString name);
+	//void Mkdir(TString name);
 
 	bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?
 	bool fIncompleteMCWarned; ///< Has the user been warned that the MC event does not match the requested one in fMCSimple and that he can change this behavior?
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Pointer to DetectorAcceptance instance. Initialize if used.
 
-	//Histogram containers
+	/*//Histogram containers
 	map<TString,TH1*> fHisto; ///< Container for TH1
 	map<TString,TH2*> fHisto2; ///< Container for the TH2
 	map<TString,TGraph*> fGraph; ///< Container for the TGraph
@@ -213,7 +213,8 @@ protected:
 	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 
 	set<TString> fAutoUpdateList;
-	map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name
+	map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name*/
+	HistoHandling fHisto;
 
 	//Parameters container
 	map<TString,param_t> fParams; ///< Container for parameters
