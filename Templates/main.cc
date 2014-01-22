@@ -14,7 +14,7 @@ TApplication *theApp = 0;
 
 void usage(char* name)
 {
-	cout << "Usage: \t"<< name << " [-hg] < -i InputFile.root | -l InputFilesList.txt > [-B #MaxFiles] [-n #FirstEvent]" << endl;
+	cout << "Usage: \t"<< name << " [-hg] < -i InputFile.root | -l InputFilesList.txt [-B #MaxFiles] > [-n #FirstEvent]" << endl;
 	cout << "\t\t[-N #Events] [-o OutputFile.root] [-r ReferenceFile.root] [-v verbosity] [-c configFile]" << endl;
 	cout << "[-p \"analyzerName:param=val;param=val&analyzerName:param=val&...\"]" << endl;
 	cout << "\t -h : Display this help" << endl;
@@ -63,6 +63,7 @@ int main(int argc, char** argv){
 	int evtNb = -1;
 	Int_t NFiles = 0;
 	bool graphicMode = false;
+	bool fromList = false;
 	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
 
 	// Browsing arguments
@@ -82,6 +83,7 @@ int main(int argc, char** argv){
 			//Input files list
 			if(!NFiles) NFiles = 1;
 			inFileName = TString(optarg);
+			fromList = true;
 			break;
 		case 'n':
 			//First event to process
@@ -128,6 +130,11 @@ int main(int argc, char** argv){
 
 	if (!n_options_read) {
 		usage(argv[0]);
+		return 0;
+	}
+
+	if(!fromList && NFiles>0){
+		cerr << "Option -B can only be used with the -l parameter" << endl;
 		return 0;
 	}
 
