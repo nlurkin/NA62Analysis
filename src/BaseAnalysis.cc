@@ -113,7 +113,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	fEventNb = fIOHandler.GetTree();
+	fEventNb = fIOHandler.GetTree(fEventNb);
 
 	fInitialized = true;
 }

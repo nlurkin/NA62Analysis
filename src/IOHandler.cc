@@ -83,13 +83,12 @@ bool IOHandler::RequestTree(TString name, TString branchName, TString className,
 	}
 }
 
-int IOHandler::GetTree(){
+int IOHandler::GetTree(int eventNb){
 	/// \MemberDescr
 	/// Effectively read all the requested trees in the input file and branch them
 	/// \EndMemberDescr
 
 	map<TString, TChain*>::iterator it;
-	int eventNb = 0;
 
 	TString branchName;
 	for(it=fTree.begin(); it!=fTree.end(); it++){
@@ -294,6 +293,7 @@ void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchC
 			}
 			else if (eventNb != tree->GetEntries())
 			{
+				cout << eventNb << endl;
 				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetEntries() << endl;
 				raise(SIGABRT);
 			}

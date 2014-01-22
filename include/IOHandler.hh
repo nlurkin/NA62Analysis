@@ -36,7 +36,7 @@ public:
 	bool OpenOutput(TString outFileName);
 
 	void SetReferenceFileName(TString fileName);
-	int GetTree();
+	int GetTree(int eventNb);
 	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
 
 	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
