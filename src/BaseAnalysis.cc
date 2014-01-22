@@ -117,6 +117,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		return;
 	}
 	fGraphicMode = graphicMode;
+
 	if(NFiles == 0){
 		if(fVerbosity >= AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inFileName << endl;
 		checkInputFile(inFileName);
