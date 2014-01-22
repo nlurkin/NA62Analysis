@@ -7,6 +7,9 @@
 
 #include <signal.h>
 #include <TFile.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TGraph.h>
 #include "IOHandler.hh"
 #include "StringBalancedTable.hh"
 
@@ -132,7 +135,7 @@ void *IOHandler::GetObject(TString name){
 	return fObject[name]->fObject;
 }
 
-TH1* IOHandler::GetReferenceHistogram(TString name){
+TH1* IOHandler::GetReferenceTH1(TString name){
 	/// \MemberDescr
 	/// \param name : Name of the requested reference histogram
 	///
@@ -162,6 +165,78 @@ TH1* IOHandler::GetReferenceHistogram(TString name){
 	fOutFile->cd(oldDirectory);
 	if(tempHisto){
 		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
+		delete tempHisto;
+	}
+	fd->Close();
+	delete fd;
+	return returnHisto;
+}
+TH2* IOHandler::GetReferenceTH2(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the requested reference histogram
+	///
+	/// Return the reference histogram from the reference file
+	/// \EndMemberDescr
+
+	TFile *fd;
+	TH2* tempHisto, *returnHisto=NULL;
+
+	TString oldDirectory = gDirectory->GetName();
+
+	if(fReferenceFileName.IsNull()) return NULL;
+
+	fd = TFile::Open(fReferenceFileName, "READ");
+	if(!fd){
+		cerr << "Error: unable to open reference file " << fReferenceFileName << endl;
+		return NULL;
+	}
+
+	tempHisto = (TH2*)fd->Get(name);
+	if(!tempHisto){
+		//Not found in the root directory of the ROOT file
+		//Try in the analyzer subdirectory if exists
+		tempHisto = (TH2*)fd->Get(oldDirectory + "/" + name);
+	}
+
+	fOutFile->cd(oldDirectory);
+	if(tempHisto){
+		returnHisto = (TH2*)tempHisto->Clone(name + "_ref");
+		delete tempHisto;
+	}
+	fd->Close();
+	delete fd;
+	return returnHisto;
+}
+TGraph* IOHandler::GetReferenceTGraph(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the requested reference histogram
+	///
+	/// Return the reference histogram from the reference file
+	/// \EndMemberDescr
+
+	TFile *fd;
+	TGraph* tempHisto, *returnHisto=NULL;
+
+	TString oldDirectory = gDirectory->GetName();
+
+	if(fReferenceFileName.IsNull()) return NULL;
+
+	fd = TFile::Open(fReferenceFileName, "READ");
+	if(!fd){
+		cerr << "Error: unable to open reference file " << fReferenceFileName << endl;
+		return NULL;
+	}
+
+	tempHisto = (TGraph*)fd->Get(name);
+	if(!tempHisto){
+		//Not found in the root directory of the ROOT file
+		//Try in the analyzer subdirectory if exists
+		tempHisto = (TGraph*)fd->Get(oldDirectory + "/" + name);
+	}
+
+	fOutFile->cd(oldDirectory);
+	if(tempHisto){
+		returnHisto = (TGraph*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
 	fd->Close();

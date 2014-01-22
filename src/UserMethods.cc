@@ -553,3 +553,33 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 
 	return fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
 }
+
+TH1* UserMethods::GetReferenceTH1(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the reference plot
+	///
+	/// Return a pointer to the specified reference histogram. If not found, return NULL.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetReferenceTH1(name);
+}
+
+TH2* UserMethods::GetReferenceTH2(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the reference plot
+	///
+	/// Return a pointer to the specified reference histogram. If not found, return NULL.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetReferenceTH2(name);
+}
+
+TGraph* UserMethods::GetReferenceTGraph(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the reference plot
+	///
+	/// Return a pointer to the specified reference histogram. If not found, return NULL.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetReferenceTGraph(name);
+}

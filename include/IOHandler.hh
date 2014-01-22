@@ -40,7 +40,9 @@ public:
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);
-	TH1* GetReferenceHistogram(TString name);
+	TH1* GetReferenceTH1(TString name);
+	TH2* GetReferenceTH2(TString name);
+	TGraph* GetReferenceTGraph(TString name);
 	void UpdateInputHistograms();
 
 	//TTree

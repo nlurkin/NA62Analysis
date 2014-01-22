@@ -320,7 +320,7 @@ void Analyzer::printNoMCWarning(){
 
 double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	/// \MemberDescr
-	/// \param h1 : Pointer to the !D histogram to compare.
+	/// \param h1 : Pointer to the 1D histogram to compare.
 	/// \param KS : If true, use Kolmogorov-Smirnov test, else use chi square test
 	///
 	/// Compare similarity between two 1D histograms, returning the probability of
@@ -333,7 +333,7 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	TH1* h = fHisto.GetTH1(h1);
 	TString name = h->GetName();
 
-	TH1* hRef = fParent->GetIOHandler()->GetReferenceHistogram(name);
+	TH1* hRef = fParent->GetIOHandler()->GetReferenceTH1(name);
 
 	if(!hRef || !h) return -1.;
 	return fHisto.compareToReferencePlot(hRef, h, KS);

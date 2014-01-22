@@ -77,6 +77,9 @@ public:
 
 	//Request input histogram
 	TH1* RequestHistogram(TString directory, TString name, bool appendOnNewFile);
+	TH1* GetReferenceTH1(TString name);
+	TH2* GetReferenceTH2(TString name);
+	TGraph* GetReferenceTGraph(TString name);
 
 	//###### Event fraction related
 	//EventFraction methods
