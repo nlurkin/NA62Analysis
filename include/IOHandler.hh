@@ -1,0 +1,88 @@
+/*
+ * IOHandler.hh
+ *
+ *  Created on: 22 Jan 2014
+ *      Author: ncl
+ */
+
+#ifndef IOHANDLER_HH_
+#define IOHANDLER_HH_
+
+#include <map>
+using namespace std;
+
+class IOHandler {
+public:
+	IOHandler();
+	virtual ~IOHandler();
+
+	//Histogram Retrieving methods
+	TH1* GetInputHistogram(TString directory, TString name, bool append, bool withMC);
+	TH1* GetReferenceHistogram(TString name, TFile *outFile);
+
+	void RequestTree(TString name, TDetectorVEvent *evt);
+	bool RequestTree(TString name, TString branchName, TString className, void* obj);
+
+	TDetectorVEvent *GetEvent(TString name);
+	void* GetObject(TString name);
+
+	bool OpenInput(TString inFileName, int nFiles, bool withMC, AnalysisFW::VerbosityLevel verbosity);
+	bool OpenOutput(TString outFileName);
+
+	void SetReferenceFileName(TString fileName);
+	int GetTree();
+	bool checkInputFile(TString fileName, bool withMC, AnalysisFW::VerbosityLevel verbosity);
+
+	int FillMCTruth(bool withMC, AnalysisFW::VerbosityLevel verbosity);
+
+	void LoadEvent(int iEvent, bool withMC);
+
+	Event* GetMCTruthEvent();
+
+	//Writing methods
+	void WriteEvent();
+	void WriteTree();
+
+	void MkOutputDir(TString name);
+
+	void PrintInitSummary();
+
+	bool CheckNewFileOpened(bool withMC);
+	void UpdateInputHistograms();
+
+private:
+	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
+
+	class ObjectTriplet{
+	public:
+		ObjectTriplet(TString c, TString branch, void* obj){
+			fClassName = c;
+			fBranchName = branch;
+			fObject = obj;
+		};
+		TString fClassName;
+		TString fBranchName;
+		void* fObject;
+	};
+	map<TString, TChain*> fTree; ///< Container for the trees
+	map<TString, TDetectorVEvent*> fEvent; ///< Container for the events
+	map<TString, ObjectTriplet*> fObject; ///< Container for the events
+
+	TChain *fMCTruthTree; ///< Container for the MC TTrees
+	Event *fMCTruthEvent; ///< MC Event
+
+	multimap<TString, TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
+	multimap<TString, TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
+
+	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
+
+	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
+
+	TFile *fOutFile; ///< Output file
+	TString fOutFileName; ///< Output fileName
+
+	map<TString, TTree*> fExportTrees; ///< Container for TTrees for exporting
+
+};
+
+#endif /* IOHANDLER_HH_ */
