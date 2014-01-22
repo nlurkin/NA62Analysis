@@ -29,7 +29,7 @@ MAIN		= Analyzer BaseAnalysis DetectorAcceptance MCSimple 	\
 				functions NeuralNetwork EventFraction ConfigParser	\
 				StringTable StringBalancedTable ParticleTree 		\
 				ParticleInterface HistoHandler UserMethods 			\
-				CounterHandler #ROOTDICT
+				CounterHandler IOHandler #ROOTDICT
 MAINO		= $(addprefix $(FWOBJDIR)/,$(addsuffix .o,$(MAIN)))
 MAINLIBS	= $(FWLIBDIR)/libAnalysisFW.so
 

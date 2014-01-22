@@ -11,6 +11,7 @@
 #include "functions.hh"
 #include "FWEnums.hh"
 #include "CounterHandler.hh"
+#include "IOHandler.hh"
 
 /// \class BaseAnalysis
 /// \Brief 
@@ -37,80 +38,38 @@ public:
 	void SetOutputState(TString name, Analyzer::OutputState state);
 	const void *GetOutput(TString name, Analyzer::OutputState &state);
 
-	//Histogram Retrieving methods
-	TH1* GetInputHistogram(TString directory, TString name, bool append);
-	TH1* GetReferenceHistogram(TString name);
-
-	//Writing methods
-	void WriteEvent();
-	void WriteTree();
-
-	void RequestTree(TString name, TDetectorVEvent *evt);
-	bool RequestTree(TString name, TString branchName, TString className, void* obj);
-
-	TDetectorVEvent *GetEvent(TString name);
-	void* GetObject(TString name);
-
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	DetectorAcceptance *IsDetectorAcceptanceInstaciated();
 
 	void PrintInitSummary();
 
-	void checkNewFileOpened();
+	void CheckNewFileOpened();
+
+	void WriteEventFraction();
+
+	IOHandler * GetIOHandler();
 
 	CounterHandler* GetCounterHandler();
 
 private:
-	void FillMCTruth();
 	void PreProcess();
-	void GetTree(int &eventNb);
-	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
-	Bool_t checkInputFile(TString fileName);
 protected:
-	class ObjectTriplet{
-	public:
-		ObjectTriplet(TString c, TString branch, void* obj){
-			fClassName = c;
-			fBranchName = branch;
-			fObject = obj;
-		};
-		TString fClassName;
-		TString fBranchName;
-		void* fObject;
-	};
 	int fEventNb; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
 	bool fInitialized;
 
-	TChain *fMCTruthTree; ///< Container for the MC TTrees
-	Event *fMCTruthEvent; ///< MC Event
-
 	vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
-	TFile *fOutFile; ///< Output file
-	TString fOutFileName; ///< Output fileName
-
-	map<TString, TChain*> fTree; ///< Container for the trees
-	map<TString, TDetectorVEvent*> fEvent; ///< Container for the events
-	map<TString, ObjectTriplet*> fObject; ///< Container for the events
-	map<TString, TTree*> fExportTrees; ///< Container for TTrees for exporting
 	map<TString, void*> fOutput; ///< Container for outputs of all analyzers
 	map<TString, Analyzer::OutputState> fOutputStates; ///< Container for output states for all analyzers
-	multimap<TString, TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
-	multimap<TString, TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
-
-	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
 
 	vector<MCSimple*> fMCSimple; ///< Container for MCSimple
 
-	bool fWithMC; ///< Do we have MC in the file?
-
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
-	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
-
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
+	IOHandler fIOHandler;
 };
 
 #endif

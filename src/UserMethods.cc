@@ -507,7 +507,7 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt){
 	/// Request to open a tree in the input file
 	/// \EndMemberDescr
 
-	fParent->RequestTree(name, evt);
+	fParent->GetIOHandler()->RequestTree(name, evt);
 }
 
 TDetectorVEvent *UserMethods::GetEvent(TString name){
@@ -517,7 +517,7 @@ TDetectorVEvent *UserMethods::GetEvent(TString name){
 	/// Get the event from input file
 	/// \EndMemberDescr
 
-	return fParent->GetEvent(name);
+	return fParent->GetIOHandler()->GetEvent(name);
 }
 
 TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
@@ -532,7 +532,7 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	/// Request histograms from input file.
 	/// \EndMemberDescr
 
-	TH1* histo = fParent->GetInputHistogram(directory, name, appendOnNewFile);
+	TH1* histo = fParent->GetIOHandler()->GetInputHistogram(directory, name, appendOnNewFile);
 
 	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
 	return histo;
@@ -543,7 +543,7 @@ void* UserMethods::GetObjectVoid(TString name){
 	/// Internal interface to BaseAnalysis for GetObject method
 	/// \EndMemberDescr
 
-	return fParent->GetObject(name);
+	return fParent->GetIOHandler()->GetObject(name);
 }
 
 bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
@@ -551,5 +551,5 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
-	return fParent->RequestTree(name, branchName, className, obj);
+	return fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
 }
