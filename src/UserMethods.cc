@@ -349,7 +349,7 @@ void UserMethods::BookCounter(TString name){
 	/// Book a new counter
 	/// \EndMemberDescr
 
-	fParent->BookCounter(fAnalyzerName + TString(".") + name);
+	fParent->GetCounterHandler()->BookCounter(fAnalyzerName + TString(".") + name);
 }
 
 void UserMethods::AddCounterToEventFraction(TString efName, TString cName){
@@ -360,7 +360,7 @@ void UserMethods::AddCounterToEventFraction(TString efName, TString cName){
 	/// Add a counter in the specified EventFraction table
 	/// \EndMemberDescr
 
-	fParent->AddCounterToEventFraction(efName, fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->AddCounterToEventFraction(efName, fAnalyzerName + TString(".") + cName);
 }
 void UserMethods::NewEventFraction(TString name){
 	/// \MemberDescr
@@ -369,7 +369,7 @@ void UserMethods::NewEventFraction(TString name){
 	/// Create a new EventFraction table
 	/// \EndMemberDescr
 
-	fParent->NewEventFraction(name);
+	fParent->GetCounterHandler()->NewEventFraction(name);
 }
 void UserMethods::DefineSampleSizeCounter(TString efName, TString cName){
 	/// \MemberDescr
@@ -379,7 +379,7 @@ void UserMethods::DefineSampleSizeCounter(TString efName, TString cName){
 	/// Define counter as SampleSize in the specified EventFraction table
 	/// \EndMemberDescr
 
-	fParent->DefineSampleSizeCounter(efName, fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->DefineSampleSizeCounter(efName, fAnalyzerName + TString(".") + cName);
 }
 void UserMethods::SetSignificantDigits(TString efName, int v){
 	/// \MemberDescr
@@ -389,7 +389,7 @@ void UserMethods::SetSignificantDigits(TString efName, int v){
 	/// Set the number of significant digits for the specified EventFraction table
 	/// \EndMemberDescr
 
-	fParent->SetSignificantDigits(efName, v);
+	fParent->GetCounterHandler()->SetSignificantDigits(efName, v);
 }
 
 void UserMethods::SetCounterValue(TString cName, int v){
@@ -400,7 +400,7 @@ void UserMethods::SetCounterValue(TString cName, int v){
 	/// Set the value of a previously booked counter
 	/// \EndMemberDescr
 
-	fParent->SetCounterValue(fAnalyzerName + TString(".") + cName, v);
+	fParent->GetCounterHandler()->SetCounterValue(fAnalyzerName + TString(".") + cName, v);
 }
 void UserMethods::IncrementCounter(TString cName, int delta){
 	/// \MemberDescr
@@ -410,7 +410,7 @@ void UserMethods::IncrementCounter(TString cName, int delta){
 	/// Increment a previously booked counter by delta
 	/// \EndMemberDescr
 
-	fParent->IncrementCounter(fAnalyzerName + TString(".") + cName, delta);
+	fParent->GetCounterHandler()->IncrementCounter(fAnalyzerName + TString(".") + cName, delta);
 }
 void UserMethods::DecrementCounter(TString cName, int delta){
 	/// \MemberDescr
@@ -420,7 +420,7 @@ void UserMethods::DecrementCounter(TString cName, int delta){
 	/// Decrement a previously booked counter by delta
 	/// \EndMemberDescr
 
-	fParent->DecrementCounter(fAnalyzerName + TString(".") + cName, delta);
+	fParent->GetCounterHandler()->DecrementCounter(fAnalyzerName + TString(".") + cName, delta);
 }
 void UserMethods::IncrementCounter(TString cName){
 	/// \MemberDescr
@@ -429,7 +429,7 @@ void UserMethods::IncrementCounter(TString cName){
 	/// Increment a previously booked counter by 1
 	/// \EndMemberDescr
 
-	fParent->IncrementCounter(fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->IncrementCounter(fAnalyzerName + TString(".") + cName);
 }
 void UserMethods::DecrementCounter(TString cName){
 	/// \MemberDescr
@@ -438,7 +438,7 @@ void UserMethods::DecrementCounter(TString cName){
 	/// Decrement a previously booked counter by 1
 	/// \EndMemberDescr
 
-	fParent->DecrementCounter(fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->DecrementCounter(fAnalyzerName + TString(".") + cName);
 }
 int UserMethods::GetCounterValue(TString cName){
 	/// \MemberDescr
@@ -447,7 +447,7 @@ int UserMethods::GetCounterValue(TString cName){
 	/// Get counter value
 	/// \EndMemberDescr
 
-	return fParent->GetCounterValue(fAnalyzerName + TString(".") + cName);
+	return fParent->GetCounterHandler()->GetCounterValue(fAnalyzerName + TString(".") + cName);
 }
 
 void UserMethods::RegisterOutput(TString name, void* address){
