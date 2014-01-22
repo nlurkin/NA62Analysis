@@ -171,3 +171,13 @@ The following parameters exist by default for all analyzers:
   	and refreshed at regular interval)
   o UpdateInterval (default=10, refresh interval for AutoUpdate plots in number of events)
 
+
+Troubleshooting
+---------------
+
+  o If you are experiencing strange problems with compilation and linking, first try a
+      NA62AnalysisBuilder.py cleanAll
+    before trying to recompile the framework. Problems sometimes happens after changing 
+    version of ROOT, NA62MC, ... or when some framework libraries were not recompiled 
+    automatically after modifications in the code. 
+    

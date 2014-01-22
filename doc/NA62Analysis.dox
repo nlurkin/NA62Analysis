@@ -122,3 +122,11 @@
 /// 	<li><b>UpdateInterval</b> (default=10, refresh interval for AutoUpdate plots in number of events)
 /// </ul>
 ///
+/// \section Troubleshooting Troubleshooting
+///
+/// <ul>
+/// 	<li>If you are experiencing strange problems with compilation and linking, first try a <br>
+/// 		<br><code><b>NA62AnalysisBuilder.py cleanAll</b></code><br>
+///			before trying to recompile the framework. Problems sometimes happens after changing version of ROOT, NA62MC, ... or when some framework libraries were not recompiled 
+///			automatically after modifications in the code. 
+/// </ul>
