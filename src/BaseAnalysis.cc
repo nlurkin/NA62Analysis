@@ -17,7 +17,6 @@ BaseAnalysis::BaseAnalysis(){
 	/// Constructor
 	/// \EndMemberDescr
 
-	fWithMC = 0;
 	fEventNb = -1;
 	fVerbosity = AnalysisFW::kNo;
 	fGraphicMode = false;
@@ -85,15 +84,14 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//Check all the data are present
 	//##############################
 	TString anName, anParams;
-	int inputFileNumber = 0;
 
-	if(!fIOHandler.OpenInput(inFileName, NFiles, fWithMC, fVerbosity)) return;
+	if(!fIOHandler.OpenInput(inFileName, NFiles, fVerbosity)) return;
 
 	fGraphicMode = graphicMode;
 	fIOHandler.OpenOutput(outFileName);
 	fIOHandler.SetReferenceFileName(refFile);
 
-	fEventNb = fIOHandler.FillMCTruth(fWithMC, fVerbosity);
+	fEventNb = fIOHandler.FillMCTruth(fVerbosity);
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -235,8 +233,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		}
 
 		// Load event infos
-		fIOHandler.LoadEvent(i, fWithMC);
-		checkNewFileOpened();
+		fIOHandler.LoadEvent(i);
+		CheckNewFileOpened();
 
 		PreProcess();
 		//Process event in Analyzer
@@ -244,7 +242,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(fWithMC) fMCSimple[j]->GetRealInfos( fIOHandler.GetMCTruthEvent(), fVerbosity);
+			if(fIOHandler.GetWithMC()) fMCSimple[j]->GetRealInfos( fIOHandler.GetMCTruthEvent(), fVerbosity);
 
 			fAnalyzerList[j]->Process(i, *fMCSimple[j], fIOHandler.GetMCTruthEvent());
 			fAnalyzerList[j]->UpdatePlots(i);
@@ -318,7 +316,7 @@ void BaseAnalysis::WriteEventFraction(){
 
 	for(it=fEventFraction.begin(); it!=fEventFraction.end(); it++){
 		it->second->DumpTable();
-		it->second->WriteTable(fOutFileName);
+		//it->second->WriteTable(fOutFileName);
 	}
 }
 
@@ -500,13 +498,13 @@ void BaseAnalysis::PrintInitSummary(){
 	cout << "================================================================================" << endl;
 }
 
-void BaseAnalysis::checkNewFileOpened(){
+void BaseAnalysis::CheckNewFileOpened(){
 	/// \MemberDescr
 	/// Method called by TChain when opening a new file.\n
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
-	if(!fIOHandler.CheckNewFileOpened(fWithMC)) return;
+	if(!fIOHandler.CheckNewFileOpened()) return;
 	//New file opened
 	//end of burst
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
@@ -517,4 +515,8 @@ void BaseAnalysis::checkNewFileOpened(){
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 		fAnalyzerList[i]->StartOfBurst();
 	}
+}
+
+IOHandler* BaseAnalysis::GetIOHandler() {
+	return &fIOHandler;
 }

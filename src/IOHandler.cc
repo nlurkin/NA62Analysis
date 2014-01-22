@@ -8,8 +8,10 @@
 #include "IOHandler.hh"
 #include <TFile.h>
 #include <signal.h>
+#include "StringBalancedTable.hh"
 
 IOHandler::IOHandler() {
+	fWithMC = false;
 	fOutFile = 0;
 
 	fMCTruthTree = 0;
@@ -122,7 +124,7 @@ void *IOHandler::GetObject(TString name){
 	return fObject[name]->fObject;
 }
 
-TH1* IOHandler::GetReferenceHistogram(TString name, TFile *outFile) {
+TH1* IOHandler::GetReferenceHistogram(TString name) {
 	TFile *fd;
 	TH1* tempHisto, *returnHisto=NULL;
 
@@ -143,7 +145,7 @@ TH1* IOHandler::GetReferenceHistogram(TString name, TFile *outFile) {
 		tempHisto = (TH1*)fd->Get(oldDirectory + "/" + name);
 	}
 
-	outFile->cd(oldDirectory);
+	fOutFile->cd(oldDirectory);
 	if(tempHisto){
 		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
@@ -153,7 +155,7 @@ TH1* IOHandler::GetReferenceHistogram(TString name, TFile *outFile) {
 	return returnHisto;
 }
 
-TH1* IOHandler::GetInputHistogram(TString directory, TString name, bool append, bool withMC){
+TH1* IOHandler::GetInputHistogram(TString directory, TString name, bool append){
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file where this histogram will be searched
 	/// \param name : Name of the searched histogram
@@ -169,7 +171,7 @@ TH1* IOHandler::GetInputHistogram(TString directory, TString name, bool append, 
 	TH1* tempHisto, *returnHisto=NULL;
 	TString fullName = directory + TString("/") + name;
 
-	if(withMC){
+	if(fWithMC){
 		fd = fMCTruthTree->GetFile();
 	}
 	else if(fTree.size()>0){
@@ -192,7 +194,7 @@ TH1* IOHandler::GetInputHistogram(TString directory, TString name, bool append, 
 	return returnHisto;
 }
 
-bool IOHandler::OpenInput(TString inFileName, int nFiles, bool withMC, AnalysisFW::VerbosityLevel verbosity){
+bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
 	map<TString, TChain*>::iterator it;
 	int inputFileNumber = 0;
 	bool inputChecked = false;
@@ -203,8 +205,8 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, bool withMC, AnalysisF
 	}
 	if(nFiles == 0){
 		if(verbosity >= AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inFileName << endl;
-		checkInputFile(inFileName, withMC, verbosity);
-		if(withMC)
+		checkInputFile(inFileName, verbosity);
+		if(fWithMC)
 			fMCTruthTree->AddFile(inFileName);
 		for(it=fTree.begin(); it!=fTree.end(); it++){
 			it->second->AddFile(inFileName);
@@ -214,9 +216,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, bool withMC, AnalysisF
 		ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && inputFileNumber < nFiles){
 			if(verbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
-			if(!inputChecked && checkInputFile(inputFileName, withMC, verbosity))
+			if(!inputChecked && checkInputFile(inputFileName, verbosity))
 				inputChecked = kTRUE;
-			if(withMC)
+			if(fWithMC)
 				fMCTruthTree->AddFile(inFileName);
 			inputFileNumber = fMCTruthTree->GetNtrees();
 			cout << "----------- " << inputFileNumber << endl;
@@ -238,10 +240,10 @@ void IOHandler::SetReferenceFileName(TString fileName) {
 	fReferenceFileName = fileName;
 }
 
-void IOHandler::LoadEvent(int iEvent, bool withMC){
+void IOHandler::LoadEvent(int iEvent){
 	map<TString, TChain*>::iterator it;
 
-	if(withMC) fMCTruthTree->GetEntry(iEvent);
+	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
 	for(it=fTree.begin(); it!=fTree.end(); it++){
 		it->second->GetEntry(iEvent);
 	}
@@ -250,6 +252,10 @@ void IOHandler::LoadEvent(int iEvent, bool withMC){
 
 Event* IOHandler::GetMCTruthEvent(){
 	return fMCTruthEvent;
+}
+
+bool IOHandler::GetWithMC() {
+	return fWithMC;
 }
 
 void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb){
@@ -295,7 +301,7 @@ void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchC
 	}
 }
 
-bool IOHandler::checkInputFile(TString fileName, bool withMC, AnalysisFW::VerbosityLevel verbosity){
+bool IOHandler::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity){
 	/// \MemberDescr
 	/// \param fileName : Name of the file to open
 	///
@@ -309,25 +315,25 @@ bool IOHandler::checkInputFile(TString fileName, bool withMC, AnalysisFW::Verbos
 
 	TList* keys = fd->GetListOfKeys();
 
-	withMC = true;
+	fWithMC = true;
 	if(keys->FindObject("Generated")) fMCTruthTree = new TChain("Generated");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
 		if(verbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: No MC data found" << endl;
-		withMC = false;
+		fWithMC = false;
 	}
 	fd->Close();
 	return kTRUE;
 }
 
-int IOHandler::FillMCTruth(bool withMC, AnalysisFW::VerbosityLevel verbosity){
+int IOHandler::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 	/// \MemberDescr
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
 	/// \EndMemberDescr
 
 	//TODO find another way to fill fEventNb
 	int eventNb = -1;
-	if(!withMC) return eventNb;
+	if(!fWithMC) return eventNb;
 
 	eventNb = fMCTruthTree->GetEntries();
 
@@ -423,25 +429,23 @@ void IOHandler::PrintInitSummary(){
 	treeTable.Print("\t");
 }
 
-bool IOHandler::CheckNewFileOpened(bool withMC){
+bool IOHandler::CheckNewFileOpened(){
 	/// \MemberDescr
 	/// Method called by TChain when opening a new file.\n
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
 	int openedFileNumber;
-	TFile *fd;
 	multimap<TString,TH1*>::iterator it;
 	TString histoPath = "-1";
-	TH1* histoPtr = NULL;
 
-	if(withMC){
+	if(fWithMC){
 		openedFileNumber = fMCTruthTree->GetTreeNumber();
-		fd = fMCTruthTree->GetFile();
+		fCurrentFile = fMCTruthTree->GetFile();
 	}
 	else if(fTree.size()>0){
 		openedFileNumber = fTree.begin()->second->GetTreeNumber();
-		fd = fTree.begin()->second->GetFile();
+		fCurrentFile = fTree.begin()->second->GetFile();
 	}
 	else return false;
 
@@ -453,8 +457,6 @@ bool IOHandler::CheckNewFileOpened(bool withMC){
 }
 
 void IOHandler::UpdateInputHistograms(){
-	int openedFileNumber;
-	TFile *fd;
 	multimap<TString,TH1*>::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
@@ -464,7 +466,7 @@ void IOHandler::UpdateInputHistograms(){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
 			if(histoPtr) delete histoPtr;
-			histoPtr = (TH1*)fd->Get(it->first);
+			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;
 		}
 		it->second->Add(histoPtr, 1.0);
@@ -478,7 +480,7 @@ void IOHandler::UpdateInputHistograms(){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
 			if(histoPtr) delete histoPtr;
-			histoPtr = (TH1*)fd->Get(it->first);
+			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;
 		}
 		it->second->Reset();

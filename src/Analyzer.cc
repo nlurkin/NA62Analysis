@@ -333,7 +333,7 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	TH1* h = fHisto.GetTH1(h1);
 	TString name = h->GetName();
 
-	TH1* hRef = fParent->GetReferenceHistogram(name);
+	TH1* hRef = fParent->GetIOHandler()->GetReferenceHistogram(name);
 
 	if(!hRef || !h) return -1.;
 	return fHisto.compareToReferencePlot(hRef, h, KS);

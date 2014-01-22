@@ -9,6 +9,12 @@
 #define IOHANDLER_HH_
 
 #include <map>
+#include <TH1.h>
+#include <TFile.h>
+#include <TDetectorVEvent.hh>
+#include "FWEnums.hh"
+#include "Event.hh"
+#include <TChain.h>
 using namespace std;
 
 class IOHandler {
@@ -17,8 +23,8 @@ public:
 	virtual ~IOHandler();
 
 	//Histogram Retrieving methods
-	TH1* GetInputHistogram(TString directory, TString name, bool append, bool withMC);
-	TH1* GetReferenceHistogram(TString name, TFile *outFile);
+	TH1* GetInputHistogram(TString directory, TString name, bool append);
+	TH1* GetReferenceHistogram(TString name);
 
 	void RequestTree(TString name, TDetectorVEvent *evt);
 	bool RequestTree(TString name, TString branchName, TString className, void* obj);
@@ -26,16 +32,16 @@ public:
 	TDetectorVEvent *GetEvent(TString name);
 	void* GetObject(TString name);
 
-	bool OpenInput(TString inFileName, int nFiles, bool withMC, AnalysisFW::VerbosityLevel verbosity);
+	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
 	bool OpenOutput(TString outFileName);
 
 	void SetReferenceFileName(TString fileName);
 	int GetTree();
-	bool checkInputFile(TString fileName, bool withMC, AnalysisFW::VerbosityLevel verbosity);
+	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
 
-	int FillMCTruth(bool withMC, AnalysisFW::VerbosityLevel verbosity);
+	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
 
-	void LoadEvent(int iEvent, bool withMC);
+	void LoadEvent(int iEvent);
 
 	Event* GetMCTruthEvent();
 
@@ -47,8 +53,10 @@ public:
 
 	void PrintInitSummary();
 
-	bool CheckNewFileOpened(bool withMC);
+	bool CheckNewFileOpened();
 	void UpdateInputHistograms();
+
+	bool GetWithMC();
 
 private:
 	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
@@ -83,6 +91,9 @@ private:
 
 	map<TString, TTree*> fExportTrees; ///< Container for TTrees for exporting
 
+	bool fWithMC; ///< Do we have MC in the file?
+
+	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 };
 
 #endif /* IOHANDLER_HH_ */

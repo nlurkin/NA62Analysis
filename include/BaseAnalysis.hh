@@ -10,6 +10,7 @@
 #include "EventFraction.hh"
 #include "functions.hh"
 #include "FWEnums.hh"
+#include "IOHandler.hh"
 
 /// \class BaseAnalysis
 /// \Brief 
@@ -56,9 +57,11 @@ public:
 
 	void PrintInitSummary();
 
-	void checkNewFileOpened();
+	void CheckNewFileOpened();
 
 	void WriteEventFraction();
+
+	IOHandler * GetIOHandler();
 
 private:
 	void PreProcess();
@@ -76,8 +79,6 @@ protected:
 	map<TString, int> fCounters; ///< Container for counters
 
 	vector<MCSimple*> fMCSimple; ///< Container for MCSimple
-
-	bool fWithMC; ///< Do we have MC in the file?
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
