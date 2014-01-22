@@ -8,11 +8,16 @@
 #include "CounterHandler.hh"
 
 CounterHandler::CounterHandler() {
-	// TODO Auto-generated constructor stub
-
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
 }
 
 CounterHandler::~CounterHandler() {
+	/// \MemberDescr
+	/// Destructor
+	/// \EndMemberDescr
+
 	map<TString, EventFraction*>::iterator itEF;
 
 	while(fEventFraction.size()>0){
