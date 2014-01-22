@@ -1,17 +1,8 @@
 #include "BaseAnalysis.hh"
-#include <TStyle.h>
-#include <sys/stat.h>
-#include <fstream>
-#include <ctime>
-#include "Event.hh"
-#include <TCanvas.h>
-#include "Analyzer.hh"
 
-#include "functions.hh"
-#include "MCSimple.hh"
+#include <TStyle.h>
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
-#include "CounterHandler.hh"
 
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
@@ -262,7 +253,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd();
 	}
 	fIOHandler.WriteTree();
-	fCounterHandler.WriteEventFraction(fOutFileName);
+	fCounterHandler.WriteEventFraction(fIOHandler.GetOutputFileName());
 
 	//Complete the analysis
 	timing = clock()-timing;
@@ -342,6 +333,10 @@ void BaseAnalysis::CheckNewFileOpened(){
 }
 
 IOHandler* BaseAnalysis::GetIOHandler() {
+	/// \MemberDescr
+	///	Return a pointer to the IOHandler instance
+	/// \EndMemberDescr
+
 	return &fIOHandler;
 }
 

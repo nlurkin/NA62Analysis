@@ -27,7 +27,6 @@ using namespace std;
 /// \Detailed
 /// Implements the histogram booking and filling methods as well as the methods for drawing and exporting.
 /// \EndDetailed
-
 class HistoHandler {
 public:
 	HistoHandler();

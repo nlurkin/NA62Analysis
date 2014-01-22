@@ -210,15 +210,13 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	/// 	GetObject<MyClass>("treeName");\n
 	/// \n
 	/// You can retrieve the histograms you booked (for drawing, changing, filling, ...) with\n
-	/// 	fHisto["histoName"] for TH1\n
-	/// 	fHisto2["histoName"] for TH2\n
-	/// 	fGraph["graphName"] for TGraph and TGraphAsymmErrors\n
-	/// Be carefull !! If the histogram you ask for doesn't exist or you ask for an existing histogram\n
-	/// in the wrong recipient (e.g. th2 in fHisto), program will segfault.\n
-	/// To fill the histograms without risk of segfault, you can use\n
+	/// 	fHisto.GetTH1("histoName") for TH1\n
+	/// 	fHisto.GetTH2("histoName") for TH2\n
+	/// 	fHisto.GetGraph("graphName") for TGraph and TGraphAsymmErrors\n
+	/// To fill the histograms you can use\n
 	/// 	FillHisto("histoName", values)\n
 	/// where values are the same parameters as if you call histogram->Fill(values) (x,y,weight,...)\n
-	/// Instead of segfault, this function print an error message\n
+	/// If the histogram is not found, an error message is printed\n
 	/// \n
 	/// Modify a counter with one of the following methods\n
 	/// 	IncrementCounter(name)\n

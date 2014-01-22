@@ -5,22 +5,31 @@
  *      Author: ncl
  */
 
-#include "IOHandler.hh"
-#include <TFile.h>
 #include <signal.h>
+#include <TFile.h>
+#include "IOHandler.hh"
 #include "StringBalancedTable.hh"
 
-IOHandler::IOHandler() {
+IOHandler::IOHandler(){
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
+
 	fWithMC = false;
 	fOutFile = 0;
 
 	fMCTruthTree = 0;
 
 	fCurrentFileNumber = 0;
+	fCurrentFile = NULL;
 	fMCTruthEvent = new Event();
 }
 
-IOHandler::~IOHandler() {
+IOHandler::~IOHandler(){
+	/// \MemberDescr
+	/// Destructor
+	/// \EndMemberDescr
+
 	map<TString, TChain*>::iterator itChain;
 	map<TString, TDetectorVEvent*>::iterator itEvent;
 	map<TString, TTree*>::iterator itTree;
@@ -123,7 +132,13 @@ void *IOHandler::GetObject(TString name){
 	return fObject[name]->fObject;
 }
 
-TH1* IOHandler::GetReferenceHistogram(TString name) {
+TH1* IOHandler::GetReferenceHistogram(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the requested reference histogram
+	///
+	/// Return the reference histogram from the reference file
+	/// \EndMemberDescr
+
 	TFile *fd;
 	TH1* tempHisto, *returnHisto=NULL;
 
@@ -194,6 +209,14 @@ TH1* IOHandler::GetInputHistogram(TString directory, TString name, bool append){
 }
 
 bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
+	/// \MemberDescr
+	/// \param inFileName : Path to the input file
+	/// \param nFiles : Number of files to open
+	/// \param verbosity : verbosity level
+	///
+	/// Open and register the input files.
+	/// \EndMemberDescr
+
 	map<TString, TChain*>::iterator it;
 	int inputFileNumber = 0;
 	bool inputChecked = false;
@@ -236,10 +259,21 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 }
 
 void IOHandler::SetReferenceFileName(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName : Path to the reference file
+	///
+	/// Set the path to the reference file
+	/// \EndMemberDescr
 	fReferenceFileName = fileName;
 }
 
 void IOHandler::LoadEvent(int iEvent){
+	/// \MemberDescr
+	/// \param iEvent : Index of the event
+	///
+	/// Load the event from the TTrees
+	/// \EndMemberDescr
+
 	map<TString, TChain*>::iterator it;
 
 	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
@@ -250,10 +284,20 @@ void IOHandler::LoadEvent(int iEvent){
 }
 
 Event* IOHandler::GetMCTruthEvent(){
+	/// \MemberDescr
+	///
+	/// Return a pointer to the MCTruthEvent
+	/// \EndMemberDescr
+
 	return fMCTruthEvent;
 }
 
-bool IOHandler::GetWithMC() {
+bool IOHandler::GetWithMC(){
+	/// \MemberDescr
+	///
+	/// Do we have MC available in the files?
+	/// \EndMemberDescr
+
 	return fWithMC;
 }
 
@@ -406,6 +450,12 @@ void IOHandler::WriteTree(){
 }
 
 bool IOHandler::OpenOutput(TString outFileName){
+	/// \MemberDescr
+	/// \param outFileName : Path to the output file
+	///
+	/// Open the output file
+	/// \EndMemberDescr
+
 	fOutFileName = outFileName;
 	fOutFileName.ReplaceAll(".root", "");
 	fOutFile = new TFile(outFileName, "RECREATE");
@@ -415,10 +465,21 @@ bool IOHandler::OpenOutput(TString outFileName){
 }
 
 void IOHandler::MkOutputDir(TString name){
+	/// \MemberDescr
+	/// \param name : Name of the directory
+	///
+	/// Create a new directory in the output file
+	/// \EndMemberDescr
+
 	fOutFile->mkdir(name);
 }
 
 void IOHandler::PrintInitSummary(){
+	/// \MemberDescr
+	///
+	/// Print the summary after initialization
+	/// \EndMemberDescr
+
 	map<TString, TChain*>::iterator itTree;
 	StringBalancedTable treeTable("List of requested TTrees");
 
@@ -457,6 +518,11 @@ bool IOHandler::CheckNewFileOpened(){
 }
 
 void IOHandler::UpdateInputHistograms(){
+	/// \MemberDescr
+	///
+	/// Update the input histograms with the one coming from the current input file.
+	/// \EndMemberDescr
+
 	multimap<TString,TH1*>::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
@@ -488,4 +554,13 @@ void IOHandler::UpdateInputHistograms(){
 	}
 	if(histoPtr) delete histoPtr;
 
+}
+
+TString IOHandler::GetOutputFileName(){
+	/// \MemberDescr
+	///
+	/// Return the base name of the output file
+	/// \EndMemberDescr
+
+	return fOutFileName;
 }

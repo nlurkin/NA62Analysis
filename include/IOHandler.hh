@@ -17,46 +17,52 @@
 #include "Event.hh"
 using namespace std;
 
+/// \class IOHandler
+/// \Brief
+/// Class containing and handling every IO object
+/// \EndBrief
+///
+/// \Detailed
+/// Implements the IO methods for histograms, TTrees, ...
+/// \EndDetailed
 class IOHandler {
 public:
 	IOHandler();
 	virtual ~IOHandler();
 
-	//Histogram Retrieving methods
-	TH1* GetInputHistogram(TString directory, TString name, bool append);
-	TH1* GetReferenceHistogram(TString name);
-
-	void RequestTree(TString name, TDetectorVEvent *evt);
-	bool RequestTree(TString name, TString branchName, TString className, void* obj);
-
-	TDetectorVEvent *GetEvent(TString name);
-	void* GetObject(TString name);
-
+	//IO Files
 	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
 	bool OpenOutput(TString outFileName);
-
 	void SetReferenceFileName(TString fileName);
-	int GetTree(int eventNb);
 	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
-
-	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
-
-	void LoadEvent(int iEvent);
-
-	Event* GetMCTruthEvent();
-
-	//Writing methods
-	void WriteEvent();
-	void WriteTree();
-
-	void MkOutputDir(TString name);
-
-	void PrintInitSummary();
-
 	bool CheckNewFileOpened();
+	TString GetOutputFileName();
+
+	//Histogram
+	TH1* GetInputHistogram(TString directory, TString name, bool append);
+	TH1* GetReferenceHistogram(TString name);
 	void UpdateInputHistograms();
 
+	//TTree
+	void RequestTree(TString name, TDetectorVEvent *evt);
+	bool RequestTree(TString name, TString branchName, TString className, void* obj);
+	int GetTree(int eventNb);
+
+	//Events
+	TDetectorVEvent *GetEvent(TString name);
+	void* GetObject(TString name);
+	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
+	void LoadEvent(int iEvent);
+	Event* GetMCTruthEvent();
 	bool GetWithMC();
+
+	//Writing
+	void WriteEvent();
+	void WriteTree();
+	void MkOutputDir(TString name);
+
+	//Printing
+	void PrintInitSummary();
 
 private:
 	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);

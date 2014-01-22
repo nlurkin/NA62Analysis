@@ -1,15 +1,8 @@
 #ifndef BASEANALYSIS_HH
 #define BASEANALYSIS_HH 1
 
-#include "TString.h"
-#include "TFile.h"
-
 #include "Analyzer.hh"
-#include "MCSimple.hh"
 #include "DetectorAcceptance.hh"
-#include "EventFraction.hh"
-#include "functions.hh"
-#include "FWEnums.hh"
 #include "CounterHandler.hh"
 #include "IOHandler.hh"
 
@@ -69,7 +62,7 @@ protected:
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
-	IOHandler fIOHandler;
+	IOHandler fIOHandler; ///< Handler for all IO objects
 };
 
 #endif

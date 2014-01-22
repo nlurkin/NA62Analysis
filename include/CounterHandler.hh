@@ -11,6 +11,15 @@
 #include <map>
 #include "EventFraction.hh"
 
+/// \class CounterHandler
+/// \Brief
+/// Class containing and handling Counters and EventFractions
+/// \EndBrief
+///
+/// \Detailed
+/// Implements the Counters and EventFractions booking, filling and printing methods.
+/// \EndDetailed
+
 class CounterHandler {
 public:
 	CounterHandler();
@@ -31,8 +40,8 @@ public:
 	void DefineSampleSizeCounter(TString efName, TString cName);
 	void SetSignificantDigits(TString efName, int v);
 
+	//Output and printing
 	void WriteEventFraction(TString fileName);
-
 	void PrintInitSummary();
 
 private:
