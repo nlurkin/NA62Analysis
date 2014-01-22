@@ -355,7 +355,7 @@ def build(filename, FWPath, UserPath):
 	error = False
 	for an in ordered:
 		#check histograms in analyzer
-		error = error | check_histo(an, prefixList[an])
+		#error = error | check_histo(an, prefixList[an])
 		includesList += """#include "%s.hh"\n""" % an;
 		instancesAnalyzer += "\t%s *an_%s = new %s(ban);\n" % (an,an,an)
 		instancesAnalyzer += "\tban->AddAnalyzer(an_%s);\n" % an
