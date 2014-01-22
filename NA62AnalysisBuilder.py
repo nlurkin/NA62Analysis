@@ -140,6 +140,7 @@ def checkDependence(depsGraph, name, prefix):
 					depsGraph.addDependency(name, m.group(1))
 
 def checkAnalyzerExists(an, FWPath, userPath):
+	print "%s/Analyzers/include/%s.hh" % (FWPath, an)
 	if os.path.exists("%s/Analyzers/include/%s.hh" % (FWPath, an)):
 		return 1
 	elif os.path.exists("%s/Analyzers/include/%s.hh" % (userPath, an)):
@@ -297,7 +298,7 @@ def build(filename, FWPath, UserPath):
 	missing = False
 	
 	for anDef in analyzers:
-		an = parseAnalyzerDef(anDef)[0]
+		an = parseAnalyzerDef(anDef.strip())[0]
 		anType = checkAnalyzerExists(an, FWPath, UserPath)
 		if(anType==0):
 			answer = raw_input("Analyzer %s does not exists. Do you want to create it [Y/N]" % (an))
