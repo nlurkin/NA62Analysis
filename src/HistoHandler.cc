@@ -9,7 +9,9 @@
 #include <TFile.h>
 #include "HistoHandler.hh"
 #include "StringTable.hh"
-#include  "functions.hh"
+#include "functions.hh"
+#include <TGraphQQ.h>
+#include <TF1.h>
 
 HistoHandler::HistoHandler() {
 	/// \MemberDescr
@@ -88,7 +90,7 @@ void HistoHandler::BookHisto(TString name, TGraph* histo, TString analyzerName, 
 
 	fGraph.insert(pair<TString,TGraph*>(name, histo));
 	fGraph[name]->SetNameTitle(name, name);
-	fPoint.insert(pair<TString,int>(name,0));
+	//fPoint.insert(pair<TString,int>(name,0));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
@@ -622,28 +624,56 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	fAutoUpdateList.insert(name);
 }
 
-double HistoHandler::compareToReferencePlot(TH1* hRef, bool hRefWeighted, TH1* h2, bool h2Weighted) {
+double HistoHandler::compareToReferencePlot(TH1* hRef, TH1* h2, bool KS) {
+	/// \MemberDescr
+	/// \param hRef : Pointer to the reference plot
+	/// \param h2 : Pointer to the plot to compare
+	/// \param KS : If true, use Kolmogorov-Smirnov test, else use chi square test
+	///
+	/// Compare similarity between two 1D histograms, returning the probability of
+	///	the tested (h2) histogram following the same distribution as the reference (hRef)
+	///	histogram.
+	/// \EndMemberDescr
+
 	int nBins = h2->GetNbinsX();
 	double *res = new double[nBins];
-	TString params = "U";
 	TString name = hRef->GetName();
 	double probability;
 
 	BookHisto(name, hRef);
-	BookHisto(name + "_res", new TGraph());
+	hRef->Sumw2();
+	hRef->Scale(h2->Integral()/hRef->Integral());
 
-	if(h2Weighted) params += "W";
-	else params += "U";
-	probability = hRef->Chi2Test(h2, params + " P", res);
-	for(int i=0;i<hRef->GetNbinsX();i++){
-		FillHisto(name+"_res", hRef->GetBinCenter(i+1), res[i]);
+	if(KS){
+		probability = hRef->KolmogorovTest(h2);
 	}
+	else{
+		BookHisto(name + "_res", new TGraph());
+		TF1 *f = new TF1("f", "TMath::Gaus(x,0,1)", -10, 10);
+		probability = hRef->Chi2Test(h2, "UUNORM P", res);
 
+		BookHisto(name + "_QQ", new TGraphQQ(hRef->GetNbinsX(), res, f));
+		for(int i=0;i<hRef->GetNbinsX();i++){
+			FillHisto(name+"_res", hRef->GetBinCenter(i+1), res[i]);
+			//FillHisto(name+"_QQ", hRef->GetBinCenter(i+1), res[i]);
+		}
+		fGraph[name+"_res"]->GetXaxis()->SetRangeUser(hRef->GetBinCenter(0), hRef->GetBinCenter(hRef->GetNbinsX()));
+		fGraph[name+"_res"]->SetTitle(name + " normalised residuals");
+		fGraph[name+"_QQ"]->SetTitle(name + " Q-Q plot of normalised residuals");
+	}
 	delete[] res;
 	return probability;
 }
 
 TH1* HistoHandler::GetTH1(TString name) {
+	/// \MemberDescr
+	/// \param name : Name of the TH1 to retrieve
+	///
+	/// Return the previously booked histogram with the specified name.
+	///	If the histogram does not exist or is not of TH1 type, print an error
+	///	message and return NULL.
+	/// \EndMemberDescr
+
 	if(fHisto.count(name)>0){
 		return fHisto[name];
 	}
@@ -654,6 +684,14 @@ TH1* HistoHandler::GetTH1(TString name) {
 }
 
 TH2* HistoHandler::GetTH2(TString name) {
+	/// \MemberDescr
+	/// \param name : Name of the TH2 to retrieve
+	///
+	/// Return the previously booked histogram with the specified name.
+	///	If the histogram does not exist or is not of TH2 type, print an error
+	///	message and return NULL.
+	/// \EndMemberDescr
+
 	if(fHisto2.count(name)>0){
 		return fHisto2[name];
 	}
@@ -664,6 +702,14 @@ TH2* HistoHandler::GetTH2(TString name) {
 }
 
 TGraph* HistoHandler::GetTGraph(TString name) {
+	/// \MemberDescr
+	/// \param name : Name of the TGraph to retrieve
+	///
+	/// Return the previously booked graph with the specified name.
+	///	If the graph does not exist or is not of TGraph type, print an error
+	///	message and return NULL.
+	/// \EndMemberDescr
+
 	if(fGraph.count(name)>0){
 		return fGraph[name];
 	}

@@ -289,7 +289,6 @@ def build(filename, FWPath, UserPath):
 	
 	#analyzers = analyzersList.split()
 	analyzers = re.findall(" ?(.+?(?:\(.+?\)|[ ]|$)) ?", analyzersList)
-	print analyzers
 	usrAnList = ""
 	fwAnList = ""
 	exAnList = ""

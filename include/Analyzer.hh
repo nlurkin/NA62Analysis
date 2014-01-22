@@ -83,7 +83,7 @@ public:
 	}
 	void ApplyParam(TString paramName, TString value);
 
-	double compareToReferencePlot(TString h1, bool h1Weighted);
+	double compareToReferencePlot(TString h1, bool KS);
 
 protected:
 	//Internal methods used for setting parameters

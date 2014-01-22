@@ -318,14 +318,25 @@ void Analyzer::printNoMCWarning(){
 	}
 }
 
-double Analyzer::compareToReferencePlot(TString h1, bool h1Weighted) {
+double Analyzer::compareToReferencePlot(TString h1, bool KS) {
+	/// \MemberDescr
+	/// \param h1 : Pointer to the !D histogram to compare.
+	/// \param KS : If true, use Kolmogorov-Smirnov test, else use chi square test
+	///
+	/// Compare similarity between two 1D histograms, returning the probability of
+	///	the tested (h1) histogram following the same distribution as a reference
+	///	histogram. The reference histogram is an histogram with same name extracted
+	/// from the reference file. If no reference file is specified in the command line
+	/// parameters, this method returns immediately.
+	/// \EndMemberDescr
+
 	TH1* h = fHisto.GetTH1(h1);
 	TString name = h->GetName();
 
 	TH1* hRef = fParent->GetReferenceHistogram(name);
 
-	if(!hRef) return -1.;
-	return fHisto.compareToReferencePlot(hRef, false, h, h1Weighted);
+	if(!hRef || !h) return -1.;
+	return fHisto.compareToReferencePlot(hRef, h, KS);
 }
 
 void Analyzer::printIncompleteMCWarning(int i){
