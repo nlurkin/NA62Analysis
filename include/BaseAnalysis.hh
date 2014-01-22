@@ -10,6 +10,7 @@
 #include "EventFraction.hh"
 #include "functions.hh"
 #include "FWEnums.hh"
+#include "CounterHandler.hh"
 
 /// \class BaseAnalysis
 /// \Brief 
@@ -36,21 +37,6 @@ public:
 	void SetOutputState(TString name, Analyzer::OutputState state);
 	const void *GetOutput(TString name, Analyzer::OutputState &state);
 
-	//Event fraction methods
-	void NewEventFraction(TString name);
-	void AddCounterToEventFraction(TString efName, TString cName);
-	void DefineSampleSizeCounter(TString efName, TString cName);
-	void SetSignificantDigits(TString efName, int v);
-
-	//Counter methods
-	void BookCounter(TString name);
-	void IncrementCounter(TString name);
-	void IncrementCounter(TString name, int v);
-	void DecrementCounter(TString name);
-	void DecrementCounter(TString name, int v);
-	void SetCounterValue(TString name, int v);
-	int GetCounterValue(TString);
-
 	//Histogram Retrieving methods
 	TH1* GetInputHistogram(TString directory, TString name, bool append);
 	TH1* GetReferenceHistogram(TString name);
@@ -58,7 +44,6 @@ public:
 	//Writing methods
 	void WriteEvent();
 	void WriteTree();
-	void WriteEventFraction();
 
 	void RequestTree(TString name, TDetectorVEvent *evt);
 	bool RequestTree(TString name, TString branchName, TString className, void* obj);
@@ -72,6 +57,8 @@ public:
 	void PrintInitSummary();
 
 	void checkNewFileOpened();
+
+	CounterHandler* GetCounterHandler();
 
 private:
 	void FillMCTruth();
@@ -96,8 +83,6 @@ protected:
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
 	bool fInitialized;
 
-
-	//TChain *fMCTruthTree[2]; ///< Container for the MC TTrees
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
 
@@ -112,8 +97,6 @@ protected:
 	map<TString, TTree*> fExportTrees; ///< Container for TTrees for exporting
 	map<TString, void*> fOutput; ///< Container for outputs of all analyzers
 	map<TString, Analyzer::OutputState> fOutputStates; ///< Container for output states for all analyzers
-	map<TString, EventFraction*> fEventFraction; ///< Container for event fraction
-	map<TString, int> fCounters; ///< Container for counters
 	multimap<TString, TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
 	multimap<TString, TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
@@ -126,6 +109,8 @@ protected:
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
+
+	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 };
 
 #endif

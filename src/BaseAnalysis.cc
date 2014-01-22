@@ -12,6 +12,7 @@
 #include "MCSimple.hh"
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
+#include "CounterHandler.hh"
 
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
@@ -40,7 +41,6 @@ BaseAnalysis::~BaseAnalysis(){
 	/// Destructor.
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator itEF;
 	map<TString, TChain*>::iterator itChain;
 	map<TString, TDetectorVEvent*>::iterator itEvent;
 	map<TString, TTree*>::iterator itTree;
@@ -52,12 +52,6 @@ BaseAnalysis::~BaseAnalysis(){
 		cout << "#############        DONE         #############" << endl;
 	}
 
-	//fEventFraction.clear();
-	while(fEventFraction.size()>0){
-		itEF = fEventFraction.begin();
-		delete itEF->second;
-		fEventFraction.erase(itEF);
-	}
 	while(fTree.size()>0){
 		itChain = fTree.begin();
 		delete itChain->second;
@@ -423,7 +417,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd();
 	}
 	WriteTree();
-	WriteEventFraction();
+	fCounterHandler.WriteEventFraction(fOutFileName);
 
 	//Complete the analysis
 	timing = clock()-timing;
@@ -557,181 +551,21 @@ void BaseAnalysis::WriteTree(){
 	}
 }
 
-void BaseAnalysis::WriteEventFraction(){
-	/// \MemberDescr
-	/// Dump the EventFraction
-	/// \EndMemberDescr
-
-	map<TString,EventFraction*>::iterator it;
-
-	for(it=fEventFraction.begin(); it!=fEventFraction.end(); it++){
-		it->second->DumpTable();
-		it->second->WriteTable(fOutFileName);
-	}
-}
-
-void BaseAnalysis::NewEventFraction(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the EventFraction table
-	///
-	/// Create a new EventFraction instance
-	/// \EndMemberDescr
-
-	fEventFraction.insert(pair<TString,EventFraction*>(name, new EventFraction(name)));
-}
-void BaseAnalysis::AddCounterToEventFraction(TString efName, TString cName){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param cName : Name of the Counter
-	///
-	/// Add a counter in the specified EventFraction table
-	/// \EndMemberDescr
-
-	if(fEventFraction.count(efName)>0){
-		if(fCounters.count(cName)>0){
-			fEventFraction[efName]->AddCounter(cName, &fCounters[cName]);
-		}
-		else cerr << "Counter " << cName << " doesn't exist." << endl;
-	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
-}
-void BaseAnalysis::DefineSampleSizeCounter(TString efName, TString cName){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param cName : Name of the Counter
-	///
-	/// Define counter as SampleSize in the specified EventFraction table
-	/// \EndMemberDescr
-
-	if(fEventFraction.count(efName)>0){
-		if(fCounters.count(cName)>0){
-			fEventFraction[efName]->DefineSampleSizeCounter(cName);
-		}
-		else cerr << "Counter " << cName << " doesn't exist." << endl;
-	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
-}
-void BaseAnalysis::SetSignificantDigits(TString efName, int v){
-	/// \MemberDescr
-	/// \param efName : Name of the EventFraction instance
-	/// \param v : number of significant digits
-	///
-	/// Set number of significant digits for the specified EventFraction table
-	/// \EndMemberDescr
-
-	if(fEventFraction.count(efName)>0){
-		fEventFraction[efName]->SetPrecision(v);
-	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
-}
-
-void BaseAnalysis::BookCounter(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the Counter
-	///
-	/// Book a new counter
-	/// \EndMemberDescr
-
-	fCounters.insert(pair<TString,int>(name, 0));
-}
-void BaseAnalysis::IncrementCounter(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	///
-	/// Increment a previously booked counter by 1
-	/// \EndMemberDescr
-
-	IncrementCounter(name, 1);
-}
-void BaseAnalysis::IncrementCounter(TString name, int v){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	/// \param v : value
-	///
-	/// Increment a previously booked counter by v
-	/// \EndMemberDescr
-
-	if(fCounters.count(name)>0){
-		fCounters[name] = fCounters[name]+v;
-	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
-}
-void BaseAnalysis::DecrementCounter(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	///
-	/// Decrement a previously booked counter by 1
-	/// \EndMemberDescr
-
-	DecrementCounter(name,1);
-}
-void BaseAnalysis::DecrementCounter(TString name, int v){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	/// \param v : value
-	///
-	/// Decrement a previously booked counter by v
-	/// \EndMemberDescr
-
-	if(fCounters.count(name)>0){
-		fCounters[name] = fCounters[name]-v;
-	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
-}
-void BaseAnalysis::SetCounterValue(TString name, int v){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	/// \param v : value
-	///
-	/// Set the value of a previously booked counter
-	/// \EndMemberDescr
-
-	if(fCounters.count(name)>0){
-		fCounters[name] = v;
-	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
-}
-int BaseAnalysis::GetCounterValue(TString name){
-	/// \MemberDescr
-	/// \param name : Name of the counter
-	///
-	/// Get the value of a previously booked counter
-	/// \EndMemberDescr
-
-	if(fCounters.count(name)>0){
-		return fCounters[name];
-	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
-	return -1;
-}
-
 void BaseAnalysis::PrintInitSummary(){
 	/// \MemberDescr
 	/// Print summary after initialization.
 	/// \EndMemberDescr
 
 	vector<Analyzer*>::iterator itAn;
-	map<TString, EventFraction*>::iterator itEvtFrac;
-	map<TString, int>::iterator itCounter;
 	map<TString, void*>::iterator itOutput;
 	map<TString, TChain*>::iterator itTree;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
-	StringBalancedTable evtFracTable("List of EventFraction");
-	StringBalancedTable counterTable("List of Counters");
 	StringBalancedTable outputTable("List of Outputs");
 	StringBalancedTable treeTable("List of requested TTrees");
 
 	for(itAn=fAnalyzerList.begin(); itAn!=fAnalyzerList.end(); itAn++){
 		anTable << (*itAn)->GetAnalyzerName();
-	}
-
-	for(itEvtFrac=fEventFraction.begin(); itEvtFrac!=fEventFraction.end(); itEvtFrac++){
-		evtFracTable << itEvtFrac->first;
-	}
-
-	for(itCounter=fCounters.begin(); itCounter!=fCounters.end(); itCounter++){
-		counterTable << itCounter->first;
 	}
 
 	for(itOutput=fOutput.begin(); itOutput!=fOutput.end(); itOutput++){
@@ -746,8 +580,7 @@ void BaseAnalysis::PrintInitSummary(){
 	cout << endl << "\t *** Global settings for AnalysisFW ***" << endl << endl;
 
 	anTable.Print("\t");
-	evtFracTable.Print("\t");
-	counterTable.Print("\t");
+	fCounterHandler.PrintInitSummary();
 	outputTable.Print("\t");
 	treeTable.Print("\t");
 
@@ -928,4 +761,12 @@ TH1* BaseAnalysis::GetInputHistogram(TString directory, TString name, bool appen
 		}
 	}
 	return returnHisto;
+}
+
+CounterHandler* BaseAnalysis::GetCounterHandler() {
+	/// \MemberDescr
+	///	Return a pointer to the CounterHandler instance
+	/// \EndMemberDescr
+
+	return &fCounterHandler;
 }
