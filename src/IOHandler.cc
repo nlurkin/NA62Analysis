@@ -243,7 +243,6 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(fWithMC)
 				fMCTruthTree->AddFile(inFileName);
 			inputFileNumber = fMCTruthTree->GetNtrees();
-			cout << "----------- " << inputFileNumber << endl;
 			for(it=fTree.begin(); it!=fTree.end(); it++){
 				it->second->AddFile(inFileName);
 				inputFileNumber = it->second->GetNtrees();
