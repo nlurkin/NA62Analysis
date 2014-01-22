@@ -6,6 +6,7 @@
  */
 
 #include "CounterHandler.hh"
+#include "StringBalancedTable.hh"
 
 CounterHandler::CounterHandler() {
 	/// \MemberDescr

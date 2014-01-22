@@ -12,6 +12,7 @@
 #include "MCSimple.hh"
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
+#include "CounterHandler.hh"
 
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
