@@ -11,10 +11,10 @@
 #include <map>
 #include <TH1.h>
 #include <TFile.h>
+#include <TChain.h>
 #include <TDetectorVEvent.hh>
 #include "FWEnums.hh"
 #include "Event.hh"
-#include <TChain.h>
 using namespace std;
 
 class IOHandler {
