@@ -2,12 +2,45 @@
 NA62Analysis Project
 ################################################################
 
+2014-01-23  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+                rev. 302
+        - Silenced massive printing when compiling
+        - New "new" syntax available when creating new analyzers (see README for details)
+        - Doc is not removed anymore when creating new analyzers
+        - New BookHisto syntax available (removed first name argument and using histo name instead).
+        - Batch histogram booking (Arrays of histograms)
+        - Avoid to set environment variables multiple times in env.(c)sh scripts
+        - Added possibility to retrieve plots from a reference file to compare with current run. Manual and automated procedure. New command line parameter -r.
+        - Moved some things from Analyzer and BaseAnalysis to HistoHandler, IOHandler, CounterHandler and UserMethods for clarity. Transparent for the user except for THisto, THisto2 and TGraph, use now instead THisto.GetTH1, THisto.GetTH2 and THisto.GetTGraph
+        - Improvement of DetectorAcceptance class:
+           - Magnetic field now taken into account when propagating or drawing a charged particle track
+           - Only sensitive volumes are now used to decide if a particle touched a detector or not
+           - The track length inside the sensitive volume of detectors is estimated
+           - Updated Geometry file to NA62MC rev. 298
+        - Documentation updated
+        - Example analyzers commented and updated to the most recent syntax
+
 2014-01-14      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 298
                 - Few modifications for compatibility with the latest
                   revision of NA62MC, in preparation for the release of
                   MC Overlay
                 - Fixed a typo in scripts/env.csh
+
+2013-12-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+                rev. 294
+        - Log message: NA62AnalysisBuilder.py: fix detection of comments with /// and taking new GetOutput<> into account in dependency resolution
+        - VertexCDA: removing unnecessary fGeom member and adding some counters for event selection.
+        - main.cc: Expending the -h help and better handling of exit signals
+        - Analyzer: Possibility to save histogram in sub-directories (new BookHisto signature, backward compatible). Filling output trees (copy from input, standard tree or custom tree) is done only if ExportEvent is called.
+        - BaseAnalysis: Will not crash anymore if TTree is not found in input file
+        - DetectorAcceptance: step precision is now optimised if not specified (best option) and detection of substations now works for GTK, LAV and Spectrometer. Fixing bug with opening ROOT geometry file.
+        - MCSimple: Possibility to retrieve all the particles in the final state or all particles at a given decay level + printing of the current event decay tree
+        - ParticleInterface: added PrintTable method
+        - ParticleTree: added some methods to help the implementation of the new MCSimple functionalities
+        - Example LKrPhotonMC: Some fixes
+
+Example Pi0Reconstruction: Use the new automatic step optimisation for DetectorAcceptance
 
 2013-10-04	Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev. 288
