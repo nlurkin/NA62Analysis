@@ -25,6 +25,7 @@ BaseAnalysis::~BaseAnalysis(){
 	/// Destructor.
 	/// \EndMemberDescr
 
+	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
 	while(fMCSimple.size()>0){
 		delete fMCSimple.back();
 		fMCSimple.pop_back();
