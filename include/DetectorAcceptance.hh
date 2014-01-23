@@ -17,7 +17,12 @@ using namespace std;
 /// \EndBrief 
 ///
 /// \Detailed
-/// Provide a good description of detector using a geometry file.
+/// Provide a good description of detector using a geometry file.\n
+///	WARNING: this class provides "exact" results, there is not tolerance. If the particle\n
+///	passes in the sensitive volume of a detector it's considered as detected, wether it's close\n
+///	to the edge or not. But as the class gives you the position of the passage point and the \n
+///	estimated path length in the sensitive volume, you can apply further cuts from this\n
+///	information at your convenience.
 /// \EndDetailed
 
 class DetectorAcceptance

@@ -39,6 +39,17 @@ void UserMethods::BookHisto(TString name, TH1* histo, bool refresh, TString dire
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
 }
+void UserMethods::BookHisto(TH1* histo, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram
+	/// \param refresh : Set the plot as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	///
+	/// Book a new histogram and make it available in the whole analyzer
+	/// \EndMemberDescr
+
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
+}
 
 void UserMethods::BookHisto(TString name, TH2* histo, bool refresh, TString directory){
 	/// \MemberDescr
@@ -52,6 +63,17 @@ void UserMethods::BookHisto(TString name, TH2* histo, bool refresh, TString dire
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
 }
+void UserMethods::BookHisto(TH2* histo, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram
+	/// \param refresh : Set the plot as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	///
+	/// Book a new histogram and make it available in the whole analyzer
+	/// \EndMemberDescr
+
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
+}
 
 void UserMethods::BookHisto(TString name, TGraph* histo, bool refresh, TString directory){
 	/// \MemberDescr
@@ -64,6 +86,17 @@ void UserMethods::BookHisto(TString name, TGraph* histo, bool refresh, TString d
 	/// \EndMemberDescr
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
+}
+void UserMethods::BookHisto(TGraph* histo, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram
+	/// \param refresh : Set the plot as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plot when calling SaveAllPlots()
+	///
+	/// Book a new histogram and make it available in the whole analyzer
+	/// \EndMemberDescr
+
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
 }
 
 void UserMethods::BookHistoArray(TString baseName, TH1* histo, int number, bool refresh, TString directory){
@@ -79,6 +112,18 @@ void UserMethods::BookHistoArray(TString baseName, TH1* histo, int number, bool 
 
 	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
 }
+void UserMethods::BookHistoArray(TH1* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
+}
 
 void UserMethods::BookHistoArray(TString baseName, TH2* histo, int number, bool refresh, TString directory){
 	/// \MemberDescr
@@ -93,6 +138,18 @@ void UserMethods::BookHistoArray(TString baseName, TH2* histo, int number, bool 
 
 	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
 }
+void UserMethods::BookHistoArray(TH2* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
+}
 
 void UserMethods::BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh, TString directory){
 	/// \MemberDescr
@@ -106,6 +163,18 @@ void UserMethods::BookHistoArray(TString baseName, TGraph* histo, int number, bo
 	/// \EndMemberDescr
 
 	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
+}
+void UserMethods::BookHistoArray(TGraph* histo, int number, bool refresh, TString directory){
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
 }
 
 void UserMethods::FillHisto(TString name, TString x, int w){

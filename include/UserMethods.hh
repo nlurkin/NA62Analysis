@@ -49,6 +49,13 @@ public:
 	void BookHistoArray(TString baseName, TH2* histo, int number, bool refresh=false, TString directory="");
 	void BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh=false, TString directory="");
 
+	void BookHisto(TH1* histo, bool refresh=false, TString directory="");
+	void BookHisto(TH2* histo, bool refresh=false, TString directory="");
+	void BookHisto(TGraph* histo, bool refresh=false, TString directory="");
+	void BookHistoArray(TH1* histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TH2* histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TGraph* histo, int number, bool refresh=false, TString directory="");
+
 	//Histogram filling methods
 	void FillHisto(TString name, TString x, int w);
 	void FillHisto(TString name, TString x, double y, int w);

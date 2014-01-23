@@ -1,37 +1,13 @@
 //Mandatory includes
-#include "templateAnalyzer.hh"
 #include <stdlib.h>
 #include <iostream>
+#include <TChain.h>
+#include "templateAnalyzer.hh"
 #include "MCSimple.hh"
 #include "functions.hh"
 #include "Event.hh"
-#include <TChain.h>
+#include "Persistency.hh"
 using namespace std;
-
-//Include the hh files for events kinds you will use
-/*$$TREEINCLUDES$$*/
-/*#include "TRecoGigaTrackerEvent.hh"
-#include "TRecoRICHEvent.hh"
-#include "TRecoCHANTIEvent.hh"
-#include "TRecoCedarEvent.hh"
-#include "TRecoCHODEvent.hh"
-#include "TRecoMUV1Event.hh"
-#include "TRecoMUV2Event.hh"
-#include "TRecoMUV3Event.hh"
-#include "TRecoMUV0Event.hh"
-#include "TRecoHACEvent.hh"
-#include "TRecoIRCEvent.hh"
-#include "TRecoLAVEvent.hh"
-#include "TRecoSACEvent.hh"
-#include "TRecoLKrEvent.hh"
-#include "TRecoSpectrometerEvent.hh"*/
-
-//Additional includes
-/*#include <TString.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TGraph.h>
-#include <TCanvas.h>*/
 
 /// \class templateAnalyzer
 /// \Brief 
@@ -105,13 +81,13 @@ void templateAnalyzer::InitHist(){
 	/// \MemberDescr
 	/// Book and Initialize histograms in this function.\n
 	/// Same function to Book TH1, TH2, TGraph and TGraphAsymmErrors (anything derived from TH1 or TGraph)\n
-	///  BookHisto(name, histogram*)\n
+	///  BookHisto(histogram*)\n
 	/// If isAutotUpdate is true, this histogram will be drawn and updated regularly during the processing. (default=false)
 	/// The refresh interval can be set with (default=10)
 	///  SetUpdateInterval(interval)
 	/// Defining plots as AutoUpdate and setting the interval can also be done at runtime with a configuration file
 	/// Example\n
-	/// 	BookHisto("PartEnergy", new TH2I("PartEnergy", "Energy as a function of particle", 0, 0, 0, Bins, MinEnergy, MaxEnergy));\n
+	/// 	BookHisto(new TH2I("PartEnergy", "Energy as a function of particle", 0, 0, 0, Bins, MinEnergy, MaxEnergy));\n
 	/// \n
 	/// Booking of counters and creation of EventFraction can be done here\n
 	///	BookCounter(name)\n
@@ -225,7 +201,12 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	/// 	DecrementCounter(name, delta)\n
 	/// 	SetCounterValue(name, value)\n
 	/// \n
-	/// For use of fGeom, read DetectorAcceptance class\n
+	/// For use of fGeom, read DetectorAcceptance class.\n
+	///	WARNING: this class provides "exact" results, there is not tolerance. If the particle\n
+	///	passes in the sensitive volume of a detector it's considered as detected, wether it's close\n
+	///	to the edge or not. But as the class gives you the position of the passage point and the \n
+	///	estimated path length in the sensitive volume, you can apply further cuts from this\n
+	///	information at your convenience.
 	/// \n
 	/// To use the output of a different analyzer, use\n
 	/// 	outputType *var = GetOutput<outputType>("analyzerName.outputName", state);\n

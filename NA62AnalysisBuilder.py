@@ -189,7 +189,7 @@ def generateNewAnalyzer(name, FWPath, UserPath, inputs):
 		return
 	
 	readAndReplace("%s/Templates/templateAnalyzer.hh" % FWPath, "%s/Analyzers/include/%s.hh" % (UserPath, name), {'templateAnalyzer':name, 'TEMPLATEANALYZER':name.upper()})
-	readAndReplace("%s/Templates/templateAnalyzer.cc" % FWPath, "%s/Analyzers/src/%s.cc" % (UserPath, name), {'templateAnalyzer':name, '/*$$TREEINCLUDES$$*/':inputs[0], '/*$$TREEREQUEST$$*/':inputs[1], '/*$$GETEVENTS$$*/':inputs[2]})
+	readAndReplace("%s/Templates/templateAnalyzer.cc" % FWPath, "%s/Analyzers/src/%s.cc" % (UserPath, name), {'templateAnalyzer':name, '/*$$TREEREQUEST$$*/':inputs[0], '/*$$GETEVENTS$$*/':inputs[1]})
 
 def parseAnalyzerDef(name):
 	m = re.findall("(.*?)\((.*)\)", name)
@@ -223,11 +223,11 @@ def createAnalyzer(name, FWPath, UserPath):
 		else:
 			className = "TReco%sEvent" % (tree)
 		
-		treeInclude = "%s#include \"%s.hh\"\n" % (treeInclude,className)
+		#treeInclude = "%s#include \"%s.hh\"\n" % (treeInclude,className)
 		treeRequest = "%s\tRequestTree(\"%s\",new %s);\n" % (treeRequest,tree,className)
 		getEvents = "%s\t%s *%sEvent = (%s*)GetEvent(\"%s\");\n" % (getEvents,className,tree,className,tree)
 	
-	generateNewAnalyzer(anName, FWPath, UserPath, [treeInclude,treeRequest,getEvents])
+	generateNewAnalyzer(anName, FWPath, UserPath, [treeRequest,getEvents])
 	
 def renameAnalyzer(oldName, newName, FWPath, UserPath):
 	if not os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, oldName)):

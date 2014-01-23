@@ -7,9 +7,8 @@
 #include "Event.hh"
 #include <TChain.h>
 #include <TFile.h>
+#include "Persistency.hh"
 using namespace std;
-
-#include "TRecoLKrEvent.hh"
 
 Pi0Reconstruction::Pi0Reconstruction(BaseAnalysis *ba) : Analyzer(ba)
 {
@@ -40,31 +39,30 @@ void Pi0Reconstruction::InitHist(){
 	//Example
 	//	BookHisto("PartEnergy", new TH2I("PartEnergy", "Energy as a function of particle", 0, 0, 0, Bins, MinEnergy, MaxEnergy));
 
-	BookHisto("g1Energy", new TH1I("G1Energy", "Energy of g1", 100, 0, 75000));
-	BookHisto("g2Energy", new TH1I("G2Energy", "Energy of g2", 100, 0, 75000));
-	BookHisto("g1Reco", new TH2I("g1Reco", "g1 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
-	BookHisto("g2Reco", new TH2I("g2Reco", "g2 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
-	BookHisto("g1px", new TH2I("g1px", "g1 px Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
-	BookHisto("g2px", new TH2I("g2px", "g2 px Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
-	BookHisto("g1py", new TH2I("g1py", "g1 py Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
-	BookHisto("g2py", new TH2I("g2py", "g2 py Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
-	BookHisto("g1pz", new TH2I("g1pz", "g1 pz Reco vs. Real", 10, 240000, 250000, 10, 240000, 250000));
-	BookHisto("g2pz", new TH2I("g2pz", "g2 pz Reco vs. Real", 10, 240000, 250000, 10, 240000, 250000));
-	BookHisto("pi0Energy", new TH1I("pi0Energy", "Energy of pi0", 100, 0, 75000));
-	BookHisto("pi0Mass", new TH1I("pi0Mass", "Reconstructed mass of pi0", 200, 0, 200));
-	//BookHisto("pi0MCMass", new TH1I("pi0MCMass", "MC mass of pi0", 200, 0, 200));
-	BookHisto("clusterPosition", new TH2I("clusterPosition", "Cluster position on LKr", 500, -2000, 2000, 500, -2000, 2000));
-	BookHisto("photonsNbr", new TH1I("photonsNbr", "Photons multiplicity/event", 10, 0, 10));
-	BookHisto("g1EnergyFraction", new TH1I("g1EnergyFraction", "Fraction between real energy and reco energy", 1000, 0, 100));
-	BookHisto("g2EnergyFraction", new TH1I("g2EnergyFraction", "Fraction between real energy and reco energy", 1000, 0, 100));
+	BookHisto(new TH1I("G1Energy", "Energy of g1", 100, 0, 75000));
+	BookHisto(new TH1I("G2Energy", "Energy of g2", 100, 0, 75000));
+	BookHisto(new TH2I("g1Reco", "g1 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
+	BookHisto(new TH2I("g2Reco", "g2 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
+	BookHisto(new TH2I("g1px", "g1 px Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
+	BookHisto(new TH2I("g2px", "g2 px Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
+	BookHisto(new TH2I("g1py", "g1 py Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
+	BookHisto(new TH2I("g2py", "g2 py Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
+	BookHisto(new TH2I("g1pz", "g1 pz Reco vs. Real", 10, 240000, 250000, 10, 240000, 250000));
+	BookHisto(new TH2I("g2pz", "g2 pz Reco vs. Real", 10, 240000, 250000, 10, 240000, 250000));
+	BookHisto(new TH1I("pi0Energy", "Energy of pi0", 100, 0, 75000));
+	BookHisto(new TH1I("pi0Mass", "Reconstructed mass of pi0", 200, 0, 200));
+	BookHisto(new TH2I("clusterPosition", "Cluster position on LKr", 500, -2000, 2000, 500, -2000, 2000));
+	BookHisto(new TH1I("photonsNbr", "Photons multiplicity/event", 10, 0, 10));
+	BookHisto(new TH1I("g1EnergyFraction", "Fraction between real energy and reco energy", 1000, 0, 100));
+	BookHisto(new TH1I("g2EnergyFraction", "Fraction between real energy and reco energy", 1000, 0, 100));
 
-	BookHisto("gPairSelected", new TH1I("gPairSelected", "Pair of gamma selected for Pi0", 10, 0, 10));
-	BookHisto("g1FirstVol", new TH1I("g1FirstVol", "First touched volume for g1", 15, 0, 15));
-	BookHisto("g2FirstVol", new TH1I("g2FirstVol", "First touched volume for g2", 15, 0, 15));
+	BookHisto(new TH1I("gPairSelected", "Pair of gamma selected for Pi0", 10, 0, 10));
+	BookHisto(new TH1I("g1FirstVol", "First touched volume for g1", 15, 0, 15));
+	BookHisto(new TH1I("g2FirstVol", "First touched volume for g2", 15, 0, 15));
 
-	BookHisto("pdgID", new TH1I("pdgID", "Non complete events : pdgID", 0, 0, 0));
+	BookHisto(new TH1I("pdgID", "Non complete events : pdgID", 0, 0, 0));
 
-	BookHisto("energyCalib", new TGraph());
+	BookHisto(new TGraph());
 }
 
 //#####################################################

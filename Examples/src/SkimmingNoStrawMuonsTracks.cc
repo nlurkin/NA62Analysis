@@ -6,32 +6,8 @@
 #include "functions.hh"
 #include "Event.hh"
 #include <TChain.h>
+#include "Persistency.hh"
 using namespace std;
-
-//Include the hh files for events kinds you will use
-/*#include "TRecoGigaTrackerEvent.hh"
-#include "TRecoCHANTIEvent.hh"
-#include "TRecoCedarEvent.hh"
-#include "TRecoCHODEvent.hh"
-#include "TRecoMUV1Event.hh"
-#include "TRecoMUV2Event.hh"
-#include "TRecoMUV0Event.hh"
-#include "TRecoHACEvent.hh"
-#include "TRecoIRCEvent.hh"
-#include "TRecoLAVEvent.hh"
-#include "TRecoSACEvent.hh"
-#include "TRecoLKrEvent.hh"
-"*/
-#include "TRecoSpectrometerEvent.hh"
-#include "TRecoRICHEvent.hh"
-#include "TRecoMUV3Event.hh"
-
-//Additional includes
-/*#include <TString.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TGraph.h>
-#include <TCanvas.h>*/
 
 SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analyzer(ba)
 {

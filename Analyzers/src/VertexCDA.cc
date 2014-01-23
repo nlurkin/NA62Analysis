@@ -7,20 +7,8 @@
 #include "Event.hh"
 #include <TChain.h>
 #include <TFile.h>
+#include "Persistency.hh"
 using namespace std;
-
-//Include the hh files for events kinds you will use
-#include "TRecoGigaTrackerEvent.hh"
-#include "TRecoSpectrometerEvent.hh"
-
-//Additional includes
-/*#include <TString.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TGraph.h>
-#include <TCanvas.h>*/
-
-//Change everywhere VertexCDA by you Analyzer name
 
 VertexCDA::VertexCDA(BaseAnalysis *ba) : Analyzer(ba)
 {
@@ -55,22 +43,22 @@ void VertexCDA::InitHist(){
 	//Example
 	//	BookHisto("PartEnergy", new TH2I("PartEnergy", "Energy as a function of particle", 0, 0, 0, Bins, MinEnergy, MaxEnergy));
 
-	BookHisto("VertexX", new TH1I("VertexX", "Reconstructed vertex X position", 250, -250, 250));
-	BookHisto("VertexY", new TH1I("VertexY", "Reconstructed vertex Y position", 150, -150, 150));
-	BookHisto("VertexZ", new TH1I("VertexZ", "Reconstructed vertex Z position", 100, 0, 300000));
+	BookHisto(new TH1I("VertexX", "Reconstructed vertex X position", 250, -250, 250));
+	BookHisto(new TH1I("VertexY", "Reconstructed vertex Y position", 150, -150, 150));
+	BookHisto(new TH1I("VertexZ", "Reconstructed vertex Z position", 100, 0, 300000));
 
-	BookHisto("DiffVertexX", new TH1I("DiffVertexX", "X difference between reco and real vertex", 200, -50, 50));
-	BookHisto("DiffVertexY", new TH1I("DiffVertexY", "Y difference between reco and real vertex", 200, -50, 50));
-	BookHisto("DiffVertexZ", new TH1I("DiffVertexZ", "Z difference between reco and real vertex", 200, -10000, 10000));
+	BookHisto(new TH1I("DiffVertexX", "X difference between reco and real vertex", 200, -50, 50));
+	BookHisto(new TH1I("DiffVertexY", "Y difference between reco and real vertex", 200, -50, 50));
+	BookHisto(new TH1I("DiffVertexZ", "Z difference between reco and real vertex", 200, -10000, 10000));
 
-	BookHisto("VertexRecoRealX", new TH2I("VertexRecoRealX", "Reconstructed vs. Real (X)", 250, -250, 250, 250, -250, 250));
-	BookHisto("VertexRecoRealY", new TH2I("VertexRecoRealY", "Reconstructed vs. Real (Y)", 150, -150, 150, 150, -150, 150));
-	BookHisto("VertexRecoRealZ", new TH2I("VertexRecoRealZ", "Reconstructed vs. Real (Z)", 200, 0, 300000, 200, 0, 300000));
+	BookHisto(new TH2I("VertexRecoRealX", "Reconstructed vs. Real (X)", 250, -250, 250, 250, -250, 250));
+	BookHisto(new TH2I("VertexRecoRealY", "Reconstructed vs. Real (Y)", 150, -150, 150, 150, -150, 150));
+	BookHisto(new TH2I("VertexRecoRealZ", "Reconstructed vs. Real (Z)", 200, 0, 300000, 200, 0, 300000));
 
-	BookHisto("GTKMultiplicity", new TH1I("GTKMultiplicity", "Multiplicity in GTK", 11, -0.5, 10.5));
-	BookHisto("StrawMultiplicity", new TH1I("StrawMultiplicity", "Multiplicity in Straw", 11, -0.5, 10.5));
+	BookHisto(new TH1I("GTKMultiplicity", "Multiplicity in GTK", 11, -0.5, 10.5));
+	BookHisto(new TH1I("StrawMultiplicity", "Multiplicity in Straw", 11, -0.5, 10.5));
 
-	BookHistoArray("BeamXY", new TH2I("BeamXY", "BeamXY", 100, -100, 100, 100, -100, 100), 20);
+	BookHistoArray(new TH2I("BeamXY", "BeamXY", 100, -100, 100, 100, -100, 100), 20);
 
 	BookCounter("Total_Events");
 	BookCounter("Good_GTK_Mult");

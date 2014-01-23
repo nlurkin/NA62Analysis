@@ -155,12 +155,7 @@ TH1* IOHandler::GetReferenceTH1(TString name){
 		return NULL;
 	}
 
-	tempHisto = (TH1*)fd->Get(name);
-	if(!tempHisto){
-		//Not found in the root directory of the ROOT file
-		//Try in the analyzer subdirectory if exists
-		tempHisto = (TH1*)fd->Get(oldDirectory + "/" + name);
-	}
+	tempHisto = (TH1*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
 	if(tempHisto){
@@ -191,12 +186,7 @@ TH2* IOHandler::GetReferenceTH2(TString name){
 		return NULL;
 	}
 
-	tempHisto = (TH2*)fd->Get(name);
-	if(!tempHisto){
-		//Not found in the root directory of the ROOT file
-		//Try in the analyzer subdirectory if exists
-		tempHisto = (TH2*)fd->Get(oldDirectory + "/" + name);
-	}
+	tempHisto = (TH2*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
 	if(tempHisto){
@@ -227,12 +217,7 @@ TGraph* IOHandler::GetReferenceTGraph(TString name){
 		return NULL;
 	}
 
-	tempHisto = (TGraph*)fd->Get(name);
-	if(!tempHisto){
-		//Not found in the root directory of the ROOT file
-		//Try in the analyzer subdirectory if exists
-		tempHisto = (TGraph*)fd->Get(oldDirectory + "/" + name);
-	}
+	tempHisto = (TGraph*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
 	if(tempHisto){
@@ -316,10 +301,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(!inputChecked && checkInputFile(inputFileName, verbosity))
 				inputChecked = kTRUE;
 			if(fWithMC)
-				fMCTruthTree->AddFile(inFileName);
+				fMCTruthTree->AddFile(inputFileName);
 			inputFileNumber = fMCTruthTree->GetNtrees();
 			for(it=fTree.begin(); it!=fTree.end(); it++){
-				it->second->AddFile(inFileName);
+				it->second->AddFile(inputFileName);
 				inputFileNumber = it->second->GetNtrees();
 			}
 
@@ -435,6 +420,7 @@ bool IOHandler::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verb
 
 	fWithMC = true;
 	if(keys->FindObject("Generated")) fMCTruthTree = new TChain("Generated");
+	else if(keys->FindObject("Run_0")) fMCTruthTree = new TChain("Run_0");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
 		if(verbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: No MC data found" << endl;
