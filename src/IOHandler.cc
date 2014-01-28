@@ -300,9 +300,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(verbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
 			if(!inputChecked && checkInputFile(inputFileName, verbosity))
 				inputChecked = kTRUE;
-			if(fWithMC)
+			if(fWithMC){
 				fMCTruthTree->AddFile(inputFileName);
-			inputFileNumber = fMCTruthTree->GetNtrees();
+				inputFileNumber = fMCTruthTree->GetNtrees();
+			}
 			for(it=fTree.begin(); it!=fTree.end(); it++){
 				it->second->AddFile(inputFileName);
 				inputFileNumber = it->second->GetNtrees();
