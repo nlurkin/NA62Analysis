@@ -491,7 +491,7 @@ void IOHandler::WriteEvent(){
 		for(it=fTree.begin(); it!= fTree.end(); it++){
 			fExportTrees.insert(pair<TString,TTree*>(it->first, it->second->CloneTree(0)));
 		}
-		fExportTrees.insert(pair<TString,TTree*>("MC", fMCTruthTree->CloneTree(0)));
+		if(fWithMC) fExportTrees.insert(pair<TString,TTree*>("MC", fMCTruthTree->CloneTree(0)));
 	}
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		itTree->second->Fill();
