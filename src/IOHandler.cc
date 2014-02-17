@@ -23,7 +23,7 @@ IOHandler::IOHandler(){
 
 	fMCTruthTree = 0;
 
-	fCurrentFileNumber = 0;
+	fCurrentFileNumber = -1;
 	fCurrentFile = NULL;
 	fMCTruthEvent = new Event();
 }
@@ -287,6 +287,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	}
 	if(nFiles == 0){
 		if(verbosity >= AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inFileName << endl;
+		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
+			inFileName = "root://castorpublic.cern.ch//"+inFileName;
+		}
 		checkInputFile(inFileName, verbosity);
 		if(fWithMC)
 			fMCTruthTree->AddFile(inFileName);
@@ -298,6 +301,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && inputFileNumber < nFiles){
 			if(verbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
+			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
+				inputFileName = "root://castorpublic.cern.ch//"+inputFileName;
+			}
 			if(!inputChecked && checkInputFile(inputFileName, verbosity))
 				inputChecked = kTRUE;
 			if(fWithMC){
@@ -573,6 +579,12 @@ bool IOHandler::CheckNewFileOpened(){
 
 	if(openedFileNumber>fCurrentFileNumber){
 		fCurrentFileNumber = openedFileNumber;
+		//Print fileName in the output file for future reference
+		MkOutputDir("InputFiles");
+		gFile->cd("InputFiles");
+		TObjString fileName(fCurrentFile->GetName());
+		fileName.Write();
+		gFile->cd();
 		return true;
 	}
 	return false;
@@ -624,4 +636,12 @@ TString IOHandler::GetOutputFileName(){
 	/// \EndMemberDescr
 
 	return fOutFileName;
+}
+int IOHandler::GetCurrentFileNumber(){
+	/// \MemberDescr
+	///
+	/// Return the index of the currently opened file
+	/// \EndMemberDescr
+
+	return fCurrentFileNumber;
 }

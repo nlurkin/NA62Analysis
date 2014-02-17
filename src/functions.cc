@@ -5,6 +5,7 @@
 
 #include "functions.hh"
 using namespace std;
+using namespace NA62Constants;
 
 TVector3 propagate(TVector3 pos, TVector3 p, double z){
 	/// \MemberDescr

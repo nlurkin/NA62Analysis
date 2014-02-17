@@ -24,6 +24,8 @@
 #include <TH1I.h>
 #include <TH2I.h>
 #include <TH2F.h>
+
+#include "NA62Constants.hh"
 using namespace std;
 
 #define ENABLE_SHELL_COLOR  1
@@ -57,8 +59,6 @@ using namespace std;
 #ifndef FUNCTIONS_HH
 #define FUNCTIONS_HH
 
-enum DetectorID {GTK, Straw, IRC, LAV, LKr, SAC, Missed};
-
 TVector3 propagate(TVector3 pos, TVector3 p, double z);
 
 TString printVector2( TVector2 v );
@@ -83,15 +83,15 @@ void map_hit(set<int> partTree, TSACEvent* Event, TH2I* map);
 
 void map_hit(KinePart* part, TGigaTrackerEvent* Event, TH2I* map);
 
-DetectorID detection(set<int> partTree, TIRCEvent* ircEvent, TLAVEvent* lavEvent, TLKrEvent* lkrEvent, TSACEvent* sacEvent, double x_extr, double y_extr, bool& irc_det, bool& lav_det, bool& lkr_det, bool& sac_det, double& rec_energy, double &clst_x, double &clst_y/*, double &clst_xrms, double &clst_yrms*/);
+NA62Constants::DetectorID detection(set<int> partTree, TIRCEvent* ircEvent, TLAVEvent* lavEvent, TLKrEvent* lkrEvent, TSACEvent* sacEvent, double x_extr, double y_extr, bool& irc_det, bool& lav_det, bool& lkr_det, bool& sac_det, double& rec_energy, double &clst_x, double &clst_y/*, double &clst_xrms, double &clst_yrms*/);
 
 TVector3 spec_propagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ);
 
 set<int> BuildParticleSet(KinePart* init_Part, Event *runEvt);
 
-DetectorID detection_straw(int part, TSpectrometerEvent* strEvent, double outer_radius[4], double center_x[4], double center_y[4], bool& straw1, bool& straw2, bool& straw3, bool& straw4);
+NA62Constants::DetectorID detection_straw(int part, TSpectrometerEvent* strEvent, double outer_radius[4], double center_x[4], double center_y[4], bool& straw1, bool& straw2, bool& straw3, bool& straw4);
 
-DetectorID detection_gtk(int part, TGigaTrackerEvent* gtkEvent, bool& gtk1);
+NA62Constants::DetectorID detection_gtk(int part, TGigaTrackerEvent* gtkEvent, bool& gtk1);
 
 vector<KinePart*> getDaughter(int id, Event *runEvt);
 
@@ -101,5 +101,4 @@ int getDaughterNbr(int id, Event* runEvt);
 
 double distance3D(TVector3 p1, TVector3 p2);
 double distance2D(TVector3 p1, TVector3 p2, TString plane);
-
 #endif

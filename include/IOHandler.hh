@@ -37,6 +37,7 @@ public:
 	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
 	bool CheckNewFileOpened();
 	TString GetOutputFileName();
+	int GetCurrentFileNumber();
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);

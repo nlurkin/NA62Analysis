@@ -229,7 +229,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(exportEvent) fAnalyzerList[j]->FillTrees();
+			//if(exportEvent) fAnalyzerList[j]->FillTrees();
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
@@ -322,12 +322,15 @@ void BaseAnalysis::CheckNewFileOpened(){
 
 	if(!fIOHandler.CheckNewFileOpened()) return;
 	//New file opened
-	//end of burst
-	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
-		fAnalyzerList[i]->EndOfBurst();
+	//first burst or not? Call end of burst only if it's not
+	if(fIOHandler.GetCurrentFileNumber()>0){
+		//end of burst
+		for(unsigned int i=0; i<fAnalyzerList.size(); i++){
+			fAnalyzerList[i]->EndOfBurst();
+		}
+		fIOHandler.UpdateInputHistograms();
 	}
 
-	fIOHandler.UpdateInputHistograms();
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 		fAnalyzerList[i]->StartOfBurst();
 	}

@@ -219,14 +219,19 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	/// When setting the value of an output variable, don't forget to set appropriately the state flag to either kOValid or kOInvalid\n
 	/// to indicate if the value can/can't be used in other analyzer\n
 	/// 	SetOutputState("outputName", kOValid);\n
-	/// 	\n
-	/// If you want to save this event in the output file, call\n
-	/// 	ExportEvent();\n
-	/// The structure of all the trees that have been opened (by all Analyzer) will be copied in the output file\n
-	/// and the events for which at least one analyzer called ExportEvent() will be written in the output trees.\n
+	/// \n
 	/// If you want to append a candidate in one of your standard output Tree, use\n
 	/// 	KinePart *candidate = CreateStandardCandidate("treeName");\n
-	/// and fill the properties of your candidate. It will be automatically written in the output tree.
+	/// and fill the properties of your candidate. It will be automatically written in the output tree.\n
+	///	\n
+	/// If you want to save this event in your custom and standard TTrees (not the input tree replication), call\n
+	/// 	FillTrees();\n
+	/// This will call the Fill method of every TTree created in this analyzer.\n
+	///	\n
+	/// If you want to replicate this event in the output file, call\n
+	/// 	ExportEvent();\n
+	/// The structure of all the trees that have been opened (by all Analyzer) will be copied in the output file\n
+	/// and the events for which at least one analyzer called ExportEvent() will be replicated in the output trees.
 	/// @see ROOT TParticlePDG for the particle properties
 	/// @see ROOT TDatabasePDG for a list of PDG codes and particle naming convention
 	/// \EndMemberDescr

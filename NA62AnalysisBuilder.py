@@ -24,6 +24,13 @@ you previous work.
 				sys.exit(0)
 			else:
 				os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
+		#Verify thath the PhysicsObjects folder has been created
+		if not os.path.exists("%s/PhysicsObjects" % UserPath):
+			os.mkdir("%s/PhysicsObjects" % UserPath)
+		if not os.path.exists("%s/PhysicsObjects/include" % UserPath):
+			os.mkdir("%s/PhysicsObjects/include" % UserPath)
+		if not os.path.exists("%s/PhysicsObjects/src" % UserPath):
+			os.mkdir("%s/PhysicsObjects/src" % UserPath)
 
 def check_histo(an, iPath):
 	f1 = open("%s/src/%s.cc" % (iPath, an), 'r')
@@ -396,6 +403,12 @@ def prepareUserFolder(path, FWPath):
 		os.mkdir("%s/Analyzers/include" % path)
 	if not os.path.exists("%s/Analyzers/src" % path):
 		os.mkdir("%s/Analyzers/src" % path)
+	if not os.path.exists("%s/PhysicsObjects" % path):
+		os.mkdir("%s/PhysicsObjects" % path)
+	if not os.path.exists("%s/PhysicsObjects/include" % path):
+		os.mkdir("%s/PhysicsObjects/include" % path)
+	if not os.path.exists("%s/PhysicsObjects/src" % path):
+		os.mkdir("%s/PhysicsObjects/src" % path)
 	if not os.path.exists("%s/obj" % path):
 		os.mkdir("%s/obj" % path)
 	if not os.path.exists("%s/lib" % path):

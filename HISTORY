@@ -2,6 +2,11 @@
 NA62Analysis Project
 ################################################################
 
+
+2014-02-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+                rev. 305
+        - Fixed a bug preventing the framework to run on data
+
 2014-01-23  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 302
         - Silenced massive printing when compiling

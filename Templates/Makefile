@@ -17,12 +17,15 @@ UserPath 	:= $$USERCODEPATH$$
 MAIN_INCLUDE	= $(FWPath)/include
 AN_INCLUDE		= $(FWPath)/Analyzers/include
 EXAMPLE_INCLUDE	= $(FWPath)/Examples/include
+PO_INCLUDE		= $(FWPath)/PhysicsObjects/include
 FWOBJDIR		= $(FWPath)/obj
 FWLIBDIR		= $(FWPath)/lib
 USR_INCLUDE		= $(UserPath)/Analyzers/include
 USR_SRC			= $(UserPath)/Analyzers/src
 USROBJDIR		= $(UserPath)/obj
 USRLIBDIR		= $(UserPath)/lib
+USRPO_INCLUDE	= $(UserPath)/PhysicsObjects/include
+USRPO_SRC		= $(UserPath)/PhysicsObjects/src
 
 #FW definitions
 MAIN		= Analyzer DetectorAcceptance functions BaseAnalysis MCSimple EventFraction ConfigParser StringTable StringBalancedTable ParticleTree 
@@ -46,8 +49,14 @@ USRANSO 	+= $(addprefix $(USROBJDIR)/,$(addsuffix .o,$(USRANS)))
 USRANSLIBS 	+= $(addprefix $(USRLIBDIR)/lib,$(addsuffix .so,$(USRANS)))
 ANALYZERSLIBS+= $(addprefix -l,$(USRANS))
 
+PO			= $(patsubst $(USRPO_INCLUDE)/%.hh,%,$(wildcard $(USRPO_INCLUDE)/*.hh))
+POSO		= $(addsuffix .o,$(PO))
+USRPOLIBS	= $(addprefix $(USRLIBDIR)/lib,$(addsuffix .so,$(PO)))
+POLIBS		= $(addprefix $(USRLIBDIR)/lib,$(addsuffix .so,$(PO)))
+POLIBS		+= $(patsubst $(PO_INCLUDE)/%.hh,-l%,$(wildcard $(PO_INCLUDE)/*.hh))
+
 #include directories
-FWHEADERS	= -I$(MAIN_INCLUDE) -I$(AN_INCLUDE) -I$(EXAMPLE_INCLUDE) -I$(USR_INCLUDE)# -I$(G4INCLUDE)
+FWHEADERS	= -I$(MAIN_INCLUDE) -I$(AN_INCLUDE) -I$(EXAMPLE_INCLUDE) -I$(USR_INCLUDE) -I$(PO_INCLUDE) -I$(USRPO_INCLUDE)# -I$(G4INCLUDE)
 EXTRAHEADERS = $$EXTRAINCLUDEDIRS$$
 
 #NA62
@@ -71,20 +80,25 @@ CC			= g++
 
 EXEC		= $$EXEC$$
 
-all:	$(EXEC)
+all: $(EXEC)
 
 test: test_main.cc $(MAINHH) $(USRANSLIBS)
 	@echo "Compiling test executable $@ ..."
 	@$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS)  $(NA62LIBS) -I$(ROOTINCDIR) $(FWHEADERS) $(NA62HEADERS)
 
 #Compilation de l'executable
-$(EXEC): $(USROBJDIR)/main.o $(USRANSLIBS)
+$(EXEC): $(USROBJDIR)/main.o $(USRANSLIBS) $(USRPOLIBS)
 	@echo "Compiling executable $(EXEC) ..."
-	@$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(EXTRALIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(ROOTLIBS) $(NA62LIBS) $(EXTRALIBS) 
+	@$(CC) -o $@ $< $(CFLAGS) -L$(FWLIBDIR) -L$(USRLIBDIR) $(NA62LIBDIR) $(EXTRALIBDIR) $(ANALYZERSLIBS) $(MAINLIBS) $(POLIBS) $(ROOTLIBS) $(NA62LIBS) $(EXTRALIBS) 
 
 #Compilation des user analyzer
 $(USROBJDIR)/%.o: $(USR_SRC)/%.cc $(USR_INCLUDE)/%.hh $(MAINHH)
 	@echo "Compiling user analyzer object $@ ..."
+	@$(CC) -o $@ -c $< $(CFLAGS) $(FWHEADERS) $(NA62HEADERS) -I$(ROOTINCDIR) $(EXTRAHEADERS)
+
+#Compilation des user PO
+$(USROBJDIR)/PO%.o: $(USRPO_SRC)/%.cc $(USRPO_INCLUDE)/%.hh
+	@echo "Compiling user PhysicsObjects object $@ ..."
 	@$(CC) -o $@ -c $< $(CFLAGS) $(FWHEADERS) $(NA62HEADERS) -I$(ROOTINCDIR) $(EXTRAHEADERS)
 
 #Compilation du main
@@ -96,7 +110,20 @@ $(USROBJDIR)/main.o: main.cc $(MAINHH) $(USRANSHH)
 $(USRLIBDIR)/lib%.so: $(USROBJDIR)/%.o
 	@echo "Creating library $@ ..."
 	@$(CC) -Wl,-soname,$(patsubst $(USRLIBDIR)/%,%,$@) -o $@ $< $(SOFLAGS) 
-	
+
+$(USRLIBDIR)/lib%.so: $(USROBJDIR)/PO%.o $(USROBJDIR)/%DICT.o
+	@echo "Creating user PO library $@ ..."
+	@$(CC) -Wl,-soname,$(patsubst $(USRLIBDIR)/%,%,$@) -o $@ $^ $(SOFLAGS)
+
+#Dictionnaires ROOT
+$(USROBJDIR)/%DICT.cc: $(USRPO_INCLUDE)/%.hh $(USRPO_INCLUDE)/LinkDef.h
+	@echo "Generating dictionary for $@ ..."
+	@rootcint -f $@ -c $(CFLAGS) $(NA62HEADERS) $(FWHEADERS) $<
+
+$(USROBJDIR)/%DICT.o: $(USROBJDIR)/%DICT.cc $(USRPO_INCLUDE)/%.hh
+	@echo "Compiling dictionary for $@ ..."
+	@$(CC) -o $@ -c $< $(CFLAGS) $(NA62HEADERS) $(FWHEADERS) -I$(ROOTINCDIR) -I.
+
 #Clean
 .PHONY: clean cleanall
 
