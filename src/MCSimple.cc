@@ -53,18 +53,28 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 			pTreeNode = (*itPTree)->GetChildren(kinePart->GetParentID());
 			if(pTreeNode!=NULL){
 				//Parent found in one of the existing tree. Add this particle as children.
+				if(verbose>=AnalysisFW::kDebug) cout << "Found parent tree" << endl;
 				pTreeNode->AddChildren(new ParticleTree(kinePart));
 				break;
 			}
 		}
 		if(pTreeNode==NULL){
 			//Parent not found in existing trees. Create a new tree with this particle
+			if(verbose>=AnalysisFW::kDebug) cout << "Creating new tree" << endl;
 			tempParticleTree.push_back(new ParticleTree(kinePart));
 		}
 
 		//Test signature
+		if(verbose>=AnalysisFW::kDebug){
+			cout << "Signature : " << kinePart->GetParentID() << "," <<  kinePart->GetPDGcode() << endl;
+			cout << "Available signatures :" << endl;
+			for(it = testStruct.begin(); it!=testStruct.end(); it++){
+				cout << it->first.first << "," << it->first.second << "," << it->second << endl;
+			}
+		}
 		if((it = testStruct.find(pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
 			//Signature found. Keep particle and remove from searched signature
+			if(verbose>=AnalysisFW::kDebug) cout << "Signature found" << endl;
 			tempPart.push_back(kinePart);
 			ReplaceID(testStruct, (*it).second, kinePart->GetID());
 			testStruct.erase(it);
@@ -143,13 +153,22 @@ void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particle
 	/// Replace the sequence ID by the MC ID in the structure
 	/// \EndMemberDescr
 
-	multimap<pair<int,int>,int>::iterator it;
-
-	for(it=s.begin(); it != s.end(); it++){
+	multimap<pair<int,int>,int>::iterator it, it2;
+	for(it=s.begin(); it != s.end() && it->first.first<0;){
 		if((*it).first.first == -seqID){
 			s.insert(pair<pair<int,int>, int>(pair<int,int>(particleID,it->first.second), it->second));
-			s.erase(it);
+			it2 = it;
+			cout << (it==s.begin()) << endl;
+			if(it!=s.begin()){
+				it++;
+				s.erase(it2);
+			}
+			else{
+				s.erase(it2);
+				it=s.begin();
+			}
 		}
+		else it++;
 	}
 }
 
