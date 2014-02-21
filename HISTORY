@@ -11,6 +11,7 @@ NA62Analysis Project
 		- Moved the enum DetectorID into the NA62Constants namespace (collisions when linking with NA62Reconstruction)
 		- StartOfBurst is also called for the first file (end of burst is called for the first time when changing to the second file)
 		- Fix for the changes in castor paths
+		- Fix bug in MCSimple::ReplaceID leading to some elements of testStruct being skipped. Bug NARKD-7
 
 2014-02-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 305
