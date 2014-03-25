@@ -290,6 +290,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
 			inFileName = "root://castorpublic.cern.ch//"+inFileName;
 		}
+		if(inFileName.Contains("/eos/") && !inFileName.Contains("root://eosna62.cern.ch//")){
+			inFileName = "root://eosna62.cern.ch//"+inFileName;
+		}
 		checkInputFile(inFileName, verbosity);
 		if(fWithMC)
 			fMCTruthTree->AddFile(inFileName);
@@ -303,6 +306,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(verbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
 				inputFileName = "root://castorpublic.cern.ch//"+inputFileName;
+			}
+			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
+				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
 			}
 			if(!inputChecked && checkInputFile(inputFileName, verbosity))
 				inputChecked = kTRUE;

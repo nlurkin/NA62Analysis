@@ -3,14 +3,14 @@ NA62Analysis Project
 ################################################################
 
 2014-02-17  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
-                rev. 309
+                rev. 319
         - New directory PhysicsObjects created to contain new object classes. Derivation from TObject with automatic generation of ROOT dictionary for an easy integration in TTree branch. Available both in FW and User directory (for custom user objects or inheritance from FW objects). Makefiles and NA62AnalysisBuilder.py modified in consequence.
 		- Removed outdated template comments in examples
 		- Replicating input event in output and filling custom and standard output trees decoupled. Use ExportEvent() for the first and FillTrees() for the latter.
 		- All the file names actually used as input are written in the InputFiles directory of the output file.
 		- Moved the enum DetectorID into the NA62Constants namespace (collisions when linking with NA62Reconstruction)
 		- StartOfBurst is also called for the first file (end of burst is called for the first time when changing to the second file)
-		- Fix for the changes in castor paths
+		- Fix for the changes in castor and eos paths
 		- Fix bug in MCSimple::ReplaceID leading to some elements of testStruct being skipped. Bug NARKD-7
 
 2014-02-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
