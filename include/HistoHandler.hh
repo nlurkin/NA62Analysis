@@ -40,20 +40,18 @@ public:
 	void BookHistoArray(TString baseName, TGraph* histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
 
 	//Histogram filling methods
-	void FillHisto(TString name, TString x, int w);
-	void FillHisto(TString name, TString x, double y, int w);
-	void FillHisto(TString name, TString x, TString y, int w);
-	void FillHisto(TString name, double x, int w);
+	void FillHisto(TString name, TString x, double w);
+	void FillHisto(TString name, TString x, double y, double w);
+	void FillHisto(TString name, TString x, TString y, double w);
 	void FillHisto(TString name, double x);
-	void FillHisto(TString name, double x, double y, int w);
+	void FillHisto(TString name, double x, double y, double w);
 	void FillHisto(TString name, double x, double y);
 
-	void FillHistoArray(TString baseName, int index, TString x, int w);
-	void FillHistoArray(TString name, int index, TString x, double y, int w);
-	void FillHistoArray(TString name, int index, TString x, TString y, int w);
-	void FillHistoArray(TString name, int index, double x, int w);
+	void FillHistoArray(TString baseName, int index, TString x, double w);
+	void FillHistoArray(TString name, int index, TString x, double y, double w);
+	void FillHistoArray(TString name, int index, TString x, TString y, double w);
 	void FillHistoArray(TString name, int index, double x);
-	void FillHistoArray(TString name, int index, double x, double y, int w);
+	void FillHistoArray(TString name, int index, double x, double y, double w);
 	void FillHistoArray(TString name, int index, double x, double y);
 
 	//Export all histograms into output trees

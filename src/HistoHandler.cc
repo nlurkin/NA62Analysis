@@ -112,18 +112,18 @@ void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TStr
 	title = histo->GetTitle();
 	TH1* h;
 
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fHisto.insert(pair<TString,TH1*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	histo->SetName(TString(name + "0").Data());
+	histo->SetTitle(TString(title + "0").Data());
+	fHisto.insert(pair<TString,TH1*>(baseName + "0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TH1*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fHisto.insert(pair<TString,TH1*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		h->SetName(TString(name + (Long_t)i).Data());
+		h->SetTitle(TString(title + (Long_t)i).Data());
+		fHisto.insert(pair<TString,TH1*>(baseName + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
@@ -144,18 +144,18 @@ void HistoHandler::BookHistoArray(TString baseName, TH2* histo, int number, TStr
 	title = histo->GetTitle();
 	TH2* h;
 
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fHisto2.insert(pair<TString,TH2*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	histo->SetName(TString(name + "0").Data());
+	histo->SetTitle(TString(title + "0").Data());
+	fHisto2.insert(pair<TString,TH2*>(baseName + "0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TH2*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fHisto2.insert(pair<TString,TH2*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		h->SetName(TString(name + (Long_t)i).Data());
+		h->SetTitle(TString(title + (Long_t)i).Data());
+		fHisto2.insert(pair<TString,TH2*>(baseName + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
@@ -176,22 +176,22 @@ void HistoHandler::BookHistoArray(TString baseName, TGraph* histo, int number, T
 	title = histo->GetTitle();
 	TGraph* h;
 
-	histo->SetName(TString(name + "_0").Data());
-	histo->SetTitle(TString(title + "_0").Data());
-	fGraph.insert(pair<TString,TGraph*>(baseName + "_0", histo));
-	if(refresh) SetPlotAutoUpdate(baseName + "_0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_0", directory.Strip(TString::kBoth, '/')));
+	histo->SetName(TString(name + "0").Data());
+	histo->SetTitle(TString(title + "0").Data());
+	fGraph.insert(pair<TString,TGraph*>(baseName + "0", histo));
+	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
+	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TGraph*)histo->Clone();
-		h->SetName(TString(name + "_" + (Long_t)i).Data());
-		h->SetTitle(TString(title + "_" + (Long_t)i).Data());
-		fGraph.insert(pair<TString,TGraph*>(baseName + "_" + (Long_t)i, h));
-		if(refresh) SetPlotAutoUpdate(baseName + "_" + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "_" + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		h->SetName(TString(name + (Long_t)i).Data());
+		h->SetTitle(TString(title + (Long_t)i).Data());
+		fGraph.insert(pair<TString,TGraph*>(baseName + (Long_t)i, h));
+		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
+		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
-void HistoHandler::FillHisto(TString name, TString x, int w){
+void HistoHandler::FillHisto(TString name, TString x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -206,7 +206,7 @@ void HistoHandler::FillHisto(TString name, TString x, int w){
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
-void HistoHandler::FillHisto(TString name, TString x, double y, int w){
+void HistoHandler::FillHisto(TString name, TString x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -226,7 +226,7 @@ void HistoHandler::FillHisto(TString name, TString x, double y, int w){
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
-void HistoHandler::FillHisto(TString name, TString x, TString y, int w){
+void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -243,28 +243,6 @@ void HistoHandler::FillHisto(TString name, TString x, TString y, int w){
 	if(th2>0) fHisto2[name]->Fill(x,y,w);
 	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,TString,int)." << endl;
 	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,int)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
-}
-
-void HistoHandler::FillHisto(TString name, double x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	//
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
-
-	if(th1>0) fHisto[name]->Fill(x,w);
-	else if(th2>0) fHisto2[name]->Fill(x,w);
-	else if(tgraph>0) {
-		fPoint[name]++;
-		fGraph[name]->SetPoint(fPoint[name], x, w);
-	}
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -286,7 +264,7 @@ void HistoHandler::FillHisto(TString name, double x){
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
-void HistoHandler::FillHisto(TString name, double x, double y, int w){
+void HistoHandler::FillHisto(TString name, double x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -319,17 +297,17 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 	int th2 = fHisto2.count(name);
 	int tgraph = fGraph.count(name);
 
-	if(th2>0) fHisto2[name]->Fill(x,y,1);
+	if(th1>0) fHisto2[name]->Fill(x,y);
+	else if(th2>0) fHisto2[name]->Fill(x,y,1);
 	else if(tgraph>0) {
 		fPoint[name]++;
 		fGraph[name]->SetPoint(fPoint[name], x, y);
 	}
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
 //########################################
-void HistoHandler::FillHistoArray(TString baseName, int index, TString x, int w){
+void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -338,10 +316,10 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, int w)
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index, x, w);
+	FillHisto(baseName + (Long_t)index, x, w);
 }
 
-void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double y, int w){
+void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -351,10 +329,10 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
+	FillHisto(baseName + (Long_t)index, x, y, w);
 }
 
-void HistoHandler::FillHistoArray(TString baseName, int index, TString x, TString y, int w){
+void HistoHandler::FillHistoArray(TString baseName, int index, TString x, TString y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -364,19 +342,7 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, TStrin
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index, x, y, w);
-}
-
-void HistoHandler::FillHistoArray(TString baseName, int index, double x, int w){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param w : weight
-	//
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	FillHisto(baseName + "_" + (Long_t)index, x, w);
+	FillHisto(baseName + (Long_t)index, x, y, w);
 }
 
 void HistoHandler::FillHistoArray(TString baseName, int index, double x){
@@ -387,10 +353,10 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index, x);
+	FillHisto(baseName + (Long_t)index, x);
 }
 
-void HistoHandler::FillHistoArray(TString baseName, int index, double x, double y, int w){
+void HistoHandler::FillHistoArray(TString baseName, int index, double x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -400,7 +366,7 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x, double 
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index,x,y,w);
+	FillHisto(baseName + (Long_t)index,x,y,w);
 }
 
 void HistoHandler::FillHistoArray(TString baseName, int index, double x, double y){
@@ -412,7 +378,7 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x, double 
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	FillHisto(baseName + "_" + (Long_t)index, x, y);
+	FillHisto(baseName + (Long_t)index, x, y);
 }
 
 void HistoHandler::PrintInitSummary(){
