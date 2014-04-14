@@ -177,7 +177,7 @@ void UserMethods::BookHistoArray(TGraph* histo, int number, bool refresh, TStrin
 	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
 }
 
-void UserMethods::FillHisto(TString name, TString x, int w){
+void UserMethods::FillHisto(TString name, TString x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -189,7 +189,7 @@ void UserMethods::FillHisto(TString name, TString x, int w){
 	fHisto.FillHisto(name, x, w);
 }
 
-void UserMethods::FillHisto(TString name, TString x, double y, int w){
+void UserMethods::FillHisto(TString name, TString x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -202,7 +202,7 @@ void UserMethods::FillHisto(TString name, TString x, double y, int w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHisto(TString name, TString x, TString y, int w){
+void UserMethods::FillHisto(TString name, TString x, TString y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -215,7 +215,7 @@ void UserMethods::FillHisto(TString name, TString x, TString y, int w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHisto(TString name, double x, int w){
+void UserMethods::FillHisto(TString name, double x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -238,7 +238,7 @@ void UserMethods::FillHisto(TString name, double x){
 	fHisto.FillHisto(name, x);
 }
 
-void UserMethods::FillHisto(TString name, double x, double y, int w){
+void UserMethods::FillHisto(TString name, double x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -251,19 +251,7 @@ void UserMethods::FillHisto(TString name, double x, double y, int w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHisto(TString name, double x, double y){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	fHisto.FillHisto(name, x, y);
-}
-
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, int w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -275,7 +263,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, int w){
 	fHisto.FillHistoArray(baseName, index, x, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, double y, int w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -288,7 +276,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, double 
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString y, int w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -301,7 +289,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, double x, int w){
+void UserMethods::FillHistoArray(TString baseName, int index, double x, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -324,7 +312,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x){
 	fHisto.FillHistoArray(baseName, index, x);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, double x, double y, int w){
+void UserMethods::FillHistoArray(TString baseName, int index, double x, double y, double w){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -335,18 +323,6 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x, double y
 	/// \EndMemberDescr
 
 	fHisto.FillHistoArray(baseName, index, x, y, w);
-}
-
-void UserMethods::FillHistoArray(TString baseName, int index, double x, double y){
-	/// \MemberDescr
-	/// \param name : Name of the histogram
-	/// \param x : abscissa
-	/// \param y : ordinate
-	///
-	/// Fill a previously booked histogram
-	/// \EndMemberDescr
-
-	fHisto.FillHistoArray(baseName, index, x, y);
 }
 
 void UserMethods::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches){

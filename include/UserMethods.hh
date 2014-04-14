@@ -57,21 +57,30 @@ public:
 	void BookHistoArray(TGraph* histo, int number, bool refresh=false, TString directory="");
 
 	//Histogram filling methods
-	void FillHisto(TString name, TString x, int w);
-	void FillHisto(TString name, TString x, double y, int w);
-	void FillHisto(TString name, TString x, TString y, int w);
-	void FillHisto(TString name, double x, int w);
+	void FillHisto(TString name, TString x, double w);
+	void FillHisto(TString name, TString x, double y, double w);
+	void FillHisto(TString name, TString x, TString y, double w);
+	void FillHisto(TString name, double x, double w);
 	void FillHisto(TString name, double x);
-	void FillHisto(TString name, double x, double y, int w);
-	void FillHisto(TString name, double x, double y);
+	void FillHisto(TString name, double x, double y, double w);
 
-	void FillHistoArray(TString baseName, int index, TString x, int w);
-	void FillHistoArray(TString name, int index, TString x, double y, int w);
-	void FillHistoArray(TString name, int index, TString x, TString y, int w);
-	void FillHistoArray(TString name, int index, double x, int w);
+	void FillHistoArray(TString baseName, int index, TString x, double w);
+	void FillHistoArray(TString name, int index, TString x, double y, double w);
+	void FillHistoArray(TString name, int index, TString x, TString y, double w);
+	void FillHistoArray(TString name, int index, double x, double w);
 	void FillHistoArray(TString name, int index, double x);
-	void FillHistoArray(TString name, int index, double x, double y, int w);
-	void FillHistoArray(TString name, int index, double x, double y);
+	void FillHistoArray(TString name, int index, double x, double y, double w);
+
+	//Alias for user to make difference between TH1 and TH2
+	inline void FillHisto2(TString name, TString x, double y, double w) {FillHisto(name,x,y,w);};
+	inline void FillHisto2(TString name, TString x, TString y, double w) {FillHisto(name,x,y,w);};
+	inline void FillHisto2(TString name, double x, double w) {FillHisto(name,x,w);};
+	inline void FillHisto2(TString name, double x, double y, double w) {FillHisto(name,x,y,w);};
+
+	inline void FillHisto2Array(TString name, int index, TString x, double y, double w) {FillHistoArray(name, index, x, y, w);};
+	inline void FillHisto2Array(TString name, int index, TString x, TString y, double w) {FillHistoArray(name, index, x, y, w);};
+	inline void FillHisto2Array(TString name, int index, double x, double w) {FillHistoArray(name, index, x, w);};
+	inline void FillHisto2Array(TString name, int index, double x, double y, double w) {FillHistoArray(name, index, x, y, w);};
 
 	//Methods for drawing plots on screen
 	void DrawAllPlots();

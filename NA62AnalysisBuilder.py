@@ -156,21 +156,22 @@ def checkAnalyzerExists(an, FWPath, userPath):
 	else:
 		return 0
 
-def readAndReplace(iPath, oPath, searchMap):
+def readAndReplace(iPath, oPath, searchMap, skipComments=True):
 	f1 = open(iPath, 'r')
 	f2 = open(oPath, 'w')
 	inComment = False
 	
 	for line in f1:
-		if "//" in line and not "///" in line:
-			continue
-		if "/**" in line:
-			inComment=True
-		if inComment and ("*/" in line):
-			inComment=False
-			continue
-		if inComment==True:
-			continue
+		if skipComments:
+			if "//" in line and not "///" in line:
+				continue
+			if "/**" in line:
+				inComment=True
+			if inComment and ("*/" in line):
+				inComment=False
+				continue
+			if inComment==True:
+				continue
 		for old in searchMap:
 			line = line.replace(old, searchMap[old])
 		f2.write(line)
@@ -256,8 +257,8 @@ def renameAnalyzer(oldName, newName, FWPath, UserPath):
 		print "This analyzer already exists. Please choose a different name."
 		return
 	
-	readAndReplace("%s/Analyzers/include/%s.hh" % (UserPath, oldName), "%s/Analyzers/include/%s.hh" % (UserPath, newName), {oldName:newName, oldName.upper():newName.upper()})
-	readAndReplace("%s/Analyzers/src/%s.cc" % (UserPath, oldName), "%s/Analyzers/src/%s.cc" % (UserPath, newName), {oldName:newName})
+	readAndReplace("%s/Analyzers/include/%s.hh" % (UserPath, oldName), "%s/Analyzers/include/%s.hh" % (UserPath, newName), {oldName:newName, oldName.upper():newName.upper()}, skipComments=False)
+	readAndReplace("%s/Analyzers/src/%s.cc" % (UserPath, oldName), "%s/Analyzers/src/%s.cc" % (UserPath, newName), {oldName:newName}, skipComments=False)
 	
 	os.remove("%s/Analyzers/include/%s.hh" % (UserPath, oldName))
 	os.remove("%s/Analyzers/src/%s.cc" % (UserPath, oldName))

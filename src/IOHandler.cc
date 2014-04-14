@@ -544,7 +544,7 @@ void IOHandler::MkOutputDir(TString name){
 	/// Create a new directory in the output file
 	/// \EndMemberDescr
 
-	fOutFile->mkdir(name);
+	if(!fOutFile->FindKey("InputFiles")) fOutFile->mkdir(name);
 }
 
 void IOHandler::PrintInitSummary(){

@@ -260,7 +260,6 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	timing = clock()-timing;
 	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
 	cout << endl << "Analysis complete" << endl << "###################################" << endl;
-
 }
 
 DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){

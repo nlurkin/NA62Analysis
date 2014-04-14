@@ -85,6 +85,7 @@ private:
 	map<TString,int> fPoint; ///< Container for the number of points in each TGraph
 	vector<TCanvas*> fCanvas; ///< Container for the TCanvas
 	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
+	vector<TString> fHistoOrder; ///< Container for the booking order
 
 	set<TString> fAutoUpdateList;
 	map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name

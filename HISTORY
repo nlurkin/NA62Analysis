@@ -2,6 +2,19 @@
 NA62Analysis Project
 ################################################################
 
+xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+				rev xxx
+		- Minor changes to documentation
+		- Do not try to mkdir in the output file if the directory already exists
+
+2014-04-14	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+				rev 332
+		- NA62AnalysisBuilder.py: Do not remove comments when renaming Analyzer. Bug NARKD-15.
+		- Histogram weights are doubles.
+		- Booking order of histograms is preserved in the output root file
+		- Histograms booked by arrays don't have _ between name and index
+		- Alias FillHisto2 for FillHisto (for user willing to use it as a reminder for the type of histogram)
+
 2014-02-17  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 319
         - New directory PhysicsObjects created to contain new object classes. Derivation from TObject with automatic generation of ROOT dictionary for an easy integration in TTree branch. Available both in FW and User directory (for custom user objects or inheritance from FW objects). Makefiles and NA62AnalysisBuilder.py modified in consequence.

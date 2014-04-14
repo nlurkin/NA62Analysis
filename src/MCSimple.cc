@@ -8,15 +8,15 @@
 using namespace std;
 
 
-MCSimple::MCSimple(){
+MCSimple::MCSimple():
+	fStatus(kEmpty),
+	fVerbosity(AnalysisFW::kNo),
+	fParticleInterface(ParticleInterface::GetParticleInterface()),
+	fDecayTree(NULL)
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
-
-	fVerbosity = AnalysisFW::kNo;
-	fStatus = kEmpty;
-	fParticleInterface = ParticleInterface::GetParticleInterface();
-	fDecayTree = NULL;
 }
 
 void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose){
@@ -158,7 +158,6 @@ void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particle
 		if((*it).first.first == -seqID){
 			s.insert(pair<pair<int,int>, int>(pair<int,int>(particleID,it->first.second), it->second));
 			it2 = it;
-			cout << (it==s.begin()) << endl;
 			if(it!=s.begin()){
 				it++;
 				s.erase(it2);

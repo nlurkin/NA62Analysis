@@ -56,6 +56,7 @@ void HistoHandler::BookHisto(TString name, TH1* histo, TString analyzerName, boo
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
+	fHistoOrder.push_back(name);
 	fHisto.insert(pair<TString,TH1*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
@@ -72,6 +73,7 @@ void HistoHandler::BookHisto(TString name, TH2* histo, TString analyzerName, boo
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
+	fHistoOrder.push_back(name);
 	fHisto2.insert(pair<TString,TH2*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
@@ -88,6 +90,7 @@ void HistoHandler::BookHisto(TString name, TGraph* histo, TString analyzerName, 
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
+	fHistoOrder.push_back(name);
 	fGraph.insert(pair<TString,TGraph*>(name, histo));
 	fGraph[name]->SetNameTitle(name, name);
 	//fPoint.insert(pair<TString,int>(name,0));
@@ -114,6 +117,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TStr
 
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
+	fHistoOrder.push_back(baseName+"0");
 	fHisto.insert(pair<TString,TH1*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
@@ -121,6 +125,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TStr
 		h = (TH1*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
+		fHistoOrder.push_back(baseName + (Long_t)i);
 		fHisto.insert(pair<TString,TH1*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
 		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
@@ -146,6 +151,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH2* histo, int number, TStr
 
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
+	fHistoOrder.push_back(baseName + "0");
 	fHisto2.insert(pair<TString,TH2*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
@@ -153,6 +159,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH2* histo, int number, TStr
 		h = (TH2*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
+		fHistoOrder.push_back(baseName + (Long_t)i);
 		fHisto2.insert(pair<TString,TH2*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
 		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
@@ -178,6 +185,7 @@ void HistoHandler::BookHistoArray(TString baseName, TGraph* histo, int number, T
 
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
+	fHistoOrder.push_back(baseName+ "0");
 	fGraph.insert(pair<TString,TGraph*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
@@ -185,6 +193,7 @@ void HistoHandler::BookHistoArray(TString baseName, TGraph* histo, int number, T
 		h = (TGraph*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
+		fHistoOrder.push_back(baseName + (Long_t)i);
 		fGraph.insert(pair<TString,TGraph*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
 		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
@@ -221,8 +230,8 @@ void HistoHandler::FillHisto(TString name, TString x, double y, double w){
 	int tgraph = fGraph.count(name);
 
 	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,double,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,double,int)." << endl;
+	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,double,double)." << endl;
+	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -241,8 +250,8 @@ void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
 	int tgraph = fGraph.count(name);
 
 	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,TString,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,int)." << endl;
+	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << endl;
+	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -279,8 +288,8 @@ void HistoHandler::FillHisto(TString name, double x, double y, double w){
 	int tgraph = fGraph.count(name);
 
 	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double,int)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double,double,int)." << endl;
+	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double,double)." << endl;
+	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double,double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -430,21 +439,21 @@ void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> 
 	/// Export all booked histograms into the output file histograms trees
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
+	vector<TString>::iterator itOrder;
 
-	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
-		branches[(*it1).second->ClassName()] = (*it1).second;
-		trees[(*it1).second->ClassName()]->Fill();
-	}
-	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		branches[(*it2).second->ClassName()] = (*it2).second;
-		trees[(*it2).second->ClassName()]->Fill();
-	}
-	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
-		branches[(*it3).second->ClassName()] = (*it3).second;
-		trees[(*it3).second->ClassName()]->Fill();
+	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
+		if(fHisto.count(*itOrder)){
+			branches[fHisto[*itOrder]->ClassName()] = fHisto[*itOrder];
+			trees[fHisto[*itOrder]->ClassName()]->Fill();
+		}
+		if(fHisto2.count(*itOrder)){
+			branches[fHisto2[*itOrder]->ClassName()] = fHisto2[*itOrder];
+			trees[fHisto2[*itOrder]->ClassName()]->Fill();
+		}
+		if(fGraph.count(*itOrder)){
+			branches[fGraph[*itOrder]->ClassName()] = fGraph[*itOrder];
+			trees[fGraph[*itOrder]->ClassName()]->Fill();
+		}
 	}
 };
 
@@ -455,24 +464,22 @@ void HistoHandler::DrawAllPlots(TString analyzerName){
 	/// Draw all booked histograms on the screen
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
+	vector<TString>::iterator itOrder;
 
-	for(it1 = fHisto.begin(); it1!=fHisto.end(); it1++){
-		new TCanvas(TString("c_" + analyzerName + "_") + it1->first);
-		cout << "Drawing " << (*it1).second->GetName() << endl;
-		(*it1).second->Draw();
-	}
+	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
+		if(fHisto.count(*itOrder)){
+			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
+			fHisto[*itOrder]->Draw();
+		}
+		if(fHisto2.count(*itOrder)){
+			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
+			fHisto2[*itOrder]->Draw("COLZ");
+		}
 
-	for(it2 = fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		new TCanvas(TString("c_" + analyzerName + "_") + it2->first);
-		(*it2).second->Draw("COLZ");
-	}
-
-	for(it3 = fGraph.begin(); it3!=fGraph.end(); it3++){
-		new TCanvas(TString("c_" + analyzerName + "_") + it3->first);
-		(*it3).second->Draw("A*");
+		if(fGraph.count(*itOrder)){
+			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
+			fGraph[*itOrder]->Draw("A*");
+		}
 	}
 }
 
@@ -497,44 +504,44 @@ void HistoHandler::SaveAllPlots(TString analyzerName){
 	/// \MemberDescr
 	/// \param analyzerName : Name of the analyzer calling the method
 	///
-	/// Write all the booked histograms into the output file
+	/// Write all the booked histograms into the output file ordered as the booking order
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
 	TString name;
 	map<TString, TString>::iterator itDirectory;
+	vector<TString>::iterator itOrder;
 
-	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
-		name = (*it1).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second, analyzerName);
-			gFile->Cd(itDirectory->second);
+	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
+		if(fHisto.count(*itOrder)){
+			name = *itOrder;
+			itDirectory = fPlotsDirectory.find(name);
+			if(itDirectory != fPlotsDirectory.end()){
+				Mkdir(itDirectory->second, analyzerName);
+				gFile->Cd(itDirectory->second);
+			}
+			fHisto[*itOrder]->Write();
+			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
-		(*it1).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
-	}
-	for(it2=fHisto2.begin(); it2!=fHisto2.end(); it2++){
-		name = (*it2).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second, analyzerName);
-			gFile->Cd(itDirectory->second);
+		if(fHisto2.count(*itOrder)){
+			name = *itOrder;
+			itDirectory = fPlotsDirectory.find(name);
+			if(itDirectory != fPlotsDirectory.end()){
+				Mkdir(itDirectory->second, analyzerName);
+				gFile->Cd(itDirectory->second);
+			}
+			fHisto2[*itOrder]->Write();
+			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
-		(*it2).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
-	}
-	for(it3=fGraph.begin(); it3!=fGraph.end(); it3++){
-		name = (*it3).second->GetName();
-		itDirectory = fPlotsDirectory.find(name);
-		if(itDirectory != fPlotsDirectory.end()){
-			Mkdir(itDirectory->second, analyzerName);
-			gFile->Cd(itDirectory->second);
+		if(fGraph.count(*itOrder)){
+			name = *itOrder;
+			itDirectory = fPlotsDirectory.find(name);
+			if(itDirectory != fPlotsDirectory.end()){
+				Mkdir(itDirectory->second, analyzerName);
+				gFile->Cd(itDirectory->second);
+			}
+			fGraph[*itOrder]->Write();
+			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
-		(*it3).second->Write();
-		if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 	}
 }
 
