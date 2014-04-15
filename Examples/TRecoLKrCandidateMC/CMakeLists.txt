@@ -1,0 +1,1 @@
+ROOT_GENERATE_DICTIONARY(TRecoLKrCandidateMC.hh LinkDef.h TRecoLKrCandidateMCDICT.cc ${ROOT_INCLUDE_DIR})

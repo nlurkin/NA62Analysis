@@ -15,7 +15,8 @@ UserPath 	:= $$USERCODEPATH$$
 
 #Directories
 MAIN_INCLUDE	= $(FWPath)/include
-AN_INCLUDE		= $(FWPath)/Analyzers/include
+#AN_INCLUDE		= $(FWPath)/Analyzers/include
+AN_INCLUDE		:= $(addsuffix /include,$(wildcard $(FWPath)/Analyzers/*))
 EXAMPLE_INCLUDE	= $(FWPath)/Examples/include
 PO_INCLUDE		= $(FWPath)/PhysicsObjects/include
 FWOBJDIR		= $(FWPath)/obj
@@ -35,7 +36,7 @@ MAINLIBS	= -lAnalysisFW
 #Analyzers definitions
 ANALYZERS	= $$ANALYZERSHH$$
 EXAMPLES	= $$EXAMPLEHH$$
-ANALYZERSHH = $(addprefix $(AN_INCLUDE)/,$(addsuffix .hh,$(ANALYZERS)))
+ANALYZERSHH	= $(filter $(addprefix %, $(addsuffix .hh, $(ANALYZERS))),$(wildcard $(FWPath)/Analyzers/*/include/*.hh))
 ANALYZERSHH += $(addprefix $(EXAMPLE_INCLUDE)/,$(addsuffix .hh,$(EXAMPLES)))
 ANALYZERSO 	= $(addprefix $(FWOBJDIR)/,$(addsuffix .o,$(ANALYZERS)))
 ANALYZERSO 	+= $(addprefix $(FWOBJDIR)/,$(addsuffix .o,$(EXAMPLES)))
@@ -56,7 +57,7 @@ POLIBS		= $(addprefix $(USRLIBDIR)/lib,$(addsuffix .so,$(PO)))
 POLIBS		+= $(patsubst $(PO_INCLUDE)/%.hh,-l%,$(wildcard $(PO_INCLUDE)/*.hh))
 
 #include directories
-FWHEADERS	= -I$(MAIN_INCLUDE) -I$(AN_INCLUDE) -I$(EXAMPLE_INCLUDE) -I$(USR_INCLUDE) -I$(PO_INCLUDE) -I$(USRPO_INCLUDE)# -I$(G4INCLUDE)
+FWHEADERS	= -I$(MAIN_INCLUDE) $(addprefix -I,$(AN_INCLUDE)) -I$(EXAMPLE_INCLUDE) -I$(USR_INCLUDE) -I$(PO_INCLUDE) -I$(USRPO_INCLUDE)# -I$(G4INCLUDE)
 EXTRAHEADERS = $$EXTRAINCLUDEDIRS$$
 
 #NA62
@@ -81,6 +82,11 @@ CC			= g++
 EXEC		= $$EXEC$$
 
 all: $(EXEC)
+
+printall:
+	$(foreach v,											\
+		$(filter-out $(VARS_OLD) VARS_OLD .VARIABLES, $(.VARIABLES)),	\
+		$(info $(v) = $($(v))))
 
 test: test_main.cc $(MAINHH) $(USRANSLIBS)
 	@echo "Compiling test executable $@ ..."

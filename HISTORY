@@ -4,8 +4,9 @@ NA62Analysis Project
 
 xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
 				rev xxx
-		- Minor changes to documentation
+		- UPdate documentation
 		- Do not try to mkdir in the output file if the directory already exists
+		- Reorganize Analyzers directory into categories: TestTools, PhysicsTools, Physics
 
 2014-04-14	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
 				rev 332

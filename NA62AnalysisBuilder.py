@@ -105,10 +105,13 @@ def cleanFW(FWPath):
 	bash_command("make clean")
 
 def available(FWPath, UserPath):
-	l = os.listdir("%s/Analyzers/include" % FWPath)
+	FWFolders = os.listdir("%s/Analyzers" % FWPath)
+	
 	print "FW Analyzers : "
-	for el in l:
-		print "\t%s" % el.replace(".hh", "")
+	for dir in FWFolders:
+		l = os.listdir("%s/Analyzers/%s/include" % (FWPath,dir))
+		for el in l:
+			print "\t%s" % el.replace(".hh", "")
 	l = os.listdir("%s/Examples/include" % FWPath)
 	print "Examples Analyzers : "
 	for el in l:
@@ -147,14 +150,17 @@ def checkDependence(depsGraph, name, prefix):
 					depsGraph.addDependency(name, m.group(1))
 
 def checkAnalyzerExists(an, FWPath, userPath):
-	if os.path.exists("%s/Analyzers/include/%s.hh" % (FWPath, an)):
-		return 1
-	elif os.path.exists("%s/Analyzers/include/%s.hh" % (userPath, an)):
-		return 2
+	FWFolders = os.listdir("%s/Analyzers" % (FWPath))
+	
+	for dir in FWFolders:
+		if os.path.exists("%s/Analyzers/%s/include/%s.hh" % (FWPath, dir, an)):
+			return [1,dir]
+	if os.path.exists("%s/Analyzers/include/%s.hh" % (userPath, an)):
+		return [2,""]
 	elif os.path.exists("%s/Examples/include/%s.hh" % (FWPath, an)):
-		return 3
+		return [3,""]
 	else:
-		return 0
+		return [0,""]
 
 def readAndReplace(iPath, oPath, searchMap, skipComments=True):
 	f1 = open(iPath, 'r')
@@ -300,13 +306,14 @@ def build(filename, FWPath, UserPath):
 	usrAnList = ""
 	fwAnList = ""
 	exAnList = ""
+	subFolder = ""
 	prefixList = {}
 	ordered = []
 	missing = False
 	
 	for anDef in analyzers:
 		an = parseAnalyzerDef(anDef)[0]
-		anType = checkAnalyzerExists(an, FWPath, UserPath)
+		[anType,subFolder] = checkAnalyzerExists(an, FWPath, UserPath)
 		if(anType==0):
 			answer = raw_input("Analyzer %s does not exists. Do you want to create it [Y/N]" % (an))
 			if answer.lower()=="y":
@@ -315,7 +322,7 @@ def build(filename, FWPath, UserPath):
 				missing = True
 		else:
 			if anType==1:
-				prefix = "%s/Analyzers" % FWPath
+				prefix = "%s/Analyzers/%s" % (FWPath,subFolder)
 				fwAnList += "%s " % an
 			elif anType==2:
 				prefix = "%s/Analyzers" % UserPath

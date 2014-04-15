@@ -1,0 +1,16 @@
+MACRO(SUBDIRLIST result)
+	FILE(GLOB children *)
+	SET(dirlist "")
+	FOREACH(child ${children})
+		IF(IS_DIRECTORY ${child})
+			SET(dirlist ${dirlist} ${child})
+		ENDIF()
+	ENDFOREACH(child)
+	SET(${result} ${dirlist})
+ENDMACRO()
+
+SUBDIRLIST(dirs)
+
+FOREACH (dir ${dirs})
+	add_subdirectory(${dir})
+ENDFOREACH(dir)
