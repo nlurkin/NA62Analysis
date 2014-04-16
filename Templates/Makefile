@@ -81,7 +81,9 @@ CC			= g++
 
 EXEC		= $$EXEC$$
 
-all: $(EXEC)
+#all: $(EXEC)
+all: 
+	make -C build --no-print-directory
 
 printall:
 	$(foreach v,											\

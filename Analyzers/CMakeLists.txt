@@ -1,6 +1,6 @@
 include(../common.cmake)
 
-SUBDIRLIST(dirs .)
+SUBDIRLIST(. dirs)
 
 FOREACH (dir ${dirs})
 	add_subdirectory(${dir})

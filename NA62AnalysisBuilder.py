@@ -9,6 +9,7 @@ import dependencyGraph
 
 def checkUpdate():
 	UserPath = getVar("ANALYSISFW_USERDIR", -1)
+	FWPath = getVar("ANALYSISFW_PATH", -1)
 	if UserPath != -1:
 		#Verify the Analyzer folders have been renamed Analyzers
 		if os.path.exists("%s/Analyzer" % UserPath):
@@ -31,6 +32,12 @@ you previous work.
 			os.mkdir("%s/PhysicsObjects/include" % UserPath)
 		if not os.path.exists("%s/PhysicsObjects/src" % UserPath):
 			os.mkdir("%s/PhysicsObjects/src" % UserPath)
+		if FWPath != -1:
+			if not os.path.exists("%s/PhysicsObjects/CMakeLists.txt" % UserPath):
+				shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
+			if not os.path.exists("%s/CMakeLists.txt" % UserPath):
+				shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
+			
 
 def check_histo(an, iPath):
 	f1 = open("%s/src/%s.cc" % (iPath, an), 'r')
@@ -99,11 +106,25 @@ def cleanUser(UserPath):
 		os.remove("main.cc")
 	if(os.path.exists("Makefile")):
 		os.remove("Makefile")
+	shutil.rmtree("build")
 
 def cleanFW(FWPath):
 	os.chdir(FWPath)
 	bash_command("make clean")
+	shutil.rmtree("build")
 
+def buildFW(FWPath):
+	shell = getVar("FWSHELL", "sh")
+	if not os.path.exists("%s/build" % FWPath):
+		bash_command("cd %s && source ./scripts/env.%s && cmake -H. -Bbuild" % (FWPath,shell))
+	bash_command("cd %s/build && source ../scripts/env.%s && make" % (FWPath,shell))
+
+def buildUser():
+	shell = getVar("FWSHELL", "sh")
+	if not os.path.exists("build"):
+		bash_command("source ./scripts/env.%s && cmake -H. -Bbuild" % (shell))
+	bash_command("cd build && source ../scripts/env.%s && make" % (shell))
+	
 def available(FWPath, UserPath):
 	FWFolders = os.listdir("%s/Analyzers" % FWPath)
 	
@@ -363,6 +384,7 @@ def build(filename, FWPath, UserPath):
 	
 	makefileDict = {"$$FWPath$$":FWPath, "$$USERCODEPATH$$":UserPath, "$$ANALYZERSHH$$":fwAnList, "$$USRHH$$":usrAnList, "$$EXAMPLEHH$$":exAnList, "$$EXEC$$": executable, "$$EXTRALIBS$$": strExtralibs, "$$EXTRALIBSDIRS$$": strExtralibsdirs, "$$EXTRAINCLUDEDIRS$$": strExtraIncdirs}
 	readAndReplace("%s/Templates/Makefile" % FWPath, "%s/Makefile" % UserPath, makefileDict)
+	readAndReplace("%s/Templates/analyzers.cmake" % FWPath, "%s/analyzers.cmake" % UserPath, makefileDict)
 	
 	includesList = ""
 	instancesAnalyzer = ""
@@ -380,9 +402,8 @@ def build(filename, FWPath, UserPath):
 	
 	#Check if FW needs to be recompiled
 	if not error:
-		shell = getVar("FWSHELL", "sh")
-		bash_command("cd %s && source ./scripts/env.%s && make" % (FWPath,shell))
-		bash_command("make")
+		buildFW(FWPath)
+		buildUser()
 
 
 def prepareUserFolder(path, FWPath):
@@ -401,9 +422,7 @@ def prepareUserFolder(path, FWPath):
 				
 	
 	NA62MCSOURCE = getCheckVar("NA62MCSOURCE")
-	os.chdir(FWPath)
-	shell = getVar("FWSHELL", "sh")
-	bash_command("source ./scripts/env.%s && make" % shell)
+	buildFW(FWPath)
 	
 	if not os.path.exists("%s/Analyzers" % path):
 		os.mkdir("%s/Analyzers" % path)
@@ -429,6 +448,8 @@ def prepareUserFolder(path, FWPath):
 	readAndReplace("Templates/env.sh", "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
 	readAndReplace("Templates/env.csh", "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
 	readAndReplace("Templates/config", "%s/config" % path, {})
+	shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % path)
+	shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % path)
 	
 	print "\nYour new user directory has been created. \nTo continue, go in %s, edit your config file, verify and source env.(c)sh, and run \nNA62AnalysisBuilder.py config" % path
 
