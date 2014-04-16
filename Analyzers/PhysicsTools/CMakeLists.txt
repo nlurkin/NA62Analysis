@@ -5,5 +5,7 @@ file(GLOB EXHH "include/*.hh")
 
 FOREACH (lib ${EXHH})
 	GET_FILENAME_COMPONENT(libName ${lib} NAME_WE)
-	add_library(${libName} SHARED include/${libName}.hh src/${libName}.cc)
+	IF( NOT ${libName} STREQUAL "toto")
+		add_library(${libName} SHARED include/${libName}.hh src/${libName}.cc)
+	ENDIF( NOT ${libName} STREQUAL "toto")
 ENDFOREACH(lib)

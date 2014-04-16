@@ -1,15 +1,6 @@
-MACRO(SUBDIRLIST result)
-	FILE(GLOB children *)
-	SET(dirlist "")
-	FOREACH(child ${children})
-		IF(IS_DIRECTORY ${child})
-			SET(dirlist ${dirlist} ${child})
-		ENDIF()
-	ENDFOREACH(child)
-	SET(${result} ${dirlist})
-ENDMACRO()
+include(../common.cmake)
 
-SUBDIRLIST(dirs)
+SUBDIRLIST(dirs .)
 
 FOREACH (dir ${dirs})
 	add_subdirectory(${dir})
