@@ -2,12 +2,15 @@
 NA62Analysis Project
 ################################################################
 
-xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
-				rev xxx
+2014-04-16	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+				rev 336
 		- Update documentation
+		- Create page referencing the components of NA62Analysis relevant to user with
+		  a description and their current validation status.
+		  See http://sergiant.web.cern.ch/sergiant/NA62FW/html/pages.html 
 		- Do not try to mkdir in the output file if the directory already exists
 		- Reorganize Analyzers directory into categories: TestTools, PhysicsTools, Physics
-		- Add PhysicsLib directory for any physics tools not being an analyzer
+		- Add PhysicsLib and ToolsLib directories for any tool not being an analyzer
 		- Use CMake internally to build the framework
 
 2014-04-14	Nicolas Lurkin (nicolas.lurkin@cern.ch) 

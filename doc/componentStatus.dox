@@ -1,5 +1,21 @@
-/// \page analysisTools Analysis Tools
-/// 
+/// \page componentStatus NA62Analysis/Components validation status
+///	<b>Table of content</b>	
+///	<ul>
+///		<li>\ref analyzers
+///		<ul>
+///			<li>\ref examples
+///			<li>\ref physics
+///			<li>\ref physicsTools
+///			<li>\ref testTools
+///		</ul>
+///		<li>\ref addLib
+///		<ul>
+///			<li>\ref physicsLib
+///			<li>\ref toolsLib
+///		</ul>
+///		<li>\ref addition
+///	</ul>
+///	 
 /// \section analyzers Analyzers
 ///	This section will describe every analyzer included with the framework. They can be found in the <i>Analyzers</i> 
 ///	and <i>Examples</i> folders of the framework. For each analyzer you will find a short description and their current status
@@ -60,13 +76,27 @@
 ///	<tr><td></td><td></td><td></td><td></td></tr>
 ///	</table>
 ///	
-///	\section physlib Physics library
-///	Any other classes or functions distributed with the framework and dealing with physics can be found in the <i>PhysicsLib</i> folder of NA62Analysis. 
-///	For more information about the functionnalities provided by each element, please refer to its own page by clicking its name.
+///	\section addLib Additional libraries
+///	Any other classes or functions distributed with the framework can be found in the <i>PhysicsLib</i> and <i>ToolsLib</i> folders of NA62Analysis. 
+///	For more information about the functionalities provided by each element, please refer to its own page by clicking its name.
+///	
+///	\subsection physicsLib Physics library
+///	For components dealing with physics. 
 /// <table>
-///	<tr><td align="center" width="250">Compoment name</td><td align="center" width="650">Description</td>
+///	<tr><td align="center" width="250">Component name</td><td align="center" width="650">Description</td>
 ///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
 ///	<tr><td>functions.cc</td><td>Provides some functions. Some might be useful but most of them are here by legacy from early development stages. 
 ///	This component should be reviewed.</td><td>Not validated</td><td>N/A</td></tr>
 ///	</table>
-	
+///	
+///	\subsection toolsLib Tools library
+///	For other helpful components 
+/// <table>
+///	<tr><td align="center" width="250">Component name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td></td><td></td><td></td><td></td></tr>
+///	</table>
+///	
+///	\section addition Adding new components
+///	If you think one of your component should be distributed with the framework (encouraged), please contact <a href="mailto:nicolas.lurkin@cern.ch">Nicolas Lurkin</a>
+///	with a short description of your component that can be included in this page.

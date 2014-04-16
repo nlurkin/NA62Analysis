@@ -20,14 +20,17 @@ include(analyzers.cmake)
 
 # Create libraries for user analyzers
 FOREACH(usrAna ${USER_ANALYZERS})
-	add_library(${usrAna} SHARED Analyzers/src/${usrAna}.cc Analyzers/include/${usrAna}.hh)
+	add_library(l${usrAna} SHARED Analyzers/src/${usrAna}.cc Analyzers/include/${usrAna}.hh)
 ENDFOREACH(usrAna)
 
 # Create executable from builder
 add_executable(${TARGET_EXEC} main.cc)
 
 # Specify all analyzers libraries
-target_link_libraries(${TARGET_EXEC} ${ANA_LIBS})
+FOREACH(ana ${ANA_LIBS})
+	target_link_libraries(${TARGET_EXEC} l${ana})
+ENDFOREACH(usrAna)
+
 
 # Specify NA62MC/NA62Analysis/ROOT libraries
 target_link_libraries(${TARGET_EXEC} AnalysisFW)
