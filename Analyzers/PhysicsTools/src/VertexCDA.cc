@@ -10,6 +10,21 @@
 #include "Persistency.hh"
 using namespace std;
 
+/// \class VertexCDA
+/// \Brief
+/// Another example analyzer to demonstrate how analyzers can be included in
+///	the framework and be used by anyone. Find the vertex using a CDA between
+///	a GigaTracker candidate track and a spectrometer candidate track.
+/// \EndBrief
+///
+/// \Detailed
+///	Requests a single candidate in GigaTracker and a single candidate in
+///	Spectrometer and uses these tracks as input for the CDA (closest distance of
+///	approach) algorithm. Outputs the resulting vertex (TVector3). If more than 1
+///	track candidate in any of the two detectors, the vertex is not computed and
+///	the output is set as invalid.
+/// \EndDetailed
+
 VertexCDA::VertexCDA(BaseAnalysis *ba) : Analyzer(ba)
 {
 	fAnalyzerName = "VertexCDA";

@@ -9,6 +9,15 @@
 #include "Persistency.hh"
 using namespace std;
 
+/// \class SkimmingNoStrawMuonsTracks
+/// \Brief
+/// Example Analyzer skimming the input file from events containing muon tracks in RICH.
+/// \EndBrief
+///
+/// \Detailed
+///
+/// \EndDetailed
+
 SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analyzer(ba)
 {
 	useMUV = false;

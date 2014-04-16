@@ -31,6 +31,7 @@ target_link_libraries(${TARGET_EXEC} ${ANA_LIBS})
 
 # Specify NA62MC/NA62Analysis/ROOT libraries
 target_link_libraries(${TARGET_EXEC} AnalysisFW)
+target_link_libraries(${TARGET_EXEC} PhysicsLib)
 target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG)
 target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
 

@@ -28,6 +28,13 @@
 #include "NA62Constants.hh"
 using namespace std;
 
+/**
+ * DISCLAIMER: This file needs reviewing. Most of the functions in this file are here by legacy
+ * from early development stages of the framework. None of them should be considered validated
+ * at this point.
+ */
+
+
 #define ENABLE_SHELL_COLOR  1
 #if ENABLE_SHELL_COLOR == 1
 #define SHELL_COLOR_RED     "\e[0;31m"

@@ -11,6 +11,20 @@ using namespace std;
 
 #include "TRecoLKrCandidateMC.hh"
 
+/// \class LKrPhotonMC
+/// \Brief
+/// Example Analyzer linking MC photons to LKr clusters for events with
+///	at least 2 photons coming from a pi0 from the beam kaon
+/// \EndBrief
+///
+/// \Detailed
+///	Get all the LKr clusters and sort them by energy. The MC photons are
+///	propagated on the LKr plane. The association between MC photon and cluster
+///	is done by comparing the distance between the cluster position and the
+///	propagated MC photon position on LKr and associating those for which the
+/// distance is minimum and lower than 50mm.
+/// \EndDetailed
+
 LKrPhotonMC::LKrPhotonMC(BaseAnalysis *ba) : Analyzer(ba)
 {
 	fAnalyzerName = "LKrPhotonMC";

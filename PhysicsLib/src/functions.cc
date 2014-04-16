@@ -7,6 +7,13 @@
 using namespace std;
 using namespace NA62Constants;
 
+/**
+ * @file functions.cc
+ * DISCLAIMER: This file needs reviewing. Most of the functions in this file are here by legacy
+ * from early development stages of the framework. None of them should be considered validated
+ * at this point.
+ */
+
 TVector3 propagate(TVector3 pos, TVector3 p, double z){
 	/// \MemberDescr
 	/// \param pos : position

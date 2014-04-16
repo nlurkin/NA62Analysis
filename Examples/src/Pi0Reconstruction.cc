@@ -10,6 +10,15 @@
 #include "Persistency.hh"
 using namespace std;
 
+/// \class Pi0Reconstruction
+/// \Brief
+/// Example Analyzer reconstructing a pi0 from 2 photon clusters on LKr.
+/// \EndBrief
+///
+/// \Detailed
+///
+/// \EndDetailed
+
 Pi0Reconstruction::Pi0Reconstruction(BaseAnalysis *ba) : Analyzer(ba)
 {
 	fAnalyzerName = "Pi0Reconstruction";

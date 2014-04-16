@@ -1,0 +1,72 @@
+/// \page analysisTools Analysis Tools
+/// 
+/// \section analyzers Analyzers
+///	This section will describe every analyzer included with the framework. They can be found in the <i>Analyzers</i> 
+///	and <i>Examples</i> folders of the framework. For each analyzer you will find a short description and their current status
+///	("Not validated" or "Validated rev.xxx"). "Not validated" means they have not been reviewed and their results might not be valid/relevant.
+///	On the contrary "Validated rev.xxx" means they have been checked and their results can be trusted for analysis. The revision mentioned is the svn revision
+///	that has been used for reviewing. For more details about what does the analyzer do and how the analyzer work, please refer to the analyzer specific
+///	page by clicking its name.
+///	\subsection examples Examples
+///	The analyzers in this folders are intented to demonstrate features/possibilities of the framework and are not expected to give physically relevant results.
+///	The demo column indicates a short list of features used/demonstrated by the analyzer.
+/// <table>
+///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td><td align="center" width="250">Demo</td></tr>
+///	<tr><td>LKrPhotonMC</td><td>Example Analyzer linking MC photons to LKr clusters.</td><td>Not validated</td><td>N/A</td><td>
+///	<ul>
+///		<li>RequestTree
+///		<li>Output standard tree with new custom classes
+///		<li>MCSimple
+///		<li>Use output from other analyzers
+///	</ul></td></tr>
+///	<tr><td>Pi0Reconstruction</td><td>Example Analyzer reconstructing a pi0 from 2 photon clusters on LKr.</td><td>Not validated</td><td>N/A</td><td>
+///	<ul>
+///		<li>Analyzer output value
+///		<li>MC/Non-MC specific actions
+///		<li>Histograms
+///		<li>DetectorAcceptance
+///	</ul></td></tr>
+///	<tr><td>SkimmingNoStrawMuonsTracks</td><td>Example Analyzer skimming the input file from events containing muon tracks in RICH.</td><td>Not validated</td><td>N/A</td><td>
+///	<ul>
+///		<li>Parameters
+///		<li>Counters and EventFraction
+///		<li>Export events to output file
+///	</ul></td></tr>
+///	</table>
+///
+/// \subsection physics Physics
+///	The analyzers in this folder are supposed to be relevant to analysis. 
+/// <table>
+///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td></td><td></td><td></td><td></td></tr>
+///	</table>
+///	
+/// \subsection physicsTools Physics Tools
+///	The analyzers in this folder are meant to be of general help for analysis by processing/transforming/generating physical objects.
+/// <table>
+///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td>VertexCDA</td><td>Another example analyzer to demonstrate how analyzers can be included in the framework and be used by anyone.Find the vertex using a CDA between
+///	a GigaTracker candidate track and a spectrometer candidate track.</td><td>Not validated</td><td>N/A</td></tr>
+///	</table>
+///	
+/// \subsection testTools Test Tools
+///	The analyzers in this folder are meant to help validate/test the NA62 software framework.
+/// <table>
+///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td></td><td></td><td></td><td></td></tr>
+///	</table>
+///	
+///	\section physlib Physics library
+///	Any other classes or functions distributed with the framework and dealing with physics can be found in the <i>PhysicsLib</i> folder of NA62Analysis. 
+///	For more information about the functionnalities provided by each element, please refer to its own page by clicking its name.
+/// <table>
+///	<tr><td align="center" width="250">Compoment name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td>functions.cc</td><td>Provides some functions. Some might be useful but most of them are here by legacy from early development stages. 
+///	This component should be reviewed.</td><td>Not validated</td><td>N/A</td></tr>
+///	</table>
+	

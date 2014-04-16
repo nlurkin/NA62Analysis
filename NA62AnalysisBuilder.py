@@ -106,12 +106,14 @@ def cleanUser(UserPath):
 		os.remove("main.cc")
 	if(os.path.exists("Makefile")):
 		os.remove("Makefile")
-	shutil.rmtree("build")
+	if(os.path.exists("build")):
+		shutil.rmtree("build")
 
 def cleanFW(FWPath):
 	os.chdir(FWPath)
 	bash_command("make clean")
-	shutil.rmtree("build")
+	if(os.path.exists("build")):
+		shutil.rmtree("build")
 
 def buildFW(FWPath):
 	shell = getVar("FWSHELL", "sh")
@@ -485,37 +487,37 @@ if __name__ == '__main__':
 	
 	filename = sys.argv[1]
 	if len(sys.argv)==4:
-		if filename == "rename":
+		if filename.lower() == "rename":
 			oldName = sys.argv[2]
 			newName = sys.argv[3]
 			renameAnalyzer(oldName, newName, getCheckVar("ANALYSISFW_PATH"), getCheckVar("ANALYSISFW_USERDIR"))
 			sys.exit(0)
 	elif len(sys.argv)==3:
-		if filename == "new":
+		if filename.lower() == "new":
 			anName = sys.argv[2]
 			createAnalyzer(anName, getCheckVar("ANALYSISFW_PATH"), getCheckVar("ANALYSISFW_USERDIR"))
 			sys.exit(0)
-		if filename == "prepare":
+		if filename.lower() == "prepare":
 			prepareUserFolder(sys.argv[2], getVar("ANALYSISFW_PATH", "."))
 			sys.exit(0)
 	elif len(sys.argv)==2:
-		if filename=="help":
+		if filename.lower() == "help":
 			printUsage()
 			sys.exit(0)
-		if filename=="cleanUser":
+		if filename.lower() == "cleanuser":
 			cleanUser(getCheckVar("ANALYSISFW_USERDIR"))
 			sys.exit(0)
-		if filename=="cleanFW":
+		if filename.lower() == "cleanfw":
 			cleanFW(getVar("ANALYSISFW_PATH", "."));
 			sys.exit(0)
-		if filename=="cleanAll":
+		if filename.lower() == "cleanall":
 			cleanUser(getCheckVar("ANALYSISFW_USERDIR"))
 			cleanFW(getVar("ANALYSISFW_PATH", "."));
 			sys.exit(0)
-		if filename=="available":
+		if filename.lower() == "available":
 			available(getCheckVar("ANALYSISFW_PATH"), getCheckVar("ANALYSISFW_USERDIR"))
 			sys.exit(0)
-		if filename=="examples":
+		if filename.lower() == "examples":
 			buildExample(getCheckVar("ANALYSISFW_PATH"), getCheckVar("ANALYSISFW_USERDIR"))
 			sys.exit(0)
 		
