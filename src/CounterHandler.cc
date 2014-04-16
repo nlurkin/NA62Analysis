@@ -14,6 +14,15 @@ CounterHandler::CounterHandler() {
 	/// \EndMemberDescr
 }
 
+CounterHandler::CounterHandler(const CounterHandler& c):
+		fEventFraction(c.fEventFraction),
+		fCounters(c.fCounters)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \EndMemberDescr
+}
+
 CounterHandler::~CounterHandler() {
 	/// \MemberDescr
 	/// Destructor
@@ -28,12 +37,12 @@ CounterHandler::~CounterHandler() {
 	}
 }
 
-void CounterHandler::WriteEventFraction(TString fileName){
+void CounterHandler::WriteEventFraction(TString fileName) const{
 	/// \MemberDescr
 	/// Dump the EventFraction
 	/// \EndMemberDescr
 
-	map<TString,EventFraction*>::iterator it;
+	map<TString,EventFraction*>::const_iterator it;
 
 	for(it=fEventFraction.begin(); it!=fEventFraction.end(); it++){
 		it->second->DumpTable();
@@ -162,7 +171,7 @@ void CounterHandler::SetCounterValue(TString name, int v){
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 }
-int CounterHandler::GetCounterValue(TString name){
+int CounterHandler::GetCounterValue(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the counter
 	///
@@ -170,19 +179,19 @@ int CounterHandler::GetCounterValue(TString name){
 	/// \EndMemberDescr
 
 	if(fCounters.count(name)>0){
-		return fCounters[name];
+		return fCounters.find(name)->second;
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 	return -1;
 }
 
-void CounterHandler::PrintInitSummary(){
+void CounterHandler::PrintInitSummary() const{
 	/// \MemberDescr
 	/// Print the summary of the EventFraction and Counters after initialization
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator itEvtFrac;
-	map<TString, int>::iterator itCounter;
+	map<TString, EventFraction*>::const_iterator itEvtFrac;
+	map<TString, int>::const_iterator itCounter;
 
 	StringBalancedTable evtFracTable("List of EventFraction");
 	StringBalancedTable counterTable("List of Counters");

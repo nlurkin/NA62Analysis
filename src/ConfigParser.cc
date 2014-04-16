@@ -22,6 +22,15 @@ ConfigParser::ConfigParser() {
 	/// \EndMemberDescr
 }
 
+ConfigParser::ConfigParser(const ConfigParser& c):
+	fList(c.fList),
+	fCurrentAnalyzer(c.fCurrentAnalyzer)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \EndMemberDescr
+}
+
 ConfigParser::~ConfigParser() {
 	/// \MemberDescr
 	/// Default destructor
@@ -102,13 +111,13 @@ void ConfigParser::AnalyzeLine(TString line){
 	delete results;
 }
 
-void ConfigParser::Print(){
+void ConfigParser::Print() const{
 	/// \MemberDescr
 	/// Print all the ParamName,ParamValue pairs
 	/// \EndMemberDescr
 
-	map<TString, t_ParamValue>::iterator it;
-	t_ParamValue::iterator pIt;
+	map<TString, t_ParamValue>::const_iterator it;
+	t_ParamValue::const_iterator pIt;
 
 	for(it = fList.begin(); it!=fList.end(); it++){
 		cout << "Analyzer " << it->first << endl;
@@ -118,17 +127,17 @@ void ConfigParser::Print(){
 	}
 }
 
-void ConfigParser::ApplyParams(Analyzer *analyzer){
+void ConfigParser::ApplyParams(Analyzer * const analyzer) const{
 	/// \MemberDescr
 	/// \param analyzer : pointer to the analyzer
 	///
 	/// Apply all the ParamName,ParamValue pairs to the specified analyzer
 	/// \EndMemberDescr
 
-	t_ParamValue::iterator pIt;
+	t_ParamValue::const_iterator pIt;
 
 	if(fList.count(analyzer->GetAnalyzerName())>0){
-		for(pIt = fList[analyzer->GetAnalyzerName()].begin(); pIt != fList[analyzer->GetAnalyzerName()].end(); pIt++){
+		for(pIt = fList.find(analyzer->GetAnalyzerName())->second.begin(); pIt != fList.find(analyzer->GetAnalyzerName())->second.end(); pIt++){
 			analyzer->ApplyParam(pIt->first, pIt->second);
 		}
 	}

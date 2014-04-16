@@ -13,12 +13,29 @@
 #include <TGraphQQ.h>
 #include <TF1.h>
 
-HistoHandler::HistoHandler() {
+HistoHandler::HistoHandler():
+			fUpdateRate(10)
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+}
 
-	fUpdateRate = 10;
+HistoHandler::HistoHandler(const HistoHandler& c):
+			fHisto(c.fHisto),
+			fHisto2(c.fHisto2),
+			fGraph(c.fGraph),
+			fPoint(c.fPoint),
+			fCanvas(c.fCanvas),
+			fOutTree(c.fOutTree),
+			fHistoOrder(c.fHistoOrder),
+			fAutoUpdateList(c.fAutoUpdateList),
+			fPlotsDirectory(c.fPlotsDirectory),
+			fUpdateRate(c.fUpdateRate)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \EndMemberDescr
 }
 
 HistoHandler::~HistoHandler() {
@@ -45,7 +62,7 @@ HistoHandler::~HistoHandler() {
 	}
 }
 
-void HistoHandler::BookHisto(TString name, TH1* histo, TString analyzerName, bool refresh, TString directory){
+void HistoHandler::BookHisto(TString name, TH1* const histo, TString analyzerName, bool refresh, TString directory){
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
@@ -390,15 +407,15 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x, double 
 	FillHisto(baseName + (Long_t)index, x, y);
 }
 
-void HistoHandler::PrintInitSummary(){
+void HistoHandler::PrintInitSummary() const{
 	/// \MemberDescr
 	///
 	/// Print a list of booked histograms.
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator itGraph;
+	map<TString,TH1*>::const_iterator it1;
+	map<TString,TH2*>::const_iterator it2;
+	map<TString,TGraph*>::const_iterator itGraph;
 
 	StringTable histoTable("List of booked histograms");
 
@@ -555,7 +572,7 @@ void HistoHandler::SetUpdateInterval(int interval){
 	fUpdateRate = interval;
 }
 
-int HistoHandler::GetUpdateInterval(){
+int HistoHandler::GetUpdateInterval() const{
 	/// \MemberDescr
 	/// Return the update interval for the plots
 	/// \EndMemberDescr
@@ -597,7 +614,7 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	fAutoUpdateList.insert(name);
 }
 
-double HistoHandler::compareToReferencePlot(TH1* hRef, TH1* h2, bool KS) {
+double HistoHandler::compareToReferencePlot(const TH1* const hRef, const TH1* const h2, bool KS) {
 	/// \MemberDescr
 	/// \param hRef : Pointer to the reference plot
 	/// \param h2 : Pointer to the plot to compare
@@ -613,24 +630,26 @@ double HistoHandler::compareToReferencePlot(TH1* hRef, TH1* h2, bool KS) {
 	TString name = hRef->GetName();
 	double probability;
 
-	BookHisto(name, hRef);
-	hRef->Sumw2();
-	hRef->Scale(h2->Integral()/hRef->Integral());
+	TH1* hRefCl = (TH1*)hRef->Clone(TString(hRef->GetName()) + "Ref");
+
+	BookHisto(name, hRefCl);
+	hRefCl->Sumw2();
+	hRefCl->Scale(h2->Integral()/hRefCl->Integral());
 
 	if(KS){
-		probability = hRef->KolmogorovTest(h2);
+		probability = hRefCl->KolmogorovTest(h2);
 	}
 	else{
 		BookHisto(name + "_res", new TGraph());
 		TF1 *f = new TF1("f", "TMath::Gaus(x,0,1)", -10, 10);
-		probability = hRef->Chi2Test(h2, "UUNORM P", res);
+		probability = hRefCl->Chi2Test(h2, "UUNORM P", res);
 
-		BookHisto(name + "_QQ", new TGraphQQ(hRef->GetNbinsX(), res, f));
-		for(int i=0;i<hRef->GetNbinsX();i++){
-			FillHisto(name+"_res", hRef->GetBinCenter(i+1), res[i]);
+		BookHisto(name + "_QQ", new TGraphQQ(hRefCl->GetNbinsX(), res, f));
+		for(int i=0;i<hRefCl->GetNbinsX();i++){
+			FillHisto(name+"_res", hRefCl->GetBinCenter(i+1), res[i]);
 			//FillHisto(name+"_QQ", hRef->GetBinCenter(i+1), res[i]);
 		}
-		fGraph[name+"_res"]->GetXaxis()->SetRangeUser(hRef->GetBinCenter(0), hRef->GetBinCenter(hRef->GetNbinsX()));
+		fGraph[name+"_res"]->GetXaxis()->SetRangeUser(hRefCl->GetBinCenter(0), hRefCl->GetBinCenter(hRefCl->GetNbinsX()));
 		fGraph[name+"_res"]->SetTitle(name + " normalised residuals");
 		fGraph[name+"_QQ"]->SetTitle(name + " Q-Q plot of normalised residuals");
 	}
@@ -692,7 +711,7 @@ TGraph* HistoHandler::GetTGraph(TString name) {
 	}
 }
 
-void HistoHandler::Mkdir(TString name, TString analyzerName){
+void HistoHandler::Mkdir(TString name, TString analyzerName) const{
 	/// \MemberDescr
 	/// \param name: Name of the directory to create
 	/// \param analyzerName : Name of the analyzer calling the method

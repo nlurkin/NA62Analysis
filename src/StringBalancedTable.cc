@@ -16,6 +16,16 @@ StringBalancedTable::StringBalancedTable(TString t) : StringTable(t){
 
 }
 
+StringBalancedTable::StringBalancedTable(const StringBalancedTable& c) :
+		StringTable(c),
+		fValuesList(c.fValuesList)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \MemberDescr
+
+}
+
 StringBalancedTable::~StringBalancedTable() {
 	/// \MemberDescr
 	/// Default destructor
@@ -23,7 +33,7 @@ StringBalancedTable::~StringBalancedTable() {
 
 }
 
-void StringBalancedTable::operator <<(TString v){
+StringBalancedTable& StringBalancedTable::operator <<(TString v){
 	/// \MemberDescr
 	/// \param v : value to append
 	///
@@ -31,6 +41,7 @@ void StringBalancedTable::operator <<(TString v){
 	/// \MemberDescr
 
 	fValuesList.push_back(v);
+	return *this;
 }
 
 void StringBalancedTable::Print(TString prefix){

@@ -13,8 +13,6 @@ using namespace std;
 #ifndef STRINGTABLE_HH_
 #define STRINGTABLE_HH_
 
-enum stOperators {endr, sepr};
-
 /// \class StringTable
 /// \Brief 
 /// Class for pretty table printing. Each cell value is stored as string.
@@ -27,40 +25,46 @@ enum stOperators {endr, sepr};
 class StringTable {
 public:
 	StringTable(TString title);
+	StringTable(const StringTable& c);
 	virtual ~StringTable();
 
-	void Print(TString prefix);
-	void Print(TString prefix, ostream &s);
+	void Print(TString prefix) const;
+	void Print(TString prefix, ostream &s) const;
 
 	void AddColumn(TString id, TString title);
 	void AddValue(TString column, TString value);
 	void AddValue(unsigned int column, TString value);
 
-	void operator<<(TString v);
-	void operator<<(int v);
-	void operator<<(stOperators op);
+	StringTable& operator<<(TString v);
+	StringTable& operator<<(int v);
+	StringTable& operator<<(StringTable& (*f)(StringTable&));
+
 	void NewRow();
 	void AddSeparatorRow();
 protected:
-	void ComputeWidth();
-	TString FormatCell(TString v, char fill, int width);
-	TString FormatCellMiddle(TString v, char fill, int width);
-	int GetRowsMaxWidth();
-	int GetRowsMaxWidth(int i);
+	void ComputeWidth() const;
+	TString FormatCell(TString v, char fill, int width) const;
+	TString FormatCellMiddle(TString v, char fill, int width) const;
+	int GetRowsMaxWidth() const;
+	int GetRowsMaxWidth(int i) const;
 	void AddColumn(int nbr);
 
 	int fColumns; ///< Number of columns
 	int fRows; ///< Number of rows
 
-	int fTableWidth; ///< Table width in characters
+	mutable int fTableWidth; ///< Table width in characters
 
 	int fCurrCol; ///< Current column index
 
 	vector< vector<TString> > fContent; ///< Cells content
 	map<TString, int> fOrder; ///< Columns sequence
-	vector<int> fColWidth; ///< Columns width in character
+	mutable vector<int> fColWidth; ///< Columns width in character
 
 	TString fTitle; ///< Title of the table
 };
+
+StringTable& endr(StringTable& s);
+StringTable& sepr(StringTable& s);
+
 
 #endif /* STRINGTABLE_HH_ */

@@ -30,14 +30,15 @@ using namespace std;
 class HistoHandler {
 public:
 	HistoHandler();
+	HistoHandler(const HistoHandler& c);
 	virtual ~HistoHandler();
 
-	void BookHisto(TString name, TH1* histo, TString analyzerName="", bool refresh=false, TString directory="");
-	void BookHisto(TString name, TH2* histo, TString analyzerName="", bool refresh=false, TString directory="");
-	void BookHisto(TString name, TGraph* histo, TString analyzerName="", bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TH1* histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TH2* histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TGraph* histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHisto(TString name, TH1* const histo, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHisto(TString name, TH2* const histo, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHisto(TString name, TGraph* const histo, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH1* const histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH2* const histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TGraph* const histo, int number, TString analyzerName="", bool refresh=false, TString directory="");
 
 	//Histogram filling methods
 	void FillHisto(TString name, TString x, double w);
@@ -61,22 +62,22 @@ public:
 	void DrawAllPlots(TString analyzerName);
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
-	int GetUpdateInterval();
+	int GetUpdateInterval() const;
 
 	//Save all plots into output file
 	void SaveAllPlots(TString analyzerName);
 
-	void PrintInitSummary();
+	void PrintInitSummary() const;
 	void SetPlotAutoUpdate(TString name, TString analyzerName);
 
-	double compareToReferencePlot(TH1* hRef, TH1* h2, bool KS);
+	double compareToReferencePlot(const TH1* const hRef, const TH1* const h2, bool KS);
 
 	TH1* GetTH1(TString name);
 	TH2* GetTH2(TString name);
 	TGraph* GetTGraph(TString name);
 
 private:
-	void Mkdir(TString name, TString analyzerName);
+	void Mkdir(TString name, TString analyzerName) const;
 
 	//Histogram containers
 	map<TString,TH1*> fHisto; ///< Container for TH1

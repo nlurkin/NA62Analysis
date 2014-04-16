@@ -22,9 +22,10 @@
 class StringBalancedTable: public StringTable {
 public:
 	StringBalancedTable(TString t);
+	StringBalancedTable(const StringBalancedTable& c);
 	virtual ~StringBalancedTable();
 
-	void operator<<(TString v);
+	StringBalancedTable& operator<<(TString v);
 
 	void Print(TString prefix);
 	void Print(TString prefix, ostream &s);

@@ -23,6 +23,7 @@
 class CounterHandler {
 public:
 	CounterHandler();
+	CounterHandler(const CounterHandler& c);
 	virtual ~CounterHandler();
 
 	//Counter methods
@@ -32,7 +33,7 @@ public:
 	void DecrementCounter(TString name);
 	void DecrementCounter(TString name, int v);
 	void SetCounterValue(TString name, int v);
-	int GetCounterValue(TString);
+	int GetCounterValue(TString) const;
 
 	//Event fraction methods
 	void NewEventFraction(TString name);
@@ -41,8 +42,8 @@ public:
 	void SetSignificantDigits(TString efName, int v);
 
 	//Output and printing
-	void WriteEventFraction(TString fileName);
-	void PrintInitSummary();
+	void WriteEventFraction(TString fileName) const;
+	void PrintInitSummary() const;
 
 private:
 	map<TString, EventFraction*> fEventFraction; ///< Container for event fraction

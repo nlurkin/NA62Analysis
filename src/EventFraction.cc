@@ -15,30 +15,41 @@
 #include "StringTable.hh"
 using namespace std;
 
-EventFraction::EventFraction() {
-	fName = "DefaultName";
-	fPrecision = 0;
+EventFraction::EventFraction():
+		fName("DefaultName"),
+		fPrecision(0)
+{
 }
 
-EventFraction::EventFraction(TString name) {
-	fName = name;
-	fPrecision = 0;
+EventFraction::EventFraction(const EventFraction& c):
+		fCounters(c.fCounters),
+		fSequence(c.fSequence),
+		fName(c.fName),
+		fSampleSizeCounter(c.fSampleSizeCounter),
+		fPrecision(c.fPrecision)
+{
+}
+
+EventFraction::EventFraction(TString name):
+		fName(name),
+		fPrecision(0)
+{
 }
 
 EventFraction::~EventFraction() {
 }
 
-void EventFraction::AddCounter(TString name, int *v){
+void EventFraction::AddCounter(TString name, int * const v){
 	fCounters.insert(pair<TString,int*>(name, v));
 	fSequence.push_back(name);
 }
 
-void EventFraction::DumpTable(){
+void EventFraction::DumpTable() const{
 	PrintToStream(cout);
 }
 
-void EventFraction::PrintToStream(ostream &s){
-	vector<TString>::iterator it;
+void EventFraction::PrintToStream(ostream &s) const{
+	vector<TString>::const_iterator it;
 
 	TGraphAsymmErrors as;
 	TH1D g("g", "", fCounters.size(), 0, fCounters.size());
@@ -58,8 +69,8 @@ void EventFraction::PrintToStream(ostream &s){
 	//First loop to fill histograms
 	for(it=fSequence.begin(); it!=fSequence.end(); it++){
 		if(isRelative){
-			g.Fill(i,*(fCounters[*it]));
-			t.Fill(i,*(fCounters[fSampleSizeCounter]));
+			g.Fill(i,*(fCounters.find(*it)->second));
+			t.Fill(i,*(fCounters.find(fSampleSizeCounter)->second));
 		}
 		i++;
 	}
@@ -108,7 +119,7 @@ void EventFraction::PrintToStream(ostream &s){
 		if(fSampleSizeCounter.CompareTo(*it, TString::kIgnoreCase)==0) table << (TString("*") + *it);
 		else table << *it;
 		//Counter value
-		table << *fCounters[*it];
+		table << *fCounters.find(*it)->second;
 		if(isRelative){
 			//Fraction
 			table << FormatDouble(y);
@@ -130,7 +141,7 @@ void EventFraction::DefineSampleSizeCounter(TString name){
 	fSampleSizeCounter = name;
 }
 
-TString EventFraction::FormatDouble(double v){
+TString EventFraction::FormatDouble(double v) const{
 	stringstream ss;
 	ss.precision(GetPrecision(v));
 	ss << fixed << v;
@@ -142,7 +153,7 @@ void EventFraction::SetPrecision(int v){
 	fPrecision = v;
 }
 
-int EventFraction::GetPrecision(double v){
+int EventFraction::GetPrecision(double v) const{
 	if(fPrecision==0) return 7;
 	int a = (fPrecision - int(log10(fabs(v))));
 
@@ -150,7 +161,7 @@ int EventFraction::GetPrecision(double v){
 	return a;
 }
 
-void EventFraction::WriteTable(TString filePrefix){
+void EventFraction::WriteTable(TString filePrefix) const{
 	ofstream fd;
 	TString fileName = filePrefix + "_" + fName + ".txt";
 	fd.open(fileName.Data(), ofstream::out);

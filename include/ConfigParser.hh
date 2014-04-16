@@ -29,12 +29,13 @@ class Analyzer;
 class ConfigParser {
 public:
 	ConfigParser();
+	ConfigParser(const ConfigParser& c);
 	virtual ~ConfigParser();
 
 	void ParseFile(TString fileName);
 	void ParseCLI(TString params);
-	void ApplyParams(Analyzer* analyzer);
-	void Print();
+	void ApplyParams(Analyzer* const analyzer) const;
+	void Print() const;
 private:
 	void AnalyzeLine(TString line);
 
