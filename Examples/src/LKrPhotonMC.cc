@@ -64,7 +64,7 @@ void LKrPhotonMC::EndOfBurstUser(){
 }
 
 
-void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
+void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple, Event*){
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analyzer can run without the complete set, comment the line
 	if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}

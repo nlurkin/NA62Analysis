@@ -3,6 +3,6 @@
 
 namespace AnalysisFW{
 	enum VerbosityLevel {kNo, kUser, kNormal, kDebug, kSomeLevel};
-};
+}
 
 #endif

@@ -8,6 +8,7 @@
 #include "Event.hh"
 #include "Persistency.hh"
 using namespace std;
+using namespace NA62Constants;
 
 /// \class templateAnalyzer
 /// \Brief 

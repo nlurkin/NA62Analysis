@@ -639,7 +639,7 @@ bool DetectorAcceptance::MagnetEffect(const TVector3 StartPosition, const TVecto
 	double endZ = 197850.;
 
 	//Propagate to the start of the magnet
-	if(!MagPropagateBefore(StartPosition, StartMomentum, fQ, endZ, middlePosition)) return false;
+	if(!MagPropagateBefore(StartPosition, StartMomentum, endZ, middlePosition)) return false;
 	//Continue until after the magnet (19850 for the method to get the correct endMomentum)
 	MagPropagateMagnet(middlePosition, StartMomentum, fQ, endZ, endPosition, endMomentum);
 	//Move the endPosition back to magnetEnd
@@ -696,11 +696,10 @@ void DetectorAcceptance::MagPropagateMagnet(const TVector3 StartPosition, const 
 	EndMomentum = (EndPosition - TempPosition).Unit();
 }
 
-bool DetectorAcceptance::MagPropagateBefore(const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition){
+bool DetectorAcceptance::MagPropagateBefore(const TVector3 StartPosition, const TVector3 StartMomentum, const Double_t fEndZ, TVector3& EndPosition){
 	/// \MemberDescr
 	/// \param StartPosition : Initial position of the particle
 	/// \param StartMomentum : InitialMomentum of the particle
-	/// \param fQ : Charge of the particle
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Position of the particle at Z of the beginning start of the magnet
 	/// \param EndMomentum : Momentum of the particle at Z of the beginning of the magnet
@@ -767,7 +766,7 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 		cerr << "[MagPropagate] Error : EndPos must be after magnet: " << fEndZ << endl;
 		return false;
 	}
-	if(!MagPropagateBefore(StartPosition, StartMomentum, fQ, fEndZ, MiddlePosition)) return false;
+	if(!MagPropagateBefore(StartPosition, StartMomentum, fEndZ, MiddlePosition)) return false;
 
 	MagPropagateMagnet(MiddlePosition, StartMomentum, fQ, fEndZ, EndPosition, EndMomentum);
 

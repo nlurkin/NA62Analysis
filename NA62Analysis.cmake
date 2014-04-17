@@ -9,8 +9,12 @@ include_directories(${ROOT_INCLUDE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-#	set(CMAKE_CXX_FLAGS "-std=c++0x -pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing")
-	set(CMAKE_CXX_FLAGS "-std=c++0x -Wall -Wextra")
+	if(NA62FW)
+#		set(CMAKE_CXX_FLAGS "-std=c++0x -pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing")
+		set(CMAKE_CXX_FLAGS "-std=c++0x -pedantic-errors -Wall -Wextra -Wwrite-strings -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing")
+	else()
+		set(CMAKE_CXX_FLAGS "-std=c++0x -Wall")
+	endif()
 endif()
 
 #Get NA62MC

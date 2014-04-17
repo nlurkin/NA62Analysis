@@ -83,7 +83,7 @@ void Pi0Reconstruction::DefineMCSimple(MCSimple *fMCSimple){
 //   fMCSimple = Set of KinePart you asked for int GetTree method
 //   MCTruthEvent = Complete set of generated KinePart
 //#####################################################
-void Pi0Reconstruction::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
+void Pi0Reconstruction::Process(int, MCSimple &fMCSimple, Event* MCTruthEvent){
 
 	//Temporary variables
 	vector<KinePart*> photons;

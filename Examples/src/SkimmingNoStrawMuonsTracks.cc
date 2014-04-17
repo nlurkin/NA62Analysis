@@ -48,7 +48,7 @@ void SkimmingNoStrawMuonsTracks::InitHist(){
 	DefineSampleSizeCounter("NoMuonsTrackFraction", "TotalEvents");
 }
 
-void SkimmingNoStrawMuonsTracks::DefineMCSimple(MCSimple *fMCSimple){
+void SkimmingNoStrawMuonsTracks::DefineMCSimple(MCSimple *){
 }
 
 void SkimmingNoStrawMuonsTracks::StartOfRunUser(){
@@ -63,8 +63,7 @@ void SkimmingNoStrawMuonsTracks::EndOfBurstUser(){
 
 }
 
-void SkimmingNoStrawMuonsTracks::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
-	TRecoSpectrometerEvent *strawEvent = (TRecoSpectrometerEvent*)GetEvent("Spectrometer");
+void SkimmingNoStrawMuonsTracks::Process(int , MCSimple&, Event* ){
 	TRecoRICHEvent *richEvent = (TRecoRICHEvent*)GetEvent("RICH");
 
 	double muonThreshold = 30.0;

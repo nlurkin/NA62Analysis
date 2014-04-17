@@ -29,7 +29,7 @@ add_executable(${TARGET_EXEC} main.cc)
 # Specify all analyzers libraries
 FOREACH(ana ${ANA_LIBS})
 	target_link_libraries(${TARGET_EXEC} l${ana})
-ENDFOREACH(usrAna)
+ENDFOREACH(ana)
 
 
 # Specify NA62MC/NA62Analysis/ROOT libraries

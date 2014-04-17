@@ -7,37 +7,86 @@ import shutil
 import subprocess
 import dependencyGraph
 
+__rev__ = 337
+
+def getUserVersion(UserPath):
+	version = ""
+	if os.path.exists("%s/.version" % UserPath):
+		f = open("%s/.version" % UserPath, 'r')
+		version = f.read()
+		f.close()
+	
+	rev = 0
+	try:
+		rev = int(version)
+	finally:
+		return rev
+
+def writeUserVersion(UserPath):
+	global __rev__
+	f = open("%s/.version" % UserPath, 'w')
+	f.write(str(__rev__))
+	f.close()
+	
+def updateOld(UserPath, FWPath):
+	#Verify the Analyzer folders have been renamed Analyzers
+	if os.path.exists("%s/Analyzer" % UserPath):
+		if os.path.exists("%s/Analyzers" % UserPath):
+			print """
+					You have a "Analyzer" folder in you user directory.
+					This folder has been renamed "Analyzers" but it seems to still exist.
+					Please move all your analyzers still inside to the correct "Analyzers" folder.
+					Warning : When moving your analyzers in the new folder, they may already exist
+					from the automatic update of the user folder. Take care of not overwriting
+					you previous work.
+				"""
+			sys.exit(0)
+		else:
+			os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
+	#Verify thath the PhysicsObjects folder has been created
+	if not os.path.exists("%s/PhysicsObjects" % UserPath):
+		os.mkdir("%s/PhysicsObjects" % UserPath)
+	if not os.path.exists("%s/PhysicsObjects/include" % UserPath):
+		os.mkdir("%s/PhysicsObjects/include" % UserPath)
+	if not os.path.exists("%s/PhysicsObjects/src" % UserPath):
+		os.mkdir("%s/PhysicsObjects/src" % UserPath)
+	if FWPath != -1:
+		if not os.path.exists("%s/PhysicsObjects/CMakeLists.txt" % UserPath):
+			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
+		if not os.path.exists("%s/CMakeLists.txt" % UserPath):
+			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
+
+def listDirClean(path):
+	list = os.listdir(path)
+	list = [x for x in list if not ".svn" in x]
+	list = [x for x in list if os.path.isdir("%s/%s" %(path,x))]
+	return list
+
+def listFileClean(path):
+	list = os.listdir(path)
+	list = [x for x in list if not ".svn" in x]
+	list = [x for x in list if not os.path.isdir("%s/%s" %(path,x))]
+	return list
+
 def checkUpdate():
+	global __rev__
 	UserPath = getVar("ANALYSISFW_USERDIR", -1)
 	FWPath = getVar("ANALYSISFW_PATH", -1)
 	if UserPath != -1:
-		#Verify the Analyzer folders have been renamed Analyzers
-		if os.path.exists("%s/Analyzer" % UserPath):
-			if os.path.exists("%s/Analyzers" % UserPath):
-				print """
-You have a "Analyzer" folder in you user directory.
-This folder has been renamed "Analyzers" but it seems to still exist.
-Please move all your analyzers still inside to the correct "Analyzers" folder.
-Warning : When moving your analyzers in the new folder, they may already exist
-from the automatic update of the user folder. Take care of not overwriting
-you previous work.
-				"""
-				sys.exit(0)
-			else:
-				os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
-		#Verify thath the PhysicsObjects folder has been created
-		if not os.path.exists("%s/PhysicsObjects" % UserPath):
-			os.mkdir("%s/PhysicsObjects" % UserPath)
-		if not os.path.exists("%s/PhysicsObjects/include" % UserPath):
-			os.mkdir("%s/PhysicsObjects/include" % UserPath)
-		if not os.path.exists("%s/PhysicsObjects/src" % UserPath):
-			os.mkdir("%s/PhysicsObjects/src" % UserPath)
-		if FWPath != -1:
-			if not os.path.exists("%s/PhysicsObjects/CMakeLists.txt" % UserPath):
-				shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
-			if not os.path.exists("%s/CMakeLists.txt" % UserPath):
-				shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
+		#check version number
+		version = getUserVersion(UserPath)
+		
+		#Old versions with no version number
+		updateOld(UserPath,FWPath)
+		
+		#Newer versions
+		if int(version)<__rev__:
+			#Always replace the CMakeLists.txt in case it changed
+			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
+			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
 			
+			#write the new version file
+			writeUserVersion(UserPath)
 
 def check_histo(an, iPath):
 	f1 = open("%s/src/%s.cc" % (iPath, an), 'r')
@@ -128,18 +177,18 @@ def buildUser():
 	bash_command("cd build && source ../scripts/env.%s && make" % (shell))
 	
 def available(FWPath, UserPath):
-	FWFolders = os.listdir("%s/Analyzers" % FWPath)
+	FWFolders = listDirClean("%s/Analyzers" % FWPath)
 	
 	print "FW Analyzers : "
 	for dir in FWFolders:
-		l = os.listdir("%s/Analyzers/%s/include" % (FWPath,dir))
+		l = listFileClean("%s/Analyzers/%s/include" % (FWPath,dir))
 		for el in l:
 			print "\t%s" % el.replace(".hh", "")
-	l = os.listdir("%s/Examples/include" % FWPath)
+	l = listFileClean("%s/Examples/include" % FWPath)
 	print "Examples Analyzers : "
 	for el in l:
 		print "\t%s" % el.replace(".hh", "")
-	l = os.listdir("%s/Analyzers/include" % UserPath)
+	l = listFileClean("%s/Analyzers/include" % UserPath)
 	print "User Analyzers : "
 	for el in l:
 		print "\t%s" % el.replace(".hh", "")
@@ -173,7 +222,7 @@ def checkDependence(depsGraph, name, prefix):
 					depsGraph.addDependency(name, m.group(1))
 
 def checkAnalyzerExists(an, FWPath, userPath):
-	FWFolders = os.listdir("%s/Analyzers" % (FWPath))
+	FWFolders = listDirClean("%s/Analyzers" % (FWPath))
 	
 	for dir in FWFolders:
 		if os.path.exists("%s/Analyzers/%s/include/%s.hh" % (FWPath, dir, an)):

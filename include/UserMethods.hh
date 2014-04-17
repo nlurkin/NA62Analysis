@@ -123,7 +123,7 @@ public:
 	template <class T>
 	const T* GetOutput(TString name, OutputState &state){
 		return (T*)GetOutputVoid(name, state);
-	};
+	}
 
 	//###### Input (Event/TTree) related
 	//Request new tree to analyze
@@ -143,7 +143,7 @@ public:
 	template <class T>
 	T* GetObject(TString name){
 		return (T*)GetObjectVoid(name);
-	};
+	}
 
 protected:
 	const void* GetOutputVoid(TString name, OutputState &state);

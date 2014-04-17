@@ -472,7 +472,7 @@ void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> 
 			trees[fGraph[*itOrder]->ClassName()]->Fill();
 		}
 	}
-};
+}
 
 void HistoHandler::DrawAllPlots(TString analyzerName){
 	/// \MemberDescr

@@ -2,6 +2,13 @@
 NA62Analysis Project
 ################################################################
 
+2014-04-17	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 337
+		- Fix small typo in CMakeLists.txt of Examples and CMakeLists.txt of Templates
+		- Correct NA62AnalysisBuilder.py to ignore .svn folders
+		- Get rid of few warnings when compiling
+		- Start reviewing functions.cc 
+
 2014-04-16	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
 				rev 336
 		- Update documentation

@@ -136,13 +136,15 @@ double NeuralNetwork::Evaluate(){
 	/// Evaluate the output of the previously trained or loaded NN on the current event
 	/// \EndMemberDescr
 
-	double params[fInputs.size()];
+	double *params = new double[fInputs.size()];
 
 	for(unsigned int i=0; i<fInputs.size(); i++){
 		params[i] = *(double*)fInputs[i];
 	}
 
-	return fMlp->Evaluate(0, params);
+	double ret = fMlp->Evaluate(0, params);
+	delete[] params;
+	return ret;
 }
 
 void NeuralNetwork::Save(TString name){

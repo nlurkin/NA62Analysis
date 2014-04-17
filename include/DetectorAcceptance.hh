@@ -71,7 +71,7 @@ public:
 private:
 	//Internal methods for magnetic field effect
 	void MagPropagateMagnet( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum );
-	bool MagPropagateBefore( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition);
+	bool MagPropagateBefore( const TVector3 StartPosition, const TVector3 StartMomentum, const Double_t fEndZ, TVector3& EndPosition);
 	void UpdateTrackingMomentum(double precision, int q, TVector3 currPos, TVector3 startMomentum);
 
 	//Build dictionaries for detectors substations
