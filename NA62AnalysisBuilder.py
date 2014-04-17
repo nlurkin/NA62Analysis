@@ -506,7 +506,7 @@ def prepareUserFolder(path, FWPath):
 
 def buildExample(fwPath, userPath):
 	shell = getVar("FWSHELL", "sh")
-	bash_command("cd %s && source ./scripts/env.%s && make && make example" % (fwPath,shell))
+	#bash_command("cd %s && source ./scripts/env.%s && make && make example" % (fwPath,shell))
 	shutil.copyfile("%s/Examples/examplePi0Config" % fwPath, "%s/examplePi0Config" % userPath)
 	shutil.copyfile("%s/Examples/exampleSkimmingConfig" % fwPath, "%s/exampleSkimmingConfig" % userPath)
 	readAndReplace("%s/Examples/exampleExportTreesConfig" % fwPath, "%s/exampleExportTreesConfig" % userPath, {"$$FWPATH$$":fwPath})
