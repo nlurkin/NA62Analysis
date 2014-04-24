@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import dependencyGraph
 
-__rev__ = 337
+__rev__ = 341
 
 def getUserVersion(UserPath):
 	version = ""
@@ -81,6 +81,7 @@ def checkUpdate():
 		
 		#Newer versions
 		if int(version)<__rev__:
+			print "\033[94mUpdating user directory from revision %s to revision %s \033[0m\n" % (version,__rev__)
 			#Always replace the CMakeLists.txt in case it changed
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
@@ -422,18 +423,24 @@ def build(filename, FWPath, UserPath):
 		p = depsGraph.getNextPath()
 	
 	strExtralibs = ""
+	strExtralibs_CMake = ""
 	for lib in extralibs:
 		strExtralibs += "-l%s " % (lib)
+		strExtralibs_CMake += "%s " % (lib)
 	
 	strExtralibsdirs = ""
+	strExtralibsdirs_CMake = ""
 	for dir in extralibsdirs:
 		strExtralibsdirs += "-L%s " % (dir)
+		strExtralibsdirs_CMake += "%s " % (dir)
 
 	strExtraIncdirs = ""
+	strExtraIncdirs_CMake = ""
 	for dir in extraincludedirs:
 		strExtraIncdirs += "-I%s " % (dir)
+		strExtraIncdirs_CMake += "%s " % (dir)
 	
-	makefileDict = {"$$FWPath$$":FWPath, "$$USERCODEPATH$$":UserPath, "$$ANALYZERSHH$$":fwAnList, "$$USRHH$$":usrAnList, "$$EXAMPLEHH$$":exAnList, "$$EXEC$$": executable, "$$EXTRALIBS$$": strExtralibs, "$$EXTRALIBSDIRS$$": strExtralibsdirs, "$$EXTRAINCLUDEDIRS$$": strExtraIncdirs}
+	makefileDict = {"$$FWPath$$":FWPath, "$$USERCODEPATH$$":UserPath, "$$ANALYZERSHH$$":fwAnList, "$$USRHH$$":usrAnList, "$$EXAMPLEHH$$":exAnList, "$$EXEC$$": executable, "$$EXTRALIBS$$": strExtralibs_CMake, "$$EXTRALIBSDIRS$$": strExtralibsdirs_CMake, "$$EXTRAINCLUDEDIRS$$": strExtraIncdirs_CMake}
 	readAndReplace("%s/Templates/Makefile" % FWPath, "%s/Makefile" % UserPath, makefileDict)
 	readAndReplace("%s/Templates/analyzers.cmake" % FWPath, "%s/analyzers.cmake" % UserPath, makefileDict)
 	
@@ -496,9 +503,9 @@ def prepareUserFolder(path, FWPath):
 	if not os.path.exists("%s/NA62.root" % path):
 		shutil.copyfile("%s/NA62.root" % FWPath, "%s/NA62.root" % path)
 	
-	readAndReplace("Templates/env.sh", "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
-	readAndReplace("Templates/env.csh", "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
-	readAndReplace("Templates/config", "%s/config" % path, {})
+	readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+	readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+	readAndReplace("%s/Templates/config" % FWPath, "%s/config" % path, {})
 	shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % path)
 	shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % path)
 	
