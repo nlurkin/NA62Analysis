@@ -44,6 +44,8 @@ public:
 
 	CounterHandler* GetCounterHandler();
 
+	int GetNEvents();
+
 private:
 	void PreProcess();
 protected:

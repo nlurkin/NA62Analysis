@@ -628,3 +628,7 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 
 	return fParent->GetIOHandler()->GetReferenceTGraph(name);
 }
+
+int UserMethods::GetNEvents(){
+	return fParent->GetNEvents();
+}

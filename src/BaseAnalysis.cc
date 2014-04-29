@@ -106,7 +106,7 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	fMCSimple.push_back(new MCSimple());
 }
 
-void BaseAnalysis::RegisterOutput(TString name, void *address){
+void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// \MemberDescr
 	/// \param name : Name of the output
 	/// \param address : pointer to the output variable
@@ -114,7 +114,7 @@ void BaseAnalysis::RegisterOutput(TString name, void *address){
 	/// Register an output
 	/// \EndMemberDescr
 
-	fOutput.insert(pair<TString, void*>(name, address));
+	fOutput.insert(pair<TString, const void* const>(name, address));
 	fOutputStates.insert(pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
 
@@ -129,7 +129,7 @@ void BaseAnalysis::SetOutputState(TString name, Analyzer::OutputState state){
 	fOutputStates[name] = state;
 }
 
-const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state){
+const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) const{
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param state : is filled with the current state of the output
@@ -142,8 +142,8 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state){
 		cerr << "Output " << name << " not found" << endl;
 		return 0;
 	}
-	state = fOutputStates[name];
-	return fOutput[name];
+	state = fOutputStates.find(name)->second;
+	return fOutput.find(name)->second;
 }
 
 void BaseAnalysis::PreProcess(){
@@ -275,7 +275,7 @@ DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){
 	return fDetectorAcceptanceInstance;
 }
 
-DetectorAcceptance* BaseAnalysis::IsDetectorAcceptanceInstaciated(){
+DetectorAcceptance* BaseAnalysis::IsDetectorAcceptanceInstanciated() const{
 	/// \MemberDescr
 	/// Return a pointer to the unique global instance of DetectorAcceptance if instantiated. Otherwise return null.
 	/// \EndMemberDescr
@@ -283,13 +283,13 @@ DetectorAcceptance* BaseAnalysis::IsDetectorAcceptanceInstaciated(){
 	return fDetectorAcceptanceInstance;
 }
 
-void BaseAnalysis::PrintInitSummary(){
+void BaseAnalysis::PrintInitSummary() const{
 	/// \MemberDescr
 	/// Print summary after initialization.
 	/// \EndMemberDescr
 
-	vector<Analyzer*>::iterator itAn;
-	map<TString, void*>::iterator itOutput;
+	vector<Analyzer*>::const_iterator itAn;
+	map<TString, const void* const>::const_iterator itOutput;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
 	StringBalancedTable outputTable("List of Outputs");
@@ -349,4 +349,8 @@ CounterHandler* BaseAnalysis::GetCounterHandler() {
 	/// \EndMemberDescr
 
 	return &fCounterHandler;
+}
+
+int BaseAnalysis::GetNEvents(){
+	return fEventNb;
 }

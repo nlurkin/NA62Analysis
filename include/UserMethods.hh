@@ -145,6 +145,8 @@ public:
 		return (T*)GetObjectVoid(name);
 	}
 
+	int GetNEvents();
+
 protected:
 	const void* GetOutputVoid(TString name, OutputState &state);
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
