@@ -28,6 +28,7 @@ using namespace std;
 class IOHandler {
 public:
 	IOHandler();
+	IOHandler(const IOHandler& c);
 	virtual ~IOHandler();
 
 	//IO Files
@@ -36,8 +37,8 @@ public:
 	void SetReferenceFileName(TString fileName);
 	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
 	bool CheckNewFileOpened();
-	TString GetOutputFileName();
-	int GetCurrentFileNumber();
+	TString GetOutputFileName() const;
+	int GetCurrentFileNumber() const;
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);
@@ -47,8 +48,8 @@ public:
 	void UpdateInputHistograms();
 
 	//TTree
-	void RequestTree(TString name, TDetectorVEvent *evt);
-	bool RequestTree(TString name, TString branchName, TString className, void* obj);
+	void RequestTree(TString name, TDetectorVEvent* const evt);
+	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
 	int GetTree(int eventNb);
 
 	//Events
@@ -57,18 +58,18 @@ public:
 	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
 	void LoadEvent(int iEvent);
 	Event* GetMCTruthEvent();
-	bool GetWithMC();
+	bool GetWithMC() const;
 
 	//Writing
 	void WriteEvent();
-	void WriteTree();
-	void MkOutputDir(TString name);
+	void WriteTree() const;
+	void MkOutputDir(TString name) const;
 
 	//Printing
-	void PrintInitSummary();
+	void PrintInitSummary() const;
 
 private:
-	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb);
+	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb);
 
 	class ObjectTriplet{
 	public:

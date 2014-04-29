@@ -13,19 +13,38 @@
 #include "IOHandler.hh"
 #include "StringBalancedTable.hh"
 
-IOHandler::IOHandler(){
+IOHandler::IOHandler():
+		fMCTruthTree(0),
+		fMCTruthEvent(new Event()),
+		fCurrentFileNumber(-1),
+		fOutFile(0),
+		fWithMC(false),
+		fCurrentFile(NULL)
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+}
 
-	fWithMC = false;
-	fOutFile = 0;
-
-	fMCTruthTree = 0;
-
-	fCurrentFileNumber = -1;
-	fCurrentFile = NULL;
-	fMCTruthEvent = new Event();
+IOHandler::IOHandler(const IOHandler& c):
+		fTree(c.fTree),
+		fEvent(c.fEvent),
+		fObject(c.fObject),
+		fMCTruthTree(c.fMCTruthTree),
+		fMCTruthEvent(c.fMCTruthEvent),
+		fInputHistoAdd(c.fInputHistoAdd),
+		fInputHisto(c.fInputHisto),
+		fCurrentFileNumber(c.fCurrentFileNumber),
+		fReferenceFileName(c.fReferenceFileName),
+		fOutFile(c.fOutFile),
+		fOutFileName(c.fOutFileName),
+		fExportTrees(c.fExportTrees),
+		fWithMC(c.fWithMC),
+		fCurrentFile(c.fCurrentFile)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \EndMemberDescr
 }
 
 IOHandler::~IOHandler(){
@@ -60,7 +79,7 @@ IOHandler::~IOHandler(){
 }
 
 
-void IOHandler::RequestTree(TString name, TDetectorVEvent *evt){
+void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt){
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
@@ -77,7 +96,7 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent *evt){
 	}
 }
 
-bool IOHandler::RequestTree(TString name, TString branchName, TString className, void* evt){
+bool IOHandler::RequestTree(TString name, TString branchName, TString className, void* const evt){
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param evt : Pointer to an instance of any class
@@ -364,7 +383,7 @@ Event* IOHandler::GetMCTruthEvent(){
 	return fMCTruthEvent;
 }
 
-bool IOHandler::GetWithMC(){
+bool IOHandler::GetWithMC() const{
 	/// \MemberDescr
 	///
 	/// Do we have MC available in the files?
@@ -373,7 +392,7 @@ bool IOHandler::GetWithMC(){
 	return fWithMC;
 }
 
-void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* evt, Int_t &eventNb){
+void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb){
 	/// \MemberDescr
 	/// \param tree :
 	/// \param branchName : name of the branch
@@ -510,12 +529,12 @@ void IOHandler::WriteEvent(){
 	}
 }
 
-void IOHandler::WriteTree(){
+void IOHandler::WriteTree() const{
 	/// \MemberDescr
 	/// Write the output trees in the output file
 	/// \EndMemberDescr
 
-	map<TString,TTree*>::iterator itTree;
+	map<TString,TTree*>::const_iterator itTree;
 
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		itTree->second->Write();
@@ -537,7 +556,7 @@ bool IOHandler::OpenOutput(TString outFileName){
 	return true;
 }
 
-void IOHandler::MkOutputDir(TString name){
+void IOHandler::MkOutputDir(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the directory
 	///
@@ -547,13 +566,13 @@ void IOHandler::MkOutputDir(TString name){
 	if(!fOutFile->FindKey("InputFiles")) fOutFile->mkdir(name);
 }
 
-void IOHandler::PrintInitSummary(){
+void IOHandler::PrintInitSummary() const{
 	/// \MemberDescr
 	///
 	/// Print the summary after initialization
 	/// \EndMemberDescr
 
-	map<TString, TChain*>::iterator itTree;
+	map<TString, TChain*>::const_iterator itTree;
 	StringBalancedTable treeTable("List of requested TTrees");
 
 	for(itTree=fTree.begin(); itTree!=fTree.end(); itTree++){
@@ -635,7 +654,7 @@ void IOHandler::UpdateInputHistograms(){
 
 }
 
-TString IOHandler::GetOutputFileName(){
+TString IOHandler::GetOutputFileName() const{
 	/// \MemberDescr
 	///
 	/// Return the base name of the output file
@@ -643,7 +662,7 @@ TString IOHandler::GetOutputFileName(){
 
 	return fOutFileName;
 }
-int IOHandler::GetCurrentFileNumber(){
+int IOHandler::GetCurrentFileNumber() const{
 	/// \MemberDescr
 	///
 	/// Return the index of the currently opened file

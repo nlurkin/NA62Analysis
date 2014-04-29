@@ -38,23 +38,24 @@ public:
 	enum OutputState {kOUninit, kOValid, kOInvalid}; ///< List of possible states for the output variables.
 
 	UserMethods(BaseAnalysis *ba);
+	UserMethods(const UserMethods&);
 	virtual ~UserMethods();
 
 	//###### Histograms related
 	//Histogram booking methods
-	void BookHisto(TString name, TH1* histo, bool refresh=false, TString directory="");
-	void BookHisto(TString name, TH2* histo, bool refresh=false, TString directory="");
-	void BookHisto(TString name, TGraph* histo, bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TH1* histo, int number, bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TH2* histo, int number, bool refresh=false, TString directory="");
-	void BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh=false, TString directory="");
+	void BookHisto(TString name, TH1* const histo, bool refresh=false, TString directory="");
+	void BookHisto(TString name, TH2* const histo, bool refresh=false, TString directory="");
+	void BookHisto(TString name, TGraph* const histo, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH1* const histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TH2* const histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TString baseName, TGraph* const histo, int number, bool refresh=false, TString directory="");
 
-	void BookHisto(TH1* histo, bool refresh=false, TString directory="");
-	void BookHisto(TH2* histo, bool refresh=false, TString directory="");
-	void BookHisto(TGraph* histo, bool refresh=false, TString directory="");
-	void BookHistoArray(TH1* histo, int number, bool refresh=false, TString directory="");
-	void BookHistoArray(TH2* histo, int number, bool refresh=false, TString directory="");
-	void BookHistoArray(TGraph* histo, int number, bool refresh=false, TString directory="");
+	void BookHisto(TH1* const histo, bool refresh=false, TString directory="");
+	void BookHisto(TH2* const histo, bool refresh=false, TString directory="");
+	void BookHisto(TGraph* const histo, bool refresh=false, TString directory="");
+	void BookHistoArray(TH1* const histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TH2* const histo, int number, bool refresh=false, TString directory="");
+	void BookHistoArray(TGraph* const histo, int number, bool refresh=false, TString directory="");
 
 	//Histogram filling methods
 	void FillHisto(TString name, TString x, double w);
@@ -111,17 +112,17 @@ public:
 	void DecrementCounter(TString cName, int delta);
 	void IncrementCounter(TString cName);
 	void DecrementCounter(TString cName);
-	int GetCounterValue(TString cName);
+	int GetCounterValue(TString cName) const;
 
 	//###### Output related
 	//Methods for setting output
-	void RegisterOutput(TString name, void* address);
+	void RegisterOutput(TString name, const void* const address);
 	void SetOutputState(TString name, OutputState state);
 
 	//Methods for getting output
-	const void *GetOutput(TString name, OutputState &state);
+	const void *GetOutput(TString name, OutputState &state) const;
 	template <class T>
-	const T* GetOutput(TString name, OutputState &state){
+	const T* GetOutput(TString name, OutputState &state) const{
 		return (T*)GetOutputVoid(name, state);
 	}
 
@@ -138,7 +139,7 @@ public:
 	TDetectorVEvent *GetEvent(TString name);
 
 	//###### Other methods
-	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove);
+	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const;
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	template <class T>
 	T* GetObject(TString name){
@@ -147,11 +148,14 @@ public:
 
 	int GetNEvents();
 
-protected:
-	const void* GetOutputVoid(TString name, OutputState &state);
+private:
+	UserMethods();
+
+	const void* GetOutputVoid(TString name, OutputState &state) const;
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
 	void* GetObjectVoid(TString name);
 
+protected:
 	HistoHandler fHisto;
 
 	TString fAnalyzerName; ///< Name of the analyzer

@@ -11,13 +11,22 @@
 
 using namespace std;
 
-UserMethods::UserMethods(BaseAnalysis *ba) {
+UserMethods::UserMethods(BaseAnalysis *ba):
+		fVerbosity(AnalysisFW::kNo),
+		fParent(ba)
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+}
 
-	fVerbosity = AnalysisFW::kNo;
-	fParent = ba;
+UserMethods::UserMethods(const UserMethods &c):
+		fVerbosity(c.fVerbosity),
+		fParent(c.fParent)
+{
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
 }
 
 UserMethods::~UserMethods() {
@@ -373,7 +382,7 @@ void UserMethods::SetUpdateInterval(int interval){
 	fHisto.SetUpdateInterval(interval);
 }
 
-bool UserMethods::PrintVerbose(AnalysisFW::VerbosityLevel printAbove){
+bool UserMethods::PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const{
 	/// \MemberDescr
 	/// \param printAbove : Verbosity level threshold
 	///
@@ -485,7 +494,7 @@ void UserMethods::DecrementCounter(TString cName){
 
 	fParent->GetCounterHandler()->DecrementCounter(fAnalyzerName + TString(".") + cName);
 }
-int UserMethods::GetCounterValue(TString cName){
+int UserMethods::GetCounterValue(TString cName) const{
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	///
@@ -495,7 +504,7 @@ int UserMethods::GetCounterValue(TString cName){
 	return fParent->GetCounterHandler()->GetCounterValue(fAnalyzerName + TString(".") + cName);
 }
 
-void UserMethods::RegisterOutput(TString name, void* address){
+void UserMethods::RegisterOutput(TString name, const void* const address){
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param address : pointer to the variable that is registered
@@ -517,7 +526,7 @@ void UserMethods::SetOutputState(TString name, OutputState state){
 	fParent->SetOutputState(fAnalyzerName + TString(".") + name, state);
 }
 
-const void *UserMethods::GetOutput(TString name, OutputState &state){
+const void *UserMethods::GetOutput(TString name, OutputState &state) const{
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param state : is filled with the current state of the output
@@ -536,7 +545,7 @@ DetectorAcceptance *UserMethods::GetDetectorAcceptanceInstance(){
 	return fParent->GetDetectorAcceptanceInstance();
 }
 
-const void* UserMethods::GetOutputVoid(TString name, OutputState &state){
+const void* UserMethods::GetOutputVoid(TString name, OutputState &state) const {
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for GetOutput method
 	/// \EndMemberDescr

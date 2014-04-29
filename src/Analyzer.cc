@@ -241,7 +241,7 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	//About DetectorAcceptance
 	if(fDetectorAcceptanceInstance==NULL) sDetAcc = "No";
 	else{
-		if(fDetectorAcceptanceInstance==fParent->IsDetectorAcceptanceInstaciated()) sDetAcc = "Global";
+		if(fDetectorAcceptanceInstance==fParent->IsDetectorAcceptanceInstanciated()) sDetAcc = "Global";
 		else sDetAcc = "Local";
 	}
 
