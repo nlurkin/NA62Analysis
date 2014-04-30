@@ -169,13 +169,13 @@ def buildFW(FWPath):
 	shell = getVar("FWSHELL", "sh")
 	if not os.path.exists("%s/build" % FWPath):
 		bash_command("cd %s && source ./scripts/env.%s && cmake -H. -Bbuild" % (FWPath,shell))
-	bash_command("cd %s/build && source ../scripts/env.%s && make" % (FWPath,shell))
+	bash_command("cd %s/build && source ../scripts/env.%s && make -j4" % (FWPath,shell))
 
 def buildUser():
 	shell = getVar("FWSHELL", "sh")
 	if not os.path.exists("build"):
 		bash_command("source ./scripts/env.%s && cmake -H. -Bbuild" % (shell))
-	bash_command("cd build && source ../scripts/env.%s && make" % (shell))
+	bash_command("cd build && source ../scripts/env.%s && make -j4" % (shell))
 	
 def available(FWPath, UserPath):
 	FWFolders = listDirClean("%s/Analyzers" % FWPath)

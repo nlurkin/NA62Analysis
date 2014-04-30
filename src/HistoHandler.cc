@@ -226,9 +226,11 @@ void HistoHandler::FillHisto(TString name, TString x, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
+	map<TString, TH1*>::iterator ptr1;
 
-	if(th1>0) fHisto[name]->Fill(x,w);
+	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,w);
+	else if(fHisto2.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double)." << endl;
+	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -242,13 +244,11 @@ void HistoHandler::FillHisto(TString name, TString x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
+	map<TString, TH2*>::iterator ptr2;
 
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,double,double)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,double,double)." << endl;
+	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
+	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double,double)." << endl;
+	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -262,13 +262,11 @@ void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
+	map<TString, TH2*>::iterator ptr2;
 
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,double)." << endl;
+	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
+	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << endl;
+	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -280,13 +278,11 @@ void HistoHandler::FillHisto(TString name, double x){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
+	map<TString, TH1*>::iterator ptr1;
 
-	if(th1>0) fHisto[name]->Fill(x,1);
-	else if(th2>0) cerr << name << " is a TH2. Cannot call with (double)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double)." << endl;
+	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,1);
+	else if(fHisto2.count(name)>0) cerr << name << " is a TH2. Cannot call with (double)." << endl;
+	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -300,13 +296,11 @@ void HistoHandler::FillHisto(TString name, double x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
+	map<TString, TH2*>::iterator ptr2;
 
-	if(th2>0) fHisto2[name]->Fill(x,y,w);
-	else if(th1>0) cerr << name << " is a TH1. Cannot call with (double,double,double)." << endl;
-	else if(tgraph>0) cerr << name << " is a TGraph. Cannot call with (double,double,double)." << endl;
+	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
+	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (double,double,double)." << endl;
+	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (double,double,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
 
@@ -319,15 +313,15 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	int th1 = fHisto.count(name);
-	int th2 = fHisto2.count(name);
-	int tgraph = fGraph.count(name);
+	map<TString, TH1*>::iterator ptr1;
+	map<TString, TH2*>::iterator ptr2;
+	map<TString, TGraph*>::iterator ptr3;
 
-	if(th1>0) fHisto2[name]->Fill(x,y);
-	else if(th2>0) fHisto2[name]->Fill(x,y,1);
-	else if(tgraph>0) {
+	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,y);
+	else if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,1);
+	else if((ptr3=fGraph.find(name))!=fGraph.end()){
 		fPoint[name]++;
-		fGraph[name]->SetPoint(fPoint[name], x, y);
+		ptr3->second->SetPoint(fPoint[name], x, y);
 	}
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
@@ -457,19 +451,22 @@ void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> 
 	/// \EndMemberDescr
 
 	vector<TString>::iterator itOrder;
+	map<TString, TH1*>::iterator ptr1;
+	map<TString, TH2*>::iterator ptr2;
+	map<TString, TGraph*>::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
-		if(fHisto.count(*itOrder)){
-			branches[fHisto[*itOrder]->ClassName()] = fHisto[*itOrder];
-			trees[fHisto[*itOrder]->ClassName()]->Fill();
+		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
+			branches[ptr1->second->ClassName()] = fHisto[*itOrder];
+			trees[ptr1->second->ClassName()]->Fill();
 		}
-		if(fHisto2.count(*itOrder)){
-			branches[fHisto2[*itOrder]->ClassName()] = fHisto2[*itOrder];
-			trees[fHisto2[*itOrder]->ClassName()]->Fill();
+		else if((ptr2=fHisto2.find(*itOrder))!=fHisto2.end()){
+			branches[ptr2->second->ClassName()] = fHisto2[*itOrder];
+			trees[ptr2->second->ClassName()]->Fill();
 		}
-		if(fGraph.count(*itOrder)){
-			branches[fGraph[*itOrder]->ClassName()] = fGraph[*itOrder];
-			trees[fGraph[*itOrder]->ClassName()]->Fill();
+		else if((ptr3=fGraph.find(*itOrder))!=fGraph.end()){
+			branches[ptr3->second->ClassName()] = fGraph[*itOrder];
+			trees[ptr3->second->ClassName()]->Fill();
 		}
 	}
 }
@@ -482,20 +479,22 @@ void HistoHandler::DrawAllPlots(TString analyzerName){
 	/// \EndMemberDescr
 
 	vector<TString>::iterator itOrder;
+	map<TString, TH1*>::iterator ptr1;
+	map<TString, TH2*>::iterator ptr2;
+	map<TString, TGraph*>::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
-		if(fHisto.count(*itOrder)){
+		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
 			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			fHisto[*itOrder]->Draw();
+			ptr1->second->Draw();
 		}
-		if(fHisto2.count(*itOrder)){
+		else if((ptr2=fHisto2.find(*itOrder))!=fHisto2.end()){
 			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			fHisto2[*itOrder]->Draw("COLZ");
+			ptr2->second->Draw("COLZ");
 		}
-
-		if(fGraph.count(*itOrder)){
+		else if((ptr3=fGraph.find(*itOrder))!=fGraph.end()){
 			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			fGraph[*itOrder]->Draw("A*");
+			ptr3->second->Draw("A*");
 		}
 	}
 }
@@ -528,35 +527,39 @@ void HistoHandler::SaveAllPlots(TString analyzerName){
 	map<TString, TString>::iterator itDirectory;
 	vector<TString>::iterator itOrder;
 
+	map<TString, TH1*>::iterator ptr1;
+	map<TString, TH2*>::iterator ptr2;
+	map<TString, TGraph*>::iterator ptr3;
+
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
-		if(fHisto.count(*itOrder)){
+		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
 			name = *itOrder;
 			itDirectory = fPlotsDirectory.find(name);
 			if(itDirectory != fPlotsDirectory.end()){
 				Mkdir(itDirectory->second, analyzerName);
 				gFile->Cd(itDirectory->second);
 			}
-			fHisto[*itOrder]->Write();
+			ptr1->second->Write();
 			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
-		if(fHisto2.count(*itOrder)){
+		else if((ptr2=fHisto2.find(*itOrder))!=fHisto2.end()){
 			name = *itOrder;
 			itDirectory = fPlotsDirectory.find(name);
 			if(itDirectory != fPlotsDirectory.end()){
 				Mkdir(itDirectory->second, analyzerName);
 				gFile->Cd(itDirectory->second);
 			}
-			fHisto2[*itOrder]->Write();
+			ptr2->second->Write();
 			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
-		if(fGraph.count(*itOrder)){
+		else if((ptr3=fGraph.find(*itOrder))!=fGraph.end()){
 			name = *itOrder;
 			itDirectory = fPlotsDirectory.find(name);
 			if(itDirectory != fPlotsDirectory.end()){
 				Mkdir(itDirectory->second, analyzerName);
 				gFile->Cd(itDirectory->second);
 			}
-			fGraph[*itOrder]->Write();
+			ptr3->second->Write();
 			if(itDirectory != fPlotsDirectory.end()) gFile->Cd("/" + analyzerName);
 		}
 	}
@@ -590,20 +593,25 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 
 	TCanvas *c;
 	TString canvasName = TString("c_" + analyzerName + "_") + name;
-	if(fHisto.count(name)>0){
+
+	map<TString, TH1*>::iterator ptr1;
+	map<TString, TH2*>::iterator ptr2;
+	map<TString, TGraph*>::iterator ptr3;
+
+	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		c = new TCanvas(canvasName, canvasName);
 		c->Draw();
-		fHisto[name]->Draw();
+		ptr1->second->Draw();
 	}
-	else if(fHisto2.count(name)>0){
+	else if((ptr2=fHisto2.find(name))!=fHisto2.end()){
 		c = new TCanvas(canvasName, canvasName);
 		c->Draw();
-		fHisto2[name]->Draw();
+		ptr2->second->Draw();
 	}
-	else if(fGraph.count(name)>0){
+	else if((ptr3=fGraph.find(name))!=fGraph.end()){
 		c = new TCanvas(canvasName, canvasName);
 		c->Draw();
-		fGraph[name]->Draw();
+		ptr3->second->Draw();
 	}
 	else{
 		cerr << "Plot " << name << " does not exist. Unable to set AutoUpdate." << endl;
@@ -666,8 +674,10 @@ TH1* HistoHandler::GetTH1(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	if(fHisto.count(name)>0){
-		return fHisto[name];
+	map<TString, TH1*>::iterator ptr1;
+
+	if((ptr1=fHisto.find(name))!=fHisto.end()){
+		return ptr1->second;
 	}
 	else{
 		cerr << "1D Plot " << name << " does not exist." << endl;
@@ -684,8 +694,10 @@ TH2* HistoHandler::GetTH2(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	if(fHisto2.count(name)>0){
-		return fHisto2[name];
+	map<TString, TH2*>::iterator ptr2;
+
+	if((ptr2=fHisto2.find(name))!=fHisto2.end()){
+		return ptr2->second;
 	}
 	else{
 		cerr << "2D Plot " << name << " does not exist." << endl;
@@ -702,8 +714,10 @@ TGraph* HistoHandler::GetTGraph(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	if(fGraph.count(name)>0){
-		return fGraph[name];
+	map<TString, TGraph*>::iterator ptr3;
+
+	if((ptr3=fGraph.find(name))!=fGraph.end()){
+		return ptr3->second;
 	}
 	else{
 		cerr << "Graph " << name << " does not exist." << endl;

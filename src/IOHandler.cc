@@ -114,21 +114,25 @@ bool IOHandler::RequestTree(TString name, TString branchName, TString className,
 	}
 }
 
+//TODO: change name
 int IOHandler::GetTree(int eventNb){
 	/// \MemberDescr
 	/// Effectively read all the requested trees in the input file and branch them
 	/// \EndMemberDescr
 
 	map<TString, TChain*>::iterator it;
+	map<TString, TDetectorVEvent*>::iterator ptr1;
+	map<TString, ObjectTriplet*>::iterator ptr2;
 
 	TString branchName;
 	for(it=fTree.begin(); it!=fTree.end(); it++){
-		if(fEvent.count(it->first)){
-			if(strstr(fEvent[it->first]->ClassName(), "Reco")!=NULL) FindAndGetTree(it->second, "Reco", fEvent[it->first]->ClassName(), &(fEvent[it->first]), eventNb);
-			else FindAndGetTree(it->second, "Hits", fEvent[it->first]->ClassName(), &(fEvent[it->first]), eventNb);
+		if((ptr1=fEvent.find(it->first))!=fEvent.end()){
+			if(strstr(ptr1->second->ClassName(), "Reco")!=NULL) FindAndGetTree(it->second, "Reco", ptr1->second->ClassName(), &(ptr1->second), eventNb);
+			else FindAndGetTree(it->second, "Hits", ptr1->second->ClassName(), &(ptr1->second), eventNb);
 		}
 		else{
-			FindAndGetTree(it->second, fObject[it->first]->fBranchName, fObject[it->first]->fClassName, &(fObject[it->first]->fObject), eventNb);
+			ptr2=fObject.find(it->first);
+			FindAndGetTree(it->second, ptr2->second->fBranchName, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
 		}
 	}
 
@@ -392,6 +396,7 @@ bool IOHandler::GetWithMC() const{
 	return fWithMC;
 }
 
+//TODO: change name
 void IOHandler::FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb){
 	/// \MemberDescr
 	/// \param tree :

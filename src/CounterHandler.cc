@@ -67,9 +67,12 @@ void CounterHandler::AddCounterToEventFraction(TString efName, TString cName){
 	/// Add a counter in the specified EventFraction table
 	/// \EndMemberDescr
 
-	if(fEventFraction.count(efName)>0){
-		if(fCounters.count(cName)>0){
-			fEventFraction[efName]->AddCounter(cName, &fCounters[cName]);
+	map<TString, EventFraction*>::iterator ptr;
+	map<TString, int>::iterator ptr2;
+
+	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
+		if((ptr2=fCounters.find(cName))!=fCounters.end()){
+			ptr->second->AddCounter(cName, &ptr2->second);
 		}
 		else cerr << "Counter " << cName << " doesn't exist." << endl;
 	}
@@ -83,9 +86,11 @@ void CounterHandler::DefineSampleSizeCounter(TString efName, TString cName){
 	/// Define counter as SampleSize in the specified EventFraction table
 	/// \EndMemberDescr
 
-	if(fEventFraction.count(efName)>0){
+	map<TString, EventFraction*>::iterator ptr;
+
+	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
 		if(fCounters.count(cName)>0){
-			fEventFraction[efName]->DefineSampleSizeCounter(cName);
+			ptr->second->DefineSampleSizeCounter(cName);
 		}
 		else cerr << "Counter " << cName << " doesn't exist." << endl;
 	}
@@ -99,8 +104,10 @@ void CounterHandler::SetSignificantDigits(TString efName, int v){
 	/// Set number of significant digits for the specified EventFraction table
 	/// \EndMemberDescr
 
-	if(fEventFraction.count(efName)>0){
-		fEventFraction[efName]->SetPrecision(v);
+	map<TString, EventFraction*>::iterator ptr;
+
+	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
+		ptr->second->SetPrecision(v);
 	}
 	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
 }
@@ -131,8 +138,10 @@ void CounterHandler::IncrementCounter(TString name, int v){
 	/// Increment a previously booked counter by v
 	/// \EndMemberDescr
 
-	if(fCounters.count(name)>0){
-		fCounters[name] = fCounters[name]+v;
+	map<TString, int>::iterator ptr;
+
+	if((ptr=fCounters.find(name))!=fCounters.end()){
+		ptr->second += v;
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 }
@@ -153,8 +162,10 @@ void CounterHandler::DecrementCounter(TString name, int v){
 	/// Decrement a previously booked counter by v
 	/// \EndMemberDescr
 
-	if(fCounters.count(name)>0){
-		fCounters[name] = fCounters[name]-v;
+	map<TString, int>::iterator ptr;
+
+	if((ptr=fCounters.find(name))!=fCounters.end()){
+		ptr->second -= v;
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 }
@@ -166,8 +177,10 @@ void CounterHandler::SetCounterValue(TString name, int v){
 	/// Set the value of a previously booked counter
 	/// \EndMemberDescr
 
-	if(fCounters.count(name)>0){
-		fCounters[name] = v;
+	map<TString, int>::iterator ptr;
+
+	if((ptr=fCounters.find(name))!=fCounters.end()){
+		ptr->second = v;
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 }
@@ -178,8 +191,10 @@ int CounterHandler::GetCounterValue(TString name) const{
 	/// Get the value of a previously booked counter
 	/// \EndMemberDescr
 
-	if(fCounters.count(name)>0){
-		return fCounters.find(name)->second;
+	map<TString, int>::const_iterator ptr;
+
+	if((ptr=fCounters.find(name))!=fCounters.end()){
+		return ptr->second;
 	}
 	else cerr << "Counter " << name << " doesn't exist." << endl;
 	return -1;

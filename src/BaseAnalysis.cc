@@ -137,13 +137,17 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	/// Return an output variable and the corresponding state
 	/// \EndMemberDescr
 
-	if(fOutput.count(name)==0){
+	map<TString, const void* const>::const_iterator ptr;
+
+	if((ptr=fOutput.find(name))!=fOutput.end()){
+		state = fOutputStates.find(name)->second;
+		return ptr->second;
+	}
+	else{
 		state = Analyzer::kOUninit;
 		cerr << "Output " << name << " not found" << endl;
 		return 0;
 	}
-	state = fOutputStates.find(name)->second;
-	return fOutput.find(name)->second;
 }
 
 void BaseAnalysis::PreProcess(){

@@ -82,6 +82,8 @@ private:
 		TString fBranchName;
 		void* fObject;
 	};
+
+	//TODO get direct access to pointers in this map
 	map<TString, TChain*> fTree; ///< Container for the trees
 	map<TString, TDetectorVEvent*> fEvent; ///< Container for the events
 	map<TString, ObjectTriplet*> fObject; ///< Container for the events
