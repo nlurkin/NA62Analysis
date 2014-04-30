@@ -16,7 +16,7 @@
 #include <TGraph.h>
 #include <TTree.h>
 #include <TCanvas.h>
-
+#include <unordered_map>
 using namespace std;
 
 /// \class HistoHandler
@@ -27,6 +27,19 @@ using namespace std;
 /// \Detailed
 /// Implements the histogram booking and filling methods as well as the methods for drawing and exporting.
 /// \EndDetailed
+
+namespace std
+{
+template<> struct hash<TString>
+{
+	size_t operator()(const TString& v) const
+	{
+		return v.Hash();
+	}
+};
+}
+
+
 class HistoHandler {
 public:
 	HistoHandler();
@@ -80,16 +93,16 @@ private:
 	void Mkdir(TString name, TString analyzerName) const;
 
 	//Histogram containers
-	map<TString,TH1*> fHisto; ///< Container for TH1
-	map<TString,TH2*> fHisto2; ///< Container for the TH2
-	map<TString,TGraph*> fGraph; ///< Container for the TGraph
-	map<TString,int> fPoint; ///< Container for the number of points in each TGraph
+	unordered_map<TString,TH1*> fHisto; ///< Container for TH1
+	unordered_map<TString,TH2*> fHisto2; ///< Container for the TH2
+	unordered_map<TString,TGraph*> fGraph; ///< Container for the TGraph
+	unordered_map<TString,int> fPoint; ///< Container for the number of points in each TGraph
 	vector<TCanvas*> fCanvas; ///< Container for the TCanvas
-	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
+	unordered_map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 	vector<TString> fHistoOrder; ///< Container for the booking order
 
 	set<TString> fAutoUpdateList;
-	map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name
+	unordered_map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name
 
 	int fUpdateRate; ///< Event interval at which the plots should be updated
 };

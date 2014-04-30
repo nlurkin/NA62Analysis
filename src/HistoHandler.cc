@@ -43,9 +43,9 @@ HistoHandler::~HistoHandler() {
 	/// Destructor. Delete all the histograms and canvases.
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::iterator it1;
-	map<TString,TH2*>::iterator it2;
-	map<TString,TGraph*>::iterator it3;
+	unordered_map<TString,TH1*>::iterator it1;
+	unordered_map<TString,TH2*>::iterator it2;
+	unordered_map<TString,TGraph*>::iterator it3;
 	vector<TCanvas*>::iterator it4;
 
 	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
@@ -226,7 +226,7 @@ void HistoHandler::FillHisto(TString name, TString x, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH1*>::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,w);
 	else if(fHisto2.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double)." << endl;
@@ -244,7 +244,7 @@ void HistoHandler::FillHisto(TString name, TString x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TH2*>::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
 	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double,double)." << endl;
@@ -262,7 +262,7 @@ void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TH2*>::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
 	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << endl;
@@ -278,7 +278,7 @@ void HistoHandler::FillHisto(TString name, double x){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH1*>::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,1);
 	else if(fHisto2.count(name)>0) cerr << name << " is a TH2. Cannot call with (double)." << endl;
@@ -296,7 +296,7 @@ void HistoHandler::FillHisto(TString name, double x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TH2*>::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
 	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (double,double,double)." << endl;
@@ -313,9 +313,9 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	map<TString, TH1*>::iterator ptr1;
-	map<TString, TH2*>::iterator ptr2;
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,y);
 	else if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,1);
@@ -407,9 +407,9 @@ void HistoHandler::PrintInitSummary() const{
 	/// Print a list of booked histograms.
 	/// \EndMemberDescr
 
-	map<TString,TH1*>::const_iterator it1;
-	map<TString,TH2*>::const_iterator it2;
-	map<TString,TGraph*>::const_iterator itGraph;
+	unordered_map<TString,TH1*>::const_iterator it1;
+	unordered_map<TString,TH2*>::const_iterator it2;
+	unordered_map<TString,TGraph*>::const_iterator itGraph;
 
 	StringTable histoTable("List of booked histograms");
 
@@ -451,9 +451,9 @@ void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> 
 	/// \EndMemberDescr
 
 	vector<TString>::iterator itOrder;
-	map<TString, TH1*>::iterator ptr1;
-	map<TString, TH2*>::iterator ptr2;
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -479,9 +479,9 @@ void HistoHandler::DrawAllPlots(TString analyzerName){
 	/// \EndMemberDescr
 
 	vector<TString>::iterator itOrder;
-	map<TString, TH1*>::iterator ptr1;
-	map<TString, TH2*>::iterator ptr2;
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -524,12 +524,12 @@ void HistoHandler::SaveAllPlots(TString analyzerName){
 	/// \EndMemberDescr
 
 	TString name;
-	map<TString, TString>::iterator itDirectory;
+	unordered_map<TString, TString>::iterator itDirectory;
 	vector<TString>::iterator itOrder;
 
-	map<TString, TH1*>::iterator ptr1;
-	map<TString, TH2*>::iterator ptr2;
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -594,9 +594,9 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	TCanvas *c;
 	TString canvasName = TString("c_" + analyzerName + "_") + name;
 
-	map<TString, TH1*>::iterator ptr1;
-	map<TString, TH2*>::iterator ptr2;
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		c = new TCanvas(canvasName, canvasName);
@@ -674,7 +674,7 @@ TH1* HistoHandler::GetTH1(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	map<TString, TH1*>::iterator ptr1;
+	unordered_map<TString, TH1*>::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		return ptr1->second;
@@ -694,7 +694,7 @@ TH2* HistoHandler::GetTH2(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	map<TString, TH2*>::iterator ptr2;
+	unordered_map<TString, TH2*>::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()){
 		return ptr2->second;
@@ -714,7 +714,7 @@ TGraph* HistoHandler::GetTGraph(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	map<TString, TGraph*>::iterator ptr3;
+	unordered_map<TString, TGraph*>::iterator ptr3;
 
 	if((ptr3=fGraph.find(name))!=fGraph.end()){
 		return ptr3->second;
