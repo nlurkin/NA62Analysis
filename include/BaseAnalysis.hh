@@ -51,7 +51,7 @@ private:
 	BaseAnalysis& operator=(const BaseAnalysis&);
 	void PreProcess();
 protected:
-	int fEventNb; ///< Number of events available in the TChains
+	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
 	bool fInitialized;
