@@ -8,7 +8,6 @@
 #ifndef HISTOHANDLER_HH_
 #define HISTOHANDLER_HH_
 
-#include <map>
 #include <set>
 #include <TH1I.h>
 #include <TH2I.h>
@@ -16,7 +15,7 @@
 #include <TGraph.h>
 #include <TTree.h>
 #include <TCanvas.h>
-#include <unordered_map>
+#include "containers.hh"
 using namespace std;
 
 /// \class HistoHandler
@@ -28,20 +27,61 @@ using namespace std;
 /// Implements the histogram booking and filling methods as well as the methods for drawing and exporting.
 /// \EndDetailed
 
-namespace std
-{
-template<> struct hash<TString>
-{
-	size_t operator()(const TString& v) const
-	{
-		return v.Hash();
-	}
-};
-}
-
-
 class HistoHandler {
+	template <typename PointerType>
+	class Iterator {
+		friend class HistoHandler;
+	public:
+		Iterator();
+		Iterator(const Iterator<PointerType>& c);
+		~ Iterator();
+		Iterator<PointerType>& operator=(const Iterator<PointerType>& c);
+		bool operator==(const Iterator<PointerType>& rhs) const;
+		bool operator==(const typename std::vector<PointerType*>::iterator& rhs) const;
+		bool operator!=(const Iterator<PointerType>& rhs) const;
+		bool operator!=(const typename std::vector<PointerType*>::iterator& rhs) const;
+		PointerType* operator*();
+		PointerType* operator->();
+
+		PointerType* operator++(int);
+		PointerType* operator--(int);
+		PointerType* operator++();
+		PointerType* operator--();
+
+		int operator-(const Iterator<PointerType>& rhs) const;
+		int operator-(const typename std::vector<PointerType*>::iterator& rhs) const;
+
+		Iterator<PointerType> operator-(int rhs) const;
+		Iterator<PointerType> operator+(int rhs) const;
+
+		Iterator<PointerType>& operator-=(int rhs);
+		Iterator<PointerType>& operator+=(int rhs);
+
+		Iterator<PointerType> operator[](int rhs);
+
+		typename std::vector<PointerType*>::iterator End();
+		typename std::vector<PointerType*>::iterator Begin();
+
+		bool operator<(const Iterator<PointerType>& rhs) const;
+		bool operator<(const typename std::vector<PointerType*>::iterator& rhs) const;
+		bool operator<=(const Iterator<PointerType>& rhs) const;
+		bool operator<=(const typename std::vector<PointerType*>::iterator& rhs) const;
+		bool operator>(const Iterator<PointerType>& rhs) const;
+		bool operator>(const typename std::vector<PointerType*>::iterator& rhs) const;
+		bool operator>=(const Iterator<PointerType>& rhs) const;
+		bool operator>=(const typename std::vector<PointerType*>::iterator& rhs) const;
+	private:
+		Iterator(const std::vector<PointerType*>& list);
+		Iterator(const Iterator<PointerType>& c, typename std::vector<PointerType*>::iterator it);
+		std::vector<PointerType*> *fList;
+		int *fNInstances;
+		typename std::vector<PointerType*>::iterator fIterator;
+	};
 public:
+	typedef Iterator<TH1> IteratorTH1;
+	typedef Iterator<TH2> IteratorTH2;
+	typedef Iterator<TGraph> IteratorTGraph;
+
 	HistoHandler();
 	HistoHandler(const HistoHandler& c);
 	virtual ~HistoHandler();
@@ -89,22 +129,55 @@ public:
 	TH2* GetTH2(TString name);
 	TGraph* GetTGraph(TString name);
 
+	IteratorTH1 GetIteratorTH1();
+	IteratorTH1 GetIteratorTH1(TString baseName);
+	IteratorTH2 GetIteratorTH2();
+	IteratorTH2 GetIteratorTH2(TString baseName);
+	IteratorTGraph GetIteratorTGraph();
+	IteratorTGraph GetIteratorTGraph(TString baseName);
 private:
 	void Mkdir(TString name, TString analyzerName) const;
 
 	//Histogram containers
-	unordered_map<TString,TH1*> fHisto; ///< Container for TH1
-	unordered_map<TString,TH2*> fHisto2; ///< Container for the TH2
-	unordered_map<TString,TGraph*> fGraph; ///< Container for the TGraph
-	unordered_map<TString,int> fPoint; ///< Container for the number of points in each TGraph
+	AnalysisFW::NA62Map<TString,TH1*>::type fHisto; ///< Container for TH1
+	AnalysisFW::NA62Map<TString,TH2*>::type fHisto2; ///< Container for the TH2
+	AnalysisFW::NA62Map<TString,TGraph*>::type fGraph; ///< Container for the TGraph
+	AnalysisFW::NA62Map<TString,int>::type fPoint; ///< Container for the number of points in each TGraph
 	vector<TCanvas*> fCanvas; ///< Container for the TCanvas
-	unordered_map<TString,TTree*> fOutTree; ///< Container for the output TTrees
+	AnalysisFW::NA62Map<TString,TTree*>::type fOutTree; ///< Container for the output TTrees
 	vector<TString> fHistoOrder; ///< Container for the booking order
 
 	set<TString> fAutoUpdateList;
-	unordered_map<TString, TString> fPlotsDirectory; ///< Matching between plot name and directory name
+	AnalysisFW::NA62Map<TString,TString>::type fPlotsDirectory; ///< Matching between plot name and directory name
 
 	int fUpdateRate; ///< Event interval at which the plots should be updated
 };
+
+template <typename PointerType>
+HistoHandler::Iterator<PointerType> operator+(int lhs, HistoHandler::Iterator<PointerType> rhs){
+	return rhs + lhs;
+}
+template <typename PointerType>
+HistoHandler::Iterator<PointerType> operator-(int lhs, HistoHandler::Iterator<PointerType> rhs){
+	return rhs - lhs;
+}
+
+template<typename PointerType>
+bool operator<(typename vector<PointerType*>::iterator lhs, const HistoHandler::Iterator<PointerType>& rhs){
+	return rhs>lhs;
+}
+template<typename PointerType>
+bool operator<=(typename vector<PointerType*>::iterator lhs, const HistoHandler::Iterator<PointerType>& rhs){
+	return rhs>=lhs;
+}
+template<typename PointerType>
+bool operator>(typename vector<PointerType*>::iterator lhs, const HistoHandler::Iterator<PointerType>& rhs){
+	return rhs<lhs;
+}
+template<typename PointerType>
+bool operator>=(typename vector<PointerType*>::iterator lhs, const HistoHandler::Iterator<PointerType>& rhs){
+	return rhs<=lhs;
+}
+
 
 #endif /* HISTOHANDLER_HH_ */

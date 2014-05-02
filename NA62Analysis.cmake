@@ -10,9 +10,20 @@ link_directories(${ROOT_LIBRARY_DIR})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	if(FULL_WARNING)
-		set(CMAKE_CXX_FLAGS "-std=c++0x -pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing")
+		message("Using Flag: FULL_WARNING")
+		set(CMAKE_CXX_FLAGS "-pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing -Wno-long-long")
 	else()
-		set(CMAKE_CXX_FLAGS "-std=c++0x -Wall")
+		set(CMAKE_CXX_FLAGS "-Wall -Wno-long-long")
+	endif()
+	
+	if(NA62_DEBUG)
+		message("Using Flag: NA62_DEBUG")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+	endif()
+	
+	if(C++11_COMPAT)
+		message("Using Flag: C++11_COMPAT")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -DNA62_C11=1")
 	endif()
 endif()
 
