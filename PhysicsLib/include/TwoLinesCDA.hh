@@ -19,7 +19,7 @@
 /// Each of the two lines can be defined by either two points or a point and a direction vector.
 /// The direction vector can be of any (non-zero) magnitude.
 /// The distance between the two lines and the point of closest approach are computed
-/// by the ComputeVertexCDA() methid.
+/// by the ComputeVertexCDA() method.
 /// \EndDetailed
 
 class TwoLinesCDA {

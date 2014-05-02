@@ -73,7 +73,9 @@
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
 ///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
-///	<tr><td></td><td></td><td></td><td></td></tr>
+///	<tr><td>CedarMCTester</td><td>A Test Tool to check the output of the Cedar component of NA62MC, showing photon distributions at various planes in the detector.
+///	It can be run on the standard output of NA62MC or on special output produced by compiling NA62MC with MDEFINES=CEDARRAYTRACING 
+///	</td><td>Validated</td><td>342</td></tr>
 ///	</table>
 ///	
 ///	\section addLib Additional libraries
@@ -87,6 +89,7 @@
 ///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
 ///	<tr><td>functions.cc</td><td>Provides some functions. Some might be useful but most of them are here by legacy from early development stages. 
 ///	This component should be reviewed.</td><td>Not validated</td><td>N/A</td></tr>
+///	<tr><td>TwoLinesCDA</td><td>Computation of distance between two lines (useful for vertexing)</td><td>Validated</td><td>342</td></tr>
 ///	</table>
 ///	
 ///	\subsection toolsLib Tools library
