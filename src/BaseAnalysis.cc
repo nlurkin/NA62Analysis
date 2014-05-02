@@ -9,7 +9,7 @@ BaseAnalysis::BaseAnalysis(){
 	/// Constructor
 	/// \EndMemberDescr
 
-	fEventNb = -1;
+	fNEvents = -1;
 	fVerbosity = AnalysisFW::kNo;
 	fGraphicMode = false;
 
@@ -68,7 +68,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fIOHandler.OpenOutput(outFileName);
 	fIOHandler.SetReferenceFileName(refFile);
 
-	fEventNb = fIOHandler.FillMCTruth(fVerbosity);
+	fNEvents = fIOHandler.FillMCTruth(fVerbosity);
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -90,7 +90,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	fEventNb = fIOHandler.GetTree(fEventNb);
+	fNEvents = fIOHandler.BranchTrees(fNEvents);
 
 	fInitialized = true;
 }
@@ -185,7 +185,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	timing = clock();
 
 	//Print event processing summary
-	if ( maxEvent > fEventNb || maxEvent <= 0 ) maxEvent = fEventNb;
+	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
 	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " events, beginning with event " << beginEvent << endl;
 
 	i_offset = maxEvent/100.;
@@ -356,5 +356,5 @@ CounterHandler* BaseAnalysis::GetCounterHandler() {
 }
 
 int BaseAnalysis::GetNEvents(){
-	return fEventNb;
+	return fNEvents;
 }

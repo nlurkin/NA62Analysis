@@ -1,5 +1,5 @@
 /*
- * IOHandler.hh
+  * IOHandler.hh
  *
  *  Created on: 22 Jan 2014
  *      Author: ncl
@@ -50,7 +50,7 @@ public:
 	//TTree
 	void RequestTree(TString name, TDetectorVEvent* const evt);
 	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
-	int GetTree(int eventNb);
+	int BranchTrees(int eventNb);
 
 	//Events
 	TDetectorVEvent *GetEvent(TString name);
@@ -69,7 +69,7 @@ public:
 	void PrintInitSummary() const;
 
 private:
-	void FindAndGetTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb);
+	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb);
 
 	class ObjectTriplet{
 	public:
