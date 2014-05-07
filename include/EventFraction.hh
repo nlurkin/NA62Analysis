@@ -11,15 +11,17 @@
 #include <iostream>
 #include <map>
 #include <TString.h>
+#include "containers.hh"
 using namespace std;
 
 /// \class EventFraction
 /// \Brief 
-/// To do
+/// Class containing a list of counters.
 /// \EndBrief 
 ///
 /// \Detailed
-/// To do 
+/// Class containing a list of counters. It can be used for printing and exporting at the end of the processing.
+///	It can also display ratio between the counters (with asymmetric errors) if one of the counter is defined as the sample size.
 /// \EndDetailed
 
 class EventFraction{
@@ -46,7 +48,7 @@ private:
 
 	void PrintToStream(ostream &s) const;
 
-	map<TString,int*> fCounters; ///< Map of counters
+	AnalysisFW::NA62Map<TString,int*>::type fCounters; ///< Map of counters
 	vector<TString> fSequence; ///< Define the display order of the counters
 	TString fName; ///< Name of the EventFraction
 	TString fSampleSizeCounter;	///< Name of the counter defining the sample size

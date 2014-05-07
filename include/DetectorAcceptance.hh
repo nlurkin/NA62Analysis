@@ -102,17 +102,17 @@ private:
 
 	//For drawing
 	int fTrackNumber;	///< Number of existing tracks
-	TCanvas *fCanvas;
+	TCanvas *fCanvas;	///< Canvas for drawing
 
 	//Dictionaries
 	map<int, int> fLAVDictionary;	///< Map for correspondence between geometry element index and LAV station index
 	map<int, int> fGTKDictionary;	///< Map for correspondence between geometry element index and GTK station index
 
 	//For keeping track of magnet effect
-	TVector3 fMomentumAfterMagnet;	///< Particle momentum after MNP33 magnet;
-	TVector3 fMomentumCenterMagnet;	/// Particle momentum in MNP33 magnet;
-	TVector3 fPositionAfterMagnet;	///< Particle position after MNP33 magnet;
-	TVector3 fPositionCenterMagnet;	///< Particle position in MNP33 magnet;
+	TVector3 fMomentumAfterMagnet;	///< Particle momentum after MNP33 magnet
+	TVector3 fMomentumCenterMagnet;	///< Particle momentum in MNP33 magnet
+	TVector3 fPositionAfterMagnet;	///< Particle position after MNP33 magnet
+	TVector3 fPositionCenterMagnet;	///< Particle position in MNP33 magnet
 	bool fMagnetEffect;	///< Did we already computed the magnet effect?
 };
 

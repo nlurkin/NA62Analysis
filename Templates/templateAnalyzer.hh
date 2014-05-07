@@ -24,7 +24,7 @@ class templateAnalyzer : public Analyzer
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple(MCSimple *fMCSimple);
-		void Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent);
+		void Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent);
 		void StartOfBurstUser();
 		void EndOfBurstUser();
 		void StartOfRunUser();
@@ -33,7 +33,7 @@ class templateAnalyzer : public Analyzer
 		void ExportPlot();
 		void DrawPlot();
 	private:
-		void Publish();
+		void Publish(); ///< Deprecated
 	protected:
 		//Add the variables that should be registered as output
 

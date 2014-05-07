@@ -363,17 +363,17 @@ void DetectorAcceptance::DrawTracks(){
 	fGeoManager->DrawTracks();
 }
 
-void DetectorAcceptance::CreateTrack(int pdgID, TVector3 pos, TVector3 momentum, int charge){
+void DetectorAcceptance::CreateTrack(int pdgID, TVector3 position, TVector3 momentum, int charge){
 	/// \MemberDescr
 	/// \param pdgID : PDG code of the particle
-	/// \param pos : Initial position of the particle
+	/// \param position : Initial position of the particle
 	/// \param momentum : Momentum of the particle
 	/// \param charge : charge of the particle
 	///
 	/// Create a new track to display.
 	/// \EndMemberDescr
 
-	double zmin = pos.Z();
+	double zmin = position.Z();
 	double zmax = 300000;
 	double step = 1000;
 	int nstep = (zmax-zmin)/step;
@@ -392,9 +392,9 @@ void DetectorAcceptance::CreateTrack(int pdgID, TVector3 pos, TVector3 momentum,
 	fTrackNumber++;
 	track = fGeoManager->GetLastTrack();
 
-	if(charge!=0) MagnetEffect(pos, momentum, charge, positionCenterMagnet, momentumCenterMagnet, positionAfterMagnet, momentumAfterMagnet);
+	if(charge!=0) MagnetEffect(position, momentum, charge, positionCenterMagnet, momentumCenterMagnet, positionAfterMagnet, momentumAfterMagnet);
 
-	currPos = pos;
+	currPos = position;
 	currMomentum = momentum;
 	z = 0;
 	for(int i=0; i<nstep; i++){
@@ -702,7 +702,6 @@ bool DetectorAcceptance::MagPropagateBefore(const TVector3 StartPosition, const 
 	/// \param StartMomentum : InitialMomentum of the particle
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Position of the particle at Z of the beginning start of the magnet
-	/// \param EndMomentum : Momentum of the particle at Z of the beginning of the magnet
 	///
 	/// Analytic propagation of a charged particle to the beginning of the spectrometer\n
 	/// \EndMemberDescr

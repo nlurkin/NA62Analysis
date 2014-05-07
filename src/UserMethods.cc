@@ -262,7 +262,8 @@ void UserMethods::FillHisto(TString name, double x, double y, double w){
 
 void UserMethods::FillHistoArray(TString baseName, int index, TString x, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param w : weight
 	///
@@ -274,7 +275,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, double 
 
 void UserMethods::FillHistoArray(TString baseName, int index, TString x, double y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -287,7 +289,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, double 
 
 void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -300,7 +303,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString
 
 void UserMethods::FillHistoArray(TString baseName, int index, double x, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param w : weight
 	//
@@ -312,7 +316,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x, double w
 
 void UserMethods::FillHistoArray(TString baseName, int index, double x){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	///
 	/// Fill a previously booked histogram with a weight of 1
@@ -323,7 +328,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x){
 
 void UserMethods::FillHistoArray(TString baseName, int index, double x, double y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -396,14 +402,14 @@ bool UserMethods::PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const{
 	return false;
 }
 
-void UserMethods::BookCounter(TString name){
+void UserMethods::BookCounter(TString cName){
 	/// \MemberDescr
-	/// \param name : Name of the Counter
+	/// \param cName : Name of the Counter
 	///
 	/// Book a new counter
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->BookCounter(fAnalyzerName + TString(".") + name);
+	fParent->GetCounterHandler()->BookCounter(fAnalyzerName + TString(".") + cName);
 }
 
 void UserMethods::AddCounterToEventFraction(TString efName, TString cName){
@@ -592,6 +598,70 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	return histo;
 }
 
+HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1() {
+	/// \MemberDescr
+	/// Create a TH1Iterator over all the TH1 stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTH1();
+}
+
+HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TH1Iterator over all the TH1 whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTH1(baseName);
+}
+
+HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2() {
+	/// \MemberDescr
+	/// Create a TH2Iterator over all the TH2 stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTH2();
+}
+
+HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TH2Iterator over all the TH2 whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTH2(baseName);
+}
+
+HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph() {
+	/// \MemberDescr
+	/// Create a TGraphIterator over all the TGraph stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTGraph();
+}
+
+HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TGraphIterator over all the TGraph whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	return fHisto.GetIteratorTGraph(baseName);
+}
+
+TChain* UserMethods::GetTree(TString name) {
+	/// \MemberDescr
+	/// \param name: Name of the TTree
+	///
+	/// Return  a pointer to the specified TChain
+	/// \EndMemberDescr
+
+	return fParent->GetTree(name);
+}
+
 void* UserMethods::GetObjectVoid(TString name){
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for GetObject method
@@ -639,5 +709,8 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 }
 
 int UserMethods::GetNEvents(){
+	/// \MemberDescr
+	/// Return the total number of events loaded from input trees.
+	/// \EndMemberDescr
 	return fParent->GetNEvents();
 }

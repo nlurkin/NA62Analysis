@@ -47,8 +47,10 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
-	/// \param mutipleFiles : Indicating if inFileName is the input file or the list of input files
-	/// \param textOnly : If yes the plots are printed on screen, in no only producing output file
+	///	\param params : list of command line parameters to parse and pass to analyzers
+	/// \param configFile : path to a runtime configuration file to be parsed and defining parameters for analyzers.
+	///	\param NFiles : Maximum number of input files to process
+	/// \param graphicMode : Graphical mode. Display plots on screen (call DrawPlots on analyzers).
 	/// \param refFile : Eventual name of a file containing reference plots
 	///
 	/// Add all the input files to TChains and to Analyzers and create branches.\n
@@ -137,7 +139,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	/// Return an output variable and the corresponding state
 	/// \EndMemberDescr
 
-	map<TString, const void* const>::const_iterator ptr;
+	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator ptr;
 
 	if((ptr=fOutput.find(name))!=fOutput.end()){
 		state = fOutputStates.find(name)->second;
@@ -155,8 +157,8 @@ void BaseAnalysis::PreProcess(){
 	/// Pre-processing method. Reset the states of the output
 	/// \EndMemberDescr
 
-	map<TString, Analyzer::OutputState>::iterator itState;
-	map<TString, void*>::iterator itOut;
+	AnalysisFW::NA62Map<TString,Analyzer::OutputState>::type::iterator itState;
+	AnalysisFW::NA62Map<TString,void*>::type::iterator itOut;
 
 	for(itState = fOutputStates.begin(); itState!=fOutputStates.end(); itState++){
 		itState->second = Analyzer::kOInvalid;
@@ -293,7 +295,7 @@ void BaseAnalysis::PrintInitSummary() const{
 	/// \EndMemberDescr
 
 	vector<Analyzer*>::const_iterator itAn;
-	map<TString, const void* const>::const_iterator itOutput;
+	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator itOutput;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
 	StringBalancedTable outputTable("List of Outputs");
@@ -356,5 +358,17 @@ CounterHandler* BaseAnalysis::GetCounterHandler() {
 }
 
 int BaseAnalysis::GetNEvents(){
+	/// \MemberDescr
+	///	Return the total number of events loaded from the input files
+	/// \EndMemberDescr
 	return fNEvents;
+}
+
+TChain* BaseAnalysis::GetTree(TString name) {
+	/// \MemberDescr
+	/// \param name : Name of the TChain
+	///
+	///	Return a pointer to the TChain
+	/// \EndMemberDescr
+	return fIOHandler.GetTree(name);
 }

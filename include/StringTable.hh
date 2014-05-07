@@ -35,8 +35,8 @@ public:
 	void AddValue(TString column, TString value);
 	void AddValue(unsigned int column, TString value);
 
-	StringTable& operator<<(TString v);
-	StringTable& operator<<(int v);
+	StringTable& operator<<(TString value);
+	StringTable& operator<<(int value);
 	StringTable& operator<<(StringTable& (*f)(StringTable&));
 
 	void NewRow();

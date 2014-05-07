@@ -28,6 +28,15 @@ using namespace std;
 /// \EndDetailed
 
 class HistoHandler {
+	/// \class Iterator
+	/// \Brief
+	/// Class for traversing sets of Histograms stored in HistoHandler.
+	/// \EndBrief
+	///
+	/// \Detailed
+	/// Class for traversing sets of Histograms stored in HistoHandler. Template class based on vector of pointers.
+	/// \EndDetailed
+
 	template <typename PointerType>
 	class Iterator {
 		friend class HistoHandler;
@@ -78,9 +87,9 @@ class HistoHandler {
 		typename std::vector<PointerType*>::iterator fIterator;
 	};
 public:
-	typedef Iterator<TH1> IteratorTH1;
-	typedef Iterator<TH2> IteratorTH2;
-	typedef Iterator<TGraph> IteratorTGraph;
+	typedef Iterator<TH1> IteratorTH1; ///< Typedef for Iterator over TH1
+	typedef Iterator<TH2> IteratorTH2; ///< Typedef for Iterator over TH2
+	typedef Iterator<TGraph> IteratorTGraph; ///< Typedef for Iterator over TGraph
 
 	HistoHandler();
 	HistoHandler(const HistoHandler& c);
@@ -102,11 +111,11 @@ public:
 	void FillHisto(TString name, double x, double y);
 
 	void FillHistoArray(TString baseName, int index, TString x, double w);
-	void FillHistoArray(TString name, int index, TString x, double y, double w);
-	void FillHistoArray(TString name, int index, TString x, TString y, double w);
-	void FillHistoArray(TString name, int index, double x);
-	void FillHistoArray(TString name, int index, double x, double y, double w);
-	void FillHistoArray(TString name, int index, double x, double y);
+	void FillHistoArray(TString baseName, int index, TString x, double y, double w);
+	void FillHistoArray(TString baseName, int index, TString x, TString y, double w);
+	void FillHistoArray(TString baseName, int index, double x);
+	void FillHistoArray(TString baseName, int index, double x, double y, double w);
+	void FillHistoArray(TString baseName, int index, double x, double y);
 
 	//Export all histograms into output trees
 	void ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches);
@@ -146,8 +155,11 @@ private:
 	vector<TCanvas*> fCanvas; ///< Container for the TCanvas
 	AnalysisFW::NA62Map<TString,TTree*>::type fOutTree; ///< Container for the output TTrees
 	vector<TString> fHistoOrder; ///< Container for the booking order
+	AnalysisFW::NA62Map<TString,IteratorTH1>::type fTH1IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
+	AnalysisFW::NA62Map<TString,IteratorTH2>::type fTH2IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
+	AnalysisFW::NA62Map<TString,IteratorTGraph>::type fTGraphIteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
 
-	set<TString> fAutoUpdateList;
+	set<TString> fAutoUpdateList; ///< List of histogram being regularly updated on screen during processing
 	AnalysisFW::NA62Map<TString,TString>::type fPlotsDirectory; ///< Matching between plot name and directory name
 
 	int fUpdateRate; ///< Event interval at which the plots should be updated

@@ -329,7 +329,8 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 //########################################
 void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param w : weight
 	///
@@ -341,7 +342,8 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double
 
 void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -354,7 +356,8 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, double
 
 void HistoHandler::FillHistoArray(TString baseName, int index, TString x, TString y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -367,7 +370,8 @@ void HistoHandler::FillHistoArray(TString baseName, int index, TString x, TStrin
 
 void HistoHandler::FillHistoArray(TString baseName, int index, double x){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	///
 	/// Fill a previously booked histogram with a weight of 1
@@ -378,7 +382,8 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x){
 
 void HistoHandler::FillHistoArray(TString baseName, int index, double x, double y, double w){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	/// \param w : weight
@@ -391,7 +396,8 @@ void HistoHandler::FillHistoArray(TString baseName, int index, double x, double 
 
 void HistoHandler::FillHistoArray(TString baseName, int index, double x, double y){
 	/// \MemberDescr
-	/// \param name : Name of the histogram
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	/// \param x : abscissa
 	/// \param y : ordinate
 	///
@@ -739,79 +745,136 @@ void HistoHandler::Mkdir(TString name, TString analyzerName) const{
 }
 
 HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1() {
+	/// \MemberDescr
+	/// Create a TH1Iterator over all the TH1 stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
 	vector<TString>::const_iterator it;
 	vector<TH1*> list;
 	AnalysisFW::NA62Map<TString,TH1*>::type::const_iterator itEl;
+	AnalysisFW::NA62Map<TString,IteratorTH1>::type::iterator itList;
+
+	if((itList=fTH1IteratorsList.find(""))!=fTH1IteratorsList.end())
+		return itList->second;
 
 	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
 		if((itEl=fHisto.find(*it))!=fHisto.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTH1(list);
+	itList = fTH1IteratorsList.insert(pair<TString,IteratorTH1>("", IteratorTH1(list))).first;
+	return itList->second;
 }
 
 HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TH1Iterator over all the TH1 whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	vector<TString>::const_iterator it;
 	vector<TH1*> list;
 	AnalysisFW::NA62Map<TString,TH1*>::type::const_iterator itEl;
-	bool exists = true;
-	int i = 0;
-	while(exists){
-		if((itEl=fHisto.find(baseName + (Long_t)i))!=fHisto.end()) list.push_back(itEl->second);
-		else exists=false;
-		++i;
+	AnalysisFW::NA62Map<TString,IteratorTH1>::type::iterator itList;
+
+	if((itList=fTH1IteratorsList.find(baseName))!=fTH1IteratorsList.end())
+		return itList->second;
+
+	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
+		if(!it->BeginsWith(baseName)) continue;
+		if((itEl=fHisto.find(*it))!=fHisto.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTH1(list);
+	itList = fTH1IteratorsList.insert(pair<TString,IteratorTH1>(baseName, IteratorTH1(list))).first;
+	return itList->second;
 }
 
 HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2() {
+	/// \MemberDescr
+	/// Create a TH2Iterator over all the TH2 stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
 	vector<TString>::const_iterator it;
 	vector<TH2*> list;
 	AnalysisFW::NA62Map<TString,TH2*>::type::const_iterator itEl;
+	AnalysisFW::NA62Map<TString,IteratorTH2>::type::iterator itList;
+
+	if((itList=fTH2IteratorsList.find(""))!=fTH2IteratorsList.end())
+		return itList->second;
 
 	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
 		if((itEl=fHisto2.find(*it))!=fHisto2.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTH2(list);
+	itList = fTH2IteratorsList.insert(pair<TString,IteratorTH2>("", IteratorTH2(list))).first;
+	return itList->second;
 }
 
 HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TH2Iterator over all the TH2 whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	vector<TString>::const_iterator it;
 	vector<TH2*> list;
 	AnalysisFW::NA62Map<TString,TH2*>::type::const_iterator itEl;
-	bool exists = true;
-	int i = 0;
-	while(exists){
-		if((itEl=fHisto2.find(baseName + (Long_t)i))!=fHisto2.end()) list.push_back(itEl->second);
-		else exists=false;
-		++i;
+	AnalysisFW::NA62Map<TString,IteratorTH2>::type::iterator itList;
+
+	if((itList=fTH2IteratorsList.find(baseName))!=fTH2IteratorsList.end())
+		return itList->second;
+
+	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
+		if(!it->BeginsWith(baseName)) continue;
+		if((itEl=fHisto2.find(*it))!=fHisto2.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTH2(list);
+	itList = fTH2IteratorsList.insert(pair<TString,IteratorTH2>(baseName, IteratorTH2(list))).first;
+	return itList->second;
 }
 
 HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph() {
+	/// \MemberDescr
+	/// Create a TGraphIterator over all the TGraph stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
 	vector<TString>::const_iterator it;
 	vector<TGraph*> list;
 	AnalysisFW::NA62Map<TString,TGraph*>::type::const_iterator itEl;
+	AnalysisFW::NA62Map<TString,IteratorTGraph>::type::iterator itList;
+
+	if((itList=fTGraphIteratorsList.find(""))!=fTGraphIteratorsList.end())
+		return itList->second;
 
 	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
 		if((itEl=fGraph.find(*it))!=fGraph.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTGraph(list);
+	itList = fTGraphIteratorsList.insert(pair<TString,IteratorTGraph>("", IteratorTGraph(list))).first;
+	return itList->second;
 }
 
 HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
+	/// \MemberDescr
+	/// \param baseName: BaseName of the histograms to iterate over.
+	///
+	/// Create a TGraphIterator over all the TGraph whose name is starting with baseName and stored in this instance of HistoHandler.
+	/// \EndMemberDescr
+
+	vector<TString>::const_iterator it;
 	vector<TGraph*> list;
 	AnalysisFW::NA62Map<TString,TGraph*>::type::const_iterator itEl;
-	bool exists = true;
-	int i = 0;
-	while(exists){
-		if((itEl=fGraph.find(baseName + (Long_t)i))!=fGraph.end()) list.push_back(itEl->second);
-		else exists=false;
-		++i;
+	AnalysisFW::NA62Map<TString,IteratorTGraph>::type::iterator itList;
+
+	if((itList=fTGraphIteratorsList.find(baseName))!=fTGraphIteratorsList.end())
+		return itList->second;
+
+	for(it=fHistoOrder.begin(); it!=fHistoOrder.end(); ++it){
+		if(!it->BeginsWith(baseName)) continue;
+		if((itEl=fGraph.find(*it))!=fGraph.end()) list.push_back(itEl->second);
 	}
 
-	return IteratorTGraph(list);
+	itList = fTGraphIteratorsList.insert(pair<TString,IteratorTGraph>(baseName, IteratorTGraph(list))).first;
+	return itList->second;
 }

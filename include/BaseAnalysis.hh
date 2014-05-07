@@ -5,6 +5,7 @@
 #include "DetectorAcceptance.hh"
 #include "CounterHandler.hh"
 #include "IOHandler.hh"
+#include "containers.hh"
 
 /// \class BaseAnalysis
 /// \Brief 
@@ -23,7 +24,7 @@ public:
 
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool textonly, TString refFile);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile);
 	void Process(int beginEvent, int maxEvent);
 
 	//Output methods
@@ -38,13 +39,12 @@ public:
 
 	void CheckNewFileOpened();
 
-	void WriteEventFraction() const;
-
 	IOHandler * GetIOHandler();
 
 	CounterHandler* GetCounterHandler();
 
 	int GetNEvents();
+	TChain* GetTree(TString name);
 
 private:
 	BaseAnalysis(const BaseAnalysis&);
@@ -54,12 +54,12 @@ protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
-	bool fInitialized;
+	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
 
 	vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
-	map<TString, const void* const> fOutput; ///< Container for outputs of all analyzers
-	map<TString, Analyzer::OutputState> fOutputStates; ///< Container for output states for all analyzers
+	AnalysisFW::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
+	AnalysisFW::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
 
 	vector<MCSimple*> fMCSimple; ///< Container for MCSimple
 

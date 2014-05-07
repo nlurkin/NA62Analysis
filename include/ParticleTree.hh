@@ -53,7 +53,8 @@ private:
 	TString fName; ///< Name of the particle
 	KinePart *fParticle; ///< Pointer to kinePart
 
-	unsigned int fGiven, fPrevGiven; ///< Internal mess
+	unsigned int fGiven; ///< Internal mess
+	unsigned int fPrevGiven; ///< Internal mess
 };
 
 #endif /* PARTICLETREE_HH_ */

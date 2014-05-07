@@ -84,5 +84,9 @@ int ParticleInterface::GetParticlePDGid(TString name){
 }
 
 void ParticleInterface::PrintTable(){
+	/// \MemberDescr
+	/// Dump the TDatabasePDG table on screen
+	/// \EndMemberDescr
+
 	fTable->Print();
 }

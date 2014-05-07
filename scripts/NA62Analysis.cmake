@@ -1,28 +1,32 @@
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/.. )
 
-include(${NA62ANALYSIS}/common.cmake)
+include(${NA62ANALYSIS}/scripts/common.cmake)
 
 #require ROOT
-include(${NA62ANALYSIS}/FindROOT.cmake)
+include(${NA62ANALYSIS}/scripts/FindROOT.cmake)
 include_directories(${ROOT_INCLUDE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "-std=c++0x")
+	try_compile(TEST_UN_MAP ${NA62ANALYSIS}/build/test ${NA62ANALYSIS}/scripts/test_unordered_map.cpp)
+	set(CMAKE_CXX_FLAGS "")
 	if(FULL_WARNING)
-		message("Using Flag: FULL_WARNING")
+		message("-- Using Flag: FULL_WARNING")
 		set(CMAKE_CXX_FLAGS "-pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing -Wno-long-long")
 	else()
 		set(CMAKE_CXX_FLAGS "-Wall -Wno-long-long")
 	endif()
 	
 	if(NA62_DEBUG)
-		message("Using Flag: NA62_DEBUG")
+		message("-- Using Flag: NA62_DEBUG")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 	endif()
 	
-	if(C++11_COMPAT)
-		message("Using Flag: C++11_COMPAT")
+	# Test unordered_map feature of c++11 availability
+	if(C++11_COMPAT AND TEST_UN_MAP)
+		message("-- Using Flag: C++11_COMPAT")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -DNA62_C11=1")
 	endif()
 endif()

@@ -2,6 +2,24 @@
 NA62Analysis Project
 ################################################################
 
+xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 342
+		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
+		  A flag to generate debugging information (-g flag of compiler)
+		  A flag to enable all the warning flags
+		  A flag to enable c++11 support (only if gcc version supports the feature)
+		  An option for compiling with several cores
+		  Type NA62AnalysisBuilder.py build -h for more info 
+		- Moved several scripts to the scripts folder
+		- Add TwoLinesCDA and CedarMCTester in the list of available components (validated)
+		- Several performances improvements in the internal parts of the framework
+		- Implement HistoHandler::Iterator<T> to run over a set of booked histograms 
+		  (can be accessed with GetIteratorTH1|TH2|TGraph; see xxx for documentation)
+		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
+		- Add GetNEvents method to get the total number of events and GetTree to get a
+		  pointer to a TTree.
+		- 
+		
 2014-04-24	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 341
 		- Fix missing extra include dirs, libs dirs and libs in user CMakeLists.txt

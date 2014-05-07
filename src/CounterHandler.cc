@@ -28,7 +28,7 @@ CounterHandler::~CounterHandler() {
 	/// Destructor
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator itEF;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::iterator itEF;
 
 	while(fEventFraction.size()>0){
 		itEF = fEventFraction.begin();
@@ -42,7 +42,7 @@ void CounterHandler::WriteEventFraction(TString fileName) const{
 	/// Dump the EventFraction
 	/// \EndMemberDescr
 
-	map<TString,EventFraction*>::const_iterator it;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::const_iterator it;
 
 	for(it=fEventFraction.begin(); it!=fEventFraction.end(); it++){
 		it->second->DumpTable();
@@ -67,8 +67,8 @@ void CounterHandler::AddCounterToEventFraction(TString efName, TString cName){
 	/// Add a counter in the specified EventFraction table
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator ptr;
-	map<TString, int>::iterator ptr2;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::iterator ptr;
+	AnalysisFW::NA62Map<TString,int>::type::iterator ptr2;
 
 	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
 		if((ptr2=fCounters.find(cName))!=fCounters.end()){
@@ -86,7 +86,7 @@ void CounterHandler::DefineSampleSizeCounter(TString efName, TString cName){
 	/// Define counter as SampleSize in the specified EventFraction table
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator ptr;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::iterator ptr;
 
 	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
 		if(fCounters.count(cName)>0){
@@ -104,7 +104,7 @@ void CounterHandler::SetSignificantDigits(TString efName, int v){
 	/// Set number of significant digits for the specified EventFraction table
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::iterator ptr;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::iterator ptr;
 
 	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
 		ptr->second->SetPrecision(v);
@@ -138,7 +138,7 @@ void CounterHandler::IncrementCounter(TString name, int v){
 	/// Increment a previously booked counter by v
 	/// \EndMemberDescr
 
-	map<TString, int>::iterator ptr;
+	AnalysisFW::NA62Map<TString,int>::type::iterator ptr;
 
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second += v;
@@ -162,7 +162,7 @@ void CounterHandler::DecrementCounter(TString name, int v){
 	/// Decrement a previously booked counter by v
 	/// \EndMemberDescr
 
-	map<TString, int>::iterator ptr;
+	AnalysisFW::NA62Map<TString,int>::type::iterator ptr;
 
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second -= v;
@@ -177,7 +177,7 @@ void CounterHandler::SetCounterValue(TString name, int v){
 	/// Set the value of a previously booked counter
 	/// \EndMemberDescr
 
-	map<TString, int>::iterator ptr;
+	AnalysisFW::NA62Map<TString,int>::type::iterator ptr;
 
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second = v;
@@ -191,7 +191,7 @@ int CounterHandler::GetCounterValue(TString name) const{
 	/// Get the value of a previously booked counter
 	/// \EndMemberDescr
 
-	map<TString, int>::const_iterator ptr;
+	AnalysisFW::NA62Map<TString,int>::type::const_iterator ptr;
 
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		return ptr->second;
@@ -205,8 +205,8 @@ void CounterHandler::PrintInitSummary() const{
 	/// Print the summary of the EventFraction and Counters after initialization
 	/// \EndMemberDescr
 
-	map<TString, EventFraction*>::const_iterator itEvtFrac;
-	map<TString, int>::const_iterator itCounter;
+	AnalysisFW::NA62Map<TString,EventFraction*>::type::const_iterator itEvtFrac;
+	AnalysisFW::NA62Map<TString,int>::type::const_iterator itCounter;
 
 	StringBalancedTable evtFracTable("List of EventFraction");
 	StringBalancedTable counterTable("List of Counters");

@@ -10,7 +10,7 @@
 
 #include <map>
 #include <TString.h>
-#include <TTree.h>
+#include <TChain.h>
 #include <TGraph.h>
 #include <TH1I.h>
 #include <TH2I.h>
@@ -66,22 +66,61 @@ public:
 	void FillHisto(TString name, double x, double y, double w);
 
 	void FillHistoArray(TString baseName, int index, TString x, double w);
-	void FillHistoArray(TString name, int index, TString x, double y, double w);
-	void FillHistoArray(TString name, int index, TString x, TString y, double w);
-	void FillHistoArray(TString name, int index, double x, double w);
-	void FillHistoArray(TString name, int index, double x);
-	void FillHistoArray(TString name, int index, double x, double y, double w);
+	void FillHistoArray(TString baseName, int index, TString x, double y, double w);
+	void FillHistoArray(TString baseName, int index, TString x, TString y, double w);
+	void FillHistoArray(TString baseName, int index, double x, double w);
+	void FillHistoArray(TString baseName, int index, double x);
+	void FillHistoArray(TString baseName, int index, double x, double y, double w);
+
+	HistoHandler::IteratorTH1 GetIteratorTH1();
+	HistoHandler::IteratorTH1 GetIteratorTH1(TString baseName);
+	HistoHandler::IteratorTH2 GetIteratorTH2();
+	HistoHandler::IteratorTH2 GetIteratorTH2(TString baseName);
+	HistoHandler::IteratorTGraph GetIteratorTGraph();
+	HistoHandler::IteratorTGraph GetIteratorTGraph(TString baseName);
 
 	//Alias for user to make difference between TH1 and TH2
-	inline void FillHisto2(TString name, TString x, double y, double w) {FillHisto(name,x,y,w);};
-	inline void FillHisto2(TString name, TString x, TString y, double w) {FillHisto(name,x,y,w);};
-	inline void FillHisto2(TString name, double x, double w) {FillHisto(name,x,w);};
-	inline void FillHisto2(TString name, double x, double y, double w) {FillHisto(name,x,y,w);};
+	inline void FillHisto2(TString name, TString x, double y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHisto(TString, TString, double, double)
+		/// \EndMemberDescr
+	FillHisto(name,x,y,w);};
+	inline void FillHisto2(TString name, TString x, TString y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHisto(TString, TString, TString, double)
+		/// \EndMemberDescr
+	FillHisto(name,x,y,w);};
+	inline void FillHisto2(TString name, double x, double w) {
+		/// \MemberDescr
+		/// Alias to FillHisto(TString, double, double)
+		/// \EndMemberDescr
+	FillHisto(name,x,w);};
+	inline void FillHisto2(TString name, double x, double y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHisto(TString, double, double, double)
+		/// \EndMemberDescr
+	FillHisto(name,x,y,w);};
 
-	inline void FillHisto2Array(TString name, int index, TString x, double y, double w) {FillHistoArray(name, index, x, y, w);};
-	inline void FillHisto2Array(TString name, int index, TString x, TString y, double w) {FillHistoArray(name, index, x, y, w);};
-	inline void FillHisto2Array(TString name, int index, double x, double w) {FillHistoArray(name, index, x, w);};
-	inline void FillHisto2Array(TString name, int index, double x, double y, double w) {FillHistoArray(name, index, x, y, w);};
+	inline void FillHisto2Array(TString name, int index, TString x, double y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHistoArray(TString, int, TString, double, double)
+		/// \EndMemberDescr
+	FillHistoArray(name, index, x, y, w);};
+	inline void FillHisto2Array(TString name, int index, TString x, TString y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHistoArray(TString, int, TString, TString, double)
+		/// \EndMemberDescr
+	FillHistoArray(name, index, x, y, w);};
+	inline void FillHisto2Array(TString name, int index, double x, double w) {
+		/// \MemberDescr
+		/// Alias to FillHistoArray(TString, int, double, double)
+		/// \EndMemberDescr
+	FillHistoArray(name, index, x, w);};
+	inline void FillHisto2Array(TString name, int index, double x, double y, double w) {
+		/// \MemberDescr
+		/// Alias to FillHistoArray(TString, int, double, double, double)
+		/// \EndMemberDescr
+	FillHistoArray(name, index, x, y, w);};
 
 	//Methods for drawing plots on screen
 	void DrawAllPlots();
@@ -123,6 +162,13 @@ public:
 	const void *GetOutput(TString name, OutputState &state) const;
 	template <class T>
 	const T* GetOutput(TString name, OutputState &state) const{
+		/// \MemberDescr
+		/// \param name : name of the output
+		/// \param state : is filled with the current state of the output
+		///
+		/// Return an output variable and the corresponding state (template version)
+		/// \EndMemberDescr
+
 		return (T*)GetOutputVoid(name, state);
 	}
 
@@ -131,11 +177,21 @@ public:
 	void RequestTree(TString name, TDetectorVEvent *evt);
 	template <class T>
 	void RequestTree(TString name, TString branchName, TString className, T* obj){
+		/// \MemberDescr
+		/// \param name : Name of the requested TTree
+		/// \param branchName : Name of the Branch to retrieve
+		/// \param className : Name of the class type in this branch
+		/// \param obj : Pointer to an instance of any class
+		///
+		/// Request a tree in the input file. If already requested before, do nothing.
+		/// \EndMemberDescr
+
 		if(!RequestTreeVoid(name, branchName, className, obj)){
 			delete obj;
 		}
 	}
 
+	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString name);
 
 	//###### Other methods
@@ -143,6 +199,12 @@ public:
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	template <class T>
 	T* GetObject(TString name){
+		/// \MemberDescr
+		/// \param name : Name of the TTree from which the object is read
+		///
+		/// Return the pointer to the object corresponding to the given tree (template version)
+		/// \EndMemberDescr
+
 		return (T*)GetObjectVoid(name);
 	}
 
@@ -156,7 +218,7 @@ private:
 	void* GetObjectVoid(TString name);
 
 protected:
-	HistoHandler fHisto;
+	HistoHandler fHisto; ///< Local instance of HistoHandler
 
 	TString fAnalyzerName; ///< Name of the analyzer
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level

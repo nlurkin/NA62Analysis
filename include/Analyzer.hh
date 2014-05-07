@@ -59,6 +59,13 @@ public:
 	void OpenNewTree(TString name, TString title);
 	template <class T>
 	void AddBranch(TString name, TString branchName, T *pointer){
+		/// \MemberDescr
+		/// \param name : Name of the output tree
+		///	\param branchName : Name of the branch
+		/// \param pointer : Pointer to the object used for filling the tree
+		///
+		/// Add a new branch to an existing output tree.
+		/// \EndMemberDescr
 		if(fOutTree.count(name)==0){
 			cerr << fAnalyzerName << ": Output TTree " << name << " does not exist" << endl;
 		}
@@ -74,6 +81,14 @@ public:
 	//Methods to handle parameters
 	template <class T>
 	void AddParam(TString name, TString type, T* address, T defaultValue){
+		/// \MemberDescr
+		/// \param name : Name of the parameter
+		///	\param type : Type of the parameter (allowed: char, int, long, bool, float, double, string, TString)
+		/// \param address : Pointer to the variable that will be assigned the parameter value
+		/// \param defaultValue : Default value if the parameter is not specified
+		///
+		/// Add a new branch to an existing output tree.
+		/// \EndMemberDescr
 		if(!CheckType(type)){
 			cout << "Error when adding parameter " << name << " : type not supported " << type << endl;
 			return;
@@ -81,7 +96,7 @@ public:
 		*address = defaultValue;
 		fParams.insert(pair<TString, param_t>(name, param_t(type, address)));
 	}
-	void ApplyParam(TString paramName, TString value);
+	void ApplyParam(TString paramName, TString paramValue);
 
 	double compareToReferencePlot(TString h1, bool KS);
 

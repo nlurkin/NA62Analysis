@@ -10,6 +10,7 @@
 
 #include <map>
 #include "EventFraction.hh"
+#include "containers.hh"
 
 /// \class CounterHandler
 /// \Brief
@@ -46,8 +47,8 @@ public:
 	void PrintInitSummary() const;
 
 private:
-	map<TString, EventFraction*> fEventFraction; ///< Container for event fraction
-	map<TString, int> fCounters; ///< Container for counters
+	AnalysisFW::NA62Map<TString,EventFraction*>::type fEventFraction; ///< Container for event fraction
+	AnalysisFW::NA62Map<TString,int>::type fCounters; ///< Container for counters
 };
 
 #endif /* COUNTERHANDLER_HH_ */

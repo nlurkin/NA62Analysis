@@ -259,6 +259,11 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 }
 
 void Analyzer::SetVerbosity(AnalysisFW::VerbosityLevel l){
+	/// \MemberDescr
+	///	\param l : verbosity level
+	///
+	///	Set the verbosity level of the Analyzer
+	/// \EndMemberDescr
 	fVerbosity = l;
 }
 

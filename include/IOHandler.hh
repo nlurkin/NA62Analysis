@@ -15,6 +15,7 @@
 #include <TDetectorVEvent.hh>
 #include "FWEnums.hh"
 #include "Event.hh"
+#include "containers.hh"
 using namespace std;
 
 /// \class IOHandler
@@ -51,6 +52,7 @@ public:
 	void RequestTree(TString name, TDetectorVEvent* const evt);
 	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
 	int BranchTrees(int eventNb);
+	TChain* GetTree(TString name);
 
 	//Events
 	TDetectorVEvent *GetEvent(TString name);
@@ -71,28 +73,45 @@ public:
 private:
 	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb);
 
+	/// \class ObjectTriplet
+	/// \Brief
+	/// Class containing an object branched to a custom TTree
+	/// \EndBrief
+	///
+	/// \Detailed
+	/// Class containing an object branched to a custom TTree. It contains everything needed to fully define the custom object:
+	///	The class name, the branch name and the pointer to the object (stored as void*)
+	/// \EndDetailed
+
 	class ObjectTriplet{
 	public:
-		ObjectTriplet(TString c, TString branch, void* obj){
-			fClassName = c;
-			fBranchName = branch;
-			fObject = obj;
+		ObjectTriplet(TString c, TString branch, void* obj):
+			fClassName(c),
+			fBranchName(branch),
+			fObject(obj)
+		{
+			/// \MemberDescr
+			///	\param c : Class name of the object
+			///	\param branch : Name of the branch
+			/// \param obj : Pointer to the object
+			///	Constructor
+			///	\EndMemberDescr
 		};
-		TString fClassName;
-		TString fBranchName;
-		void* fObject;
+		TString fClassName; ///< Class name of the object
+		TString fBranchName; ///< Branch name
+		void* fObject; ///< Pointer to the object
 	};
 
 	//TODO get direct access to pointers in this map
-	map<TString, TChain*> fTree; ///< Container for the trees
-	map<TString, TDetectorVEvent*> fEvent; ///< Container for the events
-	map<TString, ObjectTriplet*> fObject; ///< Container for the events
+	AnalysisFW::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
+	AnalysisFW::NA62Map<TString,TDetectorVEvent*>::type fEvent; ///< Container for the events
+	AnalysisFW::NA62Map<TString,ObjectTriplet*>::type fObject; ///< Container for the events
 
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
 
-	multimap<TString, TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
-	multimap<TString, TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
+	multimap<TString,TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
+	multimap<TString,TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
 
@@ -101,7 +120,7 @@ private:
 	TFile *fOutFile; ///< Output file
 	TString fOutFileName; ///< Output fileName
 
-	map<TString, TTree*> fExportTrees; ///< Container for TTrees for exporting
+	AnalysisFW::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
 	bool fWithMC; ///< Do we have MC in the file?
 

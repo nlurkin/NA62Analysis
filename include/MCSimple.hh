@@ -52,7 +52,7 @@ private:
 	TString GetParticleName(int pdgID);
 	int GetPdgID(TString name);
 	void ClearParticles();
-	void ReplaceID(multimap<pair<int,int>, int> &s, int genID, int particleID);
+	void ReplaceID(multimap<pair<int,int>, int> &s, int seqID, int particleID);
 
 	map<int, vector<KinePart*>* > fParticles; ///< Container for particle vectors
 	multimap<pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect

@@ -1,4 +1,4 @@
-include(../common.cmake)
+include(../scripts/common.cmake)
 
 SUBDIRLIST(. dirs)
 

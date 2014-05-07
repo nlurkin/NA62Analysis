@@ -37,7 +37,7 @@ StringTable::StringTable(const StringTable& c):
 		fTitle(c.fTitle)
 {
 	/// \MemberDescr
-	///	\param s: StringTable to copy
+	///	\param c: StringTable to copy
 	/// Copy Constructor
 	/// \EndMemberDescr
 
@@ -139,7 +139,7 @@ StringTable& StringTable::operator<<(int value){
 }
 StringTable& StringTable::operator<<(StringTable& (*f)(StringTable&)){
 	/// \MemberDescr
-	/// \param value : function to apply
+	/// \param f : function to apply
 	///
 	/// Apply the function to the stream
 	/// \EndMemberDescr
@@ -270,19 +270,19 @@ TString StringTable::FormatCell(TString v, char fill, int width) const{
 	}
 }
 
-TString StringTable::FormatCellMiddle(TString v, char fill, int size) const{
+TString StringTable::FormatCellMiddle(TString v, char fill, int width) const{
 	/// \MemberDescr
 	/// \param v : value of the cell
 	/// \param fill : character to prepend and append to v to fit the width
-	/// \param size : width of the cell in characters
+	/// \param width : width of the cell in characters
 	///
 	/// Format the cell content to fit the specified width. The value is aligned in the middle of the cell.
 	/// \EndMemberDescr
 
 	TString zerosL, zerosT;
 
-	zerosL.Append(fill, (size-v.Length())/2);
-	zerosT.Append(fill, size-v.Length()-zerosL.Length());
+	zerosL.Append(fill, (width-v.Length())/2);
+	zerosT.Append(fill, width-v.Length()-zerosL.Length());
 	return zerosL + v + zerosT;
 }
 

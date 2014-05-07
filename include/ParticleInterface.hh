@@ -35,7 +35,7 @@ public:
 private:
 	ParticleInterface();
 
-	TDatabasePDG *fTable;
+	TDatabasePDG *fTable; ///< Pointer to TDatabasePDG instance
 	static ParticleInterface *fParticleInterface; ///< static pointer to unique instance of the class
 };
 
