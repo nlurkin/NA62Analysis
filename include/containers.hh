@@ -10,6 +10,21 @@
 #include <iostream>
 
 /// \file containers.hh
+/// \Brief
+/// Feature switch
+/// \EndBrief
+///
+/// \Detailed
+/// This header switches features used in the code depending if C++11 is enabled or not.\n
+/// Currently:\n
+/// If C++11 enabled:
+/// - Uses std::unordered_map: map providing O(1) random access to elements (implemented with hashtable).\n
+///   Provides a ~40% speed improvement on maps (accessing histograms, counters, events, analyzers, ...)
+///   compared to std::map.
+/// .
+/// If C++11 disabled:
+/// - Uses std::map: Fallback solution
+/// \EndDetailed
 
 #ifdef NA62_C11
 #include <unordered_map>

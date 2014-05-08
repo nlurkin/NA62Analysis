@@ -15,7 +15,7 @@ typedef pair<TString, void*> param_t;
 /// \EndBrief 
 ///
 /// \Detailed
-/// Implements the common methods and define abstract methods signature
+/// Implements the common methods and define abstract methods signature.
 /// \EndDetailed
 class Analyzer : public UserMethods
 {
@@ -24,6 +24,7 @@ public:
 	enum AnalyzerState {kReady, kUninit};
 
 	Analyzer(BaseAnalysis* ba);
+	Analyzer(const Analyzer& c);
 	virtual ~Analyzer();
 
 	//Run/burst events
@@ -59,14 +60,14 @@ public:
 	};
 
 	//Analyzer name
-	void PrintName();
-	TString GetAnalyzerName();
-	void PrintInitSummary(MCSimple *fMCSimple);
+	void PrintName() const;
+	TString GetAnalyzerName() const ;
+	void PrintInitSummary(const MCSimple * const fMCSimple) const;
 	void SetVerbosity(AnalysisFW::VerbosityLevel l);
 
 	//Methods for exporting an event
 	void ExportEvent();
-	bool GetExportEvent();
+	bool GetExportEvent() const;
 
 	//Methods for output trees
 	void OpenNewTree(TString name, TString title);
@@ -115,16 +116,16 @@ public:
 
 protected:
 	//Internal methods used for setting parameters
-	bool CheckType(TString type);
+	bool CheckType(TString type) const;
 	void SetParamValue(TString name, TString val);
-	TString StringFromParam(TString name);
+	TString StringFromParam(TString name) const;
 
 	//Collection of warning messages
-	void printNoMCWarning();
-	void printIncompleteMCWarning(int i);
+	void printNoMCWarning() const;
+	void printIncompleteMCWarning(int i) const;
 
-	bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?
-	bool fIncompleteMCWarned; ///< Has the user been warned that the MC event does not match the requested one in fMCSimple and that he can change this behavior?
+	mutable bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?
+	mutable bool fIncompleteMCWarned; ///< Has the user been warned that the MC event does not match the requested one in fMCSimple and that he can change this behavior?
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Pointer to DetectorAcceptance instance. Initialize if used.
 

@@ -12,7 +12,7 @@ using namespace std;
 /// \EndBrief 
 ///
 /// \Detailed
-/// Experimental feature. Wrapper for a neural network
+///
 /// \EndDetailed
 
 class NeuralNetwork {

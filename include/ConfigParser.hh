@@ -23,7 +23,24 @@ class Analyzer;
 /// \EndBrief 
 ///
 /// \Detailed
-/// This class will parse a configuration file and assign the values to the variables
+/// It can parse strings passed from command line, or configuration files. When analyzers are
+/// provided to the parser, it applies the relevant parameters.\n
+/// Command line string looks like
+/// \code
+/// 	analyzerName1:param1=val1;param2=val2&analyzerName2:param1=value1;paramx=valuex ...
+/// \endcode
+/// The configuration file looks like
+/// \code
+/// 	[[analyzerName1]]
+/// 	param1 = val1
+/// 	param2 = val2
+///
+/// 	[[analyzerName2]]
+/// 	param1 = value1
+/// 	paramx = valuex
+///
+/// 	...
+/// \endcode
 /// \EndDetailed
 
 class ConfigParser {

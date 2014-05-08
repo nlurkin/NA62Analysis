@@ -24,7 +24,10 @@ using namespace std;
 /// \EndBrief
 ///
 /// \Detailed
-/// Implements the IO methods for histograms, TTrees, ...
+/// Implements the IO methods for histograms, TTrees, ...\n
+/// Manage input event files (loading, specific processing before closing a file or after opening it)\n
+/// Load input files with reference histograms and give access to these histograms, update them.\n
+/// TTree management (input and output).
 /// \EndDetailed
 class IOHandler {
 public:

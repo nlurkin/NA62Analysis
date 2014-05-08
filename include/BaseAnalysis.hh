@@ -13,7 +13,9 @@
 /// \EndBrief 
 ///
 /// \Detailed
-/// Is taking care of the initialization and closing procedure. Process the analyzers in the required order.
+/// Main class of the framework. It takes care of initializing everything properly, processing the events,
+/// keeping track of every object created by the framework (including user analyzers) and passing them to
+/// the user when requested, communication between different parts of the framework, writing the output files.
 /// \EndDetailed
 
 class BaseAnalysis

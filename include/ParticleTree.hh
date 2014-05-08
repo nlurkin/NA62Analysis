@@ -20,7 +20,10 @@ using namespace std;
 /// \EndBrief 
 ///
 /// \Detailed
-/// Class representing particle decay chain for on-screen printing.
+/// Implementation of a node class for a tree. Each node can have multiple children.
+/// The node represents a particle. When the tree is traversed for printing, the
+/// result is an horizontal particle decay tree with the decay generations are aligned
+/// on columns.
 /// \EndDetailed
 
 class ParticleTree {

@@ -35,7 +35,7 @@ ParticleInterface::~ParticleInterface() {
 
 }
 
-TParticlePDG* ParticleInterface::FindParticle(int pdgID){
+const TParticlePDG* const ParticleInterface::FindParticle(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg code of the particle
 	///
@@ -45,7 +45,7 @@ TParticlePDG* ParticleInterface::FindParticle(int pdgID){
 	return fTable->GetParticle(pdgID);
 }
 
-TParticlePDG* ParticleInterface::FindParticle(TString name){
+const TParticlePDG* const ParticleInterface::FindParticle(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the particle
 	///
@@ -55,7 +55,7 @@ TParticlePDG* ParticleInterface::FindParticle(TString name){
 	return fTable->GetParticle(name.Data());
 }
 
-TString ParticleInterface::GetParticleName(int pdgID){
+TString ParticleInterface::GetParticleName(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg code of the particle
 	///
@@ -69,7 +69,7 @@ TString ParticleInterface::GetParticleName(int pdgID){
 	return "";
 }
 
-int ParticleInterface::GetParticlePDGid(TString name){
+int ParticleInterface::GetParticlePDGid(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the particle
 	///
@@ -83,7 +83,7 @@ int ParticleInterface::GetParticlePDGid(TString name){
 	return 0;
 }
 
-void ParticleInterface::PrintTable(){
+void ParticleInterface::PrintTable() const{
 	/// \MemberDescr
 	/// Dump the TDatabasePDG table on screen
 	/// \EndMemberDescr

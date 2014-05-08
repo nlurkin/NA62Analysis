@@ -19,6 +19,9 @@
 ///
 /// \Detailed
 /// Implements the Counters and EventFractions booking, filling and printing methods.
+/// Counters are integers counters and EventFraction are tables of counter providing
+/// printing and exporting capabilities and able to compute ratios between counters
+/// with asymetric errors.
 /// \EndDetailed
 
 class CounterHandler {

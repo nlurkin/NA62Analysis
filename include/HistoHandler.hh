@@ -25,6 +25,8 @@ using namespace std;
 ///
 /// \Detailed
 /// Implements the histogram booking and filling methods as well as the methods for drawing and exporting.
+/// Contains an Iterator class to allow the user to batch access a complete subset of histogram without having
+/// to request them manually one by one.
 /// \EndDetailed
 
 class HistoHandler {

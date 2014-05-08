@@ -19,6 +19,19 @@ MCSimple::MCSimple():
 	/// \EndMemberDescr
 }
 
+MCSimple::MCSimple(const MCSimple& c):
+		fStatus(c.fStatus),
+		fParticles(c.fParticles),
+		fStruct(c.fStruct),
+		fVerbosity(c.fVerbosity),
+		fParticleInterface(c.fParticleInterface),
+		fDecayTree(c.fDecayTree)
+{
+	/// \MemberDescr
+	/// Copy constructor
+	/// \EndMemberDescr
+}
+
 void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose){
 	/// \MemberDescr
 	/// \param MCTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
@@ -171,7 +184,7 @@ void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particle
 	}
 }
 
-TString MCSimple::GetParticleName(int pdgID){
+TString MCSimple::GetParticleName(int pdgID) const {
 	/// \MemberDescr
 	/// \param pdgID : PDG ID of the particle
 	///
@@ -184,7 +197,7 @@ TString MCSimple::GetParticleName(int pdgID){
 	return name;
 }
 
-int MCSimple::GetPdgID(TString name){
+int MCSimple::GetPdgID(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the particle
 	///
@@ -234,7 +247,7 @@ vector<KinePart*> MCSimple::operator [](int pdgCode){
 	return *fParticles[pdgCode];
 }
 
-int MCSimple::Size(int pdgID){
+int MCSimple::Size(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg ID of the particle
 	///
@@ -242,10 +255,10 @@ int MCSimple::Size(int pdgID){
 	/// \EndMemberDescr
 
 	if(fParticles.count(pdgID)==0) return 0;
-	else return fParticles[pdgID]->size();
+	else return fParticles.find(pdgID)->second->size();
 }
 
-int MCSimple::Size(TString name){
+int MCSimple::Size(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the particle
 	///
@@ -255,12 +268,12 @@ int MCSimple::Size(TString name){
 	return Size(GetPdgID(name));
 }
 
-void MCSimple::PrintInit(){
+void MCSimple::PrintInit() const{
 	/// \MemberDescr
 	/// Do some printing of the requested structure
 	/// \EndMemberDescr
 
-	map<pair<int,int>, int >::reverse_iterator it;
+	map<pair<int,int>, int >::const_reverse_iterator it;
 
 	ParticleTree root;
 
@@ -278,7 +291,7 @@ void MCSimple::PrintInit(){
 	}
 }
 
-void MCSimple::PrintDecayTree(){
+void MCSimple::PrintDecayTree() const{
 	/// \MemberDescr
 	/// Print the current decay tree.
 	/// \EndMemberDescr

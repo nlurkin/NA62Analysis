@@ -17,7 +17,7 @@
 /// \EndBrief 
 ///
 /// \Detailed
-/// Interface class to Root particle database
+/// Use it to get particle properties from ROOT.
 /// \EndDetailed
 
 class ParticleInterface {
@@ -25,15 +25,17 @@ public:
 	virtual ~ParticleInterface();
 	static ParticleInterface* GetParticleInterface();
 
-	TParticlePDG *FindParticle(int pdgID);
-	TParticlePDG *FindParticle(TString name);
+	const TParticlePDG* const FindParticle(int pdgID) const;
+	const TParticlePDG* const FindParticle(TString name) const;
 
-	int GetParticlePDGid(TString name);
-	TString GetParticleName(int pdgID);
+	int GetParticlePDGid(TString name) const;
+	TString GetParticleName(int pdgID) const;
 
-	void PrintTable();
+	void PrintTable() const;
 private:
 	ParticleInterface();
+	ParticleInterface(const ParticleInterface&);
+	ParticleInterface& operator=(const ParticleInterface&);
 
 	TDatabasePDG *fTable; ///< Pointer to TDatabasePDG instance
 	static ParticleInterface *fParticleInterface; ///< static pointer to unique instance of the class

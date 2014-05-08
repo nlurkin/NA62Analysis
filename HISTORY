@@ -3,12 +3,12 @@ NA62Analysis Project
 ################################################################
 
 xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 342
+				rev 343
 		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
 		  A flag to generate debugging information (-g flag of compiler)
 		  A flag to enable all the warning flags
 		  A flag to enable c++11 support (only if gcc version supports the feature)
-		  An option for compiling with several cores
+		  An option for compiling with several processors
 		  Type NA62AnalysisBuilder.py build -h for more info 
 		- Moved several scripts to the scripts folder
 		- Add TwoLinesCDA and CedarMCTester in the list of available components (validated)
@@ -20,6 +20,11 @@ xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 		  pointer to a TTree.
 		- Documentation improvement
 		
+2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
+                rev 342
+        - Add CedarMCTester to check for consistency after changes
+          to Cedar component of NA62MC
+
 2014-04-24	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 341
 		- Fix missing extra include dirs, libs dirs and libs in user CMakeLists.txt

@@ -7,17 +7,20 @@
 #include <TVirtualGeoTrack.h>
 using namespace std;
 
-DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
+DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
+		fVerbosity(AnalysisFW::kNo),
+		fGeoManager(TGeoManager::Import(GeometryFile)),
+		fFile(GeometryFile),
+		fTrackNumber(0),
+		fCanvas(0),
+		fMagnetEffect(false)
+{
 	/// \MemberDescr
 	/// \param GeometryFile : path to the geometry file (root)
 	///
 	/// Constructor. Imports the geometry.
 	/// \EndMemberDescr
 
-	fMagnetEffect = false;
-	fGeoManager = TGeoManager::Import(GeometryFile);
-	fCanvas = 0;
-	fVerbosity = AnalysisFW::kNo;
 
 	buildDetectorsDictionaries();
 
@@ -26,7 +29,6 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
 		fVolumePos[i] = TVector3(0.,0.,0.);
 		fDetLength[i] = 0.;
 	}
-	fTrackNumber=0;
 
 	if(fVerbosity>=AnalysisFW::kNormal){
 		cout << "Detector acceptance enum definitions: " << endl << "CEDAR:" << kCEDAR << "\tGTK:" << kGTK << "\tCHANTI:" << kCHANTI << "\tLAV:" << kLAV << "\tSpectrometer:" << kSpectrometer << "\tIRC:" << kIRC << endl;
@@ -34,10 +36,53 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile){
 	}
 }
 
+DetectorAcceptance::DetectorAcceptance(const DetectorAcceptance& c):
+		fVerbosity(c.fVerbosity),
+		fGeoManager(TGeoManager::Import(fFile)),
+		fFile(c.fFile),
+		fTrackNumber(c.fTrackNumber),
+		fCanvas(c.fCanvas),
+		fLAVDictionary(c.fLAVDictionary),
+		fGTKDictionary(c.fGTKDictionary),
+		fMomentumAfterMagnet(c.fMomentumAfterMagnet),
+		fMomentumCenterMagnet(c.fMomentumCenterMagnet),
+		fPositionAfterMagnet(c.fPositionAfterMagnet),
+		fPositionCenterMagnet(c.fPositionCenterMagnet),
+		fMagnetEffect(false)
+{
+	/// \MemberDescr
+	/// \param GeometryFile : path to the geometry file (root)
+	///
+	/// Constructor. Imports the geometry.
+	/// \EndMemberDescr
+
+	for (int i = 0; i < 15; i++){
+		fDetPath[i] = c.fDetLength[i];
+		fVolumePos[i] = c.fVolumePos[i];
+		fDetLength[i] = c.fDetLength[i];
+	}
+
+	for (int i = 0; i < 4; i++){
+		fGTKPath[i] = c.fGTKPath[i];
+		fGTKPos[i] = c.fGTKPos[i];
+		fGTKLength[i] = c.fGTKLength[i];
+	}
+	for (int i = 0; i < 5; i++){
+		fStrawPath[i] = c.fStrawPath[i];
+		fStrawPos[i] = c.fStrawPos[i];
+		fStrawLength[i] = c.fStrawLength[i];
+	}
+	for (int i = 0; i < 13; i++){
+		fLAVPath[i] = c.fLAVPath[i];
+		fLAVPos[i] = c.fLAVPos[i];
+		fLAVLength[i] = c.fLAVLength[i];
+	}
+}
+
 DetectorAcceptance::~DetectorAcceptance(){
 }
 
-bool DetectorAcceptance::GetDetAcceptance(volume det){
+bool DetectorAcceptance::GetDetAcceptance(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
 	///
@@ -47,7 +92,7 @@ bool DetectorAcceptance::GetDetAcceptance(volume det){
 
 	return fDetPath[det];
 }
-TVector3 DetectorAcceptance::GetDetPosition(volume det){
+TVector3 DetectorAcceptance::GetDetPosition(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
 	///
@@ -57,7 +102,7 @@ TVector3 DetectorAcceptance::GetDetPosition(volume det){
 
 	return fVolumePos[det];
 }
-double DetectorAcceptance::GetDetLength(volume det){
+double DetectorAcceptance::GetDetLength(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
 	///
@@ -68,7 +113,7 @@ double DetectorAcceptance::GetDetLength(volume det){
 	return fDetLength[det];
 }
 
-bool DetectorAcceptance::GetGTKAcceptance(GTKVol det){
+bool DetectorAcceptance::GetGTKAcceptance(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
 	///
@@ -78,7 +123,7 @@ bool DetectorAcceptance::GetGTKAcceptance(GTKVol det){
 
 	return fGTKPath[det];
 }
-TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det){
+TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
 	///
@@ -88,7 +133,7 @@ TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det){
 
 	return fGTKPos[det];
 }
-double DetectorAcceptance::GetGTKLength(GTKVol det){
+double DetectorAcceptance::GetGTKLength(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
 	///
@@ -99,7 +144,7 @@ double DetectorAcceptance::GetGTKLength(GTKVol det){
 	return fGTKLength[det];
 }
 
-bool DetectorAcceptance::GetStrawAcceptance(StrawVol det){
+bool DetectorAcceptance::GetStrawAcceptance(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
 	///
@@ -109,7 +154,7 @@ bool DetectorAcceptance::GetStrawAcceptance(StrawVol det){
 
 	return fStrawPath[det];
 }
-TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det){
+TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
 	///
@@ -119,7 +164,7 @@ TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det){
 
 	return fStrawPos[det];
 }
-double DetectorAcceptance::GetStrawLength(StrawVol det){
+double DetectorAcceptance::GetStrawLength(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
 	///
@@ -130,7 +175,7 @@ double DetectorAcceptance::GetStrawLength(StrawVol det){
 	return fStrawLength[det];
 }
 
-bool DetectorAcceptance::GetLAVAcceptance(LAVVol det){
+bool DetectorAcceptance::GetLAVAcceptance(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
 	///
@@ -140,7 +185,7 @@ bool DetectorAcceptance::GetLAVAcceptance(LAVVol det){
 
 	return fLAVPath[det];
 }
-TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det){
+TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
 	///
@@ -150,7 +195,7 @@ TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det){
 
 	return fLAVPos[det];
 }
-double DetectorAcceptance::GetLAVLength(LAVVol det){
+double DetectorAcceptance::GetLAVLength(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
 	///
@@ -421,7 +466,7 @@ void DetectorAcceptance::CreateTrack(int pdgID, TVector3 position, TVector3 mome
 	}
 }
 
-void DetectorAcceptance::DrawPoint(double x, double y, double z){
+void DetectorAcceptance::DrawPoint(double x, double y, double z) const{
 	/// \MemberDescr
 	/// \param x : x coordinate
 	/// \param y : y coordinate
@@ -438,7 +483,7 @@ void DetectorAcceptance::DrawPoint(double x, double y, double z){
 	fGeoManager->DrawCurrentPoint();
 }
 
-DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str){
+DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
 	///
@@ -483,7 +528,7 @@ DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str){
 		return kVOID;
 }
 
-DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str){
+DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
 	///
@@ -495,7 +540,7 @@ DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str){
 	if((startSearch = str.find("/GigaTrackerStation_")) > 1){
 		endSearch = str.find("/", startSearch+20);
 		stationID = atoi(str.substr(startSearch+20, endSearch-startSearch-20).data());
-		index = fGTKDictionary[stationID];
+		index = fGTKDictionary.find(stationID)->second;
 
 		switch(index){
 		case 0:
@@ -515,7 +560,7 @@ DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str){
 		return kNOGTK;
 }
 
-DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str){
+DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
 	///
@@ -534,7 +579,7 @@ DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str){
 		return kNOSTRAW;
 }
 
-DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str){
+DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
 	///
@@ -547,7 +592,7 @@ DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str){
 	if((startSearch = str.find("/LAVStation_")) > 1){
 		endSearch = str.find("/", startSearch+12);
 		stationID = atoi(str.substr(startSearch+12, endSearch-startSearch-12).data());
-		index = fLAVDictionary[stationID];
+		index = fLAVDictionary.find(stationID)->second;
 
 		switch(index){
 		case 0:
@@ -594,7 +639,7 @@ DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str){
 		return kNOLAV;
 }
 
-DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z)
+DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z) const
 {
 	/// \MemberDescr
 	/// \param x : x coordinate
@@ -611,7 +656,7 @@ DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t
 	return ParseDetector(str);
 }
 
-DetectorAcceptance::volume DetectorAcceptance::FirstTouchedDetector(){
+DetectorAcceptance::volume DetectorAcceptance::FirstTouchedDetector() const{
 	/// \MemberDescr
 	/// Return the first detector crossed.\n
 	/// WARNING : need to call FillPath before to be populated
@@ -773,7 +818,7 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 }
 
 
-TGeoManager* DetectorAcceptance::GetGeoManager(){
+TGeoManager* DetectorAcceptance::GetGeoManager() const{
 	/// \MemberDescr
 	/// Return the pointer to the TGeoManager instance.
 	/// \EndMemberDescr

@@ -4,19 +4,36 @@
 
 using namespace std;
 
-Analyzer::Analyzer(BaseAnalysis *ba) : UserMethods(ba){
+Analyzer::Analyzer(BaseAnalysis *ba) :
+		UserMethods(ba),
+		fNoMCWarned(false),
+		fIncompleteMCWarned(false),
+		fDetectorAcceptanceInstance(NULL),
+		fState(kUninit),
+		fExportEvent(false),
+		fParticleInterface(ParticleInterface::GetParticleInterface())
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+}
 
-	fExportEvent = false;
-	fState = kUninit;
-
-	fDetectorAcceptanceInstance = NULL;
-	fParticleInterface = ParticleInterface::GetParticleInterface();
-
-	fNoMCWarned = false;
-	fIncompleteMCWarned = false;
+Analyzer::Analyzer(const Analyzer& c) :
+		UserMethods(c),
+		fNoMCWarned(c.fNoMCWarned),
+		fIncompleteMCWarned(c.fIncompleteMCWarned),
+		fDetectorAcceptanceInstance(c.fDetectorAcceptanceInstance),
+		fOutTree(c.fOutTree),
+		fParams(c.fParams),
+		fState(c.fState),
+		fExportEvent(c.fExportEvent),
+		fExportCandidates(c.fExportCandidates),
+		fExportCandidatesNumber(c.fExportCandidatesNumber),
+		fParticleInterface(ParticleInterface::GetParticleInterface())
+{
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
 }
 
 Analyzer::~Analyzer(){
@@ -25,7 +42,7 @@ Analyzer::~Analyzer(){
 	/// \EndMemberDescr
 }
 
-void Analyzer::PrintName(){
+void Analyzer::PrintName() const{
 	/// \MemberDescr
 	/// Print the name of the Analyzer
 	/// \EndMemberDescr
@@ -33,7 +50,7 @@ void Analyzer::PrintName(){
 	cout << fAnalyzerName << endl;
 }
 
-TString Analyzer::GetAnalyzerName(){
+TString Analyzer::GetAnalyzerName() const{
 	/// \MemberDescr
 	/// Return the name of the Analyzer
 	/// \EndMemberDescr
@@ -51,7 +68,7 @@ void Analyzer::ExportEvent(){
 	fExportEvent = true;
 }
 
-bool Analyzer::GetExportEvent(){
+bool Analyzer::GetExportEvent() const{
 	/// \MemberDescr
 	/// Did the analyzer asked to export the event?
 	/// \EndMemberDescr
@@ -124,14 +141,14 @@ void Analyzer::SetParamValue(TString name, TString val){
 	}
 }
 
-TString Analyzer::StringFromParam(TString name){
+TString Analyzer::StringFromParam(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the parameter (previously defined with AddParam)
 	///
 	/// Return the value of a parameter as TString
 	/// \EndMemberDescr
 
-	param_t p = fParams[name];
+	param_t p = fParams.find(name)->second;
 
 	TString r("");
 
@@ -162,7 +179,7 @@ TString Analyzer::StringFromParam(TString name){
 	return r;
 }
 
-bool Analyzer::CheckType(TString type){
+bool Analyzer::CheckType(TString type) const{
 	/// \MemberDescr
 	/// \param type : type to check
 	///
@@ -208,14 +225,14 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	else SetParamValue(paramName, paramValue);
 }
 
-void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
+void Analyzer::PrintInitSummary(const MCSimple * const fMCSimple) const{
 	/// \MemberDescr
 	/// \param fMCSimple : MCSimple instance corresponding to this Analyzer
 	///
 	/// Print a summary of the Analyzer after initialization. List of booked histograms, list of parameters, ...
 	/// \EndMemberDescr
 
-	map<TString, param_t>::iterator it;
+	map<TString, param_t>::const_iterator it;
 
 	StringTable paramTable("List of parameters");
 
@@ -226,16 +243,10 @@ void Analyzer::PrintInitSummary(MCSimple *fMCSimple){
 	paramTable.AddColumn("type", "Type");
 	paramTable.AddColumn("value", "Value");
 	paramTable << sepr;
-	paramTable << "Verbose";
-	paramTable << "int";
-	paramTable << fVerbosity;
-	paramTable << "AutoUpdate Rate";
-	paramTable << "int";
-	paramTable << fHisto.GetUpdateInterval();
+	paramTable << "Verbose" << "int" << fVerbosity;
+	paramTable << "AutoUpdate Rate" << "int" << fHisto.GetUpdateInterval();
 	for(it=fParams.begin(); it!=fParams.end(); it++){
-		paramTable << it->first;
-		paramTable << it->second.first;
-		paramTable << StringFromParam(it->first);
+		paramTable << it->first << it->second.first << StringFromParam(it->first);
 	}
 
 	//About DetectorAcceptance
@@ -308,7 +319,7 @@ void Analyzer::WriteTrees(){
 	}
 }
 
-void Analyzer::printNoMCWarning(){
+void Analyzer::printNoMCWarning() const{
 	/// \MemberDescr
 	/// Print a warning message when no MC data are present and the analyzer requires them.
 	/// \EndMemberDescr
@@ -344,7 +355,7 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	return fHisto.compareToReferencePlot(hRef, h, KS);
 }
 
-void Analyzer::printIncompleteMCWarning(int i){
+void Analyzer::printIncompleteMCWarning(int i) const{
 	/// \MemberDescr
 	/// Print a warning message when MC event is not complete.
 	/// \EndMemberDescr

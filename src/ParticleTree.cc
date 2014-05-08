@@ -121,8 +121,10 @@ ParticleTree *ParticleTree::GetChildren(int id){
 
 	vector<ParticleTree*>::iterator it;
 	ParticleTree *r = NULL;
-	if(fId==id) return this;
+	if(fId==id) return this; //If this is the right particle, return it
 	else{
+		//Loop over childrens recursively and get the result. While NULL, requested
+		//particle is not yet found
 		for(it=fChildrens.begin(); it!=fChildrens.end() && r==NULL; it++){
 			r = (*it)->GetChildren(id);
 		}
@@ -143,34 +145,51 @@ ParticleTree *ParticleTree::operator [](unsigned int i){
 
 ParticleTree::state ParticleTree::PrintNext(){
 	/// \MemberDescr
-	/// Locate and print the next particle in the tree. Can be itself, direct or non direct children.
+	/// Locate and print the next particle in the tree. Can be itself, direct or non direct children.\n
+	/// Final result for the tree should look like\n
+	/// K+    -> pi+   \n
+	///       -> pi0    -> gamma \n
+	///                 -> gamma
 	/// \EndMemberDescr
 
 	int r=kEmpty;
 	int spaceSize = 10;
 
 	if(fGiven==0){
+		//This node has not yet been traversed
 		fGiven++;
+		//Print it (name if provided, else pdgID)
 		if(fName.Length()!=0) cout << setw(spaceSize) << fName;
 		else cout << setw(spaceSize) << fpdgID;
+		//Print decay arrow and move to first children if any
 		if(fChildrens.size()>0){
 			cout << " ->";
-			r = fChildrens[fGiven-1]->PrintNext();
+			r = fChildrens[0]->PrintNext();
 		}
+		//Else this is the last particle of the branch, got to next line
 		else{
 			cout << endl;
 			return kEmpty;
 		}
 	}
 	else if(fGiven<=fChildrens.size()){
+		//This node has already been traversed once
+		//fPrevGiven is the previously traversed children
+		//If fPrevGiven!=fGiven, it means we are traversing a new children
+		//we should therefore print the decay arrow
+		//else, just leave some white spaces for alignment
 		if(fPrevGiven!=fGiven) cout << setw(spaceSize+3) << " ->";
 		else cout << setw(spaceSize+3) << "";
 		r = fChildrens[fGiven-1]->PrintNext();
 	}
 
+	//Replace the previously traversed children by the current one
 	fPrevGiven = fGiven;
+	//Move to the next children if the branch of the previous one is already fully printed
+	//Else we need to go again in this children next time
 	if(r==kEmpty) fGiven++;
 
+	//If we printed all the children, finish this branch
 	if(fGiven>fChildrens.size()) return kEmpty;
 	else return kChildren;
 }

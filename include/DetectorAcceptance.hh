@@ -38,9 +38,10 @@ public:
 	enum LAVVol {kLAV0, kLAV1, kLAV2, kLAV3, kLAV4, kLAV5, kLAV6, kLAV7, kLAV8, kLAV9, kLAV10, kLAV11, kNOLAV};
 
 	DetectorAcceptance(TString GeometryFile);
+	DetectorAcceptance(const DetectorAcceptance& c);
 	~DetectorAcceptance();
 
-	TGeoManager *GetGeoManager();
+	TGeoManager *GetGeoManager() const;
 
 	//Path Filling
 	void FillPath(TVector3 position, TVector3 momentum, double precision=0, int q=0);
@@ -49,25 +50,25 @@ public:
 	//Drawing
 	void DrawDetector();
 	void DrawTracks();
-	void DrawPoint(double x, double y, double z);
+	void DrawPoint(double x, double y, double z) const;
 	void ClearTracks();
 	void CreateTrack(int pdgID,TVector3 position, TVector3 momentum, int charge);
 
 	//Acceptance checking
-	volume CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z);
-	volume FirstTouchedDetector();
-	bool GetDetAcceptance(volume det);
-	TVector3 GetDetPosition(volume det);
-	double GetDetLength(volume det);
-	bool GetGTKAcceptance(GTKVol det);
-	TVector3 GetGTKPosition(GTKVol det);
-	double GetGTKLength(GTKVol det);
-	bool GetStrawAcceptance(StrawVol det);
-	TVector3 GetStrawPosition(StrawVol det);
-	double GetStrawLength(StrawVol det);
-	bool GetLAVAcceptance(LAVVol det);
-	TVector3 GetLAVPosition(LAVVol det);
-	double GetLAVLength(LAVVol det);
+	volume CheckDetectorAcceptPoint(Double_t x,Double_t y, Double_t z) const;
+	volume FirstTouchedDetector() const;
+	bool GetDetAcceptance(volume det) const;
+	TVector3 GetDetPosition(volume det) const;
+	double GetDetLength(volume det) const;
+	bool GetGTKAcceptance(GTKVol det) const;
+	TVector3 GetGTKPosition(GTKVol det) const;
+	double GetGTKLength(GTKVol det) const;
+	bool GetStrawAcceptance(StrawVol det) const;
+	TVector3 GetStrawPosition(StrawVol det) const;
+	double GetStrawLength(StrawVol det) const;
+	bool GetLAVAcceptance(LAVVol det) const;
+	TVector3 GetLAVPosition(LAVVol det) const;
+	double GetLAVLength(LAVVol det) const;
 
 	//Magnetic field effect
 	bool MagPropagate( const TVector3 StartPosition, const TVector3 StartMomentum, const Int_t fQ, const Double_t fEndZ, TVector3& EndPosition, TVector3& EndMomentum );
@@ -82,13 +83,14 @@ private:
 	void buildDetectorsDictionaries();
 
 	//Node name parsing
-	volume ParseDetector(string str);
-	GTKVol ParseGTK(string str);
-	StrawVol ParseStraw(string str);
-	LAVVol ParseLAV(string str);
+	volume ParseDetector(string str) const;
+	GTKVol ParseGTK(string str) const;
+	StrawVol ParseStraw(string str) const;
+	LAVVol ParseLAV(string str) const;
 
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 	TGeoManager *fGeoManager; ///< TGeoManager
+	TString fFile; ///< Geometry file
 
 	//Contains the results of FillPath
 	bool fDetPath[15];	///< Array of boolean (Cell index ~ enum volume). True if corresponding detector sensitive volume has been touched.

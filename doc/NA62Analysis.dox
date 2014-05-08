@@ -140,14 +140,14 @@
 /// (with -p). The format of the configuration file is the following:<br> 
 /// 
 /// \code
-/// [[analyzer-Name]]<br>
-/// Parameter1 = value1<br>
-/// Parameter2 = value2<br>
-/// <br>
-/// [[analyzer-Name2]]<br>
-/// ...<br>
-/// ...<br>
-/// ...<br>
+/// [[analyzer-Name]]
+/// Parameter1 = value1
+/// Parameter2 = value2
+/// 
+/// [[analyzer-Name2]]
+/// ...
+/// ...
+/// ...
 /// \endcode
 ///
 /// The following parameters exist by default for all analyzers:

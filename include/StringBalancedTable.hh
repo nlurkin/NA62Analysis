@@ -12,11 +12,13 @@
 
 /// \class StringBalancedTable
 /// \Brief 
-/// Extension of StringTable to print a list of values in a 2D array for better visual than simple 1D list.<br>
+/// Extension of StringTable to print a list of values in a 2D array for
+/// better visual than simple 1D list.<br>
 /// \EndBrief 
 ///
 /// \Detailed
-/// The number of columns and rows is computed when printing to have a nice lines/columns ratio
+/// Like StringTable but the number of columns and rows is automatically
+/// computed when printing to have a nice lines/columns ratio.
 /// \EndDetailed
 
 class StringBalancedTable: public StringTable {
