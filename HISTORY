@@ -2,7 +2,7 @@
 NA62Analysis Project
 ################################################################
 
-xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-05-08	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 343
 		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
 		  A flag to generate debugging information (-g flag of compiler)
@@ -18,7 +18,7 @@ xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
 		- Add GetNEvents method to get the total number of events and GetTree to get a
 		  pointer to a TTree.
-		- Documentation improvement
+		- Additions and improvements to documentation
 		
 2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
                 rev 342
