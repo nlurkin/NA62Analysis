@@ -25,7 +25,8 @@ using namespace std;
 
 class ParticleTree {
 public:
-	enum state {kFirst, kChildren, kEmpty}; ///< Current state of the node
+	/// Current state of the node
+	enum state {kFirst, kChildren, kEmpty};
 
 	ParticleTree();
 	ParticleTree(int id, int pdgID, TString name);

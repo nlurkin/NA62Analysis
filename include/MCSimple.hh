@@ -24,7 +24,8 @@ using namespace std;
 class MCSimple
 {
 public:
-	enum MCSimpleStatus {kEmpty, kComplete, kMissing}; ///< Possible status for MCSimple instance. Self-explanatory
+	/// Possible status for MCSimple instance. Self-explanatory
+	enum MCSimpleStatus {kEmpty, kComplete, kMissing};
 
 	MCSimple();
 	~MCSimple() {};

@@ -5,15 +5,22 @@ import sys
 import re
 import shutil
 import subprocess
-import scripts.dependencyGraph as dependencyGraph
+from scripts import dependencyGraph
 from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
+import scripts
 
 __rev__ = 342
+__descr__ = ("""
+   Use this script when working with NA62Analysis. The script takes care of
+   operations like preparing the environment, creating, renaming and cleaning 
+   analyzers.
+   It also takes care of parsing the configuration file and generating all necessary
+   information to build the framework with the desired analyzers.
+""")
 
 #----- Version handling -----
 # Version Check
 # Version Update
-
 def getUserVersion(UserPath):
 	version = ""
 	#Get the user version from the hidden file in the user directory
@@ -40,14 +47,13 @@ def updateOld(UserPath, FWPath):
 	if os.path.exists("%s/Analyzer" % UserPath):
 		if os.path.exists("%s/Analyzers" % UserPath):
 			print ("""
-					You have a "Analyzer" folder in you user directory.
-					This folder has been renamed "Analyzers" but it seems to still exist.
-					Please move all your analyzers still inside to the correct "Analyzers" folder.
-					Warning : When moving your analyzers in the new folder, they may already exist
-					from the automatic update of the user folder. Take care of not overwriting
-					you previous work.
-				"""
-			)
+   You have a "Analyzer" folder in you user directory.
+   This folder has been renamed "Analyzers" but it seems to still exist.
+   Please move all your analyzers still inside to the correct "Analyzers" folder.
+   Warning : When moving your analyzers in the new folder, they may already exist
+   from the automatic update of the user folder. Take care of not overwriting
+   you previous work.
+""")
 			sys.exit(0)
 		else:
 			os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
@@ -587,27 +593,35 @@ def buildExample(args):
 	shutil.copyfile("%s/Examples/exampleSkimmingConfig" % FWPath, "%s/exampleSkimmingConfig" % UserPath)
 	readAndReplace("%s/Examples/exampleExportTreesConfig" % FWPath, "%s/exampleExportTreesConfig" % UserPath, {"$$FWPATH$$":FWPath})
 
+def printHelp(args):
+	args.parserRef.print_help()
+	
 # Command line argument parser
 def parseArgs():
-	global __rev__
+	global __rev__, __descr__
 	
 	program_version_message = "rev %s." % __rev__
-	program_short_description = "xxx"
+	program_short_description = __descr__
 	
 	# Prepend the build command if the first positional argument is a file path (for compatibility with previous syntax)
 	# Plus lowercase the first positional argument (supposed to be the command then)
 	if len(sys.argv)>=1:
-		index,positional = next((i,x) for (i,x) in enumerate(sys.argv[1:]) if not x.startswith('-'))
-		if os.path.exists(positional):
-			if os.path.isfile(positional):
-				sys.argv.insert(1, 'build')
-				index = 0
-		sys.argv[index+1] = sys.argv[index+1].lower()
+		try:
+			index,positional = next((i,x) for (i,x) in enumerate(sys.argv[1:]) if not x.startswith('-'))
+		except StopIteration:
+			pass
+		else:
+			if os.path.exists(positional):
+				if os.path.isfile(positional):
+					sys.argv.insert(1, 'build')
+					index = 0
+			sys.argv[index+1] = sys.argv[index+1].lower()
 	
 	# Setup argument parser
 	common_flags = ArgumentParser(add_help=False)
-	common_flags.add_argument('-j', '--jobs', default=1, type=int, help="Number of cores to use for building (same as make -j)")
-	clean_group = common_flags.add_argument_group(title="Build options", description=("""The following options require a cleanAll to take effect 
+	common_flags.add_argument('-j', '--jobs', default=1, type=int, help="Number of processors to use for building (same as make -j)")
+	clean_group = common_flags.add_argument_group(title="Build options", 
+												description=("""The following options require a cleanAll to take effect 
 															if the framework was already compiled without the option"""))
 	clean_group.add_argument('-d', '--debug', action="append_const", const="NA62_DEBUG", 
 							dest="defines", help="Compile the framework and user directories with debugging informations")
@@ -618,47 +632,70 @@ def parseArgs():
 	
 	parser = ArgumentParser(description=program_short_description, formatter_class=RawDescriptionHelpFormatter)
 	parser.add_argument('-V', '--version', action='version', version=program_version_message)
-	subparsers = parser.add_subparsers()
+	subparsers = parser.add_subparsers(metavar = "commandName", title="Available commands", 
+									description="'NA62AnalysisBulder.py commandName -h' for help about specific command")
 	
+	''' Help command'''
+	parser_help = subparsers.add_parser('help', help='Show this help message and exit', description='Show this help message and exit')
+	parser_help.set_defaults(func=printHelp, parserRef=parser)
+
 	''' Build command'''
-	parser_build = subparsers.add_parser('build', help='Build the FW using the configuration file', parents=[common_flags])
+	parser_build = subparsers.add_parser('build', help='Build the FW using the configuration file', parents=[common_flags],
+										description="Build the FW using the configuration file configFileName")
 	parser_build.set_defaults(func=build)
 	parser_build.add_argument('configFileName', type=str, nargs=1, help="Path to the config file")
 	
 	''' Rename command'''
-	parser_rename = subparsers.add_parser('rename', help='Rename a user analyzer')
+	parser_rename = subparsers.add_parser('rename', help='Rename a user analyzer',
+										description="Rename a user analyzer")
 	parser_rename.set_defaults(func=renameAnalyzer)
 	parser_rename.add_argument('oldName', type=str, nargs=1, help="Old name of the analyzer")
 	parser_rename.add_argument('newName', type=str, nargs=1, help="New name of the analyzer")
 	
 	''' new command'''
-	parser_new = subparsers.add_parser('new', help='Create a new analyzer in the user directory')
+	parser_new = subparsers.add_parser('new', help='Create a new analyzer in the user directory',
+									description="""
+   Create a new analyzer with name AnalyzerName in the user directory
+   Alternatively AnalyzerName can be replaced by the following syntax: 
+      AnalyzerName(InputType TreeName, ...)
+   This will already include the correct persistency headers, request the input tree and 
+   retrieve the input events.
+   Example: Creating an analyzer named toto using as input the GigaTracker MonteCarlo and 
+   LKr and Spectrometer RECO
+      NA62AnalysisBuilder.py new "toto(MC GigaTracker, Reco LKr, Reco Spectrometer)""",
+      								formatter_class=RawDescriptionHelpFormatter)
 	parser_new.set_defaults(func=createAnalyzer)
 	parser_new.add_argument('AnalyzerName', type=str, nargs=1, help="Name of the analyzer to create")
 
 	''' prepare command'''
-	parser_prepare = subparsers.add_parser('prepare', help='Prepare a new user directory at the specified path', parents=[common_flags])
+	parser_prepare = subparsers.add_parser('prepare', help='Prepare a new user directory at the specified path', parents=[common_flags],
+										description="Prepare a user directory at the specified path")
 	parser_prepare.set_defaults(func=prepareUserFolder)
 	parser_prepare.add_argument('UserDirectory', type=str, nargs=1, help="Path to the user directory")
 
 	''' cleanUser command'''
-	parser_cleanUser = subparsers.add_parser('cleanuser', help='Remove all files generated by the build in the user directory')
+	parser_cleanUser = subparsers.add_parser('cleanuser', help='Remove all files generated by the build in the user directory',
+										description="Remove all files generated by the build in the user directory")
 	parser_cleanUser.set_defaults(func=cleanUser)
 
 	''' cleanFW command'''
-	parser_cleanFW = subparsers.add_parser('cleanfw', help='Remove all files generated by the build in the FW directory')
+	parser_cleanFW = subparsers.add_parser('cleanfw', help='Remove all files generated by the build in the FW directory',
+										description="Remove all files generated by the build in the FW directory")
 	parser_cleanFW.set_defaults(func=cleanFW)
 
 	''' cleanAll command'''
-	parser_cleanAll = subparsers.add_parser('cleanall', help='Remove all files generated by the build in the User and FW directory')
+	parser_cleanAll = subparsers.add_parser('cleanall', help='Remove all files generated by the build in the User and FW directory',
+										description="Remove all files generated by the build in the FW directory and user directory")
 	parser_cleanAll.set_defaults(func=cleanAll)
 
 	''' available command'''
-	parser_available = subparsers.add_parser('available', help='Display the list of available analyzers')
+	parser_available = subparsers.add_parser('available', help='Display the list of available analyzers',
+										description="Print the list of available Analyzers")
 	parser_available.set_defaults(func=available)
 	
 	''' examples command'''
-	parser_examples = subparsers.add_parser('examples', help='Build the libraries for the examples and copy the config files into the user directory')
+	parser_examples = subparsers.add_parser('examples', help='Build the libraries for the examples and copy the config files into the user directory',
+										description="Build the libraries for examples and import the configuration files in user directory")
 	parser_examples.set_defaults(func=buildExample)
 
 	# Process arguments

@@ -9,6 +9,8 @@
 #define CONTAINERS_HH_
 #include <iostream>
 
+/// \file containers.hh
+
 #ifdef NA62_C11
 #include <unordered_map>
 
@@ -18,6 +20,11 @@ template<> struct hash<TString>
 {
 	size_t operator()(const TString& v) const
 	{
+		/// \MemberDescr
+		/// \param v : TString to hash
+		///
+		/// Hash operation proxy for TString to use it in hashtable.
+		/// \EndMemberDescr
 		return v.Hash();
 	}
 };
@@ -25,7 +32,8 @@ template<> struct hash<TString>
 
 namespace AnalysisFW{
 	template <class K, class V>
-	struct NA62Map{ typedef std::unordered_map<K,V> type;};
+	struct NA62Map{ typedef std::unordered_map<K,V> type; ///< C++ trick for template typedef.
+	};	///< Defines the type of map used in the framework (C++11 enabled)
 }
 #else
 
@@ -33,7 +41,8 @@ namespace AnalysisFW{
 #include <map>
 namespace AnalysisFW{
 	template <class K, class V>
-	struct NA62Map{ typedef std::map<K,V> type;};
+	struct NA62Map{ typedef std::map<K,V> type; ///< C++ trick for template typedef.
+	}; ///< Defines the type of map used in the framework (C++11 disabled)
 }
 
 #endif

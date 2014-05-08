@@ -28,10 +28,14 @@ using namespace std;
 class DetectorAcceptance
 {
 public:
-	enum volume {kCEDAR, kGTK, kCHANTI, kLAV, kSpectrometer, kIRC, kCHOD, kLKr, kSAC, kMUV0, kMUV1, kMUV2, kMUV3, kHAC, kVOID}; ///< List of volumes of the geometry
-	enum GTKVol {kGTK0, kGTK1, kGTK2, kNOGTK}; ///< List of GTK parts
-	enum StrawVol {kSTRAW0, kSTRAW1, kSTRAW2, kSTRAW3, kNOSTRAW}; ///< List of straw parts
-	enum LAVVol {kLAV0, kLAV1, kLAV2, kLAV3, kLAV4, kLAV5, kLAV6, kLAV7, kLAV8, kLAV9, kLAV10, kLAV11, kNOLAV}; ///< List of LAV stations
+	/// List of volumes of the geometry
+	enum volume {kCEDAR, kGTK, kCHANTI, kLAV, kSpectrometer, kIRC, kCHOD, kLKr, kSAC, kMUV0, kMUV1, kMUV2, kMUV3, kHAC, kVOID};
+	/// List of GTK parts
+	enum GTKVol {kGTK0, kGTK1, kGTK2, kNOGTK};
+	/// List of straw parts
+	enum StrawVol {kSTRAW0, kSTRAW1, kSTRAW2, kSTRAW3, kNOSTRAW};
+	/// List of LAV stations
+	enum LAVVol {kLAV0, kLAV1, kLAV2, kLAV3, kLAV4, kLAV5, kLAV6, kLAV7, kLAV8, kLAV9, kLAV10, kLAV11, kNOLAV};
 
 	DetectorAcceptance(TString GeometryFile);
 	~DetectorAcceptance();

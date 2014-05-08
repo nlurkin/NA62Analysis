@@ -18,7 +18,7 @@ xxxx-xx-xx	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
 		- Add GetNEvents method to get the total number of events and GetTree to get a
 		  pointer to a TTree.
-		- 
+		- Documentation improvement
 		
 2014-04-24	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 341

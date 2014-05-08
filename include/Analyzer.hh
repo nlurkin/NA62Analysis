@@ -20,7 +20,8 @@ typedef pair<TString, void*> param_t;
 class Analyzer : public UserMethods
 {
 public:
-	enum AnalyzerState {kReady, kUninit}; ///< Possible states for the analyzer
+	/// Possible states for the analyzer
+	enum AnalyzerState {kReady, kUninit};
 
 	Analyzer(BaseAnalysis* ba);
 	virtual ~Analyzer();
@@ -33,17 +34,29 @@ public:
 	void PreProcess();
 
 	//Abstract methods to be implemented in each Analyzer
-	virtual void InitHist() = 0;
-	virtual void DefineMCSimple(MCSimple *fMCSimple) = 0;
-	virtual void InitOutput() = 0;
-	virtual void Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent) = 0;
-	virtual void StartOfBurstUser() {};
-	virtual void EndOfBurstUser() {};
-	virtual void StartOfRunUser() {};
-	virtual void EndOfRunUser() {};
-	virtual void PostProcess() = 0;
-	virtual void ExportPlot() = 0;
-	virtual void DrawPlot() = 0;
+	virtual void InitHist() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void DefineMCSimple(MCSimple *fMCSimple) = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void InitOutput() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent) = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void PostProcess() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void ExportPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void DrawPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void StartOfBurstUser() {
+		/// \MemberDescr Executed at start of burst (new file). No default action to do.
+		/// \EndMemberDescr
+	};
+	virtual void EndOfBurstUser() {
+		/// \MemberDescr Executed at start of burst (new file). No default action to do.
+		/// \EndMemberDescr
+	};
+	virtual void StartOfRunUser() {
+		/// \MemberDescr Executed at start of burst (new file). No default action to do.
+		/// \EndMemberDescr
+	};
+	virtual void EndOfRunUser() {
+		/// \MemberDescr Executed at start of burst (new file). No default action to do.
+		/// \EndMemberDescr
+	};
 
 	//Analyzer name
 	void PrintName();

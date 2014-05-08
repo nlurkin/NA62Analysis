@@ -47,8 +47,8 @@ public:
 	TChain* GetTree(TString name);
 
 private:
-	BaseAnalysis(const BaseAnalysis&);
-	BaseAnalysis& operator=(const BaseAnalysis&);
+	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
+	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 protected:
 	int fNEvents; ///< Number of events available in the TChains

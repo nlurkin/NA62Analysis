@@ -19,7 +19,12 @@ using namespace std;
 /// \EndBrief 
 ///
 /// \Detailed
-/// Class for pretty table printing. Each cell value is stored as string.
+/// Print tables with rows, columns, cells, borders. Use standard stream operator<<
+/// for filling and automatically print nicely formatted tables. Use also\n
+/// \code
+/// << endr and << sepr
+/// \endcode
+/// to respectively go to next row or print an horizontal line and go to next row
 /// \EndDetailed
 
 class StringTable {

@@ -22,99 +22,124 @@
 /// 
 /// Before starting to work with the framework, you should set the NA62MCSOURCE environment variable to point to the directory where you keep your sources of NA62MC. 
 /// 
+/// \section glossary Glossary
+/// NA62Analysis is divided into two distinct directory trees
+/// <ul>
+/// 	<li><b>[FWDir]</b> Framework directory: Contains NA62Analysis itself (what you get from svn). You should never have the need to work in this directory.
+/// 	<li><b>[UserDir]</b> User directory: Work directory that contains your own work (your analyzers, configurations, executables, ...)
+/// </ul>
+/// 
 /// \section Installation Installation
 /// <ul>
 /// 	<li>Extract the sources from the svn repository<br>
-/// 		<br><code><b>svn co svn co svn+ssh://svn.cern.ch/reps/na62fw/trunk/NA62Analysis</b></code><br><br>
+/// 		\code svn co svn co svn+ssh://svn.cern.ch/reps/na62fw/trunk/NA62Analysis\endcode
 /// 	<li>Make sure the <b>NA62MCSOURCE</b> environment variable points to the directory containing <b>NA62MC</b>
 /// 	<li>Setup the environment<br>
-/// 		<br><code><b>source scripts/env.[c]sh</b></code><br>
-/// 	<li>Prepare your user directory by issuing<br>
-/// 		<br><code><b>./NA62AnalysisBuilder.py prepare PathToUserDir</b></code><br><br>
-/// 		Your user directory can be anywhere except in the same directory than this framework. It should ideally be 
+/// 		\code source scripts/env.[c]sh\endcode
+/// 	<li>Prepare your user directory<b>[UserDir]</b> by issuing<br>
+/// 		\code./NA62AnalysisBuilder.py prepare PathToUserDir\endcode
+/// 		Your user directory<b>[UserDir]</b> can be anywhere except in the same directory than this framework. It should ideally be 
 /// 		kept separate to avoid overwriting any of your work when updating the framework. If any update is needed inside your
 /// 		user directory, the NA62AnalysisBuilder.py tool will take care of it automatically.
-/// 	<li>Go inside your user directory, check that scripts/env.[c]sh is correct.
-/// 	<li>The framework is now installed. After sourcing the scripts/env.[c]sh script the framework directory is added to the <b>PATH</b>.<br> 
-/// 		You should be able to run the framework from your user directory without ever going back to the framework directory. 
-/// 		All the python scripts are also directly available from your user directory.
+/// 	<li>Go inside your user directory<b>[UserDir]</b>, check that scripts/env.[c]sh is correct.
+/// 	<li>The framework is now installed. After sourcing the scripts/env.[c]sh script the framework directory<b>[FWDir]</b> is added to the <b>PATH</b>.<br> 
+/// 		You should be able to run the framework from your user directory<b>[UserDir]</b> without ever going back to the framework directory. 
+/// 		All the python scripts are also directly available from your user directory<b>[FWDir]</b>.
 /// </ul>
 /// 
 /// \section rebuild Clean rebuild	
 /// If you change NA62MC or NA62Reconstruction, you should rebuild the framework.
 /// <ul>
-/// 	<li> Go in your user directory and setup the environment<br>
-/// 		<br><code><b>source scripts/env.[c]sh</b></code><br>
-/// 	<li>Clean the current build<br>
-/// 		<br><code><b>NA62AnalysisBuilder.py cleanAll</b></code><br><br>
-/// 	<li>The libraries will be recompiled next time you will try to build and executable with<br>
-/// 		<br><code><b>NA62AnalysisBuilder.py configFileName</b></code><br><br>
+/// 	<li> Go in your user directory<b>[UserDir]</b> and setup the environment
+/// 		\code source scripts/env.[c]sh\endcode
+/// 	<li>Clean the current build
+/// 		\code NA62AnalysisBuilder.py cleanAll\endcode
+/// 	<li>The libraries will be recompiled next time you will try to build and executable with
+/// 		\code NA62AnalysisBuilder.py configFileName\endcode
+/// </ul>
 /// 
 /// \section update Update
-/// To update the framework, just go inside the framework directory and issue<br>
-/// <br><code><b>svn update</b></code><br><br>
-/// The next time you try to build and executable with<br>
-/// <br><code><b>NA62AnalysisBuilder.py configFileName</b></code><br><br>
-/// the libraries will be recompiled and eventual changes in your user directory will be safely done automatically.
+/// To update the framework, just go inside the framework directory<b>[FWDir]</b> and issue
+/// \code svn update\endcode
+/// The next time you try to build an executable with
+/// \code NA62AnalysisBuilder.py configFileName\endcode
+/// the libraries will be recompiled and eventual changes in your user directory<b>[UserDir]</b> will be safely done automatically.
 /// In case of problem you will see a warning message and inform you on the appropriate actions to manually solve the problem.
 /// In case of compilation problem you can try a complete clean rebuild of the framework. See \ref rebuild
 /// 
 /// \section QuickStart QuickStart
 /// 
 /// <ul>
-/// 	<li>NA62AnalysisBuilder.py help				: will print the help of the NA62AnalysisBuilder.py script<br>
-/// 	<li>NA62AnalysisBuilder.py available			: will return the list of available Analyzers<br>
-/// 	<li>NA62AnalysisBuilder.py cleanUser	 		: will remove all files generated by the build in the user directory<br>
-/// 	<li>NA62AnalysisBuilder.py cleanFW	 		: will remove all files generated by the build in the FW directory<br>
-/// 	<li>NA62AnalysisBuilder.py new AnalyzerName		: will create a new analyzer with name AnalyzerName in the user directory<br>
+/// 	<li>NA62AnalysisBuilder.py help				: will print the help of the NA62AnalysisBuilder.py script
+/// 	<li>NA62AnalysisBuilder.py available			: will print the list of available Analyzers
+/// 	<li>NA62AnalysisBuilder.py cleanUser	 		: will remove all files generated by the build in the user directory<b>[UserDir]</b>
+/// 	<li>NA62AnalysisBuilder.py cleanFW	 		: will remove all files generated by the build in the FW directory[FWDir[
+/// 	<li>NA62AnalysisBuilder.py cleanAll	 		: will remove all files generated by the build in the FW directory<b>[FWDir]</b> and user directory<b>[UserDir]</b>
+/// 	<li>NA62AnalysisBuilder.py new AnalyzerName		: will create a new analyzer with name AnalyzerName in the user directory<b>[UserDir]</b><br>
 ///			Alternatively AnalyzerName can be replaced by the following syntax:<br> 
-///        		<br><code><b>AnalyzerName(InputType TreeName, ...)</b></code><br><br>
+///        		\code AnalyzerName(InputType TreeName, ...)\endcode
 ///        	This will already include the correct persistency headers, request the input tree and retrieve the input events.<br>
 ///        	Example: Creating an analyzer named toto using as input the GigaTracker MonteCarlo and LKr and Spectrometer RECO<br>
-///        		<br><code><b>NA62AnalysisBuilder.py new "toto(MC GigaTracker, Reco LKr, Reco Spectrometer)"</b></code><br><br>
-/// 	<li>NA62AnalysisBuilder.py rename oldName newName	: will rename a user analyzer<br>
-/// 	<li>NA62AnalysisBuilder.py configFileName		: will build the FW using the configuration file configFileName<br>
-/// 	<li>NA62AnalysisBuilder.py prepare path			: will prepare a user directory at the specified path<br>
-///	<li>NA62AnalysisBuilder.py examples			: will build the libraries for examples and import the configuration files in user directory<br>
+///        		\code NA62AnalysisBuilder.py new "toto(MC GigaTracker, Reco LKr, Reco Spectrometer)"\endcode
+/// 	<li>NA62AnalysisBuilder.py rename oldName newName	: will rename a user analyzer
+/// 	<li>NA62AnalysisBuilder.py configFileName		: will build the FW using the configuration file configFileName
+/// 	<li>NA62AnalysisBuilder.py prepare path			: will prepare a user directory at the specified path
+///		<li>NA62AnalysisBuilder.py examples			: will build the libraries for examples and import the configuration files in user directory<b>[UserDir]</b>
 /// </ul>
+/// The prepare and build commands have some flags that can be used to enable some features:
+/// <ul>
+/// 	<li>-d/--debug : activate the debug flag -g in the compiler for producing debugging information
+/// 	<li>--c++11 : enable c++11 support in the framework
+/// 	<li>--full-warning : activate all the warning flags during compilation
+/// 	<li>-j/--jobs : number of processors to use while building (make -j option)
+/// </ul>
+/// To get help from the script: 
+/// \code NA62AnalysisBuilder.py -h \endcode 
+/// Or for help on a specific command: 
+/// \code NA62AnalysisBuilder.py commandName -h \endcode 
 /// 
 /// If you want to write a new analyzer on MC simulation or reconstruction coming from NA62MC or NA62Analysis:
 /// <ol>
-///	<li> Go in your user directory (<b>PathToUserDir</b>) and setup the environment<br>
-/// 		<br><code><b>source scripts/env.[c]sh</b></code><br>
+///	<li> Go in your user directory<b>[UserDir]</b> and setup the environment<br>
+/// 		\code source scripts/env.[c]sh\endcode
 /// 	<li> Create a new analyzer with<br>
-/// 		<br><code><b>NA62AnalysisBuilder.py new analyzer-Name</b></code><br><br>
-/// 	<li> Write your analyzer. The header and source files are<br> 
-/// 		<br><code>PathToUserDir/Analyzer/include/analyzer-Name.hh<br>
-/// 		PathToUserDir/Analyzer/src/analyzer-Name.cc</code><br>
-///          In PathToUserDir there is also a preformatted runtime configuration file
+/// 		\code NA62AnalysisBuilder.py new analyzer-Name\endcode
+/// 	<li> Write your analyzer. The header and source files are
+/// 		\code
+/// PathToUserDir/Analyzer/include/analyzer-Name.hh
+/// PathToUserDir/Analyzer/src/analyzer-Name.cc \endcode
+///          In <b>[UserDir]</b> there is also a preformatted runtime configuration file
 /// </ol>
 /// 
 /// If you want to run the program with a set of analyzers
 /// <ol>
 /// 	<li> Go in you user directory (PathToUserDir) and setup the environment<br>
-/// 		<br><code><b>source scripts/env.[c]sh</b></code><br>
+/// 		\code source scripts/env.[c]sh\endcode
 /// 	<li> Create a config file containing the following line:<br>
-/// 		<br><code>exec = name-Of-Executable-To-Generate<br>
-/// 		analyzers = List-Of-Analyzer-You-Want-To-Run-Separated-By-White-Spaces<br>
-/// 		libs = List-Of-Additional-Libraries-To-Link-With<br>
-/// 		libsdirs = List-Of-Additional-Directories-To-Search-For-Libraries<br>
-/// 		incdirs = List-Of-Additional-Directories-To-Search-For-Include-Files</code><br><br>
+/// 		\code
+/// exec = name-Of-Executable-To-Generate
+/// analyzers = List-Of-Analyzer-You-Want-To-Run-Separated-By-White-Spaces
+/// libs = List-Of-Additional-Libraries-To-Link-With
+/// libsdirs = List-Of-Additional-Directories-To-Search-For-Libraries
+/// incdirs = List-Of-Additional-Directories-To-Search-For-Include-Files
+/// 		\endcode
 ///			If one of the analyzer specified in the list does not exist, a prompt will propose you to create it. For this reason, the syntax<br> 
-///      	<br><code><b>AnalyzerName(InputType TreeName, ...)</b></code><br><br>
+///      	\code AnalyzerName(InputType TreeName, ...)\endcode
 ///			is valid in the config file as well.
 /// 	<li> Compile in the user directory with <br>
-/// 		<br><code><b>NA62AnalysisBuilder.py configFileName</b></code><br><br>
+/// 		\code NA62AnalysisBuilder.py configFileName\endcode
 /// 	<li> Run with <br>
-/// 		<br><code>./yourExecutableName [-hg] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]<br>
-/// 		 [-N NumberOfEvents] [-o OutputFile] [-v verbosity] <br>
-/// 		 [-p "analyzer:param=val;param=val&analyzer:param=val&..."] [-c configFile] [-h]</code><br>
+/// 	\code 
+/// ./yourExecutableName [-hg] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]
+///                      [-N NumberOfEvents] [-o OutputFile] [-v verbosity]
+///                      [-p "analyzer:param=val;param=val&analyzer:param=val&..."] [-c configFile] [-h]
+/// 	\endcode
 /// </ol>
 /// 
 /// The runtime configuration file will advantageously replace long list of command line parameters 
 /// (with -p). The format of the configuration file is the following:<br> 
 /// 
-/// <code>
+/// \code
 /// [[analyzer-Name]]<br>
 /// Parameter1 = value1<br>
 /// Parameter2 = value2<br>
@@ -123,7 +148,7 @@
 /// ...<br>
 /// ...<br>
 /// ...<br>
-/// </code>
+/// \endcode
 ///
 /// The following parameters exist by default for all analyzers:
 /// <ul>
@@ -136,7 +161,7 @@
 ///
 /// <ul>
 /// 	<li>If you are experiencing strange problems with compilation and linking, first try a <br>
-/// 		<br><code><b>NA62AnalysisBuilder.py cleanAll</b></code><br>
+/// 		\code NA62AnalysisBuilder.py cleanAll\endcode
 ///			before trying to recompile the framework. Problems sometimes happens after changing version of ROOT, NA62MC, ... or when some framework libraries were not recompiled 
 ///			automatically after modifications in the code. 
 /// </ul>

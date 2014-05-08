@@ -35,7 +35,8 @@ using namespace std;
 /// \EndDetailed
 class UserMethods {
 public:
-	enum OutputState {kOUninit, kOValid, kOInvalid}; ///< List of possible states for the output variables.
+	/// List of possible states for the output variables.
+	enum OutputState {kOUninit, kOValid, kOInvalid};
 
 	UserMethods(BaseAnalysis *ba);
 	UserMethods(const UserMethods&);

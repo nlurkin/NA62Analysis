@@ -54,7 +54,7 @@ private:
 
 	bool fCreated; ///< Does the network already exists
 
-	AnalysisFW::VerbosityLevel fVerbosity;
+	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 };
 
 #endif /* NEURALNETWORK_HH_ */
