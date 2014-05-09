@@ -35,7 +35,7 @@ ParticleInterface::~ParticleInterface() {
 
 }
 
-const TParticlePDG* const ParticleInterface::FindParticle(int pdgID) const{
+const TParticlePDG* ParticleInterface::FindParticle(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg code of the particle
 	///
@@ -45,7 +45,7 @@ const TParticlePDG* const ParticleInterface::FindParticle(int pdgID) const{
 	return fTable->GetParticle(pdgID);
 }
 
-const TParticlePDG* const ParticleInterface::FindParticle(TString name) const{
+const TParticlePDG* ParticleInterface::FindParticle(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the particle
 	///

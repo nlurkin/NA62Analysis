@@ -1,6 +1,6 @@
 #include "TRecoLKrCandidateMC.hh"
 
-ClassImp(TRecoLKrCandidateMC);
+ClassImp(TRecoLKrCandidateMC)
 
 
 void TRecoLKrCandidateMC::copy(TRecoLKrCandidate *c){

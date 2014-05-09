@@ -25,8 +25,8 @@ public:
 	virtual ~ParticleInterface();
 	static ParticleInterface* GetParticleInterface();
 
-	const TParticlePDG* const FindParticle(int pdgID) const;
-	const TParticlePDG* const FindParticle(TString name) const;
+	const TParticlePDG* FindParticle(int pdgID) const;
+	const TParticlePDG* FindParticle(TString name) const;
 
 	int GetParticlePDGid(TString name) const;
 	TString GetParticleName(int pdgID) const;

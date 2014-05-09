@@ -5,6 +5,7 @@ include(${NA62ANALYSIS}/scripts/common.cmake)
 
 #require ROOT
 include(${NA62ANALYSIS}/scripts/FindROOT.cmake)
+#include($ENV{ROOTSYS}/etc/cmake/FindROOT.cmake)
 include_directories(${ROOT_INCLUDE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 
@@ -34,10 +35,12 @@ endif()
 #Get NA62MC
 set(NA62MCSOURCE $ENV{NA62MCSOURCE})
 set(SUBDIRS RICH LKr Spectrometer GigaTracker LAV IRC CHANTI Cedar CHOD MUV1 MUV2 SAC MUV3 MUV0 HAC)
+set(NA62MC_INC_DIRS ${NA62MCSOURCE}/Persistency/include)
 set(NA62MC_LIB_DIRS ${NA62MCSOURCE}/Persistency/lib)
 set(NA62MC_LIBS NA62Persistency)
 FOREACH (DIR ${SUBDIRS})
 	include_directories(${NA62MCSOURCE}/${DIR}/Persistency/include)
+	set(NA62MC_INC_DIRS ${NA62MC_INC_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/include)
 	set(NA62MC_LIB_DIRS ${NA62MC_LIB_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/lib)
 	set(NA62MC_LIBS ${NA62MC_LIBS} ${DIR}Persistency)
 ENDFOREACH(DIR)

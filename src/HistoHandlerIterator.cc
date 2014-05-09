@@ -118,7 +118,7 @@ HistoHandler::Iterator<PointerType>& HistoHandler::Iterator<PointerType>::operat
 	/// \EndMemberDescr
 
 	if(c==*this) return *this; // If asked to be replaced by itself stop here (itself already = to itself)
-	if(fNInstances==fNInstances){	//This is already a copy of this Iterator. No need to re-copy everything, only fIterator can be different.
+	if(fNInstances==c.fNInstances){	//This is already a copy of this Iterator. No need to re-copy everything, only fIterator can be different.
 		fIterator = c.fIterator;
 		return *this;
 	}

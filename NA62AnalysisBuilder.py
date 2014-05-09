@@ -239,7 +239,6 @@ def buildFW(FWPath, defines, jobs):
 		command = ["cd %s && source ./scripts/env.%s && cmake -H. -Bbuild" % (FWPath,shell)]
 		for d in defines or []:
 			command.append(" -D%s=1" % d)
-			print ''.join(command)
 		bash_command(''.join(command))
 	print "cd %s/build && source ../scripts/env.%s && make -j%s" % (FWPath,shell, jobs)
 	bash_command("cd %s/build && source ../scripts/env.%s && make -j%s" % (FWPath,shell, jobs))
