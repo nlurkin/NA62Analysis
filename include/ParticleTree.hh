@@ -28,27 +28,24 @@ using namespace std;
 
 class ParticleTree {
 public:
-	/// Current state of the node
-	enum state {kFirst, kChildren, kEmpty};
-
 	ParticleTree();
+	ParticleTree(const ParticleTree& c);
 	ParticleTree(int id, int pdgID, TString name);
-	ParticleTree(KinePart *ptr);
+	ParticleTree(KinePart* const ptr);
 	~ParticleTree();
 
 	void SetParticleProperties(int id, int pdgID, TString name);
-	int GetID();
-	KinePart *GetKinePart();
-	int GetParentID();
+	int GetID() const;
+	KinePart* GetKinePart() const;
+	int GetParentID() const;
 
 	void AddChildren(ParticleTree *child);
 	ParticleTree *GetChildren(int id);
-	bool GetFinalState(vector<KinePart*> &array);
-	bool GetLevel(vector<KinePart*> &array, int level, bool full);
+	bool GetFinalState(vector<KinePart*> &array) const;
+	bool GetLevel(vector<KinePart*> &array, int level, bool full) const;
 
 	ParticleTree *operator[](unsigned int i);
-	state PrintNext();
-	void ResetPrint();
+	void PrintHorizontal(TString prefix="", int cellSize=10, int level=1) const;
 
 private:
 	vector<ParticleTree*> fChildrens; ///< Children nodes
@@ -56,9 +53,6 @@ private:
 	int fId; ///< Sequence id of the particle
 	TString fName; ///< Name of the particle
 	KinePart *fParticle; ///< Pointer to kinePart
-
-	unsigned int fGiven; ///< Internal mess
-	unsigned int fPrevGiven; ///< Internal mess
 };
 
 #endif /* PARTICLETREE_HH_ */

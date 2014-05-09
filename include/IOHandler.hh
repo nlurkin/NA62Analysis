@@ -105,7 +105,6 @@ private:
 		void* fObject; ///< Pointer to the object
 	};
 
-	//TODO get direct access to pointers in this map
 	AnalysisFW::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
 	AnalysisFW::NA62Map<TString,TDetectorVEvent*>::type fEvent; ///< Container for the events
 	AnalysisFW::NA62Map<TString,ObjectTriplet*>::type fObject; ///< Container for the events

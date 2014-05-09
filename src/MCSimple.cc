@@ -285,8 +285,8 @@ void MCSimple::PrintInit() const{
 	}
 
 	if(fStruct.size()>0){
-		cout << "\tRequested MCSimple structure: " << endl << endl << "\t\t";
-		while(root.PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
+		cout << "\tRequested MCSimple structure: " << endl << endl;;
+		root.PrintHorizontal("\t");
 		cout << endl;
 	}
 }
@@ -297,10 +297,9 @@ void MCSimple::PrintDecayTree() const{
 	/// \EndMemberDescr
 
 	if(fDecayTree==NULL) return;
-	cout << endl << "\t\t";
-	while(fDecayTree->PrintNext()!=ParticleTree::kEmpty){cout << "\t\t";}
 	cout << endl;
-	fDecayTree->ResetPrint();
+	fDecayTree->PrintHorizontal("\t");
+	cout << endl;
 }
 
 vector<KinePart*> MCSimple::GetFinalState(){

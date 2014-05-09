@@ -10,44 +10,52 @@
 #include <iomanip>
 using namespace std;
 
-ParticleTree::ParticleTree(){
+ParticleTree::ParticleTree():
+		fpdgID(0),
+		fId(-1),
+		fParticle(NULL)
+{
 	/// \MemberDescr
 	/// Default constructor
 	/// \EndMemberDescr
-
-	fId = -1;
-	fPrevGiven = 0;
-	fGiven = 0;
-	fpdgID = 0;
-	fParticle = NULL;
 }
 
-ParticleTree::ParticleTree(int id, int pdgId, TString name) {
+ParticleTree::ParticleTree(int id, int pdgId, TString name):
+		fpdgID(pdgId),
+		fId(id),
+		fName(name),
+		fParticle(NULL)
+{
 	/// \MemberDescr
 	/// Constructor setting particle properties
 	/// \EndMemberDescr
-
-	fPrevGiven = 0;
-	fGiven = 0;
-	fId = id;
-	fpdgID = pdgId;
-	fName = name;
-	fParticle = NULL;
 }
 
-ParticleTree::ParticleTree(KinePart *ptr) {
+ParticleTree::ParticleTree(KinePart* const ptr):
+		fpdgID(ptr->GetPDGcode()),
+		fId(ptr->GetID()),
+		fName(ptr->GetParticleName()),
+		fParticle(ptr)
+{
 	/// \MemberDescr
 	/// \param ptr : Pointer to the KinePart
 	///
 	/// Constructor setting particle properties
 	/// \EndMemberDescr
+}
 
-	fPrevGiven = 0;
-	fGiven = 0;
-	fParticle = ptr;
-	fId = fParticle->GetID();
-	fpdgID = fParticle->GetPDGcode();
-	fName = fParticle->GetParticleName();
+ParticleTree::ParticleTree(const ParticleTree& c):
+		fChildrens(c.fChildrens),
+		fpdgID(c.fpdgID),
+		fId(c.fId),
+		fName(c.fName),
+		fParticle(c.fParticle)
+{
+	/// \MemberDescr
+	/// \param ptr : Pointer to the KinePart
+	///
+	/// Constructor setting particle properties
+	/// \EndMemberDescr
 }
 
 void ParticleTree::SetParticleProperties(int id, int pdgID, TString name){
@@ -64,7 +72,7 @@ void ParticleTree::SetParticleProperties(int id, int pdgID, TString name){
 	fName = name;
 }
 
-int ParticleTree::GetID(){
+int ParticleTree::GetID() const{
 	/// \MemberDescr
 	/// Return the particle id
 	/// \EndMemberDescr
@@ -72,7 +80,7 @@ int ParticleTree::GetID(){
 	return fId;
 }
 
-KinePart *ParticleTree::GetKinePart(){
+KinePart* ParticleTree::GetKinePart() const{
 	/// \MemberDescr
 	/// Return the KinePart pointer
 	/// \EndMemberDescr
@@ -80,7 +88,7 @@ KinePart *ParticleTree::GetKinePart(){
 	return fParticle;
 }
 
-int ParticleTree::GetParentID(){
+int ParticleTree::GetParentID() const{
 	/// \MemberDescr
 	/// Return the parent id of the particle if KinePart is set
 	/// \EndMemberDescr
@@ -143,7 +151,7 @@ ParticleTree *ParticleTree::operator [](unsigned int i){
 	else return NULL;
 }
 
-ParticleTree::state ParticleTree::PrintNext(){
+void ParticleTree::PrintHorizontal(TString prefix, int cellSize, int level) const{
 	/// \MemberDescr
 	/// Locate and print the next particle in the tree. Can be itself, direct or non direct children.\n
 	/// Final result for the tree should look like\n
@@ -151,65 +159,24 @@ ParticleTree::state ParticleTree::PrintNext(){
 	///       -> pi0    -> gamma \n
 	///                 -> gamma
 	/// \EndMemberDescr
+	vector<ParticleTree*>::const_iterator it;
 
-	int r=kEmpty;
-	int spaceSize = 10;
+	if(level==1) cout << prefix;
+	if(fName.Length()!=0) cout << setw(cellSize) << fName;
+	else cout << setw(cellSize) << fpdgID;
 
-	if(fGiven==0){
-		//This node has not yet been traversed
-		fGiven++;
-		//Print it (name if provided, else pdgID)
-		if(fName.Length()!=0) cout << setw(spaceSize) << fName;
-		else cout << setw(spaceSize) << fpdgID;
-		//Print decay arrow and move to first children if any
-		if(fChildrens.size()>0){
-			cout << " ->";
-			r = fChildrens[0]->PrintNext();
-		}
-		//Else this is the last particle of the branch, got to next line
-		else{
-			cout << endl;
-			return kEmpty;
-		}
+	if(fChildrens.size()==0) {
+		cout << endl;
+		return;
 	}
-	else if(fGiven<=fChildrens.size()){
-		//This node has already been traversed once
-		//fPrevGiven is the previously traversed children
-		//If fPrevGiven!=fGiven, it means we are traversing a new children
-		//we should therefore print the decay arrow
-		//else, just leave some white spaces for alignment
-		if(fPrevGiven!=fGiven) cout << setw(spaceSize+3) << " ->";
-		else cout << setw(spaceSize+3) << "";
-		r = fChildrens[fGiven-1]->PrintNext();
-	}
-
-	//Replace the previously traversed children by the current one
-	fPrevGiven = fGiven;
-	//Move to the next children if the branch of the previous one is already fully printed
-	//Else we need to go again in this children next time
-	if(r==kEmpty) fGiven++;
-
-	//If we printed all the children, finish this branch
-	if(fGiven>fChildrens.size()) return kEmpty;
-	else return kChildren;
-}
-
-void ParticleTree::ResetPrint(){
-	/// \MemberDescr
-	/// Reset the printing state.
-	/// \EndMemberDescr
-
-	vector<ParticleTree*>::iterator it;
-
-	fGiven = 0;
-	fPrevGiven = 0;
-
-	for(it=fChildrens.begin(); it!=fChildrens.end(); it++){
-		(*it)->ResetPrint();
+	for(it=fChildrens.begin(); it!=fChildrens.end(); ++it){
+		if(it!=fChildrens.begin()) cout << prefix << setw((cellSize+3)*level) << " ->";
+		else cout << " ->";
+		(*it)->PrintHorizontal(prefix, cellSize, level+1);
 	}
 }
 
-bool ParticleTree::GetFinalState(vector<KinePart*> &array){
+bool ParticleTree::GetFinalState(vector<KinePart*> &array) const{
 	/// \MemberDescr
 	/// \param array : Address of the array to be filled
 	///
@@ -217,7 +184,7 @@ bool ParticleTree::GetFinalState(vector<KinePart*> &array){
 	/// Return false if the pointers are not filled.
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::iterator it;
+	vector<ParticleTree*>::const_iterator it;
 	vector<KinePart*> tempVector;
 
 	if(!fParticle) return false;
@@ -233,7 +200,7 @@ bool ParticleTree::GetFinalState(vector<KinePart*> &array){
 	return true;
 }
 
-bool ParticleTree::GetLevel(vector<KinePart*> &array, int level, bool full){
+bool ParticleTree::GetLevel(vector<KinePart*> &array, int level, bool full) const{
 	/// \MemberDescr
 	/// \param array : Address of the array to be filled
 	/// \param level : Level number below the current node to return
@@ -243,7 +210,7 @@ bool ParticleTree::GetLevel(vector<KinePart*> &array, int level, bool full){
 	/// Return false if the pointers are not filled.
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::iterator it;
+	vector<ParticleTree*>::const_iterator it;
 	vector<KinePart*> tempVector;
 
 	if(!fParticle) return false;

@@ -2,23 +2,25 @@
 NA62Analysis Project
 ################################################################
 
-2014-05-08	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 343
+		- Moved several scripts to the scripts folder
 		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
 		  A flag to generate debugging information (-g flag of compiler)
 		  A flag to enable all the warning flags
 		  A flag to enable c++11 support (only if gcc version supports the feature)
 		  An option for compiling with several processors
 		  Type NA62AnalysisBuilder.py build -h for more info 
-		- Moved several scripts to the scripts folder
-		- Add TwoLinesCDA and CedarMCTester in the list of available components (validated)
+		- Additions and improvements to documentation (http://sergiant.web.cern.ch/sergiant/NA62FW/html/)
+		- Add TwoLinesCDA and CedarMCTester in the list of validated components (http://sergiant.web.cern.ch/sergiant/NA62FW/html/componentStatus.html)
 		- Several performances improvements in the internal parts of the framework
 		- Implement HistoHandler::Iterator<T> to run over a set of booked histograms 
-		  (can be accessed with GetIteratorTH1|TH2|TGraph; see xxx for documentation)
+		  (can be accessed with GetIteratorTH1|TH2|TGraph; see HistoHandler::Iterator class documentation
+		  at http://sergiant.web.cern.ch/sergiant/NA62FW/html/annotated.html for example on how to use it)
 		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
 		- Add GetNEvents method to get the total number of events and GetTree to get a
 		  pointer to a TTree.
-		- Additions and improvements to documentation
+
 		
 2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
                 rev 342
