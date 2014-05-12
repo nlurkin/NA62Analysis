@@ -551,7 +551,7 @@ def prepareUserFolder(args):
 				return
 				
 	
-	buildFW(FWPath)
+	buildFW(FWPath,args.defines, args.jobs)
 	
 	if not os.path.exists("%s/Analyzers" % path):
 		os.mkdir("%s/Analyzers" % path)

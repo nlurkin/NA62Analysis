@@ -12,7 +12,8 @@ NA62Analysis Project
 		  An option for compiling with several processors
 		  Type NA62AnalysisBuilder.py build -h for more info 
 		- Additions and improvements to documentation (http://sergiant.web.cern.ch/sergiant/NA62FW/html/)
-		- Add TwoLinesCDA and CedarMCTester in the list of validated components (http://sergiant.web.cern.ch/sergiant/NA62FW/html/componentStatus.html)
+		- Add TwoLinesCDA and CedarMCTester in the list of validated components 
+		  (http://sergiant.web.cern.ch/sergiant/NA62FW/html/componentStatus.html)
 		- Several performances improvements in the internal parts of the framework
 		- Implement HistoHandler::Iterator<T> to run over a set of booked histograms 
 		  (can be accessed with GetIteratorTH1|TH2|TGraph; see HistoHandler::Iterator class documentation
@@ -20,6 +21,8 @@ NA62Analysis Project
 		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
 		- Add GetNEvents method to get the total number of events and GetTree to get a
 		  pointer to a TTree.
+		- Fix bug in FindROOT when generating dictionary for TObjects in PhysicsObjects and 
+		  TRecoLKrCandidateMC in Examples. The corresponding libraries are now compiled.  
 
 		
 2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
