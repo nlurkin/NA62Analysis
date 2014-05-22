@@ -130,7 +130,7 @@
 /// 		\code NA62AnalysisBuilder.py build configFileName\endcode
 /// 	<li> Run with <br>
 /// 	\code 
-/// ./yourExecutableName [-hg] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]
+/// ./yourExecutableName [-hga] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]
 ///                      [-N NumberOfEvents] [-o OutputFile] [-v verbosity]
 ///                      [-p "analyzer:param=val;param=val&analyzer:param=val&..."] [-c configFile] [-h]
 /// 	\endcode

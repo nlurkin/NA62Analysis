@@ -170,7 +170,7 @@ If you want to run the program with a set of analyzers
       NA62AnalysisBuilder.py build configFileName
 
   o Run with
-      ./yourExecutableName [-hg] <-i InputFile | -l InpuFilesList> 
+      ./yourExecutableName [-hga] <-i InputFile | -l InpuFilesList> 
                            [-B NumberOfFilesToProcess] [-n FirstEvent]
                            [-N NumberOfEvents] [-o OutputFile] [-v verbosity]
                            [-p "analyzer:param=val;param=val&analyzer:param=val&..."]

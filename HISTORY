@@ -2,6 +2,15 @@
 NA62Analysis Project
 ################################################################
 
+2015-05-22 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 344
+		- Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
+		  and use the system argparse module if available
+		- Add an option to the framework (-a) to allow it to run even if one or several 
+		  TTree is not found
+		- The framework now fully supports input TTrees with any number of branches 
+		  (To use this new feature see the documentation of RequestTree, GetEvent and GetObject)
+
 2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 343
 		- Moved several scripts to the scripts folder
