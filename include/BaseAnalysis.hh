@@ -26,7 +26,7 @@ public:
 
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 
 	//Output methods

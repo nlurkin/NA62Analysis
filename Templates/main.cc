@@ -14,7 +14,7 @@ TApplication *theApp = 0;
 
 void usage(char* name)
 {
-	cout << "Usage: \t"<< name << " [-hg] < -i InputFile.root | -l InputFilesList.txt [-B #MaxFiles] > [-n #FirstEvent]" << endl;
+	cout << "Usage: \t"<< name << " [-hga] < -i InputFile.root | -l InputFilesList.txt [-B #MaxFiles] > [-n #FirstEvent]" << endl;
 	cout << "\t\t[-N #Events] [-o OutputFile.root] [-r ReferenceFile.root] [-v verbosity] [-c configFile]" << endl;
 	cout << "[-p \"analyzerName:param=val;param=val&analyzerName:param=val&...\"]" << endl;
 	cout << "\t -h : Display this help" << endl;
@@ -29,6 +29,7 @@ void usage(char* name)
 	cout << "\t -v : Verbosity level." << endl;
 	cout << "\t -p : List of parameters to pass to analyzers." << endl;
 	cout << "\t -c : Path to a configuration file containing analyzers parameters." << endl;
+	cout << "\t -a : Allow non-existing trees." << endl;
 }
 
 void sighandler(int sig)
@@ -64,12 +65,13 @@ int main(int argc, char** argv){
 	Int_t NFiles = 0;
 	bool graphicMode = false;
 	bool fromList = false;
+	bool allowNonExisting = false;
 	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
 
 	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
-	while ((opt = getopt(argc, argv, "hgB:n:i:l:N:o:v:p:c:r:")) != -1) {
+	while ((opt = getopt(argc, argv, "hagB:n:i:l:N:o:v:p:c:r:")) != -1) {
 		n_options_read++;
 		switch (opt) {
 		case 'B':
@@ -122,6 +124,9 @@ int main(int argc, char** argv){
 		case 'g':
 			graphicMode = true;
 			break;
+		case 'a':
+			allowNonExisting = true;
+			break;
 		default: /* '?' */
 			usage(argv[0]);
 			return 0;
@@ -146,7 +151,7 @@ int main(int argc, char** argv){
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName);
+	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName, allowNonExisting);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();

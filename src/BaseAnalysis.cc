@@ -43,7 +43,7 @@ void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
 	fVerbosity = v;
 }
 
-void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile){
+void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
@@ -69,6 +69,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fGraphicMode = graphicMode;
 	fIOHandler.OpenOutput(outFileName);
 	fIOHandler.SetReferenceFileName(refFile);
+	fIOHandler.SetAllowNonExisting(allowNonExisting);
 
 	fNEvents = fIOHandler.FillMCTruth(fVerbosity);
 
