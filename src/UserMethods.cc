@@ -559,7 +559,7 @@ const void* UserMethods::GetOutputVoid(TString name, OutputState &state) const {
 	return fParent->GetOutput(name, state);
 }
 
-void UserMethods::RequestTree(TString name, TDetectorVEvent *evt){
+void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
@@ -567,17 +567,17 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt){
 	/// Request to open a tree in the input file
 	/// \EndMemberDescr
 
-	fParent->GetIOHandler()->RequestTree(name, evt);
+	fParent->GetIOHandler()->RequestTree(name, evt, branchName);
 }
 
-TDetectorVEvent *UserMethods::GetEvent(TString name){
+TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the tree from which the event is read
 	///
 	/// Get the event from input file
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetEvent(name);
+	return fParent->GetIOHandler()->GetEvent(name, branchName);
 }
 
 TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
@@ -670,12 +670,12 @@ void* UserMethods::GetObjectVoid(TString name){
 	return fParent->GetIOHandler()->GetObject(name);
 }
 
-bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
+void UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
+	fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
 }
 
 TH1* UserMethods::GetReferenceTH1(TString name){

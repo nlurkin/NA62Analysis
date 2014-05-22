@@ -14,12 +14,13 @@
 #include "StringBalancedTable.hh"
 
 IOHandler::IOHandler():
-		fMCTruthTree(0),
-		fMCTruthEvent(new Event()),
-		fCurrentFileNumber(-1),
-		fOutFile(0),
-		fWithMC(false),
-		fCurrentFile(NULL)
+	fMCTruthTree(0),
+	fMCTruthEvent(new Event()),
+	fCurrentFileNumber(-1),
+	fOutFile(0),
+	fWithMC(false),
+	fCurrentFile(NULL),
+	allowNonExisting(false)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -27,20 +28,21 @@ IOHandler::IOHandler():
 }
 
 IOHandler::IOHandler(const IOHandler& c):
-		fTree(c.fTree),
-		fEvent(c.fEvent),
-		fObject(c.fObject),
-		fMCTruthTree(c.fMCTruthTree),
-		fMCTruthEvent(c.fMCTruthEvent),
-		fInputHistoAdd(c.fInputHistoAdd),
-		fInputHisto(c.fInputHisto),
-		fCurrentFileNumber(c.fCurrentFileNumber),
-		fReferenceFileName(c.fReferenceFileName),
-		fOutFile(c.fOutFile),
-		fOutFileName(c.fOutFileName),
-		fExportTrees(c.fExportTrees),
-		fWithMC(c.fWithMC),
-		fCurrentFile(c.fCurrentFile)
+	fTree(c.fTree),
+	fEvent(c.fEvent),
+	fObject(c.fObject),
+	fMCTruthTree(c.fMCTruthTree),
+	fMCTruthEvent(c.fMCTruthEvent),
+	fInputHistoAdd(c.fInputHistoAdd),
+	fInputHisto(c.fInputHisto),
+	fCurrentFileNumber(c.fCurrentFileNumber),
+	fReferenceFileName(c.fReferenceFileName),
+	fOutFile(c.fOutFile),
+	fOutFileName(c.fOutFileName),
+	fExportTrees(c.fExportTrees),
+	fWithMC(c.fWithMC),
+	fCurrentFile(c.fCurrentFile),
+	allowNonExisting(false)
 {
 	/// \MemberDescr
 	/// Copy constructor
@@ -52,9 +54,9 @@ IOHandler::~IOHandler(){
 	/// Destructor
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator itChain;
-	AnalysisFW::NA62Map<TString,TDetectorVEvent*>::type::iterator itEvent;
-	AnalysisFW::NA62Map<TString,TTree*>::type::iterator itTree;
+	treeIterator itChain;
+	objectIterator itObject;
+	eventIterator itEvent;
 
 	if(fOutFile) {
 		cout << "############# Writing output file #############" << endl;
@@ -73,13 +75,18 @@ IOHandler::~IOHandler(){
 		delete itEvent->second;
 		fEvent.erase(itEvent);
 	}
+	while(fObject.size()>0){
+		itObject = fObject.begin();
+		delete itObject->second;
+		fObject.erase(itObject);
+	}
 
 	delete fMCTruthTree;
 	delete fMCTruthEvent;
 }
 
 
-void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt){
+void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
@@ -88,15 +95,19 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt){
 	/// \EndMemberDescr
 
 	if(fTree.count(name)==0){
-		fTree.insert(pair<TString,TChain*>(name, new TChain(name)));
-		fEvent.insert(pair<TString,TDetectorVEvent*>(name,evt));
+		fTree.insert(chainPair(name, new TChain(name)));
 	}
-	else{
-		delete evt;
+	if(branchName.CompareTo("")==0){
+		if(strstr(evt->ClassName(), "Reco")!=NULL) branchName="Reco";
+		else branchName="Hits";
 	}
+	fEvent.insert(eventPair(name, new EventTriplet(branchName, evt)));
+	//else{
+	//	delete evt;
+	//}
 }
 
-bool IOHandler::RequestTree(TString name, TString branchName, TString className, void* const obj){
+void IOHandler::RequestTree(TString name, TString branchName, TString className, void* const obj){
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param branchName : Name of the Branch to retrieve
@@ -107,13 +118,12 @@ bool IOHandler::RequestTree(TString name, TString branchName, TString className,
 	/// \EndMemberDescr
 
 	if(fTree.count(name)==0){
-		fTree.insert(pair<TString,TChain*>(name, new TChain(name)));
-		fObject.insert(pair<TString,ObjectTriplet*>(name,new ObjectTriplet(className, branchName, obj)));
-		return true;
+		fTree.insert(chainPair(name, new TChain(name)));
 	}
-	else{
-		return false;
-	}
+	fObject.insert(objectPair(name,new ObjectTriplet(className, branchName, obj)));
+	//else{
+	//	return false;
+	//}
 }
 
 int IOHandler::BranchTrees(int eventNb){
@@ -122,19 +132,21 @@ int IOHandler::BranchTrees(int eventNb){
 	///
 	/// Effectively read all the requested trees in the input file and branch them
 	/// \EndMemberDescr
+	treeIterator it;
+	eventIterator ptr1;
+	objectIterator ptr2;
+	pair<eventIterator, eventIterator> eventRange;
+	pair<objectIterator, objectIterator> objectRange;
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator it;
-	AnalysisFW::NA62Map<TString,TDetectorVEvent*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,ObjectTriplet*>::type::iterator ptr2;
-
-	TString branchName;
-	for(it=fTree.begin(); it!=fTree.end(); it++){
-		if((ptr1=fEvent.find(it->first))!=fEvent.end()){
-			if(strstr(ptr1->second->ClassName(), "Reco")!=NULL) FindAndBranchTree(it->second, "Reco", ptr1->second->ClassName(), &(ptr1->second), eventNb);
-			else FindAndBranchTree(it->second, "Hits", ptr1->second->ClassName(), &(ptr1->second), eventNb);
+	for(it=fTree.begin(); it!=fTree.end(); ++it){
+		eventRange = fEvent.equal_range(it->first);
+		//if((ptr1=fEvent.find(it->first))!=fEvent.end()){
+		for(ptr1=eventRange.first; ptr1!=eventRange.second; ++ptr1){
+			FindAndBranchTree(it->second, ptr1->second->fBranchName, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent), eventNb);
 		}
-		else{
-			ptr2=fObject.find(it->first);
+		objectRange = fObject.equal_range(it->first);
+		//ptr2=fObject.find(it->first);
+		for(ptr2=objectRange.first; ptr2!=objectRange.second; ++ptr2){
 			FindAndBranchTree(it->second, ptr2->second->fBranchName, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
 		}
 	}
@@ -142,23 +154,60 @@ int IOHandler::BranchTrees(int eventNb){
 	return eventNb;
 }
 
-TDetectorVEvent *IOHandler::GetEvent(TString name){
+TDetectorVEvent *IOHandler::GetEvent(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree from which the event is read
 	///
 	/// Return the pointer to the event corresponding to the given tree
 	/// \EndMemberDescr
 
-	return fEvent[name];
+	eventIterator it;
+	pair<eventIterator, eventIterator> eventRange;
+
+	eventRange = fEvent.equal_range(name);
+	if(eventRange.first==eventRange.second){
+		cerr << "Error: Unable to find event in tree " << name << endl;
+		return NULL;
+	}
+	else{
+		for(it=eventRange.first; it!=eventRange.second; ++it){
+			if(( branchName.CompareTo("")==0 && (
+					it->second->fBranchName.CompareTo("Reco")==0 ||
+					it->second->fBranchName.CompareTo("Hits")==0))
+					|| it->second->fBranchName.CompareTo(branchName)==0){
+				return it->second->fEvent;
+			}
+		}
+	}
+	cerr << "Error: Unable to find event in branch " << branchName << " in tree " << name << endl;
+	return NULL;
 }
 
-void *IOHandler::GetObject(TString name){
+void *IOHandler::GetObject(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree from which the object is read
 	///
 	/// Return the pointer to the object corresponding to the given tree
 	/// \EndMemberDescr
-	return fObject[name]->fObject;
+
+	objectIterator it;
+	pair<objectIterator, objectIterator> objectRange;
+
+	objectRange = fObject.equal_range(name);
+	if(objectRange.first==objectRange.second){
+		cerr << "Error: Unable to find object in tree " << name << endl;
+		return NULL;
+	}
+	else{
+		for(it=objectRange.first; it!=objectRange.second; ++it){
+			if( branchName.CompareTo("")==0 ||
+					it->second->fBranchName.CompareTo(branchName)==0){
+				return it->second->fObject;
+			}
+		}
+	}
+	cerr << "Error: Unable to find object in branch " << branchName << " in tree " << name << endl;
+	return NULL;
 }
 
 TH1* IOHandler::GetReferenceTH1(TString name){
@@ -303,7 +352,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	/// Open and register the input files.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator it;
+	treeIterator it;
 	int inputFileNumber = 0;
 	bool inputChecked = false;
 
@@ -372,11 +421,25 @@ void IOHandler::LoadEvent(int iEvent){
 	/// Load the event from the TTrees
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator it;
+	treeIterator it;
+	eventIterator itEvt;
+	objectIterator itObj;
+
+	pair<eventIterator, eventIterator> eventRange;
+	pair<objectIterator, objectIterator> objectRange;
 
 	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
 	for(it=fTree.begin(); it!=fTree.end(); it++){
-		it->second->GetEntry(iEvent);
+		eventRange = fEvent.equal_range(it->first);
+		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
+			//cout << itEvt->second->fBranchName << endl;
+			//it->second->GetListOfBranches()->Print();
+			it->second->GetBranch(itEvt->second->fBranchName)->GetEntry(iEvent);
+		}
+		objectRange = fObject.equal_range(it->first);
+		for(itObj=objectRange.first; itObj!=objectRange.second; ++itObj){
+			it->second->GetBranch(itObj->second->fBranchName)->GetEntry(iEvent);
+		}
 	}
 
 }
@@ -405,7 +468,7 @@ TChain* IOHandler::GetTree(TString name) {
 	///
 	///	Return a pointer to the specified TTree
 	/// \EndMemberDescr
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator it;
+	treeIterator it;
 
 	if((it=fTree.find(name))!= fTree.end()){
 		return it->second;
@@ -432,8 +495,14 @@ void IOHandler::FindAndBranchTree(TChain* tree, TString branchName, TString bran
 
 	branchesList = tree->GetListOfBranches();
 	if(!branchesList){
-		cerr << "Unable to find TTree " << tree->GetName() << ". Aborting.";
-		raise(SIGABRT);
+		if(! allowNonExisting){
+			cerr << "Unable to find TTree " << tree->GetName() << ". Aborting.";
+			raise(SIGABRT);
+		}
+		else{
+			cerr << "Warning: unable to find TTree " << tree->GetName() << ". Retrieved corresponding event will always be empty";
+			return;
+		}
 	}
 	jMax = branchesList->GetEntries();
 	for (Int_t j=0; j < jMax; j++){
@@ -448,16 +517,18 @@ void IOHandler::FindAndBranchTree(TChain* tree, TString branchName, TString bran
 			tree->SetBranchAddress(branchName, evt);
 			if ( eventNb < 0 )
 			{
-				eventNb = tree->GetEntries();
+				eventNb = tree->GetBranch(branchName)->GetEntries();
 			}
-			else if (eventNb != tree->GetEntries())
+			else if (eventNb != tree->GetBranch(branchName)->GetEntries())
 			{
 				cout << eventNb << endl;
-				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetEntries() << endl;
+				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetBranch(branchName)->GetEntries() << endl;
 				raise(SIGABRT);
 			}
+			return;
 		}
 	}
+	cerr << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << endl;
 }
 
 bool IOHandler::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity){
@@ -540,7 +611,7 @@ void IOHandler::WriteEvent(){
 	/// Write the event in the output tree.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::iterator it;
+	treeIterator it;
 	AnalysisFW::NA62Map<TString,TTree*>::type::iterator itTree;
 
 	if(fExportTrees.size()==0){
@@ -614,7 +685,6 @@ bool IOHandler::CheckNewFileOpened(){
 	/// \EndMemberDescr
 
 	int openedFileNumber;
-	multimap<TString,TH1*>::iterator it;
 	TString histoPath = "-1";
 
 	if(fWithMC){
@@ -646,7 +716,7 @@ void IOHandler::UpdateInputHistograms(){
 	/// Update the input histograms with the one coming from the current input file.
 	/// \EndMemberDescr
 
-	multimap<TString,TH1*>::iterator it;
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
 
@@ -694,4 +764,8 @@ int IOHandler::GetCurrentFileNumber() const{
 	/// \EndMemberDescr
 
 	return fCurrentFileNumber;
+}
+
+void IOHandler::SetAllowNonExisting(bool allowNonExisting) {
+	this->allowNonExisting = allowNonExisting;
 }

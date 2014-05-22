@@ -52,14 +52,15 @@ public:
 	void UpdateInputHistograms();
 
 	//TTree
-	void RequestTree(TString name, TDetectorVEvent* const evt);
-	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
+	void RequestTree(TString name, TDetectorVEvent* const evt, TString branchName="");
+	void RequestTree(TString name, TString branchName, TString className, void* const obj);
 	int BranchTrees(int eventNb);
 	TChain* GetTree(TString name);
+	void SetAllowNonExisting(bool allowNonExisting);
 
 	//Events
-	TDetectorVEvent *GetEvent(TString name);
-	void* GetObject(TString name);
+	TDetectorVEvent *GetEvent(TString name, TString branchName="");
+	void* GetObject(TString name, TString branchName="");
 	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
 	void LoadEvent(int iEvent);
 	Event* GetMCTruthEvent();
@@ -104,16 +105,42 @@ private:
 		TString fBranchName; ///< Branch name
 		void* fObject; ///< Pointer to the object
 	};
+	class EventTriplet{
+		public:
+			EventTriplet(TString branch, TDetectorVEvent* obj):
+				fBranchName(branch),
+				fEvent(obj)
+			{
+				/// \MemberDescr
+				///	\param c : Class name of the object
+				///	\param branch : Name of the branch
+				/// \param obj : Pointer to the object
+				///	Constructor
+				///	\EndMemberDescr
+			};
+			~EventTriplet(){
+				delete fEvent;
+			}
+			TString fBranchName; ///< Branch name
+			TDetectorVEvent* fEvent; ///< Pointer to the object
+	};
+
+	typedef pair<TString, TChain*> chainPair;
+	typedef pair<TString, EventTriplet*> eventPair;
+	typedef pair<TString, ObjectTriplet*> objectPair;
+	typedef AnalysisFW::NA62Map<TString,TChain*>::type::iterator treeIterator;
+	typedef AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator;
+	typedef AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator;
 
 	AnalysisFW::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
-	AnalysisFW::NA62Map<TString,TDetectorVEvent*>::type fEvent; ///< Container for the events
-	AnalysisFW::NA62Map<TString,ObjectTriplet*>::type fObject; ///< Container for the events
+	AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events
+	AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects
 
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
 
-	multimap<TString,TH1*> fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
-	multimap<TString,TH1*> fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
 
@@ -127,6 +154,8 @@ private:
 	bool fWithMC; ///< Do we have MC in the file?
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
+
+	bool allowNonExisting; ///< Do we allow non existing trees
 };
 
 #endif /* IOHANDLER_HH_ */
