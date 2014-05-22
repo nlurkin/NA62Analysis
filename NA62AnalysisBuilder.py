@@ -6,7 +6,10 @@ import re
 import shutil
 import subprocess
 from scripts import dependencyGraph
-from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
+try:
+	from argparse import ArgumentParser, RawDescriptionHelpFormatter
+except ImportError:
+	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
 __rev__ = 343
@@ -624,8 +627,9 @@ def parseArgs():
 															if the framework was already compiled without the option"""))
 	clean_group.add_argument('-d', '--debug', action="append_const", const="NA62_DEBUG", 
 							dest="defines", help="Compile the framework and user directories with debugging informations")
-	clean_group.add_argument('--c++11', action="append_const", const="C++11_COMPAT", 
-							dest="defines", help="Compile the framework and user directories with c++11 support")
+	clean_group.add_argument('--no-c++11', action="store_false", default="True", 
+							dest="c11", help="""Compile the framework and user directories without c++11 support 
+							(automatically disabled if compiler does not support c++11)""")
 	clean_group.add_argument('--full-warning', action="append_const", const="FULL_WARNING", 
 							dest="defines", help="Compile the framework and user directories with all the warning flags")
 	
@@ -699,6 +703,11 @@ def parseArgs():
 
 	# Process arguments
 	args = parser.parse_args()
+	
+	if "c11" in args and args.c11:
+		if args.defines==None:
+			args.defines = []
+		args.defines.append("C++11_COMPAT")
 	
 	args.func(args)
 

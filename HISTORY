@@ -8,7 +8,7 @@ NA62Analysis Project
 		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
 		  A flag to generate debugging information (-g flag of compiler)
 		  A flag to enable all the warning flags
-		  A flag to enable c++11 support (only if gcc version supports the feature)
+		  A flag to disable c++11 support (automatically enabled if gcc version supports the feature)
 		  An option for compiling with several processors
 		  Type NA62AnalysisBuilder.py build -h for more info 
 		- Additions and improvements to documentation (http://sergiant.web.cern.ch/sergiant/NA62FW/html/)
