@@ -62,7 +62,7 @@
 /// To update the framework, just go inside the framework directory<b>[FWDir]</b> and issue
 /// \code svn update\endcode
 /// The next time you try to build an executable with
-/// \code NA62AnalysisBuilder.py configFileName\endcode
+/// \code NA62AnalysisBuilder.py build configFileName\endcode
 /// the libraries will be recompiled and eventual changes in your user directory<b>[UserDir]</b> will be safely done automatically.
 /// In case of problem you will see a warning message and inform you on the appropriate actions to manually solve the problem.
 /// In case of compilation problem you can try a complete clean rebuild of the framework. See \ref rebuild
@@ -82,14 +82,14 @@
 ///        	Example: Creating an analyzer named toto using as input the GigaTracker MonteCarlo and LKr and Spectrometer RECO<br>
 ///        		\code NA62AnalysisBuilder.py new "toto(MC GigaTracker, Reco LKr, Reco Spectrometer)"\endcode
 /// 	<li>NA62AnalysisBuilder.py rename oldName newName	: will rename a user analyzer
-/// 	<li>NA62AnalysisBuilder.py configFileName		: will build the FW using the configuration file configFileName
+/// 	<li>NA62AnalysisBuilder.py build configFileName		: will build the FW using the configuration file configFileName
 /// 	<li>NA62AnalysisBuilder.py prepare path			: will prepare a user directory at the specified path
 ///		<li>NA62AnalysisBuilder.py examples			: will build the libraries for examples and import the configuration files in user directory<b>[UserDir]</b>
 /// </ul>
 /// The prepare and build commands have some flags that can be used to enable some features:
 /// <ul>
 /// 	<li>-d/--debug : activate the debug flag -g in the compiler for producing debugging information
-/// 	<li>--c++11 : enable c++11 support in the framework
+/// 	<li>--no-c++11 : disable c++11 support in the framework. C++11 support is automatically enabled for compiler supporting the feature.
 /// 	<li>--full-warning : activate all the warning flags during compilation
 /// 	<li>-j/--jobs : number of processors to use while building (make -j option)
 /// </ul>
@@ -127,7 +127,7 @@
 ///      	\code AnalyzerName(InputType TreeName, ...)\endcode
 ///			is valid in the config file as well.
 /// 	<li> Compile in the user directory with <br>
-/// 		\code NA62AnalysisBuilder.py configFileName\endcode
+/// 		\code NA62AnalysisBuilder.py build configFileName\endcode
 /// 	<li> Run with <br>
 /// 	\code 
 /// ./yourExecutableName [-hg] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]
