@@ -90,24 +90,41 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt, TString b
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
+	/// \param branchName : Name of the branch to request
 	///
-	/// Request a tree in the input file. If already requested before, do nothing.
+	/// Request a branch in a tree in the input file. If the tree has already been requested before,
+	/// only add the new branch.
+	/// If branchName is not specified, the branch "Reco" or "Hits" will be used (depending on the
+	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
+	eventIterator it;
+	pair<eventIterator, eventIterator> eventRange;
+
+	//Create the tree if not yet requested
 	if(fTree.count(name)==0){
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
+
+	//Which branch are we dealing with?
 	if(branchName.CompareTo("")==0){
 		if(strstr(evt->ClassName(), "Reco")!=NULL) branchName="Reco";
 		else branchName="Hits";
 	}
+
+	//Is this branch already requested?
+	//If yes delete evt and return (we already have the branching object instance)
+	eventRange = fEvent.equal_range(name);
+	for(it=eventRange.first; it!=eventRange.second; ++it){
+		if(it->second->fBranchName.CompareTo(branchName)==0){
+			delete evt;
+			return;
+		}
+	}
 	fEvent.insert(eventPair(name, new EventTriplet(branchName, evt)));
-	//else{
-	//	delete evt;
-	//}
 }
 
-void IOHandler::RequestTree(TString name, TString branchName, TString className, void* const obj){
+bool IOHandler::RequestTree(TString name, TString branchName, TString className, void* const obj){
 	/// \MemberDescr
 	/// \param name : Name of the requested TTree
 	/// \param branchName : Name of the Branch to retrieve
@@ -117,13 +134,24 @@ void IOHandler::RequestTree(TString name, TString branchName, TString className,
 	/// Request a tree in the input file. If already requested before, do nothing.
 	/// \EndMemberDescr
 
+	objectIterator it;
+	pair<objectIterator, objectIterator> objectRange;
+
+	//Create the tree if not yet requested
 	if(fTree.count(name)==0){
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
+
+	//Is this branch already requested?
+	//If yes signal the caller that obj shoud be deleted and return (we already have the branching object instance)
+	objectRange = fObject.equal_range(name);
+	for(it=objectRange.first; it!=objectRange.second; ++it){
+		if(it->second->fBranchName.CompareTo(branchName)==0){
+			return false;
+		}
+	}
 	fObject.insert(objectPair(name,new ObjectTriplet(className, branchName, obj)));
-	//else{
-	//	return false;
-	//}
+	return true;
 }
 
 int IOHandler::BranchTrees(int eventNb){
@@ -132,20 +160,24 @@ int IOHandler::BranchTrees(int eventNb){
 	///
 	/// Effectively read all the requested trees in the input file and branch them
 	/// \EndMemberDescr
+
 	treeIterator it;
 	eventIterator ptr1;
 	objectIterator ptr2;
 	pair<eventIterator, eventIterator> eventRange;
 	pair<objectIterator, objectIterator> objectRange;
 
+	//Loop over all the trees
 	for(it=fTree.begin(); it!=fTree.end(); ++it){
+
+		//Loop over all the event branches of this tree and branch them
 		eventRange = fEvent.equal_range(it->first);
-		//if((ptr1=fEvent.find(it->first))!=fEvent.end()){
 		for(ptr1=eventRange.first; ptr1!=eventRange.second; ++ptr1){
 			FindAndBranchTree(it->second, ptr1->second->fBranchName, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent), eventNb);
 		}
+
+		//Loop over all the object branches of this tree and branch them
 		objectRange = fObject.equal_range(it->first);
-		//ptr2=fObject.find(it->first);
 		for(ptr2=objectRange.first; ptr2!=objectRange.second; ++ptr2){
 			FindAndBranchTree(it->second, ptr2->second->fBranchName, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
 		}
@@ -157,20 +189,34 @@ int IOHandler::BranchTrees(int eventNb){
 TDetectorVEvent *IOHandler::GetEvent(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree from which the event is read
+	/// \param branchName : Name of the branch
 	///
-	/// Return the pointer to the event corresponding to the given tree
+	/// Return the pointer to the event corresponding to the given tree and the given branch.
+	/// If branchName is left empty and there is only 1 branch requested on this tree, this
+	/// single branch is returned. If there is more than 1 branch requested on this tree,
+	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
+	/// if both "Reco" and "Hits" branches have been requested).
+	/// If branchName is specified, try to return the specified branch.
 	/// \EndMemberDescr
 
 	eventIterator it;
 	pair<eventIterator, eventIterator> eventRange;
 
 	eventRange = fEvent.equal_range(name);
-	if(eventRange.first==eventRange.second){
+	if(eventRange.first==eventRange.second){ //Range is 0, no such event found
 		cerr << "Error: Unable to find event in tree " << name << endl;
 		return NULL;
 	}
 	else{
+		//No branchName specified but only a single branch has been requested in this tree. Must be the one...
+		it = eventRange.first;
+		if(branchName.CompareTo("")==0 && (++it==eventRange.first)){
+			return eventRange.second->second->fEvent;
+		}
+		--it;
 		for(it=eventRange.first; it!=eventRange.second; ++it){
+			//If the branch is not specified but we find Reco or Hits, we return it
+			//Or if this is the requested branchm also return it
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fBranchName.CompareTo("Reco")==0 ||
 					it->second->fBranchName.CompareTo("Hits")==0))
@@ -186,20 +232,28 @@ TDetectorVEvent *IOHandler::GetEvent(TString name, TString branchName){
 void *IOHandler::GetObject(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree from which the object is read
+	/// \param branchName : Name of the branch
 	///
-	/// Return the pointer to the object corresponding to the given tree
+	///
+	/// Return the pointer to the event corresponding to the given tree and the given branch.
+	/// If branchName is left empty and there is only 1 branch requested on this tree, this
+	/// single branch is returned. If there is more than 1 branch requested on this tree,
+	/// return the first one.
+	/// If branchName is specified, try to return the specified branch.
 	/// \EndMemberDescr
 
 	objectIterator it;
 	pair<objectIterator, objectIterator> objectRange;
 
 	objectRange = fObject.equal_range(name);
-	if(objectRange.first==objectRange.second){
+	if(objectRange.first==objectRange.second){ //Range is 0, no such object found
 		cerr << "Error: Unable to find object in tree " << name << endl;
 		return NULL;
 	}
 	else{
 		for(it=objectRange.first; it!=objectRange.second; ++it){
+			// If the branch is not specified or this is the requested one,
+			// return it
 			if( branchName.CompareTo("")==0 ||
 					it->second->fBranchName.CompareTo(branchName)==0){
 				return it->second->fObject;
@@ -429,11 +483,12 @@ void IOHandler::LoadEvent(int iEvent){
 	pair<objectIterator, objectIterator> objectRange;
 
 	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
+
+	//Loop over all our trees
 	for(it=fTree.begin(); it!=fTree.end(); it++){
+		//Loop over all event and object branch and load the corresponding entry for each of them
 		eventRange = fEvent.equal_range(it->first);
 		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
-			//cout << itEvt->second->fBranchName << endl;
-			//it->second->GetListOfBranches()->Print();
 			it->second->GetBranch(itEvt->second->fBranchName)->GetEntry(iEvent);
 		}
 		objectRange = fObject.equal_range(it->first);
@@ -487,7 +542,7 @@ void IOHandler::FindAndBranchTree(TChain* tree, TString branchName, TString bran
 	/// \param evt :
 	/// \param eventNb : number of expected events
 	///
-	/// Branch the tree
+	/// Branch the tree.
 	/// \EndMemberDescr
 
 	TObjArray* branchesList;
@@ -767,5 +822,11 @@ int IOHandler::GetCurrentFileNumber() const{
 }
 
 void IOHandler::SetAllowNonExisting(bool allowNonExisting) {
+	/// \MemberDescr
+	/// allowNonExisting : if false, exit if one or several TTree is missing in the input file
+	///
+	/// Determine if the framework is allowed to run when one or several TTrees
+	/// are missing in the input file.
+	/// \EndMemberDescr
 	this->allowNonExisting = allowNonExisting;
 }

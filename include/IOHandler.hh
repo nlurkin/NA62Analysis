@@ -53,7 +53,7 @@ public:
 
 	//TTree
 	void RequestTree(TString name, TDetectorVEvent* const evt, TString branchName="");
-	void RequestTree(TString name, TString branchName, TString className, void* const obj);
+	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
 	int BranchTrees(int eventNb);
 	TChain* GetTree(TString name);
 	void SetAllowNonExisting(bool allowNonExisting);
@@ -83,7 +83,7 @@ private:
 	/// \EndBrief
 	///
 	/// \Detailed
-	/// Class containing an object branched to a custom TTree. It contains everything needed to fully define the custom object:
+	/// It contains everything needed to fully define the custom object:
 	///	The class name, the branch name and the pointer to the object (stored as void*)
 	/// \EndDetailed
 
@@ -105,6 +105,16 @@ private:
 		TString fBranchName; ///< Branch name
 		void* fObject; ///< Pointer to the object
 	};
+
+	/// \class EventTriplet
+	/// \Brief
+	/// Class containing an event branched to a TTree
+	/// \EndBrief
+	///
+	/// \Detailed
+	/// It contains the branch from which the eventis extracted and
+	/// the pointer to the event itself.
+	/// \EndDetailed
 	class EventTriplet{
 		public:
 			EventTriplet(TString branch, TDetectorVEvent* obj):
@@ -112,9 +122,8 @@ private:
 				fEvent(obj)
 			{
 				/// \MemberDescr
-				///	\param c : Class name of the object
 				///	\param branch : Name of the branch
-				/// \param obj : Pointer to the object
+				/// \param obj : Pointer to the event
 				///	Constructor
 				///	\EndMemberDescr
 			};
@@ -122,15 +131,15 @@ private:
 				delete fEvent;
 			}
 			TString fBranchName; ///< Branch name
-			TDetectorVEvent* fEvent; ///< Pointer to the object
+			TDetectorVEvent* fEvent; ///< Pointer to the event
 	};
 
-	typedef pair<TString, TChain*> chainPair;
-	typedef pair<TString, EventTriplet*> eventPair;
-	typedef pair<TString, ObjectTriplet*> objectPair;
-	typedef AnalysisFW::NA62Map<TString,TChain*>::type::iterator treeIterator;
-	typedef AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator;
-	typedef AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator;
+	typedef pair<TString, TChain*> chainPair; ///< typedef for elements of map of TChain
+	typedef pair<TString, EventTriplet*> eventPair; ///< typedef for elements of map of EventTriplet
+	typedef pair<TString, ObjectTriplet*> objectPair; ///< typedef for elements of map of ObjectTriplet
+	typedef AnalysisFW::NA62Map<TString,TChain*>::type::iterator treeIterator; ///< typedef for iterators of map of TChain
+	typedef AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator; ///< typedef for iterators of map of EventTriplet
+	typedef AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator; ///< typedef for iterators of map of ObjectTriplet
 
 	AnalysisFW::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
 	AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events

@@ -175,7 +175,7 @@ public:
 
 	//###### Input (Event/TTree) related
 	//Request new tree to analyze
-	void RequestTree(TString name, TDetectorVEvent *evt);
+	void RequestTree(TString name, TDetectorVEvent *evt, TString branchName="");
 	template <class T>
 	void RequestTree(TString name, TString branchName, TString className, T* obj){
 		/// \MemberDescr
@@ -184,7 +184,7 @@ public:
 		/// \param className : Name of the class type in this branch
 		/// \param obj : Pointer to an instance of any class
 		///
-		/// Request a tree in the input file. If already requested before, do nothing.
+		/// Request a tree in the input file. If already requested before, only add the new branch.
 		/// \EndMemberDescr
 
 		if(!RequestTreeVoid(name, branchName, className, obj)){
@@ -193,17 +193,22 @@ public:
 	}
 
 	TChain* GetTree(TString name);
-	TDetectorVEvent *GetEvent(TString name);
+	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
 
 	//###### Other methods
 	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const;
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	template <class T>
-	T* GetObject(TString name){
+	T* GetObject(TString name, TString branchName = ""){
 		/// \MemberDescr
 		/// \param name : Name of the TTree from which the object is read
+		/// \param branchName : name of the branch to retrieve (optional)
 		///
-		/// Return the pointer to the object corresponding to the given tree (template version)
+		/// Return the pointer to the object corresponding to the given tree (template version).
+		/// If branchName is left empty and there is only 1 branch requested on this tree, this
+		/// single branch is returned. If there is more than 1 branch requested on this tree,
+		/// return the first one.
+		/// If branchName is specified, try to return the specified branch.
 		/// \EndMemberDescr
 
 		return (T*)GetObjectVoid(name);

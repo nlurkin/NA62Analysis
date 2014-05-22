@@ -563,8 +563,12 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 	/// \MemberDescr
 	/// \param name : Name of the TTree to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
+	/// \param branchName : Name of the branch to request
 	///
-	/// Request to open a tree in the input file
+	/// Request a branch in a tree in the input file. If the tree has already been requested before,
+	/// only add the new branch.
+	/// If branchName is not specified, the branch "Reco" or "Hits" will be used (depending on the
+	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
 	fParent->GetIOHandler()->RequestTree(name, evt, branchName);
@@ -573,8 +577,14 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the tree from which the event is read
+	/// \param branchName : Name of the branch
 	///
-	/// Get the event from input file
+	/// Return the pointer to the event corresponding to the given tree and the given branch.
+	/// If branchName is left empty and there is only 1 branch requested on this tree, this
+	/// single branch is returned. If there is more than 1 branch requested on this tree,
+	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
+	/// if both "Reco" and "Hits" branches have been requested).
+	/// If branchName is specified, try to return the specified branch.
 	/// \EndMemberDescr
 
 	return fParent->GetIOHandler()->GetEvent(name, branchName);
@@ -670,12 +680,12 @@ void* UserMethods::GetObjectVoid(TString name){
 	return fParent->GetIOHandler()->GetObject(name);
 }
 
-void UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
+bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
-	fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
+	return fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
 }
 
 TH1* UserMethods::GetReferenceTH1(TString name){

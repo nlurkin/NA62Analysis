@@ -34,8 +34,8 @@ public:
 	void PrintTable() const;
 private:
 	ParticleInterface();
-	ParticleInterface(const ParticleInterface&);
-	ParticleInterface& operator=(const ParticleInterface&);
+	ParticleInterface(const ParticleInterface&); ///< Non implemented copy-constructor (prevents copy)
+	ParticleInterface& operator=(const ParticleInterface&); ///< Non implemented copy-assignment operator (prevents copy)
 
 	TDatabasePDG *fTable; ///< Pointer to TDatabasePDG instance
 	static ParticleInterface *fParticleInterface; ///< static pointer to unique instance of the class
