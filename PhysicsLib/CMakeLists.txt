@@ -6,4 +6,4 @@ file(GLOB LIBFILES
 	"src/*.cc"
 )
 
-add_library(PhysicsLib SHARED ${LIBFILES})
+add_library(PhysicsLib${LIBTYPEPOSTFIX} ${LIBTYPE} ${LIBFILES})

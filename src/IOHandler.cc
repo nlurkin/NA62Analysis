@@ -213,7 +213,7 @@ TDetectorVEvent *IOHandler::GetEvent(TString name, TString branchName){
 		if(branchName.CompareTo("")==0 && (++it==eventRange.first)){
 			return eventRange.second->second->fEvent;
 		}
-		--it;
+		it = eventRange.first;;
 		for(it=eventRange.first; it!=eventRange.second; ++it){
 			//If the branch is not specified but we find Reco or Hits, we return it
 			//Or if this is the requested branchm also return it

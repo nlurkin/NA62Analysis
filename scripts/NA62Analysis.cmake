@@ -1,5 +1,13 @@
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/.. )
+
+set( LIBTYPE STATIC )
+if(${LIBTYPE} STREQUAL STATIC)
+	set( LIBTYPEPOSTFIX "-static")
+else()
+	set( LIBTYPEPOSTFIX "")
+endif()
 
 include(${NA62ANALYSIS}/scripts/common.cmake)
 
@@ -37,13 +45,14 @@ set(NA62MCSOURCE $ENV{NA62MCSOURCE})
 set(SUBDIRS RICH LKr Spectrometer GigaTracker LAV IRC CHANTI Cedar CHOD MUV1 MUV2 SAC MUV3 MUV0 HAC)
 set(NA62MC_INC_DIRS ${NA62MCSOURCE}/Persistency/include)
 set(NA62MC_LIB_DIRS ${NA62MCSOURCE}/Persistency/lib)
-set(NA62MC_LIBS NA62Persistency)
+set(NA62MC_LIBS "")
 FOREACH (DIR ${SUBDIRS})
 	include_directories(${NA62MCSOURCE}/${DIR}/Persistency/include)
 	set(NA62MC_INC_DIRS ${NA62MC_INC_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/include)
 	set(NA62MC_LIB_DIRS ${NA62MC_LIB_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/lib)
-	set(NA62MC_LIBS ${NA62MC_LIBS} ${DIR}Persistency)
+	set(NA62MC_LIBS ${NA62MC_LIBS} ${DIR}Persistency${LIBTYPEPOSTFIX})
 ENDFOREACH(DIR)
+set(NA62MC_LIBS ${NA62MC_LIBS} NA62Persistency${LIBTYPEPOSTFIX})
 include_directories(${NA62MCSOURCE}/Persistency/include)
 
 #FW include directories

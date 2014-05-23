@@ -24,7 +24,7 @@ link_directories(${EXTRA_LIBS_DIRS})
 
 # Create libraries for user analyzers
 FOREACH(usrAna ${USER_ANALYZERS})
-	add_library(l${usrAna} SHARED Analyzers/src/${usrAna}.cc Analyzers/include/${usrAna}.hh)
+	add_library(l${usrAna}${LIBTYPEPOSTFIX} ${LIBTYPE} Analyzers/src/${usrAna}.cc Analyzers/include/${usrAna}.hh)
 ENDFOREACH(usrAna)
 
 # Create executable from builder
@@ -32,15 +32,15 @@ add_executable(${TARGET_EXEC} main.cc)
 
 # Specify all analyzers libraries
 FOREACH(ana ${ANA_LIBS})
-	target_link_libraries(${TARGET_EXEC} l${ana})
+	target_link_libraries(${TARGET_EXEC} l${ana}${LIBTYPEPOSTFIX})
 ENDFOREACH(ana)
 
 
 # Specify NA62MC/NA62Analysis/ROOT libraries
-target_link_libraries(${TARGET_EXEC} AnalysisFW)
-target_link_libraries(${TARGET_EXEC} PhysicsLib)
-target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG)
+target_link_libraries(${TARGET_EXEC} PhysicsLib${LIBTYPEPOSTFIX})
+target_link_libraries(${TARGET_EXEC} AnalysisFW${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
+target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG)
 
 # Specify extra libraries
 target_link_libraries(${TARGET_EXEC} ${EXTRA_LIBS})

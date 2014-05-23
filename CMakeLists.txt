@@ -13,7 +13,7 @@ file(GLOB MAINO
 	"src/*.cc"
 )
 
-add_library(AnalysisFW SHARED ${MAINO})
+add_library(AnalysisFW${LIBTYPEPOSTFIX} ${LIBTYPE} ${MAINO})
 
 add_subdirectory(Examples)
 add_subdirectory(Analyzers)

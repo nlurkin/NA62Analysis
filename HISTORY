@@ -10,6 +10,8 @@ NA62Analysis Project
 		  TTree is not found
 		- The framework now fully supports input TTrees with any number of branches 
 		  (To use this new feature see the documentation of RequestTree, GetEvent and GetObject)
+		- Use static libraries instead of shared libraries (for NA62MC Persistency, NA62Analysis
+		  libraries and user analyzers)
 
 2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 343

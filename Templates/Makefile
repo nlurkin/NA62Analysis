@@ -140,5 +140,6 @@ cleanall:	clean
 clean: 
 		rm -rf $(USROBJDIR)/*.o
 		rm -rf $(USRLIBDIR)/*.so
+		rm -rf $(USRLIBDIR)/*.a
 		rm -rf $(EXEC)
 		rm -rf outFile.root

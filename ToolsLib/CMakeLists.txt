@@ -6,4 +6,4 @@ file(GLOB LIBFILES
 	"src/*.cc"
 )
 
-add_library(ToolsLib SHARED ${LIBFILES})
+add_library(ToolsLib${LIBTYPEPOSTFIX} ${LIBTYPE} ${LIBFILES})
