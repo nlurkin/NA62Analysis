@@ -43,5 +43,6 @@ class LKrPhotonMC : public Analyzer
 
 		//Add the variables to branch to the output trees
 		TClonesArray *fCandidates;
+		int param1;
 };
 #endif
