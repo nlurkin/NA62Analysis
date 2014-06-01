@@ -5,13 +5,14 @@ NA62Analysis Project
 2015-05-22 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 344
 		- Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
-		  and use the system argparse module if available
+		  and use the system argparse module if available (Bug NA62RKD-22) 
 		- Add an option to the framework (-a) to allow it to run even if one or several 
 		  TTree is not found
 		- The framework now fully supports input TTrees with any number of branches 
 		  (To use this new feature see the documentation of RequestTree, GetEvent and GetObject)
 		- Use static libraries instead of shared libraries (for NA62MC Persistency, NA62Analysis
 		  libraries and user analyzers)
+		- Include ToolsLib in the build (Bug NA62RKD-23)
 
 2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 343
