@@ -2,8 +2,14 @@
 NA62Analysis Project
 ################################################################
 
-2015-05-22 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 344
+2014-06-05 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 348
+		- Add python version test. NA62AnalysisBuilder.py works only with python2 > 2.5.
+		- Add empty files cmakeTrick.hh(.cc) in ToolsLib to force CMAKE to build the empty library
+		  (to be removed when the library is not empty anymore).
+
+2014-06-01 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 345
 		- Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
 		  and use the system argparse module if available (Bug NA62RKD-22) 
 		- Add an option to the framework (-a) to allow it to run even if one or several 
