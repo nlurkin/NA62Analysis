@@ -489,11 +489,11 @@ void IOHandler::LoadEvent(int iEvent){
 		//Loop over all event and object branch and load the corresponding entry for each of them
 		eventRange = fEvent.equal_range(it->first);
 		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
-			it->second->GetBranch(itEvt->second->fBranchName)->GetEntry(iEvent);
+			it->second->GetEntry(iEvent);
 		}
 		objectRange = fObject.equal_range(it->first);
 		for(itObj=objectRange.first; itObj!=objectRange.second; ++itObj){
-			it->second->GetBranch(itObj->second->fBranchName)->GetEntry(iEvent);
+			it->second->GetEntry(iEvent);
 		}
 	}
 
@@ -572,12 +572,12 @@ void IOHandler::FindAndBranchTree(TChain* tree, TString branchName, TString bran
 			tree->SetBranchAddress(branchName, evt);
 			if ( eventNb < 0 )
 			{
-				eventNb = tree->GetBranch(branchName)->GetEntries();
+				eventNb = tree->GetEntries();
 			}
-			else if (eventNb != tree->GetBranch(branchName)->GetEntries())
+			else if (eventNb != tree->GetEntries())
 			{
 				cout << eventNb << endl;
-				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetBranch(branchName)->GetEntries() << endl;
+				cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetEntries() << endl;
 				raise(SIGABRT);
 			}
 			return;
