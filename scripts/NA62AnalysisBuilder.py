@@ -366,6 +366,9 @@ def createAnalyzer(args):
 	
 # Rename a user analyzer
 def renameAnalyzer(args):
+	FWPath = getCheckVar("ANALYSISFW_PATH")
+	UserPath = getCheckVar("ANALYSISFW_USERDIR")
+	
 	[oldName] = args.oldName
 	[newName] = args.newName
 	

@@ -489,11 +489,13 @@ void IOHandler::LoadEvent(int iEvent){
 		//Loop over all event and object branch and load the corresponding entry for each of them
 		eventRange = fEvent.equal_range(it->first);
 		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
-			it->second->GetEntry(iEvent);
+			if(it->second->GetBranch(itEvt->second->fBranchName))
+				it->second->GetEntry(iEvent);
 		}
 		objectRange = fObject.equal_range(it->first);
 		for(itObj=objectRange.first; itObj!=objectRange.second; ++itObj){
-			it->second->GetEntry(iEvent);
+			if(it->second->GetBranch(itObj->second->fBranchName))
+				it->second->GetEntry(iEvent);
 		}
 	}
 
