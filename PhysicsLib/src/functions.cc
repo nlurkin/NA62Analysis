@@ -177,7 +177,7 @@ TVector3 spec_propagate( const TVector3 StartPosition, const TVector3 StartMomen
     if ( StartMomentum.Z() == 0)
     {
         cerr << "[spec_propagate] Error : Perpendicular momentum." << endl;
-        return -1;
+        return TVector3(0,0,0);
     }
 
     Double_t fThetaX = StartMomentum.X() / StartMomentum.Z();
