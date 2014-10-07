@@ -1,0 +1,121 @@
+/// \page mcRevisions NA62Reconstruction/GRID Productions compatibility
+///	<b>Table of content</b>	
+///	<ul>
+///		<li>\ref list
+///		<li>\ref MCRev
+///	</ul>
+///	 
+/// \section list GRID MC productions
+///	This table shows the available MC productions that have been tested. The tag is used to refer to them later. 
+///	The date is the production date (month and year only, found on the GRID MC productions 
+///	website http://na62.gla.ac.uk/index.php?task=production). As all the Kaon decay channels are not generated for
+///	each production, a single channel is selected for each production among the available one (one which is likely
+///	to trigger the maximum number of detectors) and this channel is indicated here. The revision of NA62MC used to
+///	produce them is indicated and finally an eventual comment.   
+/// <table>
+///	<tr><td align="center" width="100">Tag</td><td align="center" width="200">Date</td><td align="center" width="200">Channel</td>
+///	<td align="center" width="100">Revision</td><td align="center" width="650">Comment</td></tr>
+/// <tr><td>prod193</td><td>October 2012</td><td>Kch2pipi0</td><td>193</td><td>No MUV</td></tr>
+/// <tr><td>prod244</td><td>February 2013</td><td>Kch2pipi0pi0</td><td>244</td><td></td></tr>
+/// <tr><td>prod261</td><td>May 2013</td><td>Kch2pimepep</td><td>261</td><td></td></tr>
+///	</table>
+///	
+///	\section MCRev NA62Reconstruction tests
+///	The GRID MC productions listed above have been tested with several revisions of NA62Reconstruction. For each 
+///	tested revision, you can find general comments that are common to all the productions. Comments specific to
+///	a production are then indicated in their corresponding column. Productions were only tested with revisions
+///	higher than their production revision. 
+///	<br><br>
+///	Due to the new castor system (xroot), older revisions are not able to read files directly from CASTOR. This can
+///	be fixed by changing few lines in NA62Reco.cc (or NA62Analysis.cc in older revisions):
+///	Replace the two occurrences of (around line 106 and 111)
+///	\code{.cpp}
+///		if(stat(Form(InputFileName.Data()), &filestat) == 0)
+///	\endcode 
+///	by 
+///	\code{.cpp}
+///		if(stat(Form(InputFileName.Data()), &filestat) == 0 || 1)
+///	\endcode
+///	<br> 
+/// <table>
+///	<tr><td align="center" width="100">Rev</td><td align="center" width="500">Comments</td>
+///	<td align="center" width="215">prod193</td>
+///	<td align="center" width="215">prod244</td></tr>
+///	<td align="center" width="215">prod261</td></tr>
+///	<tr><td>193</td><td>
+///	<ul>
+///		<li>Unable to read from CASTOR
+///		<li>Empty monitors: Cedar, CHOD, MUV1
+///		<li>Empty trees: CHOD, IRC, LAV
+///	</ul></td><td></td><td>N/A</td><td>N/A</td></tr>
+///	<tr><td>250</td><td>
+///	<ul>
+///		<li>Unable to read from CASTOR
+///		<li>Crash on LKr
+///		<li>Empty trees: CHANTI, CHOD, IRC, LAV, MUV2, MUV3
+///	</ul>
+///	</td><td></td><td>
+///	<ul>
+///		<li>Infinite loop possible in Spectrometer
+///	</ul>
+///	</td><td>N/A</td></tr>
+///	<tr><td>261</td><td>
+///	<ul>
+///		<li>Unable to read from CASTOR
+///		<li>Empty trees: CHANTI, IRC, MUV3, CHOD, LAV
+///	</ul>
+///	</td>
+///	<td>
+///	<ul>
+///		<li>Empty trees: LKr
+///	</ul>
+///	</td><td>
+///	<ul>
+///		<li>Infinite loop possible in Spectrometer
+///		<li>No LKr candidates
+///	</ul>
+///	</td><td></td></tr>
+///	<tr><td>281</td><td>
+///	<ul>
+///		<li>Unable to read from CASTOR
+///		<li>Empty trees: IRC, MUV3, LAV, CHOD, CHANTI, CEDAR
+///	</ul>
+///	</td>
+///	<td>
+///	<ul>
+///		<li>Empty trees: LKr
+///	</ul>
+///	</td><td>
+///	<ul>
+///		<li>Empty trees: LKr
+///	</ul>
+///	</td><td></td></tr>
+///	<tr><td>300</td><td>
+///	<ul>
+///		<li>Unable to read from CASTOR
+///		<li>IRC and LKr crashes reco when included in the config
+///		<li>Error TVEvent::fTimeStamp type 204 (Long_t) is not supported yet
+///		<li>Empty trees: CEDAR, CHANTI, Spectrometer, MUV3, LAV, GigaTracker, CHOD, IRC
+///		<li>mcEvent is empty
+///	</ul>
+///	</td>
+///	<td>
+///	</td><td></td><td></td></tr>
+///	<tr><td>342</td><td>
+///	<ul>
+///		<li>IRC crashes reco when included in the config
+///		<li>Error TVEvent::fTimeStamp type 204 (Long_t) is not supported yet
+///		<li>Empty trees: MUV3, CHANTI, LAV, GigaTracker, IRC
+///		<li>mcEvent is empty
+///	</ul>
+///	</td>
+///	<td>
+///	<ul>
+///		<li>Empty trees: CEDAR, LKr
+///	</ul>
+///	</td><td>
+///	<ul>
+///		<li>Empty trees: LKr
+///	</ul>
+///	</td><td></td></tr>
+///	</table>
