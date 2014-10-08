@@ -16,9 +16,12 @@
 IOHandler::IOHandler():
 	fMCTruthTree(0),
 	fMCTruthEvent(new Event()),
+	fRawHeaderTree(0),
+	fRawHeaderEvent(new RawHeader()),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
 	fWithMC(false),
+	fWithRawHeader(false),
 	fCurrentFile(NULL),
 	allowNonExisting(false)
 {
@@ -33,6 +36,8 @@ IOHandler::IOHandler(const IOHandler& c):
 	fObject(c.fObject),
 	fMCTruthTree(c.fMCTruthTree),
 	fMCTruthEvent(c.fMCTruthEvent),
+	fRawHeaderTree(c.fRawHeaderTree),
+	fRawHeaderEvent(c.fRawHeaderEvent),
 	fInputHistoAdd(c.fInputHistoAdd),
 	fInputHisto(c.fInputHisto),
 	fCurrentFileNumber(c.fCurrentFileNumber),
@@ -41,6 +46,7 @@ IOHandler::IOHandler(const IOHandler& c):
 	fOutFileName(c.fOutFileName),
 	fExportTrees(c.fExportTrees),
 	fWithMC(c.fWithMC),
+	fWithRawHeader(c.fWithRawHeader),
 	fCurrentFile(c.fCurrentFile),
 	allowNonExisting(false)
 {
@@ -83,6 +89,9 @@ IOHandler::~IOHandler(){
 
 	delete fMCTruthTree;
 	delete fMCTruthEvent;
+
+	delete fRawHeaderTree;
+	delete fRawHeaderEvent;
 }
 
 
@@ -425,6 +434,8 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		checkInputFile(inFileName, verbosity);
 		if(fWithMC)
 			fMCTruthTree->AddFile(inFileName);
+		if(fWithRawHeader)
+			fRawHeaderTree->AddFile(inFileName);
 		for(it=fTree.begin(); it!=fTree.end(); it++){
 			it->second->AddFile(inFileName);
 		}
@@ -444,6 +455,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(fWithMC){
 				fMCTruthTree->AddFile(inputFileName);
 				inputFileNumber = fMCTruthTree->GetNtrees();
+			}
+			if(fWithRawHeader){
+				fRawHeaderTree->AddFile(inputFileName);
+				inputFileNumber = fRawHeaderTree->GetNtrees();
 			}
 			for(it=fTree.begin(); it!=fTree.end(); it++){
 				it->second->AddFile(inputFileName);
@@ -483,6 +498,7 @@ void IOHandler::LoadEvent(int iEvent){
 	pair<objectIterator, objectIterator> objectRange;
 
 	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
+	if(fWithRawHeader) fRawHeaderTree->GetEntry(iEvent);
 
 	//Loop over all our trees
 	for(it=fTree.begin(); it!=fTree.end(); it++){
@@ -517,6 +533,24 @@ bool IOHandler::GetWithMC() const{
 	/// \EndMemberDescr
 
 	return fWithMC;
+}
+
+RawHeader* IOHandler::GetRawHeaderEvent(){
+	/// \MemberDescr
+	///
+	/// Return a pointer to the MCTruthEvent
+	/// \EndMemberDescr
+
+	return fRawHeaderEvent;
+}
+
+bool IOHandler::GetWithRawHeader() const{
+	/// \MemberDescr
+	///
+	/// Do we have MC available in the files?
+	/// \EndMemberDescr
+
+	return fWithRawHeader;
 }
 
 TChain* IOHandler::GetTree(TString name) {
@@ -611,6 +645,14 @@ bool IOHandler::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verb
 		if(verbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: No MC data found" << endl;
 		fWithMC = false;
 	}
+
+	fWithRawHeader = true;
+	if(keys->FindObject("RawHeader")) fRawHeaderTree = new TChain("RawHeader");
+	else{
+		if(verbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: No Raw Header found" << endl;
+		fWithRawHeader = false;
+	}
+
 	fd->Close();
 	return kTRUE;
 }
@@ -663,6 +705,52 @@ int IOHandler::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 	return eventNb;
 }
 
+int IOHandler::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
+	/// \MemberDescr
+	/// Branch the Raw Data trees.
+	/// \EndMemberDescr
+
+	//TODO find another way to fill fEventNb
+	int eventNb = -1;
+	if(!fWithRawHeader) return eventNb;
+
+	eventNb = fRawHeaderTree->GetEntries();
+
+	TObjArray* branchesList = fRawHeaderTree->GetListOfBranches();
+	int jMax = branchesList->GetEntries();
+	TString branchName = "";
+
+	for (Int_t j=0; j < jMax; j++)
+	{
+		if(verbosity >= AnalysisFW::kSomeLevel) cout << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << endl;
+		if ( TString("RawHeader").CompareTo( branchesList->At(j)->GetName() ) == 0){
+			branchName = "RawHeader";
+		}
+		if(branchName.CompareTo("") != 0)
+		{
+			if(verbosity >= AnalysisFW::kSomeLevel) cout << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << endl;
+			if ( TString("RawHeader").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
+			{
+				cerr  << "Input file corrupted, bad RawHeader class found for " << fRawHeaderTree->GetTree()->GetName() << endl;
+			}
+			else{
+				if(verbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << endl;
+				fRawHeaderTree->SetBranchAddress(branchName, &fRawHeaderEvent );
+				if ( eventNb < 0 )
+				{
+					eventNb = fRawHeaderTree->GetEntries();
+				}
+				else if (eventNb != fRawHeaderTree->GetEntries())
+				{
+					cerr << "Input file corrupted, bad number of entries : " << fRawHeaderTree->GetEntries() << endl;
+				}
+			}
+		}
+	}
+	return eventNb;
+}
+
+
 void IOHandler::WriteEvent(){
 	/// \MemberDescr
 	/// Write the event in the output tree.
@@ -676,6 +764,7 @@ void IOHandler::WriteEvent(){
 			fExportTrees.insert(pair<TString,TTree*>(it->first, it->second->CloneTree(0)));
 		}
 		if(fWithMC) fExportTrees.insert(pair<TString,TTree*>("MC", fMCTruthTree->CloneTree(0)));
+		if(fWithRawHeader) fExportTrees.insert(pair<TString,TTree*>("RawHeader", fRawHeaderTree->CloneTree(0)));
 	}
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		itTree->second->Fill();
@@ -747,6 +836,10 @@ bool IOHandler::CheckNewFileOpened(){
 	if(fWithMC){
 		openedFileNumber = fMCTruthTree->GetTreeNumber();
 		fCurrentFile = fMCTruthTree->GetFile();
+	}
+	else if(fWithRawHeader){
+		openedFileNumber = fRawHeaderTree->GetTreeNumber();
+		fCurrentFile = fRawHeaderTree->GetFile();
 	}
 	else if(fTree.size()>0){
 		openedFileNumber = fTree.begin()->second->GetTreeNumber();

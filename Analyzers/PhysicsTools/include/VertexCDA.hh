@@ -29,7 +29,7 @@ class VertexCDA : public Analyzer
 		void InitHist();
 		void DefineMCSimple(MCSimple *fMCSimple);
 		void InitOutput();
-		void Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent);
+		void Process(int i, MCSimple &fMCSimple);
 		void PostProcess();
 		void ExportPlot();
 		void DrawPlot();

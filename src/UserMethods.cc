@@ -590,6 +590,22 @@ TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	return fParent->GetIOHandler()->GetEvent(name, branchName);
 }
 
+Event* UserMethods::GetMCEvent(){
+	/// \MemberDescr
+	/// Return the pointer to the MC event.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetMCTruthEvent();
+}
+
+RawHeader* UserMethods::GetRawHeader(){
+	/// \MemberDescr
+	/// Return the pointer to the RawHeader.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetRawHeaderEvent();
+}
+
 TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file where this histogram will be searched
@@ -723,4 +739,18 @@ int UserMethods::GetNEvents(){
 	/// Return the total number of events loaded from input trees.
 	/// \EndMemberDescr
 	return fParent->GetNEvents();
+}
+
+bool UserMethods::GetWithMC(){
+	/// \MemberDescr
+	/// Return true if the input file contains MC events
+	/// \EndMemberDescr
+	return fParent->GetIOHandler()->GetWithMC();
+}
+
+bool UserMethods::GetWithRawHeader(){
+	/// \MemberDescr
+	/// Return true if the input file contains RawHeader
+	/// \EndMemberDescr
+	return fParent->GetIOHandler()->GetWithRawHeader();
 }

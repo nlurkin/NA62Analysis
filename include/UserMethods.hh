@@ -21,6 +21,8 @@
 
 class BaseAnalysis;
 class DetectorAcceptance;
+class RawHeader;
+class Event;
 
 using namespace std;
 
@@ -194,6 +196,10 @@ public:
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
+	Event* GetMCEvent();
+	RawHeader* GetRawHeader();
+	bool GetWithMC();
+	bool GetWithRawHeader();
 
 	//###### Other methods
 	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const;

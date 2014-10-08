@@ -83,7 +83,7 @@ void Pi0Reconstruction::DefineMCSimple(MCSimple *fMCSimple){
 //   fMCSimple = Set of KinePart you asked for int GetTree method
 //   MCTruthEvent = Complete set of generated KinePart
 //#####################################################
-void Pi0Reconstruction::Process(int, MCSimple &fMCSimple, Event* MCTruthEvent){
+void Pi0Reconstruction::Process(int, MCSimple &fMCSimple){
 
 	//Temporary variables
 	vector<KinePart*> photons;
@@ -127,6 +127,7 @@ void Pi0Reconstruction::Process(int, MCSimple &fMCSimple, Event* MCTruthEvent){
 	//Are we working with correct MC
 	bool withMC = true;
 	if(fMCSimple.fStatus == MCSimple::kMissing){
+		Event* MCTruthEvent = GetMCEvent();
 		for(int i=0; i<MCTruthEvent->GetNKineParts(); i++){
 			FillHisto("pdgID", ((KinePart*)MCTruthEvent->GetKineParts()->At(i))->GetParticleName(), 1);
 		}

@@ -71,7 +71,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fIOHandler.SetReferenceFileName(refFile);
 	fIOHandler.SetAllowNonExisting(allowNonExisting);
 
-	fNEvents = fIOHandler.FillMCTruth(fVerbosity);
+	fNEvents = std::max(fIOHandler.FillMCTruth(fVerbosity), fIOHandler.FillRawHeader(fVerbosity));
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -209,7 +209,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		//Print current event
 		if ( i % i_offset == 0 ){
 			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED"*** Processing Event %i/%i => %.2f%%\r"SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
+				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
 			}
 			else{
 				printf("*** Processing Event %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
@@ -228,7 +228,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 			if(fIOHandler.GetWithMC()) fMCSimple[j]->GetRealInfos( fIOHandler.GetMCTruthEvent(), fVerbosity);
 
-			fAnalyzerList[j]->Process(i, *fMCSimple[j], fIOHandler.GetMCTruthEvent());
+			fAnalyzerList[j]->Process(i, *fMCSimple[j]);
 			fAnalyzerList[j]->UpdatePlots(i);
 			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd();
@@ -244,7 +244,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	}
 
 	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED"*** Processing Event %i/%i => 100.00%%\n"SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
+		printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => 100.00%%\n" SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
 	}
 	else{
 		printf("*** Processing Event %i/%i => 100.00%%\n", beginEvent+maxEvent, beginEvent+maxEvent);

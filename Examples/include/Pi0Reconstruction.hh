@@ -29,7 +29,7 @@ class Pi0Reconstruction : public Analyzer
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple(MCSimple *fMCSimple);
-		void Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent);
+		void Process(int i, MCSimple &fMCSimple);
 		void PostProcess();
 		void ExportPlot();
 		void DrawPlot();
