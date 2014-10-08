@@ -2,6 +2,13 @@
 NA62Analysis Project
 ################################################################
 
+2014-10-07 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev 360
+		- Fix -a option (Bug NA62RKD-26)
+		- Fix NA62AnalysisBuilder.py rename command (Bug NA62RKD-24)
+		- Fix bug when reading multiple files in input (Bug NA62RKD-27)
+		- Fix user PhysicsObjects headers not being included
+
 2014-06-05 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 348
 		- Add python version test. NA62AnalysisBuilder.py works only with python2 > 2.5.
