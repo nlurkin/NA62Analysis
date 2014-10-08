@@ -15,6 +15,7 @@
 #include <TDetectorVEvent.hh>
 #include "FWEnums.hh"
 #include "Event.hh"
+#include "RawHeader.hh"
 #include "containers.hh"
 using namespace std;
 
@@ -62,9 +63,12 @@ public:
 	TDetectorVEvent *GetEvent(TString name, TString branchName="");
 	void* GetObject(TString name, TString branchName="");
 	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
+	int FillRawHeader(AnalysisFW::VerbosityLevel verbosity);
 	void LoadEvent(int iEvent);
 	Event* GetMCTruthEvent();
 	bool GetWithMC() const;
+	RawHeader* GetRawHeaderEvent();
+	bool GetWithRawHeader() const;
 
 	//Writing
 	void WriteEvent();
@@ -148,6 +152,9 @@ private:
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
 
+	TChain *fRawHeaderTree; ///< Container for the Raw Data TTrees
+	RawHeader *fRawHeaderEvent; ///< Raw Data Event
+
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
@@ -161,6 +168,7 @@ private:
 	AnalysisFW::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
 	bool fWithMC; ///< Do we have MC in the file?
+	bool fWithRawHeader; ///< Do we have Raw Data in the file?
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 

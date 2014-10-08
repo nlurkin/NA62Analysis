@@ -63,7 +63,7 @@ void SkimmingNoStrawMuonsTracks::EndOfBurstUser(){
 
 }
 
-void SkimmingNoStrawMuonsTracks::Process(int , MCSimple&, Event* ){
+void SkimmingNoStrawMuonsTracks::Process(int , MCSimple&){
 	TRecoRICHEvent *richEvent = (TRecoRICHEvent*)GetEvent("RICH");
 
 	double muonThreshold = 30.0;

@@ -400,7 +400,7 @@ void CedarMCTester::EndOfBurstUser(){
     /// \EndMemberDescr
 }
 
-void CedarMCTester::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
+void CedarMCTester::Process(int iEvent, MCSimple &fMCSimple){
     /// \MemberDescr
     /// \param iEvent : Event number
     /// \param fMCSimple : MCSimple
@@ -486,8 +486,10 @@ void CedarMCTester::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent
     //XRAY - GEANTINO
 
     //Save EndPosition of every MC particle
-    if ( MCTruthEvent )
+    Event* MCTruthEvent;
+    if ( GetWithMC() )
     {
+    	MCTruthEvent = GetMCEvent();
         unsigned int nPart = MCTruthEvent->GetNKineParts();
         TClonesArray*  ParticleArray = MCTruthEvent->GetKineParts();
 

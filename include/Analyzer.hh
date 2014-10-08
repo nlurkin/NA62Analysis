@@ -38,7 +38,7 @@ public:
 	virtual void InitHist() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void DefineMCSimple(MCSimple *fMCSimple) = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void InitOutput() = 0; ///< Pure virtual method to be implemented by user analyzer
-	virtual void Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent) = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void Process(int iEvent, MCSimple &fMCSimple) = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void PostProcess() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void ExportPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void DrawPlot() = 0; ///< Pure virtual method to be implemented by user analyzer

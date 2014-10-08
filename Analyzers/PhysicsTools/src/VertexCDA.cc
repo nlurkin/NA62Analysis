@@ -123,7 +123,7 @@ void VertexCDA::PrintClass(){
 //   fMCSimple = Set of KinePart you asked for int GetTree method
 //   MCTruthEvent = Complete set of generated KinePart
 //#####################################################
-void VertexCDA::Process(int, MCSimple &fMCSimple, Event*){
+void VertexCDA::Process(int, MCSimple &fMCSimple){
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analysis can run without the complete set, comment the line
 	//if(fMCSimple.fStatus == MCSimple::kMissing) return;
