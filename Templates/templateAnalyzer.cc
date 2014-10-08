@@ -200,11 +200,10 @@ void templateAnalyzer::EndOfBurstUser(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){
+void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple){
 	/// \MemberDescr
 	/// \param iEvent : Event number
 	/// \param fMCSimple : MCSimple
-	/// \param MCTruthEvent : Complete set of MC particles
 	///
 	/// Main process method. Called on each event. Write you analysis here.\n
 	/// You can retrieve MC particles from the fMCSimple set with (returns a vector<KinePart*>)\n
@@ -235,6 +234,14 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEv
 	/// You can retrieve data from generic TTrees with\n
 	/// \code
 	/// 	GetObject<MyClass>("treeName");
+	/// \endcode
+	/// You can retrieve MC events if available ( GetWithMC() ) with\n
+	/// \code
+	/// 	GetMCEvent();
+	/// \endcode
+	/// You can retrieve RawHeader if available ( GetWithRawHeader() ) with\n
+	/// \code
+	/// 	GetRawHeaderEvent();
 	/// \endcode
 	/// You can retrieve the histograms you booked (for drawing, changing, filling, ...) with\n
 	/// \code

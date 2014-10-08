@@ -152,8 +152,8 @@ private:
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
 
-	TChain *fRawHeaderTree; ///< Container for the Raw Data TTrees
-	RawHeader *fRawHeaderEvent; ///< Raw Data Event
+	TChain *fRawHeaderTree; ///< Container for the RawHeader TTrees
+	RawHeader *fRawHeaderEvent; ///< RawHeader
 
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
@@ -168,7 +168,7 @@ private:
 	AnalysisFW::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
 	bool fWithMC; ///< Do we have MC in the file?
-	bool fWithRawHeader; ///< Do we have Raw Data in the file?
+	bool fWithRawHeader; ///< Do we have RawHeader in the file?
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 

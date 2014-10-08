@@ -24,7 +24,7 @@ class templateAnalyzer : public Analyzer
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple(MCSimple *fMCSimple);
-		void Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent);
+		void Process(int iEvent, MCSimple &fMCSimple);
 		void StartOfBurstUser();
 		void EndOfBurstUser();
 		void StartOfRunUser();
