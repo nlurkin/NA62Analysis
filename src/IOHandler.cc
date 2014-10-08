@@ -538,7 +538,7 @@ bool IOHandler::GetWithMC() const{
 RawHeader* IOHandler::GetRawHeaderEvent(){
 	/// \MemberDescr
 	///
-	/// Return a pointer to the MCTruthEvent
+	/// Return a pointer to the RawHeader
 	/// \EndMemberDescr
 
 	return fRawHeaderEvent;
@@ -547,7 +547,7 @@ RawHeader* IOHandler::GetRawHeaderEvent(){
 bool IOHandler::GetWithRawHeader() const{
 	/// \MemberDescr
 	///
-	/// Do we have MC available in the files?
+	/// Do we have RawHeader available in the files?
 	/// \EndMemberDescr
 
 	return fWithRawHeader;
@@ -707,7 +707,7 @@ int IOHandler::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 
 int IOHandler::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 	/// \MemberDescr
-	/// Branch the Raw Data trees.
+	/// Branch the RawHeader trees.
 	/// \EndMemberDescr
 
 	//TODO find another way to fill fEventNb

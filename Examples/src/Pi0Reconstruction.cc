@@ -32,8 +32,8 @@ Pi0Reconstruction::Pi0Reconstruction(BaseAnalysis *ba) : Analyzer(ba)
 //   Book and Initialize histograms in this function.
 //#####################################################
 void Pi0Reconstruction::InitHist(){
-	BookHisto(new TH1I("G1Energy", "Energy of g1", 100, 0, 75000));
-	BookHisto(new TH1I("G2Energy", "Energy of g2", 100, 0, 75000));
+	BookHisto(new TH1I("g1Energy", "Energy of g1", 100, 0, 75000));
+	BookHisto(new TH1I("g2Energy", "Energy of g2", 100, 0, 75000));
 	BookHisto(new TH2I("g1Reco", "g1 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
 	BookHisto(new TH2I("g2Reco", "g2 Reco vs. Real", 100, 0, 75000, 100, 0, 75000));
 	BookHisto(new TH2I("g1px", "g1 px Reco vs. Real", 200, 0, 2000, 200, 0, 2000));
