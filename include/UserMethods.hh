@@ -18,6 +18,7 @@
 #include <TDetectorVEvent.hh>
 #include "HistoHandler.hh"
 #include "FWEnums.hh"
+#include "MCSimple.hh"
 
 class BaseAnalysis;
 class DetectorAcceptance;
@@ -196,6 +197,7 @@ public:
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
+	const MCSimple& GetMCSimple();
 	Event* GetMCEvent();
 	RawHeader* GetRawHeader();
 	bool GetWithMC();

@@ -24,11 +24,11 @@ BaseAnalysis::~BaseAnalysis(){
 	/// \MemberDescr
 	/// Destructor.
 	/// \EndMemberDescr
+	AnalysisFW::NA62Map<TString, MCSimple*>::type::iterator it;
 
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
-	while(fMCSimple.size()>0){
-		delete fMCSimple.back();
-		fMCSimple.pop_back();
+	for(it = fMCSimple.begin(); it!=fMCSimple.end(); it++){
+		delete it->second;
 	}
 }
 
@@ -87,8 +87,8 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 		confParser.ApplyParams(fAnalyzerList[i]);
 
-		fAnalyzerList[i]->DefineMCSimple(fMCSimple[i]);
-		fAnalyzerList[i]->PrintInitSummary(fMCSimple[i]);
+		fAnalyzerList[i]->DefineMCSimple(fMCSimple[fAnalyzerList[i]->GetAnalyzerName()]);
+		fAnalyzerList[i]->PrintInitSummary(fMCSimple[fAnalyzerList[i]->GetAnalyzerName()]);
 		gFile->cd();
 	}
 
@@ -106,7 +106,7 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	/// \EndMemberDescr
 
 	fAnalyzerList.push_back(an);
-	fMCSimple.push_back(new MCSimple());
+	fMCSimple.insert(std::pair<TString, MCSimple*>(an->GetAnalyzerName(), new MCSimple()));
 }
 
 void BaseAnalysis::RegisterOutput(TString name, const void * const address){
@@ -226,9 +226,9 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(fIOHandler.GetWithMC()) fMCSimple[j]->GetRealInfos( fIOHandler.GetMCTruthEvent(), fVerbosity);
+			if(fIOHandler.GetWithMC()) fMCSimple[fAnalyzerList[j]->GetAnalyzerName()]->GetRealInfos( fIOHandler.GetMCTruthEvent(), fVerbosity);
 
-			fAnalyzerList[j]->Process(i, *fMCSimple[j]);
+			fAnalyzerList[j]->Process(i);
 			fAnalyzerList[j]->UpdatePlots(i);
 			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd();
@@ -372,4 +372,8 @@ TChain* BaseAnalysis::GetTree(TString name) {
 	///	Return a pointer to the TChain
 	/// \EndMemberDescr
 	return fIOHandler.GetTree(name);
+}
+
+const MCSimple& BaseAnalysis::GetMCSimple(TString analyzerName){
+	return *(fMCSimple[analyzerName]);
 }

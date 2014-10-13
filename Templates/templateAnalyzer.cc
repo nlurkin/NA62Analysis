@@ -200,7 +200,7 @@ void templateAnalyzer::EndOfBurstUser(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple){
+void templateAnalyzer::Process(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
 	/// \param fMCSimple : MCSimple
@@ -235,7 +235,11 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple){
 	/// \code
 	/// 	GetObject<MyClass>("treeName");
 	/// \endcode
-	/// You can retrieve MC events if available ( GetWithMC() ) with\n
+	/// You can retrieve simplified MC event with\n
+	/// \code
+	/// 	GetMCSimple();
+	/// \endcode
+	/// You can retrieve full MC events if available ( GetWithMC() ) with\n
 	/// \code
 	/// 	GetMCEvent();
 	/// \endcode
@@ -312,9 +316,10 @@ void templateAnalyzer::Process(int iEvent, MCSimple &fMCSimple){
 	//
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analyzer can run without the complete set, comment the line
-	if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
+	MCSimple mcSimple = GetMCSimple();
+	if(mcSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
 	//If the analyzer can run without MC data, comment the line
-	if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
+	if(mcSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
 
 /*$$GETEVENTS$$*/
 
