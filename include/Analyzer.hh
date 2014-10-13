@@ -5,6 +5,7 @@
 #include "FWEnums.hh"
 #include "NA62Constants.hh"
 #include "UserMethods.hh"
+#include "IOHandler.hh"
 
 using namespace std;
 typedef pair<TString, void*> param_t;
