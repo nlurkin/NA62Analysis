@@ -689,6 +689,10 @@ TChain* UserMethods::GetTree(TString name) {
 }
 
 const MCSimple& UserMethods::GetMCSimple() {
+	/// \MemberDescr
+	///	Return a pointer to the MCSimple instance
+	/// \EndMemberDescr
+
 	return fParent->GetMCSimple(fAnalyzerName);
 }
 

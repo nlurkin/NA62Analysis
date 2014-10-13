@@ -375,5 +375,11 @@ TChain* BaseAnalysis::GetTree(TString name) {
 }
 
 const MCSimple& BaseAnalysis::GetMCSimple(TString analyzerName){
+	/// \MemberDescr
+	/// \param analyzerName : Name of the Analyzer requesting its MCSimple instance
+	///
+	///	Return a pointer to the MCSimple instance of the specified analyzer
+	/// \EndMemberDescr
+
 	return *(fMCSimple[analyzerName]);
 }
