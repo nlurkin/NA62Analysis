@@ -64,12 +64,13 @@ void LKrPhotonMC::EndOfBurstUser(){
 }
 
 
-void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple){
+void LKrPhotonMC::Process(int iEvent){
+	MCSimple mcSimple = GetMCSimple();
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analyzer can run without the complete set, comment the line
-	if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
+	if(mcSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
 	//If the analyzer can run without MC data, comment the line
-	if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
+	if(mcSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
 
 	TRecoLKrEvent *lkr = (TRecoLKrEvent*)GetEvent("LKr");
 
@@ -136,8 +137,8 @@ void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple){
 	}
 
 	//Project MC photons on LKr plane
-	gamma1 = propagate(fMCSimple["gamma"][0]->GetProdPos().Vect(), fMCSimple["gamma"][0]->GetInitialMomentum(), LKrStartPos);
-	gamma2 = propagate(fMCSimple["gamma"][1]->GetProdPos().Vect(), fMCSimple["gamma"][1]->GetInitialMomentum(), LKrStartPos);
+	gamma1 = propagate(mcSimple["gamma"][0]->GetProdPos().Vect(), mcSimple["gamma"][0]->GetInitialMomentum(), LKrStartPos);
+	gamma2 = propagate(mcSimple["gamma"][1]->GetProdPos().Vect(), mcSimple["gamma"][1]->GetInitialMomentum(), LKrStartPos);
 
 	//Associate clusters to photons
 	distance1 = 10000;
@@ -160,11 +161,11 @@ void LKrPhotonMC::Process(int iEvent, MCSimple &fMCSimple){
 	if(d_sel1!=d_sel2){
 		if(candidatesNumber>=1 && d_sel1!=-1 && distance1<thresholdgamma){
 			//Setting correct association
-			((TRecoLKrCandidateMC*)fCandidates->At(d_sel1))->SetMCParticleID(fMCSimple["gamma"][0]->GetID());
+			((TRecoLKrCandidateMC*)fCandidates->At(d_sel1))->SetMCParticleID(mcSimple["gamma"][0]->GetID());
 		}
 		if(candidatesNumber>=2 && d_sel2!=-1 && distance2<thresholdgamma){
 			//Setting correct association
-			((TRecoLKrCandidateMC*)fCandidates->At(d_sel2))->SetMCParticleID(fMCSimple["gamma"][1]->GetID());
+			((TRecoLKrCandidateMC*)fCandidates->At(d_sel2))->SetMCParticleID(mcSimple["gamma"][1]->GetID());
 		}
 	}
 

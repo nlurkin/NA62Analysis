@@ -400,7 +400,7 @@ void CedarMCTester::EndOfBurstUser(){
     /// \EndMemberDescr
 }
 
-void CedarMCTester::Process(int iEvent, MCSimple &fMCSimple){
+void CedarMCTester::Process(int iEvent){
     /// \MemberDescr
     /// \param iEvent : Event number
     /// \param fMCSimple : MCSimple
@@ -478,8 +478,8 @@ void CedarMCTester::Process(int iEvent, MCSimple &fMCSimple){
     /// @see ROOT TParticlePDG for the particle properties
     /// @see ROOT TDatabasePDG for a list of PDG codes and particle naming convention
     /// \EndMemberDescr
-    if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
-    if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
+    //if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
+    //if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
 
     IncrementCounter( "NKaons");
 

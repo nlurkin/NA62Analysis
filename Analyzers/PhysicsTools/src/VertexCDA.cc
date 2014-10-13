@@ -123,7 +123,7 @@ void VertexCDA::PrintClass(){
 //   fMCSimple = Set of KinePart you asked for int GetTree method
 //   MCTruthEvent = Complete set of generated KinePart
 //#####################################################
-void VertexCDA::Process(int, MCSimple &fMCSimple){
+void VertexCDA::Process(int){
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analysis can run without the complete set, comment the line
 	//if(fMCSimple.fStatus == MCSimple::kMissing) return;
@@ -133,9 +133,10 @@ void VertexCDA::Process(int, MCSimple &fMCSimple){
 	bool badEvent = false;
 	TVector3 KaonPosition, KaonMomentum;
 	TVector3 PipPosition, PipMomentum;
+	MCSimple mcSimple = GetMCSimple();
 
 	bool withMC = true;
-	if(fMCSimple.fStatus != MCSimple::kComplete) withMC = false;
+	if(mcSimple.fStatus != MCSimple::kComplete) withMC = false;
 
 	TRecoGigaTrackerEvent *GTKEvent = (TRecoGigaTrackerEvent*)GetEvent("GigaTracker");
 	TRecoSpectrometerEvent *SpectrometerEvent = (TRecoSpectrometerEvent*)GetEvent("Spectrometer");
@@ -171,14 +172,14 @@ void VertexCDA::Process(int, MCSimple &fMCSimple){
 		FillHisto("VertexZ", fVertex.Z());
 
 		if(withMC){
-			FillHisto("DiffVertexX", fVertex.X()-fMCSimple["pi+"][0]->GetProdPos().X());
-			FillHisto("DiffVertexY", fVertex.Y()-fMCSimple["pi+"][0]->GetProdPos().Y());
-			FillHisto("DiffVertexZ", fVertex.Z()-fMCSimple["pi+"][0]->GetProdPos().Z());
-			FillHisto("VertexRecoRealX", fVertex.X(), fMCSimple["pi+"][0]->GetProdPos().X());
-			FillHisto("VertexRecoRealY", fVertex.Y(), fMCSimple["pi+"][0]->GetProdPos().Y());
-			FillHisto("VertexRecoRealZ", fVertex.Z(), fMCSimple["pi+"][0]->GetProdPos().Z());
-			int cat = ((fMCSimple["pi+"][0]->GetProdPos().Z()/1000)-100)/5;
-			FillHistoArray("BeamXY", cat, fMCSimple["pi+"][0]->GetProdPos().X(), fMCSimple["pi+"][0]->GetProdPos().Y());
+			FillHisto("DiffVertexX", fVertex.X()-mcSimple["pi+"][0]->GetProdPos().X());
+			FillHisto("DiffVertexY", fVertex.Y()-mcSimple["pi+"][0]->GetProdPos().Y());
+			FillHisto("DiffVertexZ", fVertex.Z()-mcSimple["pi+"][0]->GetProdPos().Z());
+			FillHisto("VertexRecoRealX", fVertex.X(), mcSimple["pi+"][0]->GetProdPos().X());
+			FillHisto("VertexRecoRealY", fVertex.Y(), mcSimple["pi+"][0]->GetProdPos().Y());
+			FillHisto("VertexRecoRealZ", fVertex.Z(), mcSimple["pi+"][0]->GetProdPos().Z());
+			int cat = ((mcSimple["pi+"][0]->GetProdPos().Z()/1000)-100)/5;
+			FillHistoArray("BeamXY", cat, mcSimple["pi+"][0]->GetProdPos().X(), mcSimple["pi+"][0]->GetProdPos().Y());
 		}
 	}
 

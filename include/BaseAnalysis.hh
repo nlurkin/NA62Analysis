@@ -47,6 +47,7 @@ public:
 
 	int GetNEvents();
 	TChain* GetTree(TString name);
+	const MCSimple& GetMCSimple(TString analyzerName);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
@@ -63,7 +64,7 @@ protected:
 	AnalysisFW::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
 	AnalysisFW::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
 
-	vector<MCSimple*> fMCSimple; ///< Container for MCSimple
+	AnalysisFW::NA62Map<TString, MCSimple*>::type fMCSimple; ///< Container for MCSimple
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
