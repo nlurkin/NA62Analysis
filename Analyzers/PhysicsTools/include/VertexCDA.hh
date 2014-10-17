@@ -27,7 +27,7 @@ class VertexCDA : public Analyzer
 	public:
 		VertexCDA(BaseAnalysis *ba);
 		void InitHist();
-		void DefineMCSimple(MCSimple *fMCSimple);
+		void DefineMCSimple();
 		void InitOutput();
 		void Process(int i);
 		void PostProcess();

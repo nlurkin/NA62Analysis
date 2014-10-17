@@ -225,9 +225,8 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	else SetParamValue(paramName, paramValue);
 }
 
-void Analyzer::PrintInitSummary(const MCSimple * const fMCSimple) const{
+void Analyzer::PrintInitSummary() const{
 	/// \MemberDescr
-	/// \param fMCSimple : MCSimple instance corresponding to this Analyzer
 	///
 	/// Print a summary of the Analyzer after initialization. List of booked histograms, list of parameters, ...
 	/// \EndMemberDescr
@@ -264,7 +263,7 @@ void Analyzer::PrintInitSummary(const MCSimple * const fMCSimple) const{
 
 	cout << "\tDetector acceptance requested ? " << sDetAcc << endl << endl;
 
-	fMCSimple->PrintInit();
+	fMCSimple.PrintInit();
 
 	cout << "================================================================================" << endl;
 }
@@ -353,6 +352,17 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 
 	if(!hRef || !h) return -1.;
 	return fHisto.compareToReferencePlot(hRef, h, KS);
+}
+
+void Analyzer::FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity) {
+	/// \MemberDescr
+	/// \param mcTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
+	/// \param verbose : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
+	///
+	/// Extract informations from current Event and store them internally for later easy access
+	/// \EndMemberDescr
+
+	fMCSimple.GetRealInfos(mcTruthEvent, verbosity);
 }
 
 void Analyzer::printIncompleteMCWarning(int i) const{

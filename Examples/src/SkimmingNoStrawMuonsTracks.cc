@@ -48,7 +48,7 @@ void SkimmingNoStrawMuonsTracks::InitHist(){
 	DefineSampleSizeCounter("NoMuonsTrackFraction", "TotalEvents");
 }
 
-void SkimmingNoStrawMuonsTracks::DefineMCSimple(MCSimple *){
+void SkimmingNoStrawMuonsTracks::DefineMCSimple(){
 }
 
 void SkimmingNoStrawMuonsTracks::StartOfRunUser(){

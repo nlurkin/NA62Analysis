@@ -37,7 +37,7 @@ public:
 
 	//Abstract methods to be implemented in each Analyzer
 	virtual void InitHist() = 0; ///< Pure virtual method to be implemented by user analyzer
-	virtual void DefineMCSimple(MCSimple *fMCSimple) = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void DefineMCSimple() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void InitOutput() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void Process(int iEvent) = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void PostProcess() = 0; ///< Pure virtual method to be implemented by user analyzer
@@ -63,7 +63,7 @@ public:
 	//Analyzer name
 	void PrintName() const;
 	TString GetAnalyzerName() const ;
-	void PrintInitSummary(const MCSimple * const fMCSimple) const;
+	void PrintInitSummary() const;
 	void SetVerbosity(AnalysisFW::VerbosityLevel l);
 
 	//Methods for exporting an event
@@ -114,6 +114,8 @@ public:
 	void ApplyParam(TString paramName, TString paramValue);
 
 	double compareToReferencePlot(TString h1, bool KS);
+	void FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity);
+
 
 protected:
 	//Internal methods used for setting parameters
@@ -143,6 +145,8 @@ protected:
 	map<TString, int> fExportCandidatesNumber; ///< Number of Export candidates
 
 	ParticleInterface *fParticleInterface; ///< Pointer to the ParticleInterface instance
+
+	MCSimple fMCSimple; ///< MCSimple instance
 };
 
 #endif

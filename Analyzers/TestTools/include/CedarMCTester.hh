@@ -22,7 +22,7 @@ class CedarMCTester : public Analyzer
 		CedarMCTester(BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
-		void DefineMCSimple(MCSimple *fMCSimple);
+		void DefineMCSimple();
 		void Process(int i);
 		void StartOfBurstUser();
 		void EndOfBurstUser();

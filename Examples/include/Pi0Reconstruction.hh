@@ -28,7 +28,7 @@ class Pi0Reconstruction : public Analyzer
 		Pi0Reconstruction(BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
-		void DefineMCSimple(MCSimple *fMCSimple);
+		void DefineMCSimple();
 		void Process(int i);
 		void PostProcess();
 		void ExportPlot();

@@ -155,24 +155,22 @@ void templateAnalyzer::InitHist(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::DefineMCSimple(MCSimple *fMCSimple){
+void templateAnalyzer::DefineMCSimple(){
 	/// \MemberDescr
-	/// \param fMCSimple : MCSimple
-	///
 	/// Setup of fMCSimple. You must specify the generated MC particles you want.\n
 	/// Add particles you want to recover from fMCSimple\n
 	///	\code
-	/// 	int particleID = fMCSimple->AddParticle(parentID, pdgCode)
+	/// 	int particleID = fMCSimple.AddParticle(parentID, pdgCode)
 	///	\endcode
 	/// parentID : 	0=no parent (=beam particle)\n
 	/// 	...\n
 	/// Example : you want to retrieve the kaon from the beam, the pi0 an pi+ from the beam kaon and the 2 photons coming from the previous pi0 decay :\n
 	///	\code
-	/// 	int kaonID = fMCSimple->AddParticle(0, 321) //Ask beam kaon (sequence ID=1)
-	/// 	fMCSimple->AddParticle(kaonID, 211) //Ask pi+ from previous kaon (sequence ID=2)
-	/// 	int pi0ID = fMCSimple->AddParticle(kaonID, 111) //Ask pi0 from previous kaon (sequence ID=3)
-	/// 	fMCSimple->AddParticle(pi0ID, 22) //Ask first gamma from previous pi0 (sequence ID=4)
-	/// 	fMCSimple->AddParticle(pi0ID, 22) //Ask second gamma from previous pi0 (sequence ID=4)
+	/// 	int kaonID = fMCSimple.AddParticle(0, 321) //Ask beam kaon (sequence ID=1)
+	/// 	fMCSimple.AddParticle(kaonID, 211) //Ask pi+ from previous kaon (sequence ID=2)
+	/// 	int pi0ID = fMCSimple.AddParticle(kaonID, 111) //Ask pi0 from previous kaon (sequence ID=3)
+	/// 	fMCSimple.AddParticle(pi0ID, 22) //Ask first gamma from previous pi0 (sequence ID=4)
+	/// 	fMCSimple.AddParticle(pi0ID, 22) //Ask second gamma from previous pi0 (sequence ID=4)
 	///	\endcode
 	///
 	/// @see ROOT TDatabasePDG for a list of PDG codes and particle naming convention
@@ -203,7 +201,6 @@ void templateAnalyzer::EndOfBurstUser(){
 void templateAnalyzer::Process(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
-	/// \param fMCSimple : MCSimple
 	///
 	/// Main process method. Called on each event. Write you analysis here.\n
 	/// You can retrieve MC particles from the fMCSimple set with (returns a vector<KinePart*>)\n
@@ -234,10 +231,6 @@ void templateAnalyzer::Process(int iEvent){
 	/// You can retrieve data from generic TTrees with\n
 	/// \code
 	/// 	GetObject<MyClass>("treeName");
-	/// \endcode
-	/// You can retrieve simplified MC event with\n
-	/// \code
-	/// 	GetMCSimple();
 	/// \endcode
 	/// You can retrieve full MC events if available ( GetWithMC() ) with\n
 	/// \code
@@ -316,10 +309,9 @@ void templateAnalyzer::Process(int iEvent){
 	//
 	//Ask the fMCSimple to have the complete set of particles we specified
 	//If the analyzer can run without the complete set, comment the line
-	MCSimple mcSimple = GetMCSimple();
-	if(mcSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
+	if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}
 	//If the analyzer can run without MC data, comment the line
-	if(mcSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
+	if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}
 
 /*$$GETEVENTS$$*/
 
