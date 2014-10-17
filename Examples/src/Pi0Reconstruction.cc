@@ -69,12 +69,12 @@ void Pi0Reconstruction::InitOutput(){
 //   Open the trees and branch them.
 //   Setup of fMCSimple. You must specify the generated MC particles you want
 //#####################################################
-void Pi0Reconstruction::DefineMCSimple(MCSimple *fMCSimple){
-	int kID = fMCSimple->AddParticle(0, 321); //ask for beam Kaon
-	fMCSimple->AddParticle(kID, 211); //ask for positive pion from initial kaon decay
-	int pi0ID = fMCSimple->AddParticle(kID, 111); //ask for positive pion from initial kaon decay
-	fMCSimple->AddParticle(pi0ID, 22); //ask for positive pion from initial kaon decay
-	fMCSimple->AddParticle(pi0ID, 22); //ask for positive pion from initial kaon decay
+void Pi0Reconstruction::DefineMCSimple(){
+	int kID = fMCSimple.AddParticle(0, 321); //ask for beam Kaon
+	fMCSimple.AddParticle(kID, 211); //ask for positive pion from initial kaon decay
+	int pi0ID = fMCSimple.AddParticle(kID, 111); //ask for positive pion from initial kaon decay
+	fMCSimple.AddParticle(pi0ID, 22); //ask for positive pion from initial kaon decay
+	fMCSimple.AddParticle(pi0ID, 22); //ask for positive pion from initial kaon decay
 }
 
 //#####################################################
@@ -118,7 +118,6 @@ void Pi0Reconstruction::Process(int){
 
 	//Get LKr event from TTree
 	TRecoLKrEvent *LKrEvent = (TRecoLKrEvent*)GetEvent("LKr");
-	MCSimple mcSimple = GetMCSimple();
 
 	//Calibration constants
 	double calibMult = 0.9744;
@@ -126,14 +125,14 @@ void Pi0Reconstruction::Process(int){
 
 	//Are we working with correct MC
 	bool withMC = true;
-	if(mcSimple.fStatus == MCSimple::kMissing){
+	if(fMCSimple.fStatus == MCSimple::kMissing){
 		Event* MCTruthEvent = GetMCEvent();
 		for(int i=0; i<MCTruthEvent->GetNKineParts(); i++){
 			FillHisto("pdgID", ((KinePart*)MCTruthEvent->GetKineParts()->At(i))->GetParticleName(), 1);
 		}
 		withMC = false;
 	}
-	if(mcSimple.fStatus == MCSimple::kEmpty) withMC = false;
+	if(fMCSimple.fStatus == MCSimple::kEmpty) withMC = false;
 
 	//Get vertex from VertexCDA analyzer
 	vertex = *(TVector3*)GetOutput("VertexCDA.Vertex", state);
@@ -193,20 +192,20 @@ void Pi0Reconstruction::Process(int){
 		if(withMC){
 
 			//Select the most energetic photons coming from the pi0 decay
-			if(mcSimple["gamma"][0]->GetInitialEnergy() >= mcSimple["gamma"][1]->GetInitialEnergy()) iLead = 0;
+			if(fMCSimple["gamma"][0]->GetInitialEnergy() >= fMCSimple["gamma"][1]->GetInitialEnergy()) iLead = 0;
 			else iLead = 1;
 			iTrail = !iLead;
 
 			//Compare the energy with the selected pair
-			g1EnergyFrac = g1->GetInitialEnergy()/mcSimple["gamma"][iLead]->GetInitialEnergy();
-			g2EnergyFrac = g2->GetInitialEnergy()/mcSimple["gamma"][iTrail]->GetInitialEnergy();
+			g1EnergyFrac = g1->GetInitialEnergy()/fMCSimple["gamma"][iLead]->GetInitialEnergy();
+			g2EnergyFrac = g2->GetInitialEnergy()/fMCSimple["gamma"][iTrail]->GetInitialEnergy();
 
 			//Are the 2 real photons in the LKr acceptance?
-			fDetectorAcceptanceInstance->FillPath(mcSimple["gamma"][iLead]->GetProdPos().Vect(), mcSimple["gamma"][iLead]->GetInitialMomentum());
+			fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iLead]->GetProdPos().Vect(), fMCSimple["gamma"][iLead]->GetInitialMomentum());
 			g1Vol = fDetectorAcceptanceInstance->FirstTouchedDetector();
 			g1LKr = fDetectorAcceptanceInstance->GetDetAcceptance(DetectorAcceptance::kLKr);
 			fDetectorAcceptanceInstance->CleanDetPath();
-			fDetectorAcceptanceInstance->FillPath(mcSimple["gamma"][iTrail]->GetProdPos().Vect(), mcSimple["gamma"][iTrail]->GetInitialMomentum());
+			fDetectorAcceptanceInstance->FillPath(fMCSimple["gamma"][iTrail]->GetProdPos().Vect(), fMCSimple["gamma"][iTrail]->GetInitialMomentum());
 			g2Vol = fDetectorAcceptanceInstance->FirstTouchedDetector();
 			g2LKr = fDetectorAcceptanceInstance->GetDetAcceptance(DetectorAcceptance::kLKr);
 
@@ -230,8 +229,8 @@ void Pi0Reconstruction::Process(int){
 
 			if(withMC){
 				//Comparison reconstructed momenta and energies between reconstructed and real
-				g1real = propagate(mcSimple["gamma"][iLead]->GetProdPos().Vect(), mcSimple["gamma"][iLead]->GetInitialMomentum(), LKrStartPos);
-				g2real = propagate(mcSimple["gamma"][iTrail]->GetProdPos().Vect(), mcSimple["gamma"][iTrail]->GetInitialMomentum(), LKrStartPos);
+				g1real = propagate(fMCSimple["gamma"][iLead]->GetProdPos().Vect(), fMCSimple["gamma"][iLead]->GetInitialMomentum(), LKrStartPos);
+				g2real = propagate(fMCSimple["gamma"][iTrail]->GetProdPos().Vect(), fMCSimple["gamma"][iTrail]->GetInitialMomentum(), LKrStartPos);
 
 				FillHisto("g1px", g1reco.X(), g1real.X());
 				FillHisto("g2px", g2reco.X(), g2real.X());
@@ -239,11 +238,11 @@ void Pi0Reconstruction::Process(int){
 				FillHisto("g2py", g2reco.Y(), g2real.Y());
 				FillHisto("g1pz", g1reco.Z(), g1real.Z());
 				FillHisto("g2pz", g2reco.Z(), g2real.Z());
-				FillHisto("g1Reco", g1->GetInitialEnergy(), mcSimple["gamma"][iLead]->GetInitialEnergy());
-				FillHisto("g2Reco", g2->GetInitialEnergy(), mcSimple["gamma"][iTrail]->GetInitialEnergy());
+				FillHisto("g1Reco", g1->GetInitialEnergy(), fMCSimple["gamma"][iLead]->GetInitialEnergy());
+				FillHisto("g2Reco", g2->GetInitialEnergy(), fMCSimple["gamma"][iTrail]->GetInitialEnergy());
 				//Dont do it if we are likely to have selected the wrong photon
-				if(g1EnergyFrac>0.95) FillHisto("energyCalib", g1->GetInitialEnergy(), mcSimple["gamma"][iLead]->GetInitialEnergy());
-				if(g2EnergyFrac>0.95) FillHisto("energyCalib", g2->GetInitialEnergy(), mcSimple["gamma"][iTrail]->GetInitialEnergy());
+				if(g1EnergyFrac>0.95) FillHisto("energyCalib", g1->GetInitialEnergy(), fMCSimple["gamma"][iLead]->GetInitialEnergy());
+				if(g2EnergyFrac>0.95) FillHisto("energyCalib", g2->GetInitialEnergy(), fMCSimple["gamma"][iTrail]->GetInitialEnergy());
 				FillHisto("g1EnergyFraction", g1EnergyFrac);
 				FillHisto("g2EnergyFraction", g2EnergyFrac);
 			}

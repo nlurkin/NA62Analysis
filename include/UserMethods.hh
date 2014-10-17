@@ -197,7 +197,6 @@ public:
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
-	const MCSimple& GetMCSimple();
 	Event* GetMCEvent();
 	RawHeader* GetRawHeader();
 	bool GetWithMC();

@@ -688,14 +688,6 @@ TChain* UserMethods::GetTree(TString name) {
 	return fParent->GetTree(name);
 }
 
-const MCSimple& UserMethods::GetMCSimple() {
-	/// \MemberDescr
-	///	Return a pointer to the MCSimple instance
-	/// \EndMemberDescr
-
-	return fParent->GetMCSimple(fAnalyzerName);
-}
-
 void* UserMethods::GetObjectVoid(TString name){
 	/// \MemberDescr
 	/// Internal interface to BaseAnalysis for GetObject method
