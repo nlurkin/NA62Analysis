@@ -112,7 +112,9 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 			}
 		}
 	}
-	fDecayTree = tempParticleTree[0];
+
+	if(tempParticleTree.size()!=0) fDecayTree = tempParticleTree[0];
+	else fDecayTree=NULL;
 	tempParticleTree.clear();
 
 	//If testStruct is empty, we found all the particles we wanted. Event is complete.
