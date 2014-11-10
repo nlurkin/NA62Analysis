@@ -3,8 +3,12 @@ include_directories(include)
 
 file(GLOB EXHH "include/*.hh")
 
+SET (USERPOLIBS "")
 FOREACH (lib ${EXHH})
 	GET_FILENAME_COMPONENT(libName ${lib} NAME_WE)
 	ROOT_GENERATE_DICTIONARY(${libName}.hh LinkDef.h ${libName}DICT.cc ${ROOT_INCLUDE_DIR})
 	add_library(${libName}${LIBTYPEPOSTFIX} ${LIBTYPE} include/${libName}.hh src/${libName}.cc)
+	SET (USERPOLIBS ${USERPOLIBS} ${libName}${LIBTYPEPOSTFIX})
 ENDFOREACH(lib)
+
+SET (USERPOLIBS ${USERPOLIBS} PARENT_SCOPE)
