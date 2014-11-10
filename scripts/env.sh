@@ -27,3 +27,7 @@ else
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/Persistency/lib
         fi
 fi
+
+gccPath=`which gcc`
+export ANALYSISFW_STDLIBSPATH="$(dirname $(dirname "$gccPath"))"
+

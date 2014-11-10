@@ -8,6 +8,4 @@ if ( "$LD_LIBRARY_PATH" !~ "*$ANALYSISFW_PATH/lib*" ) then
 	setenv PATH ${PATH}:${ANALYSISFW_PATH}
 endif
 
-if (!($?FWSHELL)) then
-        source $ANALYSISFW_PATH/scripts/env.csh
-endif
+source $ANALYSISFW_PATH/scripts/env.csh

@@ -243,7 +243,6 @@ def buildFW(FWPath, defines, jobs):
 		for d in defines or []:
 			command.append(" -D%s=1" % d)
 		bash_command(''.join(command))
-	print "cd %s/build && source ../scripts/env.%s && make -j%s" % (FWPath,shell, jobs)
 	bash_command("cd %s/build && source ../scripts/env.%s && make -j%s" % (FWPath,shell, jobs))
 
 def buildUser(defines, jobs):

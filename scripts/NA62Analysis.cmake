@@ -17,6 +17,10 @@ include(${NA62ANALYSIS}/scripts/FindROOT.cmake)
 include_directories(${ROOT_INCLUDE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 
+# Use correct gcc libraries
+link_directories($ENV{ANALYSISFW_STDLIBSPATH}/lib64)
+link_directories($ENV{ANALYSISFW_STDLIBSPATH}/lib)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "-std=c++0x")
 	try_compile(TEST_UN_MAP ${NA62ANALYSIS}/build/test ${NA62ANALYSIS}/scripts/test_unordered_map.cpp)
@@ -38,6 +42,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 		message("-- Using Flag: C++11_COMPAT")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -DNA62_C11=1")
 	endif()
+
 endif()
 
 #Get NA62MC

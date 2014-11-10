@@ -8,6 +8,4 @@ if [[ ! $LD_LIBRARY_PATH =~ $ANALYSISFW_PATH/lib ]]; then
 	export PATH+=:$ANALYSISFW_PATH
 fi
 
-if [ -z $FWSHELL ]; then
-        source $ANALYSISFW_PATH/scripts/env.sh
-fi
+source $ANALYSISFW_PATH/scripts/env.sh
