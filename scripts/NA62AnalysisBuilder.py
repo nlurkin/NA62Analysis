@@ -94,8 +94,8 @@ def checkUpdate():
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
 			
-			readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
-			readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+			readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % UserPath, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+			readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % UserPath, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
 	
 			#write the new version file
 			writeUserVersion(UserPath)
