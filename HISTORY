@@ -14,6 +14,11 @@ NA62Analysis Project
 		  headers and source file. The signature is now:
 		      void DefineMCSimple()
 		  fMCSimple is now always accessible as it belongs to the class.
+		  
+2014-11-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+      - Fix NA62Analysis crashes when mcEvent contains no KinePart (Bug NA62RKD-31)
+      - Fix NA62Analysis not compiling anymore on lxplus (Bug NA62RKD-33)
+		- Fix PhysicsObjects libraries not being built
 
 2014-10-07 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 360
