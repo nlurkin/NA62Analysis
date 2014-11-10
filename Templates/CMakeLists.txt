@@ -43,7 +43,9 @@ target_link_libraries(${TARGET_EXEC} PhysicsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ToolsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
 target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG)
-target_link_libraries(${TARGET_EXEC} ${USERPOLIBS})
+FOREACH(lib ${USERPOLIBS})
+	target_link_libraries(${TARGET_EXEC} ${lib})
+ENDFOREACH(lib)
 
 # Specify extra libraries
 target_link_libraries(${TARGET_EXEC} ${EXTRA_LIBS})

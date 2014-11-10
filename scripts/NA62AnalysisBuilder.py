@@ -12,7 +12,7 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 345
+__rev__ = 385
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -78,6 +78,8 @@ def checkUpdate():
 	global __rev__
 	UserPath = getVar("ANALYSISFW_USERDIR", -1)
 	FWPath = getVar("ANALYSISFW_PATH", -1)
+	NA62MCSOURCE = getCheckVar("NA62MCSOURCE")
+	
 	if UserPath != -1:
 		#check version number
 		version = getUserVersion(UserPath)
@@ -92,6 +94,9 @@ def checkUpdate():
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
 			
+			readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+			readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":UserPath, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+	
 			#write the new version file
 			writeUserVersion(UserPath)
 
