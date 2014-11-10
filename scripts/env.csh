@@ -27,3 +27,7 @@ else
 	        setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${NA62MCSOURCE}/Persistency/lib
         endif
 endif
+
+set gccPath=`which gcc`
+set temp=`dirname "$gccPath"`
+setenv ANALYSISFW_STDLIBSPATH `dirname "$temp"`
