@@ -125,19 +125,18 @@ def updateHeaderSignature(UserPath):
 				print "Updating " + original
 				for line in f1:
 					#search
-					m = re.findall("(.*)void Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*.*\);", line)
-					if m:
+					m1 = re.findall("(.*)void Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*.*\);", line)
+					m2 = re.findall("(.*)void DefineMCSimple\(.*MCSimple.*\*.*\);", line)
+					if m1:
 						print "\033[31m- "+line.replace("\n","")+"\033[0m"
-						print "\033[32m+ "+m[0][0]+"void Process(int"+m[0][1]+");\n\033[0m",
-						f2.write(m[0][0]+"void Process(int"+m[0][1]+");\n")
+						print "\033[32m+ "+m1[0][0]+"void Process(int"+m1[0][1]+");\n\033[0m",
+						f2.write(m1[0][0]+"void Process(int"+m1[0][1]+");\n")
+					elif m2:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m2[0]+"void DefineMCSimple();\n\033[0m",
+						f2.write(m2[0]+"void DefineMCSimple();\n")
 					else:
-						m = re.findall("(.*)void DefineMCSimple\(.*MCSimple.*\*.*\);", line)
-						if m:
-							print "\033[31m- "+line.replace("\n","")+"\033[0m"
-							print "\033[32m+ "+m[0][0]+"void DefineMCSimple();\n\033[0m",
-							f2.write(m[0][0]+"void DefineMCSimple();\n")
-						else:
-							f2.write(line)
+						f2.write(line)
 	
 	#Read user Analyzers src dir
 	anList = os.listdir("%s/Analyzers/src" % UserPath)
@@ -160,23 +159,27 @@ def updateHeaderSignature(UserPath):
 				print "Updating " + original
 				for line in f1:
 					#search
-					m = re.findall("(.*)void (.*)::Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*(.*)\)(.*)", line)
-					if m:
+					m1 = re.findall("(.*)void (.*)::Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*(.*)\)(.*)", line)
+					m2 = re.findall("(.*)void (.*)::DefineMCSimple\(.*MCSimple.*\*.*\)(.*)", line)
+					m3 = re.findall("(.*)fMCSimple->(.*)", line)
+					if m1:
 						print "\033[31m- "+line.replace("\n","")+"\033[0m"
-						print "\033[32m+ "+m[0][0]+"void "+m[0][1]+"::Process(int"+m[0][2]+")"+m[0][4]+"\033[0m\n",
-						print "\033[32m+ "+m[0][0]+"\tEvent* "+m[0][3]+" = NULL;\033[0m\n",
-						print "\033[32m+ "+m[0][0]+"\tif(GetWithMC()) "+m[0][3]+"= GetMCEvent();\033[0m\n",
-						f2.write(m[0][0]+"void "+m[0][1]+"::Process(int"+m[0][2]+")"+m[0][4]+"\n")
-						f2.write(m[0][0]+"\tEvent* "+m[0][3]+" = NULL;\n")
-						f2.write(m[0][0]+"\tif(GetWithMC()) "+m[0][3]+"= GetMCEvent();\n")
+						print "\033[32m+ "+m1[0][0]+"void "+m1[0][1]+"::Process(int"+m1[0][2]+")"+m1[0][4]+"\033[0m\n",
+						print "\033[32m+ "+m1[0][0]+"\tEvent* "+m1[0][3]+" = NULL;\033[0m\n",
+						print "\033[32m+ "+m1[0][0]+"\tif(GetWithMC()) "+m1[0][3]+"= GetMCEvent();\033[0m\n",
+						f2.write(m1[0][0]+"void "+m1[0][1]+"::Process(int"+m1[0][2]+")"+m1[0][4]+"\n")
+						f2.write(m1[0][0]+"\tEvent* "+m1[0][3]+" = NULL;\n")
+						f2.write(m1[0][0]+"\tif(GetWithMC()) "+m1[0][3]+"= GetMCEvent();\n")
+					elif m2:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m2[0][0]+"void "+m2[0][1]+"::DefineMCSimple()"+m2[0][2]+"\033[0m\n",
+						f2.write(m2[0][0]+"void "+m2[0][1]+"::DefineMCSimple()"+m2[0][2]+"\n")
+					elif m3:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m3[0][0]+"fMCSimple."+m3[0][1]+"\033[0m\n",
+						f2.write(m3[0][0]+"fMCSimple."+m3[0][1]+"\n")
 					else:
-						m = re.findall("(.*)void (.*)::DefineMCSimple\(.*MCSimple.*\*.*\)(.*)", line)
-						if m:
-							print "\033[31m- "+line.replace("\n","")+"\033[0m"
-							print "\033[32m+ "+m[0][0]+"void "+m[0][1]+"::DefineMCSimple()"+m[0][2]+"\033[0m\n",
-							f2.write(m[0][0]+"void "+m[0][1]+"::DefineMCSimple()"+m[0][2]+"\n")
-						else:
-							f2.write(line)
+						f2.write(line)
 	
 	
 def checkUpdate():
