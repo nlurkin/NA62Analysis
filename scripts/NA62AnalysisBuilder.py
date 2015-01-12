@@ -76,17 +76,21 @@ def updateOld(UserPath, FWPath):
 
 def updateHeaderSignature(UserPath):
 	print ("""\033[31m
-	The signature of the Process method of the analyzer have changed. This requires
+	The signature of the Process and DefineMCSimple method of the analyzer have changed. This requires
 	to change the method signature in every analyzer header in Analyzers/include. 
-	Replace 
+	Replace both
 	\t\033[32mvoid Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent);\033[31m
+	\t\033[32mvoid DefineMCSimple(MCSimple *fMCSimple);\033[31m
 	with 
 	\t\033[32mvoid Process(int i);\033[31m
+	\t\033[32mvoid DefineMCSimple();\033[31m
 	It also requires to change the source file of every analyzer.
-	Replace 
+	Replace both
 	\t\033[32mvoid clusterNN::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){\033[31m
+	\t\033[32mvoid clusterNN::DefineMCSimple(MCSimple *fMCSimple){\033[31m
 	with 
 	\t\033[32mvoid clusterNN::Process(int iEvent){\033[31m
+	\t\033[32mvoid clusterNN::DefineMCSimple(){\033[31m
 	and if you want access to MCTruthEvent you can now use
 	\t\033[32mEvent MCTruthEvent = GetMCEvent();\033[31m
 	You can either allow this script to attempt to automatically change all your
@@ -127,7 +131,13 @@ def updateHeaderSignature(UserPath):
 						print "\033[32m+ "+m[0][0]+"void Process(int"+m[0][1]+");\n\033[0m",
 						f2.write(m[0][0]+"void Process(int"+m[0][1]+");\n")
 					else:
-						f2.write(line)
+						m = re.findall("(.*)void DefineMCSimple\(.*MCSimple.*\*.*\);", line)
+						if m:
+							print "\033[31m- "+line.replace("\n","")+"\033[0m"
+							print "\033[32m+ "+m[0][0]+"void DefineMCSimple();\n\033[0m",
+							f2.write(m[0][0]+"void DefineMCSimple();\n")
+						else:
+							f2.write(line)
 	
 	#Read user Analyzers src dir
 	anList = os.listdir("%s/Analyzers/src" % UserPath)
@@ -160,7 +170,13 @@ def updateHeaderSignature(UserPath):
 						f2.write(m[0][0]+"\tEvent* "+m[0][3]+" = NULL;\n")
 						f2.write(m[0][0]+"\tif(GetWithMC()) "+m[0][3]+"= GetMCEvent();\n")
 					else:
-						f2.write(line)
+						m = re.findall("(.*)void (.*)::DefineMCSimple\(.*MCSimple.*\*.*\)(.*)", line)
+						if m:
+							print "\033[31m- "+line.replace("\n","")+"\033[0m"
+							print "\033[32m+ "+m[0][0]+"void "+m[0][1]+"::DefineMCSimple()"+m[0][2]+"\033[0m\n",
+							f2.write(m[0][0]+"void "+m[0][1]+"::DefineMCSimple()"+m[0][2]+"\n")
+						else:
+							f2.write(line)
 	
 	
 def checkUpdate():
