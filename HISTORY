@@ -16,7 +16,7 @@ NA62Analysis Project
 		  fMCSimple is now always accessible as it belongs to the class.
 		- Allow Digis to be read from input TTree as with Hits and Recos
 		- Automatically link with NA62Reconstruction. User still has to specify include path in the
-		  config file.
+		  config file. The link is done only if the NA62RECOSOURCE environment variable is defined.
 		
 2014-11-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 385

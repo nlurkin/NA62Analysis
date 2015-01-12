@@ -1,5 +1,7 @@
 MACRO(SUBDIRLIST dir result)
 	FILE(GLOB children ${dir}/*)
+	FILE(GLOB svn ${dir}/.svn)
+	LIST(REMOVE_ITEM children ${svn})
 	SET(dirlist "")
 	FOREACH(child ${children})
 		IF(IS_DIRECTORY ${child})

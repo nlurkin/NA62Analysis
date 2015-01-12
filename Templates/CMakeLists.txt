@@ -12,7 +12,6 @@ include_directories(${NA62ANALYSIS_ANALYZER_INCLUDES})
 link_directories(${NA62ANALYSIS}/lib)
 link_directories(${NA62MC_LIB_DIRS})
 link_directories(${NA62RECO_LIB_DIRS})
-message("RecoDirs " ${NA62RECO_LIB_DIRS})
 
 # Include POs
 add_subdirectory(PhysicsObjects)
