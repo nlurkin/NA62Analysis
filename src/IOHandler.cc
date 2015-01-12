@@ -118,7 +118,8 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt, TString b
 	//Which branch are we dealing with?
 	if(branchName.CompareTo("")==0){
 		if(strstr(evt->ClassName(), "Reco")!=NULL) branchName="Reco";
-		else branchName="Hits";
+		else if(strstr(evt->ClassName(), "Hits")!=NULL) branchName="Hits";
+		else branchName="Digis";
 	}
 
 	//Is this branch already requested?
@@ -228,6 +229,7 @@ TDetectorVEvent *IOHandler::GetEvent(TString name, TString branchName){
 			//Or if this is the requested branchm also return it
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fBranchName.CompareTo("Reco")==0 ||
+					it->second->fBranchName.CompareTo("Digis")==0 ||
 					it->second->fBranchName.CompareTo("Hits")==0))
 					|| it->second->fBranchName.CompareTo(branchName)==0){
 				return it->second->fEvent;
