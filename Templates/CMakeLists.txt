@@ -13,12 +13,12 @@ link_directories(${NA62ANALYSIS}/lib)
 link_directories(${NA62MC_LIB_DIRS})
 link_directories(${NA62RECO_LIB_DIRS})
 
+# Get analyzers definition from builder
+include(analyzers.cmake)
+
 # Include POs
 add_subdirectory(PhysicsObjects)
 include_directories(PhysicsObjects/include)
-
-# Get analyzers definition from builder
-include(analyzers.cmake)
 
 # Extras
 include_directories(${EXTRA_INCLUDE_DIRS})
@@ -37,6 +37,9 @@ FOREACH(ana ${ANA_LIBS})
 	target_link_libraries(${TARGET_EXEC} l${ana}${LIBTYPEPOSTFIX})
 ENDFOREACH(ana)
 
+FOREACH(lib ${USERPOLIBS})
+	target_link_libraries(${TARGET_EXEC} ${lib})
+ENDFOREACH(lib)
 
 # Specify NA62MC/NA62Reconstruction/NA62Analysis/ROOT libraries
 target_link_libraries(${TARGET_EXEC} AnalysisFW${LIBTYPEPOSTFIX})
@@ -45,9 +48,6 @@ target_link_libraries(${TARGET_EXEC} ToolsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
 target_link_libraries(${TARGET_EXEC} ${NA62RECO_LIBS})
 target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG)
-FOREACH(lib ${USERPOLIBS})
-	target_link_libraries(${TARGET_EXEC} ${lib})
-ENDFOREACH(lib)
 
 # Specify extra libraries
 target_link_libraries(${TARGET_EXEC} ${EXTRA_LIBS})
