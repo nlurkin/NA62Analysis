@@ -12,7 +12,7 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 386
+__rev__ = 403
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -92,7 +92,7 @@ def updateHeaderSignature(UserPath):
 	\t\033[32mvoid clusterNN::Process(int iEvent){\033[31m
 	\t\033[32mvoid clusterNN::DefineMCSimple(){\033[31m
 	and if you want access to MCTruthEvent you can now use
-	\t\033[32mEvent MCTruthEvent = GetMCEvent();\033[31m
+	\t\033[32mEvent* MCTruthEvent = GetMCEvent();\033[31m
 	You can either allow this script to attempt to automatically change all your
 	analyzers, or do it manually. In case you allow this script to automatically
 	do the changes, a backup copy of your analyzers will be created in Analyzers/bckp.
