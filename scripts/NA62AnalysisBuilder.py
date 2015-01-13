@@ -12,7 +12,7 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 385
+__rev__ = 403
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -74,6 +74,114 @@ def updateOld(UserPath, FWPath):
 		if not os.path.exists("%s/CMakeLists.txt" % UserPath):
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 
+def updateHeaderSignature(UserPath):
+	print ("""\033[31m
+	The signature of the Process and DefineMCSimple method of the analyzer have changed. This requires
+	to change the method signature in every analyzer header in Analyzers/include. 
+	Replace both
+	\t\033[32mvoid Process(int i, MCSimple &fMCSimple, Event* MCTruthEvent);\033[31m
+	\t\033[32mvoid DefineMCSimple(MCSimple *fMCSimple);\033[31m
+	with 
+	\t\033[32mvoid Process(int i);\033[31m
+	\t\033[32mvoid DefineMCSimple();\033[31m
+	It also requires to change the source file of every analyzer.
+	Replace both
+	\t\033[32mvoid clusterNN::Process(int iEvent, MCSimple &fMCSimple, Event* MCTruthEvent){\033[31m
+	\t\033[32mvoid clusterNN::DefineMCSimple(MCSimple *fMCSimple){\033[31m
+	with 
+	\t\033[32mvoid clusterNN::Process(int iEvent){\033[31m
+	\t\033[32mvoid clusterNN::DefineMCSimple(){\033[31m
+	and if you want access to MCTruthEvent you can now use
+	\t\033[32mEvent* MCTruthEvent = GetMCEvent();\033[31m
+	You can either allow this script to attempt to automatically change all your
+	analyzers, or do it manually. In case you allow this script to automatically
+	do the changes, a backup copy of your analyzers will be created in Analyzers/bckp.
+\033[0m""")
+	
+	answer = raw_input("\tDo you want this script to automatically modify your analyzers [Y/N]?")
+	if answer.lower() != "y":
+		return
+	
+	if not os.path.exists("%s/Analyzers/bckp" % (UserPath)):
+		os.mkdir("%s/Analyzers/bckp" % (UserPath))
+	if not os.path.exists("%s/Analyzers/bckp/include" % (UserPath)):
+		os.mkdir("%s/Analyzers/bckp/include" % (UserPath))
+	if not os.path.exists("%s/Analyzers/bckp/src" % (UserPath)):
+		os.mkdir("%s/Analyzers/bckp/src" % (UserPath))
+	
+	#Read user Analyzers include dir
+	anList = os.listdir("%s/Analyzers/include" % UserPath)
+	for header in anList:
+		#For each file, search "void Process(int xxx, MCSimple &xxx, Event* xxx);" and replace with "void Process(int iEvent);"
+		original = "%s/Analyzers/include/%s" % (UserPath,header)
+		backup = "%s/Analyzers/bckp/include/%s.bak" % (UserPath,header)
+		
+		shutil.copy2(original, backup)
+		if not os.path.exists(backup):
+			print "Unable to create backup copy of %s in %s" % (original,backup)
+			continue
+		with open(backup, 'r') as f1:
+			with open(original, 'w') as f2:
+				print "Updating " + original
+				for line in f1:
+					#search
+					m1 = re.findall("(.*)void Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*.*\);", line)
+					m2 = re.findall("(.*)void DefineMCSimple\(.*MCSimple.*\*.*\);", line)
+					if m1:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m1[0][0]+"void Process(int"+m1[0][1]+");\n\033[0m",
+						f2.write(m1[0][0]+"void Process(int"+m1[0][1]+");\n")
+					elif m2:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m2[0]+"void DefineMCSimple();\n\033[0m",
+						f2.write(m2[0]+"void DefineMCSimple();\n")
+					else:
+						f2.write(line)
+	
+	#Read user Analyzers src dir
+	anList = os.listdir("%s/Analyzers/src" % UserPath)
+	for source in anList:
+		#For each file, search "void clusterNN::Process(int ${1}, MCSimple &xxx, Event* ${2}){"
+		# and replace with
+		#	void clusterNN::Process(int ${1}){
+		#		Event* ${2}
+		#		if(GetWithMC()) ${2}= GetMCEvent()
+		original = "%s/Analyzers/src/%s" % (UserPath,source)
+		backup = "%s/Analyzers/bckp/src/%s.bak" % (UserPath,source)
+		
+		shutil.copy2(original, backup)
+		if not os.path.exists(backup):
+			print "Unable to create backup copy of %s in %s" % (original,backup)
+			continue
+		
+		with open(backup, 'r') as f1:
+			with open(original, 'w') as f2:
+				print "Updating " + original
+				for line in f1:
+					#search
+					m1 = re.findall("(.*)void (.*)::Process\(int(.*),.*MCSimple.*&.*,.*Event.*\*(.*)\)(.*)", line)
+					m2 = re.findall("(.*)void (.*)::DefineMCSimple\(.*MCSimple.*\*.*\)(.*)", line)
+					m3 = re.findall("(.*)fMCSimple->(.*)", line)
+					if m1:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m1[0][0]+"void "+m1[0][1]+"::Process(int"+m1[0][2]+")"+m1[0][4]+"\033[0m\n",
+						print "\033[32m+ "+m1[0][0]+"\tEvent* "+m1[0][3]+" = NULL;\033[0m\n",
+						print "\033[32m+ "+m1[0][0]+"\tif(GetWithMC()) "+m1[0][3]+"= GetMCEvent();\033[0m\n",
+						f2.write(m1[0][0]+"void "+m1[0][1]+"::Process(int"+m1[0][2]+")"+m1[0][4]+"\n")
+						f2.write(m1[0][0]+"\tEvent* "+m1[0][3]+" = NULL;\n")
+						f2.write(m1[0][0]+"\tif(GetWithMC()) "+m1[0][3]+"= GetMCEvent();\n")
+					elif m2:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m2[0][0]+"void "+m2[0][1]+"::DefineMCSimple()"+m2[0][2]+"\033[0m\n",
+						f2.write(m2[0][0]+"void "+m2[0][1]+"::DefineMCSimple()"+m2[0][2]+"\n")
+					elif m3:
+						print "\033[31m- "+line.replace("\n","")+"\033[0m"
+						print "\033[32m+ "+m3[0][0]+"fMCSimple."+m3[0][1]+"\033[0m\n",
+						f2.write(m3[0][0]+"fMCSimple."+m3[0][1]+"\n")
+					else:
+						f2.write(line)
+	
+	
 def checkUpdate():
 	global __rev__
 	UserPath = getVar("ANALYSISFW_USERDIR", -1)
@@ -90,6 +198,8 @@ def checkUpdate():
 		#Newer versions
 		if int(version)<__rev__:
 			print "\033[94mUpdating user directory from revision %s to revision %s \033[0m\n" % (version,__rev__)
+			if(int(version))<=385:
+				updateHeaderSignature(UserPath)
 			#Always replace the CMakeLists.txt in case it changed
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)

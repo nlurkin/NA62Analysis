@@ -2,19 +2,22 @@
 NA62Analysis Project
 ################################################################
 
-2014-10-xx 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev xxx
+2015-01-xx 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev xxxx
 		- Add possibility to get RawHeader from reconstructed data files. !Warning, Process method
 		  signature has changed with no backward compatibility. Please update your analyzers headers
 		  and source files. The signature is now:
 		      void Process(int iEvent)
-	     Use GetMCEvent() and GetRawHeader() to access the MCTruthEvent or the RawHeader structures.
+		  Use GetMCEvent() and GetRawHeader() to access the MCTruthEvent or the RawHeader structures.
 		- Analyzer MCSimple instance moved from BaseAnalysis to Analyzer. !Warning, DefineMCSimple
 		  method signature has changed with no backward compatibility. Please update your analyzers
 		  headers and source file. The signature is now:
 		      void DefineMCSimple()
 		  fMCSimple is now always accessible as it belongs to the class.
-
+		- Allow Digis to be read from input TTree as with Hits and Recos
+		- Automatically link with NA62Reconstruction. User still has to specify include path in the
+		  config file. The link is done only if the NA62RECOSOURCE environment variable is defined.
+		
 2014-11-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 385
       - Fix NA62Analysis crashes when mcEvent contains no KinePart (Bug NA62RKD-31)
