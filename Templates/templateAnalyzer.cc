@@ -238,7 +238,7 @@ void templateAnalyzer::Process(int iEvent){
 	/// \endcode
 	/// You can retrieve RawHeader if available ( GetWithRawHeader() ) with\n
 	/// \code
-	/// 	GetRawHeaderEvent();
+	/// 	GetRawHeader();
 	/// \endcode
 	/// You can retrieve the histograms you booked (for drawing, changing, filling, ...) with\n
 	/// \code
