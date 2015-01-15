@@ -608,7 +608,7 @@ void IOHandler::FindAndBranchTree(TChain* tree, TString branchName, TString bran
 			}
 			cout << "Found " << branchName << " (" << tree->GetEntries() << ") of class " << branchClass << endl;
 			tree->SetBranchAddress(branchName, evt);
-			if ( eventNb < 0 )
+			if ( eventNb <= 0 )
 			{
 				eventNb = tree->GetEntries();
 			}
@@ -669,6 +669,10 @@ int IOHandler::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 	if(!fWithMC) return eventNb;
 
 	eventNb = fMCTruthTree->GetEntries();
+	if(eventNb==0){
+		fWithMC = false;
+		return -1;
+	}
 
 	TObjArray* branchesList = fMCTruthTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();
@@ -717,6 +721,10 @@ int IOHandler::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 	if(!fWithRawHeader) return eventNb;
 
 	eventNb = fRawHeaderTree->GetEntries();
+	if(eventNb==0){
+		fWithRawHeader = false;
+		return -1;
+	}
 
 	TObjArray* branchesList = fRawHeaderTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();

@@ -61,7 +61,7 @@ def updateOld(UserPath, FWPath):
 		else:
 			os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
 	
-	#Verify thath the PhysicsObjects folder has been created
+	#Verify that the PhysicsObjects folder has been created
 	if not os.path.exists("%s/PhysicsObjects" % UserPath):
 		os.mkdir("%s/PhysicsObjects" % UserPath)
 	if not os.path.exists("%s/PhysicsObjects/include" % UserPath):

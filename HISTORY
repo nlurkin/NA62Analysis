@@ -2,6 +2,13 @@
 NA62Analysis Project
 ################################################################
 
+2015-xx-xx 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+				rev xxx
+		- Fix PhysicsObjects are not getting the extra include dirs from the config 
+		  file (Bug NA62RKD-34).
+		- If mcEvent exists and is empty, consider the file as not containing MC
+		- If RawHeader exists and is empty, consider the file as not containing RawHeader 
+		  
 2015-01-13 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 403
 		- Add possibility to get RawHeader from reconstructed data files. !Warning, Process method
