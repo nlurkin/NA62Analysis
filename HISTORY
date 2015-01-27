@@ -2,8 +2,12 @@
 NA62Analysis Project
 ################################################################
 
+2015-01-26      Karim Massri (karim.massri@cern.ch)
+                rev.419
+                - Small bug fixed in xroot protocol handling (IOHandler.cc)
+
 2015-01-13 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 403
+                rev 403
 		- Add possibility to get RawHeader from reconstructed data files. !Warning, Process method
 		  signature has changed with no backward compatibility. Please update your analyzers headers
 		  and source files. The signature is now:
@@ -20,25 +24,25 @@ NA62Analysis Project
 		
 2014-11-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 385
-      - Fix NA62Analysis crashes when mcEvent contains no KinePart (Bug NA62RKD-31)
-      - Fix NA62Analysis not compiling anymore on lxplus (Bug NA62RKD-33)
+                - Fix NA62Analysis crashes when mcEvent contains no KinePart (Bug NA62RKD-31)
+                - Fix NA62Analysis not compiling anymore on lxplus (Bug NA62RKD-33)
 		- Fix PhysicsObjects libraries not being built
 
 2014-10-07 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 360
+                rev 360
 		- Fix -a option (Bug NA62RKD-26)
 		- Fix NA62AnalysisBuilder.py rename command (Bug NA62RKD-24)
 		- Fix bug when reading multiple files in input (Bug NA62RKD-27)
 		- Fix user PhysicsObjects headers not being included
 
 2014-06-05 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 348
+                rev 348
 		- Add python version test. NA62AnalysisBuilder.py works only with python2 > 2.5.
 		- Add empty files cmakeTrick.hh(.cc) in ToolsLib to force CMAKE to build the empty library
 		  (to be removed when the library is not empty anymore).
 
 2014-06-01 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 345
+                rev 345
 		- Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
 		  and use the system argparse module if available (Bug NA62RKD-22) 
 		- Add an option to the framework (-a) to allow it to run even if one or several 
@@ -50,7 +54,7 @@ NA62Analysis Project
 		- Include ToolsLib in the build (Bug NA62RKD-23)
 
 2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 343
+                rev 343
 		- Moved several scripts to the scripts folder
 		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
 		  A flag to generate debugging information (-g flag of compiler)
@@ -74,8 +78,8 @@ NA62Analysis Project
 		
 2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
                 rev 342
-        - Add CedarMCTester to check for consistency after changes
-          to Cedar component of NA62MC
+                - Add CedarMCTester to check for consistency after changes
+                  to Cedar component of NA62MC
 
 2014-04-24	Nicolas Lurkin (nicolas.lurkin@cern.ch)
 				rev 341
@@ -91,14 +95,14 @@ NA62Analysis Project
 		- added the TwoLinesCDA class into PhysicsLib
 
 2014-04-17	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 337
+                rev 337
 		- Fix small typo in CMakeLists.txt of Examples and CMakeLists.txt of Templates
 		- Correct NA62AnalysisBuilder.py to ignore .svn folders
 		- Get rid of few warnings when compiling
 		- Start reviewing functions.cc (remove old junk)
 
 2014-04-16	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
-				rev 336
+                rev 336
 		- Update documentation
 		- Create page referencing the components of NA62Analysis relevant to user with
 		  a description and their current validation status.
@@ -118,7 +122,10 @@ NA62Analysis Project
 
 2014-02-17  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 319
-        - New directory PhysicsObjects created to contain new object classes. Derivation from TObject with automatic generation of ROOT dictionary for an easy integration in TTree branch. Available both in FW and User directory (for custom user objects or inheritance from FW objects). Makefiles and NA62AnalysisBuilder.py modified in consequence.
+                - New directory PhysicsObjects created to contain new object classes.
+                  Derivation from TObject with automatic generation of ROOT dictionary for an easy integration in TTree branch.
+                  Available both in FW and User directory (for custom user objects or inheritance from FW objects).
+                  Makefiles and NA62AnalysisBuilder.py modified in consequence.
 		- Removed outdated template comments in examples
 		- Replicating input event in output and filling custom and standard output trees decoupled. Use ExportEvent() for the first and FillTrees() for the latter.
 		- All the file names actually used as input are written in the InputFiles directory of the output file.
@@ -129,25 +136,26 @@ NA62Analysis Project
 
 2014-02-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 305
-        - Fixed a bug preventing the framework to run on data
+                - Fixed a bug preventing the framework to run on data
 
 2014-01-23  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 302
-        - Silenced massive printing when compiling
-        - New "new" syntax available when creating new analyzers (see README for details)
-        - Doc is not removed anymore when creating new analyzers
-        - New BookHisto syntax available (removed first name argument and using histo name instead).
-        - Batch histogram booking (Arrays of histograms)
-        - Avoid to set environment variables multiple times in env.(c)sh scripts
-        - Added possibility to retrieve plots from a reference file to compare with current run. Manual and automated procedure. New command line parameter -r.
-        - Moved some things from Analyzer and BaseAnalysis to HistoHandler, IOHandler, CounterHandler and UserMethods for clarity. Transparent for the user except for THisto, THisto2 and TGraph, use now instead THisto.GetTH1, THisto.GetTH2 and THisto.GetTGraph
-        - Improvement of DetectorAcceptance class:
-           - Magnetic field now taken into account when propagating or drawing a charged particle track
-           - Only sensitive volumes are now used to decide if a particle touched a detector or not
-           - The track length inside the sensitive volume of detectors is estimated
-           - Updated Geometry file to NA62MC rev. 298
-        - Documentation updated
-        - Example analyzers commented and updated to the most recent syntax
+                - Silenced massive printing when compiling
+                - New "new" syntax available when creating new analyzers (see README for details)
+                - Doc is not removed anymore when creating new analyzers
+                - New BookHisto syntax available (removed first name argument and using histo name instead).
+                - Batch histogram booking (Arrays of histograms)
+                - Avoid to set environment variables multiple times in env.(c)sh scripts
+                - Added possibility to retrieve plots from a reference file to compare with current run. Manual and automated procedure. New command line parameter -r.
+                - Moved some things from Analyzer and BaseAnalysis to HistoHandler, IOHandler, CounterHandler and UserMethods for clarity.
+                  Transparent for the user except for THisto, THisto2 and TGraph, use now instead THisto.GetTH1, THisto.GetTH2 and THisto.GetTGraph
+                - Improvement of DetectorAcceptance class:
+                   - Magnetic field now taken into account when propagating or drawing a charged particle track
+                   - Only sensitive volumes are now used to decide if a particle touched a detector or not
+                   - The track length inside the sensitive volume of detectors is estimated
+                   - Updated Geometry file to NA62MC rev. 298
+                - Documentation updated
+                - Example analyzers commented and updated to the most recent syntax
 
 2014-01-14      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 298
@@ -158,16 +166,18 @@ NA62Analysis Project
 
 2013-12-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 294
-        - Log message: NA62AnalysisBuilder.py: fix detection of comments with /// and taking new GetOutput<> into account in dependency resolution
-        - VertexCDA: removing unnecessary fGeom member and adding some counters for event selection.
-        - main.cc: Expending the -h help and better handling of exit signals
-        - Analyzer: Possibility to save histogram in sub-directories (new BookHisto signature, backward compatible). Filling output trees (copy from input, standard tree or custom tree) is done only if ExportEvent is called.
-        - BaseAnalysis: Will not crash anymore if TTree is not found in input file
-        - DetectorAcceptance: step precision is now optimised if not specified (best option) and detection of substations now works for GTK, LAV and Spectrometer. Fixing bug with opening ROOT geometry file.
-        - MCSimple: Possibility to retrieve all the particles in the final state or all particles at a given decay level + printing of the current event decay tree
-        - ParticleInterface: added PrintTable method
-        - ParticleTree: added some methods to help the implementation of the new MCSimple functionalities
-        - Example LKrPhotonMC: Some fixes
+                - Log message: NA62AnalysisBuilder.py: fix detection of comments with /// and taking new GetOutput<> into account in dependency resolution
+                - VertexCDA: removing unnecessary fGeom member and adding some counters for event selection.
+                - main.cc: Expending the -h help and better handling of exit signals
+                - Analyzer: Possibility to save histogram in sub-directories (new BookHisto signature, backward compatible).
+                  Filling output trees (copy from input, standard tree or custom tree) is done only if ExportEvent is called.
+                - BaseAnalysis: Will not crash anymore if TTree is not found in input file
+                - DetectorAcceptance: step precision is now optimised if not specified (best option) and detection of substations now works for GTK, LAV and Spectrometer.
+                  Fixing bug with opening ROOT geometry file.
+                - MCSimple: Possibility to retrieve all the particles in the final state or all particles at a given decay level + printing of the current event decay tree
+                - ParticleInterface: added PrintTable method
+                - ParticleTree: added some methods to help the implementation of the new MCSimple functionalities
+                - Example LKrPhotonMC: Some fixes
 
 Example Pi0Reconstruction: Use the new automatic step optimisation for DetectorAcceptance
 
