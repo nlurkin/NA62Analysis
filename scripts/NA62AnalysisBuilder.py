@@ -630,7 +630,6 @@ def build(args):
 		strExtraIncdirs_CMake += "%s " % (dir)
 	
 	makefileDict = {"$$FWPath$$":FWPath, "$$USERCODEPATH$$":UserPath, "$$ANALYZERSHH$$":fwAnList, "$$USRHH$$":usrAnList, "$$EXAMPLEHH$$":exAnList, "$$EXEC$$": executable, "$$EXTRALIBS$$": strExtralibs_CMake, "$$EXTRALIBSDIRS$$": strExtralibsdirs_CMake, "$$EXTRAINCLUDEDIRS$$": strExtraIncdirs_CMake}
-	readAndReplace("%s/Templates/Makefile" % FWPath, "%s/Makefile" % UserPath, makefileDict)
 	readAndReplace("%s/Templates/analyzers.cmake" % FWPath, "%s/analyzers.cmake" % UserPath, makefileDict)
 	
 	includesList = ""
