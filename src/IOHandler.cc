@@ -428,7 +428,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	if(nFiles == 0){
 		if(verbosity >= AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inFileName << endl;
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
-			inFileName = "root://castorpublic.cern.ch//"+inFileName;
+                        TString svcClass = getenv("STAGE_SVCCLASS");
+                        if(svcClass=="") svcClass="na62";
+			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+svcClass;
 		}
 		if(inFileName.Contains("/eos/") && !inFileName.Contains("root://eosna62.cern.ch//")){
 			inFileName = "root://eosna62.cern.ch//"+inFileName;
@@ -447,7 +449,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		while(inputFileName.ReadLine(inputList) && inputFileNumber < nFiles){
 			if(verbosity>=AnalysisFW::kNormal) cout << "AnalysisFW: Adding file " << inputFileName << endl;
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
-				inputFileName = "root://castorpublic.cern.ch//"+inputFileName;
+                                TString svcClass = getenv("STAGE_SVCCLASS");
+                                if(svcClass=="") svcClass="na62";
+			        inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+svcClass;
 			}
 			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
