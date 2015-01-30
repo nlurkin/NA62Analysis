@@ -229,7 +229,7 @@ void HistoHandler::FillHisto(TString name, TString x, double w){
 	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,w);
-	else if(fHisto2.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double)." << endl;
+	else if(fHisto2.count(name)>0) cerr << name << " is a TH2. Cannot call with (TString,double)." << endl;
 	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,double)." << endl;
 	else cerr << "Histogram " << name << " doesn't exist." << endl;
 }
@@ -436,12 +436,12 @@ void HistoHandler::PrintInitSummary() const{
 	}
 	for(it2 = fHisto2.begin(); it2 != fHisto2.end(); it2++){
 		histoTable.AddValue(2, it2->first);
-		if(fAutoUpdateList.count(it1->first)>0) histoTable.AddValue(3, "x");
+		if(fAutoUpdateList.count(it2->first)>0) histoTable.AddValue(3, "x");
 		else histoTable.AddValue(3, "");
 	}
 	for(itGraph = fGraph.begin(); itGraph != fGraph.end(); itGraph++){
 		histoTable.AddValue(4, itGraph->first);
-		if(fAutoUpdateList.count(it1->first)>0) histoTable.AddValue(5, "x");
+		if(fAutoUpdateList.count(itGraph->first)>0) histoTable.AddValue(5, "x");
 		else histoTable.AddValue(5, "");
 	}
 
