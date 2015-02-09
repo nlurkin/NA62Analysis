@@ -9,6 +9,9 @@ NA62Analysis Project
         - If mcEvent exists and is empty, consider the file as not containing MC
         - If RawHeader exists and is empty, consider the file as not containing RawHeader 
         - Remove obsolete Makefile
+        - Fix: NA62AnalysisBuilder.py - updateHeaderSignature() - Don't handle subdirectories
+          in include(Bug NA62RKD-36)
+        - Fix: Order of linking reconstruction libraries is wrong (Bug NA62RKD-37)
           
 2015-01-26      Karim Massri (karim.massri@cern.ch)
                 rev.419
