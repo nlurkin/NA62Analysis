@@ -112,6 +112,8 @@ def updateHeaderSignature(UserPath):
 	#Read user Analyzers include dir
 	anList = os.listdir("%s/Analyzers/include" % UserPath)
 	for header in anList:
+		if (os.path.isdir(header)):
+			continue
 		#For each file, search "void Process(int xxx, MCSimple &xxx, Event* xxx);" and replace with "void Process(int iEvent);"
 		original = "%s/Analyzers/include/%s" % (UserPath,header)
 		backup = "%s/Analyzers/bckp/include/%s.bak" % (UserPath,header)
@@ -141,6 +143,8 @@ def updateHeaderSignature(UserPath):
 	#Read user Analyzers src dir
 	anList = os.listdir("%s/Analyzers/src" % UserPath)
 	for source in anList:
+		if(os.path.isdir(source)):
+			continue
 		#For each file, search "void clusterNN::Process(int ${1}, MCSimple &xxx, Event* ${2}){"
 		# and replace with
 		#	void clusterNN::Process(int ${1}){
