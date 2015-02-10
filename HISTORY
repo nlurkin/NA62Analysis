@@ -12,7 +12,8 @@ NA62Analysis Project
         - Fix: NA62AnalysisBuilder.py - updateHeaderSignature() - Don't handle subdirectories
           in include(Bug NA62RKD-36)
         - Fix: Order of linking reconstruction libraries is wrong (Bug NA62RKD-37)
-        - Fix CMAKE always picking the default gcc/g++ version instead of the user defined one 
+        - Fix CMAKE always picking the default gcc/g++ version instead of the user defined one
+        - Add c++11 support for newer compiler (-std=c++11 flag instead of -std=c++0x) 
           
 2015-01-26      Karim Massri (karim.massri@cern.ch)
                 rev.419
