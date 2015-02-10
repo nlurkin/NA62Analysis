@@ -393,7 +393,19 @@ def cleanUser(args):
 	UserPath = getCheckVar("ANALYSISFW_USERDIR")
 	
 	os.chdir(UserPath)
-	bash_command("make clean")
+	print "rm obj/*.o"
+	for f in os.listdir("%s/obj" % UserPath):
+		if ".o" in f:
+			os.remove(f)
+	print "rm lib/*.so"
+	print "rm lib/*.a"
+	for f in os.listdir("%s/lib" % UserPath):
+		if (".so" in f) or (".a" in f):
+			os.remove(f)
+	print "rm outfile.root"
+	if(os.path.exists("outfile.root")):
+		os.remove("outfile.root")
+		
 	if(os.path.exists("main.cc")):
 		os.remove("main.cc")
 	if(os.path.exists("Makefile")):
@@ -405,7 +417,14 @@ def cleanFW(args):
 	FWPath = getVar("ANALYSISFW_PATH", ".")
 	
 	os.chdir(FWPath)
-	bash_command("make clean")
+	print "rm obj"
+	print "rm lib"
+	shutil.rmtree("obj", True)
+	shutil.rmtree("lib", True)
+	for f in os.listdir("%s" % FWPath):
+		if ".pyc" in f:
+			print "rm %s" % f 
+			os.remove(f)
 	if(os.path.exists("build")):
 		shutil.rmtree("build")
 
