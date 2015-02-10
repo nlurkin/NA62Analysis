@@ -31,3 +31,5 @@ endif
 set gccPath=`which gcc`
 set temp=`dirname "$gccPath"`
 setenv ANALYSISFW_STDLIBSPATH `dirname "$temp"`
+setenv CC `which  gcc`
+setenv CXX `which g++`

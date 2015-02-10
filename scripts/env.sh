@@ -30,4 +30,6 @@ fi
 
 gccPath=`which gcc`
 export ANALYSISFW_STDLIBSPATH="$(dirname $(dirname "$gccPath"))"
+export CC=`which gcc`
+export CXX=`which g++`
 
