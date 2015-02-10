@@ -396,12 +396,12 @@ def cleanUser(args):
 	print "rm obj/*.o"
 	for f in os.listdir("%s/obj" % UserPath):
 		if ".o" in f:
-			os.remove(f)
+			os.remove("obj/%s" % (f))
 	print "rm lib/*.so"
 	print "rm lib/*.a"
 	for f in os.listdir("%s/lib" % UserPath):
 		if (".so" in f) or (".a" in f):
-			os.remove(f)
+			os.remove("lib/%s" % (f))
 	print "rm outfile.root"
 	if(os.path.exists("outfile.root")):
 		os.remove("outfile.root")
@@ -421,10 +421,15 @@ def cleanFW(args):
 	print "rm lib"
 	shutil.rmtree("obj", True)
 	shutil.rmtree("lib", True)
+	print "rm *.pyc"
 	for f in os.listdir("%s" % FWPath):
 		if ".pyc" in f:
-			print "rm %s" % f 
 			os.remove(f)
+	print "rm scripts/*.pyc"
+	for f in os.listdir("%s/scripts" % FWPath):
+		if ".pyc" in f:
+			os.remove("scripts/%s" % (f))
+
 	if(os.path.exists("build")):
 		shutil.rmtree("build")
 
