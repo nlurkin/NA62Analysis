@@ -128,7 +128,7 @@ QuickStart
   
 The prepare and build commands have some flags that can be used to enable some features:
   o -d/--debug : activate the debug flag -g in the compiler for producing debugging information
-  o --no-c++11 : disable c++11 support in the framework. C++11 support is automatically enabled for compilers supportting the feature.
+  o --no-c++11 : disable c++11 support in the framework. C++11 support is automatically enabled for compilers supporting the feature.
   o --full-warning : activate all the warning flags during compilation
   o -j/--jobs : number of processors to use while building (make -j option)
 

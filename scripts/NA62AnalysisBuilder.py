@@ -61,7 +61,7 @@ def updateOld(UserPath, FWPath):
 		else:
 			os.rename("%s/Analyzer" % UserPath, "%s/Analyzers" % UserPath)
 	
-	#Verify thath the PhysicsObjects folder has been created
+	#Verify that the PhysicsObjects folder has been created
 	if not os.path.exists("%s/PhysicsObjects" % UserPath):
 		os.mkdir("%s/PhysicsObjects" % UserPath)
 	if not os.path.exists("%s/PhysicsObjects/include" % UserPath):
@@ -393,7 +393,19 @@ def cleanUser(args):
 	UserPath = getCheckVar("ANALYSISFW_USERDIR")
 	
 	os.chdir(UserPath)
-	bash_command("make clean")
+	print "rm obj/*.o"
+	for f in os.listdir("%s/obj" % UserPath):
+		if ".o" in f:
+			os.remove("obj/%s" % (f))
+	print "rm lib/*.so"
+	print "rm lib/*.a"
+	for f in os.listdir("%s/lib" % UserPath):
+		if (".so" in f) or (".a" in f):
+			os.remove("lib/%s" % (f))
+	print "rm outfile.root"
+	if(os.path.exists("outfile.root")):
+		os.remove("outfile.root")
+		
 	if(os.path.exists("main.cc")):
 		os.remove("main.cc")
 	if(os.path.exists("Makefile")):
@@ -405,7 +417,19 @@ def cleanFW(args):
 	FWPath = getVar("ANALYSISFW_PATH", ".")
 	
 	os.chdir(FWPath)
-	bash_command("make clean")
+	print "rm obj"
+	print "rm lib"
+	shutil.rmtree("obj", True)
+	shutil.rmtree("lib", True)
+	print "rm *.pyc"
+	for f in os.listdir("%s" % FWPath):
+		if ".pyc" in f:
+			os.remove(f)
+	print "rm scripts/*.pyc"
+	for f in os.listdir("%s/scripts" % FWPath):
+		if ".pyc" in f:
+			os.remove("scripts/%s" % (f))
+
 	if(os.path.exists("build")):
 		shutil.rmtree("build")
 
@@ -634,7 +658,6 @@ def build(args):
 		strExtraIncdirs_CMake += "%s " % (dir)
 	
 	makefileDict = {"$$FWPath$$":FWPath, "$$USERCODEPATH$$":UserPath, "$$ANALYZERSHH$$":fwAnList, "$$USRHH$$":usrAnList, "$$EXAMPLEHH$$":exAnList, "$$EXEC$$": executable, "$$EXTRALIBS$$": strExtralibs_CMake, "$$EXTRALIBSDIRS$$": strExtralibsdirs_CMake, "$$EXTRAINCLUDEDIRS$$": strExtraIncdirs_CMake}
-	readAndReplace("%s/Templates/Makefile" % FWPath, "%s/Makefile" % UserPath, makefileDict)
 	readAndReplace("%s/Templates/analyzers.cmake" % FWPath, "%s/analyzers.cmake" % UserPath, makefileDict)
 	
 	includesList = ""

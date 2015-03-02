@@ -22,9 +22,26 @@ link_directories($ENV{ANALYSISFW_STDLIBSPATH}/lib64)
 link_directories($ENV{ANALYSISFW_STDLIBSPATH}/lib)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "-std=c++0x")
+	#Get GCC/G++ version to use correct c++11 flag
+	GETGCCVERSION(maj min)
+	if( "${maj}.${min}" VERSION_LESS "4.7" )
+		SET(C++11_FLAG "-std=c++0x")
+	else()
+		SET(C++11_FLAG "-std=c++11")
+	endif()
+	
+	# Test c++11 unordered_map feature availability
+	set(CMAKE_CXX_FLAGS ${C++11_FLAG})
 	try_compile(TEST_UN_MAP ${NA62ANALYSIS}/build/test ${NA62ANALYSIS}/scripts/test_unordered_map.cpp)
+	if(TEST_UN_MAP)
+		message ("-- Testing C++11 compatibility -- works")
+	else()
+		message ("-- Testing C++11 compatibility -- failed")
+	endif()
+	
+	
 	set(CMAKE_CXX_FLAGS "")
+	# Choose warning flags
 	if(FULL_WARNING)
 		message("-- Using Flag: FULL_WARNING")
 		set(CMAKE_CXX_FLAGS "-pedantic-errors -Wall -Wextra -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing -Wno-long-long")
@@ -32,15 +49,16 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 		set(CMAKE_CXX_FLAGS "-Wall -Wno-long-long")
 	endif()
 	
+	# Choose debug flags
 	if(NA62_DEBUG)
 		message("-- Using Flag: NA62_DEBUG")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 	endif()
 	
-	# Test unordered_map feature of c++11 availability
+	# Choose c++11 flag
 	if(C++11_COMPAT AND TEST_UN_MAP)
 		message("-- Using Flag: C++11_COMPAT")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -DNA62_C11=1")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C++11_FLAG} -DNA62_C11=1")
 	endif()
 
 endif()
