@@ -2,8 +2,8 @@
 NA62Analysis Project
 ################################################################
 
-2015-xx-xx  Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev xxx
+2015-03-02  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 441
         - Fix PhysicsObjects are not getting the extra include dirs from the config 
           file (Bug NA62RKD-34).
         - If mcEvent exists and is empty, consider the file as not containing MC
@@ -14,6 +14,7 @@ NA62Analysis Project
         - Fix: Order of linking reconstruction libraries is wrong (Bug NA62RKD-37)
         - Fix CMAKE always picking the default gcc/g++ version instead of the user defined one
         - Add c++11 support for newer compiler (-std=c++11 flag instead of -std=c++0x) 
+        - Fix: RequestTree does not work with "Hits" (Bug NA62RKD-52)
           
 2015-01-26      Karim Massri (karim.massri@cern.ch)
                 rev.419
