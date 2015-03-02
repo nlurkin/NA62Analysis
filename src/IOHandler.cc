@@ -104,7 +104,8 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt, TString b
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
 	/// If branchName is not specified, the branch "Reco" or "Hits" will be used (depending on the
-	/// TDetectorVEvent class instance).
+	/// TDetectorVEvent class instance). If you need a different branch, please specify the name of the branch
+	/// (e.g. Digis)
 	/// \EndMemberDescr
 
 	eventIterator it;
@@ -118,8 +119,8 @@ void IOHandler::RequestTree(TString name, TDetectorVEvent * const evt, TString b
 	//Which branch are we dealing with?
 	if(branchName.CompareTo("")==0){
 		if(strstr(evt->ClassName(), "Reco")!=NULL) branchName="Reco";
-		else if(strstr(evt->ClassName(), "Hits")!=NULL) branchName="Hits";
-		else branchName="Digis";
+		else if(strstr(evt->ClassName(), "Digi")!=NULL) branchName="Digis";
+		else branchName="Hits";
 	}
 
 	//Is this branch already requested?
