@@ -16,6 +16,10 @@ NA62Analysis Project
         - Add c++11 support for newer compiler (-std=c++11 flag instead of -std=c++0x) 
         - Fix: RequestTree does not work with "Hits" (Bug NA62RKD-52)
           
+2015-02-21      Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev.434
+                - Added version writing in prepare command
+
 2015-01-26      Karim Massri (karim.massri@cern.ch)
                 rev.419
                 - Small bug fixed in xroot protocol handling (IOHandler.cc)
