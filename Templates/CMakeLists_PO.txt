@@ -1,5 +1,6 @@
 
 include_directories(include)
+include_directories(.)
 include_directories(${EXTRA_INCLUDE_DIRS})
 
 file(GLOB EXHH "include/*.hh")
@@ -7,8 +8,8 @@ file(GLOB EXHH "include/*.hh")
 SET (USERPOLIBS "")
 FOREACH (lib ${EXHH})
 	GET_FILENAME_COMPONENT(libName ${lib} NAME_WE)
-	ROOT_GENERATE_DICTIONARY(${libName}.hh LinkDef.h ${libName}DICT.cc ${ROOT_INCLUDE_DIR})
-	add_library(${libName}${LIBTYPEPOSTFIX} ${LIBTYPE} include/${libName}.hh src/${libName}.cc)
+	ROOT_GENERATE_DICTIONARY(include/${libName}.hh include/LinkDef.h ${libName}DICT.cc "${ROOT_INCLUDE_DIR};${CMAKE_CURRENT_SOURCE_DIR};${NA62MC_INC_DIRS}")
+	add_library(${libName}${LIBTYPEPOSTFIX} ${LIBTYPE} include/${libName}.hh src/${libName}.cc ${libName}DICT.cc)
 	SET (USERPOLIBS ${USERPOLIBS} ${libName}${LIBTYPEPOSTFIX})
 ENDFOREACH(lib)
 
