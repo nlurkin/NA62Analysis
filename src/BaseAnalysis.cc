@@ -62,9 +62,6 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//##############################
 	TString anName, anParams;
 
-	fIOHandler = new IOTree();
-	fIOHandlerType = IOHandlerType::kTREE;
-
 	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
 
 	fGraphicMode = graphicMode;
