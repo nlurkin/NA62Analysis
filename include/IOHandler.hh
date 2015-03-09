@@ -32,6 +32,7 @@ public:
 	//IO Files
 	virtual bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
 	virtual bool OpenOutput(TString outFileName);
+	virtual bool CheckNewFileOpened();
 	TString GetOutputFileName() const;
 	int GetCurrentFileNumber() const;
 

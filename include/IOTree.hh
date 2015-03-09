@@ -135,7 +135,7 @@ private:
 	bool fWithMC; ///< Do we have MC in the file?
 	bool fWithRawHeader; ///< Do we have RawHeader in the file?
 
-	bool allowNonExisting; ///< Do we allow non existing trees
+	bool fAllowNonExisting; ///< Do we allow non existing trees
 };
 
 #endif /* IOTREE_HH_ */
