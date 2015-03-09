@@ -11,8 +11,8 @@ BaseAnalysis::BaseAnalysis():
 	fVerbosity(AnalysisFW::kNo),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
-	fIOHandler(nullptr),
-	fIOHandlerType(IOHandlerType::kNOIO)
+	fIOHandler(new IOTree()),
+	fIOHandlerType(IOHandlerType::kTREE)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -61,6 +61,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//Check all the data are present
 	//##############################
 	TString anName, anParams;
+
+	fIOHandler = new IOTree();
+	fIOHandlerType = IOHandlerType::kTREE;
 
 	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
 
@@ -221,6 +224,7 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 	if(!fInitialized) return;
 
 	IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
+	cout << treeIO <<  " " << fIOHandler << endl;
 
 	timing = clock();
 
