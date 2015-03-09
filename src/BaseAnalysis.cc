@@ -11,8 +11,7 @@ BaseAnalysis::BaseAnalysis():
 	fVerbosity(AnalysisFW::kNo),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
-	fIOHandler(new IOTree()),
-	fIOHandlerType(IOHandlerType::kTREE)
+	fIOHandler(new IOTree())
 {
 	/// \MemberDescr
 	/// Constructor
@@ -221,7 +220,6 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 	if(!fInitialized) return;
 
 	IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
-	cout << treeIO <<  " " << fIOHandler << endl;
 
 	timing = clock();
 

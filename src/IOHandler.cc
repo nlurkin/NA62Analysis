@@ -12,6 +12,7 @@
 #include <TObjString.h>
 
 IOHandler::IOHandler():
+	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
 	fCurrentFile(NULL)
@@ -22,6 +23,7 @@ IOHandler::IOHandler():
 }
 
 IOHandler::IOHandler(const IOHandler& c):
+	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
 	fOutFileName(c.fOutFileName),

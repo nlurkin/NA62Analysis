@@ -20,7 +20,6 @@
 
 class BaseAnalysis
 {
-	enum class IOHandlerType {kNOIO, kHISTO, kTREE};
 public:
 	BaseAnalysis();
 	~BaseAnalysis();
@@ -53,8 +52,8 @@ public:
 	int GetNEvents();
 	TChain* GetTree(TString name);
 
-	bool IsHistoType() { return fIOHandlerType==IOHandlerType::kHISTO || fIOHandlerType==IOHandlerType::kTREE; };
-	bool IsTreeType() { return fIOHandlerType==IOHandlerType::kTREE; };
+	bool IsHistoType() { return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE; };
+	bool IsTreeType() { return fIOHandler->GetIOType()==IOHandlerType::kTREE; };
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
@@ -77,7 +76,6 @@ protected:
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
-	IOHandlerType fIOHandlerType;
 };
 
 #endif

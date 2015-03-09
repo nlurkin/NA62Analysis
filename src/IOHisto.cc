@@ -12,10 +12,13 @@
 #include <TH2.h>
 #include <TGraph.h>
 
-IOHisto::IOHisto(){
+IOHisto::IOHisto()
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+
+	fIOType = IOHandlerType::kHISTO;
 }
 
 IOHisto::IOHisto(const IOHisto &c):
@@ -26,6 +29,8 @@ IOHisto::IOHisto(const IOHisto &c):
 	/// \MemberDescr
 	/// Copy Constructor
 	/// \EndMemberDescr
+
+	fIOType = c.GetIOType();
 }
 
 IOHisto::~IOHisto() {
