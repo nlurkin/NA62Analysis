@@ -9,6 +9,10 @@
 #define IOHISTO_H_
 
 #include "IOHandler.hh"
+#include "containers.hh"
+class TH1;
+class TH2;
+class TGraph;
 
 class IOHisto : public IOHandler{
 public:

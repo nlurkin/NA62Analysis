@@ -9,6 +9,7 @@
 #include <TChain.h>
 #include <iostream>
 #include <signal.h>
+#include "StringBalancedTable.hh"
 
 IOTree::IOTree():
 	fMCTruthTree(0),

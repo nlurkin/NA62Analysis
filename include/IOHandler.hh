@@ -8,6 +8,10 @@
 #ifndef IOHANDLER_HH_
 #define IOHANDLER_HH_
 
+#include <TString.h>
+#include <TFile.h>
+#include "FWEnums.hh"
+
 /// \class IOHandler
 /// \Brief
 /// Class containing and handling every IO object
