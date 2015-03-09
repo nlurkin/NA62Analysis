@@ -27,7 +27,6 @@ public:
 
 	//IO Files
 	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
-	bool OpenOutput(TString outFileName);
 	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
 	bool CheckNewFileOpened();
 
