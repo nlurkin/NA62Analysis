@@ -571,7 +571,8 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
-	fParent->GetIOHandler()->RequestTree(name, evt, branchName);
+	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(name, evt, branchName);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
 }
 
 TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
@@ -587,7 +588,9 @@ TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	/// If branchName is specified, try to return the specified branch.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetEvent(name, branchName);
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(name, branchName);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	return nullptr;
 }
 
 Event* UserMethods::GetMCEvent(){
@@ -595,7 +598,9 @@ Event* UserMethods::GetMCEvent(){
 	/// Return the pointer to the MC event.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetMCTruthEvent();
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent();
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	return nullptr;
 }
 
 RawHeader* UserMethods::GetRawHeader(){
@@ -603,7 +608,9 @@ RawHeader* UserMethods::GetRawHeader(){
 	/// Return the pointer to the RawHeader.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetRawHeaderEvent();
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetRawHeaderEvent();
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	return nullptr;
 }
 
 TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
@@ -618,7 +625,11 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	/// Request histograms from input file.
 	/// \EndMemberDescr
 
-	TH1* histo = fParent->GetIOHandler()->GetInputHistogram(directory, name, appendOnNewFile);
+	if(!fParent->IsHistoType()){
+		if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+		return nullptr;
+	}
+	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, appendOnNewFile);
 
 	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
 	return histo;
@@ -693,7 +704,10 @@ void* UserMethods::GetObjectVoid(TString name){
 	/// Internal interface to BaseAnalysis for GetObject method
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetObject(name);
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetObject(name);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+
+	return nullptr;
 }
 
 bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
@@ -701,7 +715,10 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->RequestTree(name, branchName, className, obj);
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->RequestTree(name, branchName, className, obj);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+
+	return false;
 }
 
 TH1* UserMethods::GetReferenceTH1(TString name){
@@ -711,7 +728,10 @@ TH1* UserMethods::GetReferenceTH1(TString name){
 	/// Return a pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetReferenceTH1(name);
+	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH1(name);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+
+	return nullptr;
 }
 
 TH2* UserMethods::GetReferenceTH2(TString name){
@@ -721,7 +741,10 @@ TH2* UserMethods::GetReferenceTH2(TString name){
 	/// Return a pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetReferenceTH2(name);
+	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH2(name);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+
+	return nullptr;
 }
 
 TGraph* UserMethods::GetReferenceTGraph(TString name){
@@ -731,7 +754,10 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 	/// Return a pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetReferenceTGraph(name);
+	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTGraph(name);
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+
+	return nullptr;
 }
 
 int UserMethods::GetNEvents(){
@@ -745,12 +771,18 @@ bool UserMethods::GetWithMC(){
 	/// \MemberDescr
 	/// Return true if the input file contains MC events
 	/// \EndMemberDescr
-	return fParent->GetIOHandler()->GetWithMC();
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithMC();
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+
+	return false;
 }
 
 bool UserMethods::GetWithRawHeader(){
 	/// \MemberDescr
 	/// Return true if the input file contains RawHeader
 	/// \EndMemberDescr
-	return fParent->GetIOHandler()->GetWithRawHeader();
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithRawHeader();
+	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+
+	return false;
 }

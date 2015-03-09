@@ -20,6 +20,7 @@
 
 class BaseAnalysis
 {
+	enum class IOHandlerType {kNOIO, kHISTO, kTREE};
 public:
 	BaseAnalysis();
 	~BaseAnalysis();
@@ -52,12 +53,14 @@ public:
 	int GetNEvents();
 	TChain* GetTree(TString name);
 
+	bool IsHistoType() { return fIOHandlerType==IOHandlerType::kHISTO || fIOHandlerType==IOHandlerType::kTREE; };
+	bool IsTreeType() { return fIOHandlerType==IOHandlerType::kTREE; };
+
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 protected:
-	enum IOHandlerType {kHISTO, kTREE};
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program

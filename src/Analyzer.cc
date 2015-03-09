@@ -348,7 +348,8 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	TH1* h = fHisto.GetTH1(h1);
 	TString name = h->GetName();
 
-	TH1* hRef = fParent->GetIOHandler()->GetReferenceTH1(name);
+	if(!fParent->IsHistoType()) return -1;
+	TH1* hRef = fParent->GetIOHisto()->GetReferenceTH1(name);
 
 	if(!hRef || !h) return -1.;
 	return fHisto.compareToReferencePlot(hRef, h, KS);
