@@ -12,6 +12,8 @@
 #include <TFile.h>
 #include "FWEnums.hh"
 
+enum class IOHandlerType {kNOIO, kHISTO, kTREE};
+
 /// \class IOHandler
 /// \Brief
 /// Class containing and handling every IO object
@@ -42,8 +44,12 @@ public:
 	//Printing
 	virtual void PrintInitSummary() const;
 
+	const IOHandlerType GetIOType() const { return fIOType; };
+
 protected:
 	void NewFileOpened();
+
+	IOHandlerType fIOType;
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
 
