@@ -40,7 +40,7 @@ void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
 	fVerbosity = v;
 }
 
-void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting){
+void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
@@ -339,7 +339,7 @@ void BaseAnalysis::CheckNewFileOpened(){
 	}
 }
 
-IOHandler* BaseAnalysis::GetIOHandler() {
+IOTree* BaseAnalysis::GetIOHandler() {
 	/// \MemberDescr
 	///	Return a pointer to the IOHandler instance
 	/// \EndMemberDescr

@@ -4,7 +4,7 @@
 #include "Analyzer.hh"
 #include "DetectorAcceptance.hh"
 #include "CounterHandler.hh"
-#include "IOHandler.hh"
+#include "IOTree.hh"
 #include "containers.hh"
 
 /// \class BaseAnalysis
@@ -26,7 +26,7 @@ public:
 
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots);
 	void Process(int beginEvent, int maxEvent);
 
 	//Output methods
@@ -41,7 +41,7 @@ public:
 
 	void CheckNewFileOpened();
 
-	IOHandler * GetIOHandler();
+	IOTree * GetIOHandler();
 
 	CounterHandler* GetCounterHandler();
 
@@ -68,7 +68,7 @@ protected:
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
-	IOHandler fIOHandler; ///< Handler for all IO objects
+	IOTree fIOHandler; ///< Handler for all IO objects
 };
 
 #endif

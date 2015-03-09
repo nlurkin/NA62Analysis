@@ -30,6 +30,7 @@ void usage(char* name)
 	cout << "\t -p : List of parameters to pass to analyzers." << endl;
 	cout << "\t -c : Path to a configuration file containing analyzers parameters." << endl;
 	cout << "\t -a : Allow non-existing trees." << endl;
+	cout << "\t -0 : Read plots and no events." << endl;
 }
 
 void sighandler(int sig)
@@ -67,6 +68,7 @@ int main(int argc, char** argv){
 	bool fromList = false;
 	bool allowNonExisting = false;
 	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
+	bool readPlots = false;
 
 	// Browsing arguments
 	int opt;
@@ -127,6 +129,9 @@ int main(int argc, char** argv){
 		case 'a':
 			allowNonExisting = true;
 			break;
+		case '0':
+			readPlots = true;
+			break;
 		default: /* '?' */
 			usage(argv[0]);
 			return 0;
@@ -151,7 +156,7 @@ int main(int argc, char** argv){
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName, allowNonExisting);
+	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName, allowNonExisting, readPlots);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
