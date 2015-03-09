@@ -62,14 +62,12 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//##############################
 	TString anName, anParams;
 
-	if(!fIOHandler.OpenInput(inFileName, NFiles, fVerbosity)) return;
+	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
 
 	fGraphicMode = graphicMode;
-	fIOHandler.OpenOutput(outFileName);
-	fIOHandler.SetReferenceFileName(refFile);
-	fIOHandler.SetAllowNonExisting(allowNonExisting);
+	fIOHandler->OpenOutput(outFileName);
 
-	fNEvents = std::max(fIOHandler.FillMCTruth(fVerbosity), fIOHandler.FillRawHeader(fVerbosity));
+	if(fIOHandlerType==kTREE) InitWithTree(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFile, allowNonExisting, readPlots);
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -78,7 +76,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	confParser.ParseCLI(params);
 
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
-		fIOHandler.MkOutputDir(fAnalyzerList[i]->GetAnalyzerName());
+		fIOHandler->MkOutputDir(fAnalyzerList[i]->GetAnalyzerName());
 		gFile->cd(fAnalyzerList[i]->GetAnalyzerName());
 		fAnalyzerList[i]->InitOutput();
 		fAnalyzerList[i]->InitHist();
@@ -91,9 +89,38 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	fNEvents = fIOHandler.BranchTrees(fNEvents);
+	if(fIOHandlerType==kTREE) fNEvents = GetIOTree()->BranchTrees(fNEvents);
 
 	fInitialized = true;
+}
+
+void BaseAnalysis::InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots){
+	/// \MemberDescr
+	/// \param inFileName : path to the input file / path to the file containing the list of input files
+	/// \param outFileName : path to the output file
+	///	\param params : list of command line parameters to parse and pass to analyzers
+	/// \param configFile : path to a runtime configuration file to be parsed and defining parameters for analyzers.
+	///	\param NFiles : Maximum number of input files to process
+	/// \param graphicMode : Graphical mode. Display plots on screen (call DrawPlots on analyzers).
+	/// \param refFile : Eventual name of a file containing reference plots
+	///
+	/// Add all the input files to TChains and to Analyzers and create branches.\n
+	/// Initialize the output trees (Histograms) and create branches.
+	/// \EndMemberDescr
+
+	//##############################
+	//Get data from Files
+	//Check integrity
+	//Check all the data are present
+	//##############################
+	TString anName, anParams;
+
+	IOTree * treeHandler = fIOHandler;
+
+	treeHandler->SetReferenceFileName(refFile);
+	treeHandler->SetAllowNonExisting(allowNonExisting);
+
+	fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -176,11 +203,24 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
+	if(fIOHandlerType==kTREE) ProcessWithTree(beginEvent, maxEvent);
+}
+
+void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
+	/// \MemberDescr
+	/// \param beginEvent : index of the first event to be processed
+	/// \param maxEvent : maximum number of events to be processed
+	///
+	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
+	/// \EndMemberDescr
+
 	int i_offset;
 	clock_t timing;
 	bool exportEvent = false;
 
 	if(!fInitialized) return;
+
+	IOTree *treeIO = fIOHandler;
 
 	timing = clock();
 
@@ -214,7 +254,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		}
 
 		// Load event infos
-		fIOHandler.LoadEvent(i);
+		treeIO->LoadEvent(i);
 		CheckNewFileOpened();
 
 		PreProcess();
@@ -223,7 +263,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(fIOHandler.GetWithMC()) fAnalyzerList[j]->FillMCSimple( fIOHandler.GetMCTruthEvent(), fVerbosity);
+			if(treeIO->GetWithMC()) fAnalyzerList[j]->FillMCSimple( treeIO->GetMCTruthEvent(), fVerbosity);
 
 			fAnalyzerList[j]->Process(i);
 			fAnalyzerList[j]->UpdatePlots(i);
@@ -237,7 +277,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
-		if(exportEvent) fIOHandler.WriteEvent();
+		if(exportEvent) treeIO->WriteEvent();
 	}
 
 	if(fGraphicMode){
@@ -257,8 +297,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
-	fIOHandler.WriteTree();
-	fCounterHandler.WriteEventFraction(fIOHandler.GetOutputFileName());
+	treeIO->WriteTree();
+	fCounterHandler.WriteEventFraction(treeIO->GetOutputFileName());
 
 	//Complete the analysis
 	timing = clock()-timing;
@@ -313,7 +353,7 @@ void BaseAnalysis::PrintInitSummary() const{
 	anTable.Print("\t");
 	fCounterHandler.PrintInitSummary();
 	outputTable.Print("\t");
-	fIOHandler.PrintInitSummary();
+	fIOHandler->PrintInitSummary();
 	cout << "================================================================================" << endl;
 }
 
@@ -323,15 +363,15 @@ void BaseAnalysis::CheckNewFileOpened(){
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
-	if(!fIOHandler.CheckNewFileOpened()) return;
+	if(!fIOHandler->CheckNewFileOpened()) return;
 	//New file opened
 	//first burst or not? Call end of burst only if it's not
-	if(fIOHandler.GetCurrentFileNumber()>0){
+	if(fIOHandler->GetCurrentFileNumber()>0){
 		//end of burst
 		for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 			fAnalyzerList[i]->EndOfBurst();
 		}
-		fIOHandler.UpdateInputHistograms();
+		if(fIOHandlerType==kTREE || fIOHandlerType==kHISTO) GetIOHisto()->UpdateInputHistograms();
 	}
 
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
@@ -339,12 +379,12 @@ void BaseAnalysis::CheckNewFileOpened(){
 	}
 }
 
-IOTree* BaseAnalysis::GetIOHandler() {
+IOHandler* BaseAnalysis::GetIOHandler() {
 	/// \MemberDescr
 	///	Return a pointer to the IOHandler instance
 	/// \EndMemberDescr
 
-	return &fIOHandler;
+	return fIOHandler;
 }
 
 CounterHandler* BaseAnalysis::GetCounterHandler() {
@@ -368,5 +408,17 @@ TChain* BaseAnalysis::GetTree(TString name) {
 	///
 	///	Return a pointer to the TChain
 	/// \EndMemberDescr
-	return fIOHandler.GetTree(name);
+
+	if(fIOHandlerType==kTREE) return GetIOTree()->GetTree(name);
+	else return nullptr;
+}
+
+IOTree* BaseAnalysis::GetIOTree() {
+	if(fIOHandlerType==kTREE) return fIOHandler;
+	else return nullptr;
+}
+
+IOHisto* BaseAnalysis::GetIOHisto() {
+	if(fIOHandlerType==kHISTO || fIOHandlerType==kTREE) return fIOHandler;
+	else return nullptr;
 }

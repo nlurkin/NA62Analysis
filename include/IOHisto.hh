@@ -21,6 +21,7 @@ public:
 	virtual ~IOHisto();
 
 	void SetReferenceFileName(TString fileName);
+	bool CheckNewFileOpened();
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);

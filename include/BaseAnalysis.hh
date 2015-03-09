@@ -27,7 +27,9 @@ public:
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots);
+	void InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots);
 	void Process(int beginEvent, int maxEvent);
+	void ProcessWithTree(int beginEvent, int maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
@@ -41,7 +43,9 @@ public:
 
 	void CheckNewFileOpened();
 
-	IOTree * GetIOHandler();
+	IOHandler * GetIOHandler();
+	IOTree * GetIOTree();
+	IOHisto * GetIOHisto();
 
 	CounterHandler* GetCounterHandler();
 
@@ -53,6 +57,7 @@ private:
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 protected:
+	enum IOHandlerType {kHISTO, kTREE};
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
@@ -68,7 +73,8 @@ protected:
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
-	IOTree fIOHandler; ///< Handler for all IO objects
+	IOHandler* fIOHandler; ///< Handler for all IO objects
+	IOHandlerType fIOHandlerType;
 };
 
 #endif

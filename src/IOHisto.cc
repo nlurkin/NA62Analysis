@@ -96,6 +96,7 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 	delete fd;
 	return returnHisto;
 }
+
 TGraph* IOHisto::GetReferenceTGraph(TString name){
 	/// \MemberDescr
 	/// \param name : Name of the requested reference histogram
@@ -216,3 +217,6 @@ void IOHisto::UpdateInputHistograms(){
 
 }
 
+bool IOHisto::CheckNewFileOpened() {
+	return true;
+}

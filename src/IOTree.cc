@@ -18,7 +18,7 @@ IOTree::IOTree():
 	fRawHeaderEvent(new RawHeader()),
 	fWithMC(false),
 	fWithRawHeader(false),
-	allowNonExisting(false)
+	fAllowNonExisting(false)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -36,7 +36,7 @@ IOTree::IOTree(const IOTree &c):
 	fExportTrees(c.fExportTrees),
 	fWithMC(c.fWithMC),
 	fWithRawHeader(c.fWithRawHeader),
-	allowNonExisting(false)
+	fAllowNonExisting(false)
 {
 	/// \MemberDescr
 	/// Copy constructor
@@ -360,7 +360,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 
 	branchesList = tree->GetListOfBranches();
 	if(!branchesList){
-		if(! allowNonExisting){
+		if(! fAllowNonExisting){
 			std::cerr << "Unable to find TTree " << tree->GetName() << ". Aborting.";
 			raise(SIGABRT);
 		}
@@ -505,7 +505,7 @@ void IOTree::SetAllowNonExisting(bool allowNonExisting) {
 	/// Determine if the framework is allowed to run when one or several TTrees
 	/// are missing in the input file.
 	/// \EndMemberDescr
-	this->allowNonExisting = allowNonExisting;
+	fAllowNonExisting = allowNonExisting;
 }
 
 
