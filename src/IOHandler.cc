@@ -126,6 +126,10 @@ void IOHandler::PrintInitSummary() const{
 	/// \EndMemberDescr
 }
 
+bool IOHandler::CheckNewFileOpened() {
+	return false;
+}
+
 void IOHandler::NewFileOpened(){
 	/// \MemberDescr
 	/// Method called by TChain when opening a new file.\n
