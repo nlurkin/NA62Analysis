@@ -12,7 +12,8 @@
 #include <TH2.h>
 #include <TGraph.h>
 
-IOHisto::IOHisto()
+IOHisto::IOHisto():
+	fNewFileOpened(false)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -21,6 +22,7 @@ IOHisto::IOHisto()
 }
 
 IOHisto::IOHisto(const IOHisto &c):
+	fNewFileOpened(false),
 	fInputHistoAdd(c.fInputHistoAdd),
 	fInputHisto(c.fInputHisto),
 	fReferenceFileName(c.fReferenceFileName)
@@ -222,5 +224,15 @@ void IOHisto::UpdateInputHistograms(){
 }
 
 bool IOHisto::CheckNewFileOpened() {
-	return true;
+	bool ret = fNewFileOpened;
+	fNewFileOpened = false;
+	return ret;
+}
+
+void IOHisto::LoadEvent(int iEvent) {
+	if(iEvent<GetInputFileNumber()){
+		if(fCurrentFile) fCurrentFile->Close();
+		NewFileOpened(iEvent, TFile::Open(fInputfiles[iEvent], "READ"));
+		fNewFileOpened = true;
+	}
 }

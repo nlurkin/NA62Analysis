@@ -88,6 +88,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 	PrintInitSummary();
 	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
+	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
 
 	fInitialized = true;
 }
@@ -202,6 +203,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// \EndMemberDescr
 
 	if(IsTreeType()) ProcessWithTree(beginEvent, maxEvent);
+	else if(IsHistoType()) ProcessWithHisto(beginEvent, maxEvent);
 }
 
 void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
@@ -298,6 +300,102 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 	}
 	treeIO->WriteTree();
 	fCounterHandler.WriteEventFraction(treeIO->GetOutputFileName());
+
+	//Complete the analysis
+	timing = clock()-timing;
+	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
+	cout << endl << "Analysis complete" << endl << "###################################" << endl;
+}
+
+void BaseAnalysis::ProcessWithHisto(int beginEvent, int maxEvent){
+	/// \MemberDescr
+	/// \param beginEvent : index of the first event to be processed
+	/// \param maxEvent : maximum number of events to be processed
+	///
+	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
+	/// \EndMemberDescr
+
+	int i_offset;
+	clock_t timing;
+
+	if(!fInitialized) return;
+
+	IOHisto *HistoIO = static_cast<IOHisto*>(fIOHandler);
+
+	timing = clock();
+
+	//Print event processing summary
+	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
+	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " files, beginning with file " << beginEvent << endl;
+
+	i_offset = maxEvent/100.;
+	if(i_offset==0) i_offset=1;
+	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: i_offset : " << i_offset << endl;
+
+	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
+		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
+		fAnalyzerList[j]->StartOfRun();
+		fAnalyzerList[j]->StartOfBurst();
+	}
+
+	//##############################
+	//Begin event loop
+	//##############################
+	for (int i=beginEvent; i < beginEvent+maxEvent; i++)
+	{
+		//Print current event
+		if ( i % i_offset == 0 ){
+			if(fGraphicMode){
+				printf(SHELL_COLOR_LRED "*** Processing File %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
+			}
+			else{
+				printf("*** Processing File %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
+			}
+		}
+
+
+		// Load event infos
+
+		HistoIO->LoadEvent(i);
+		CheckNewFileOpened();
+
+		PreProcess();
+		//Process event in Analyzer
+		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
+			//Get reality
+			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
+
+			fAnalyzerList[j]->Process(i);
+			fAnalyzerList[j]->UpdatePlots(i);
+			gFile->cd();
+		}
+
+		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
+			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
+			//if(exportEvent) fAnalyzerList[j]->FillTrees();
+			fAnalyzerList[j]->PostProcess();
+			gFile->cd();
+		}
+	}
+
+	if(fGraphicMode){
+		printf(SHELL_COLOR_LRED "*** Processing File %i/%i => 100.00%%\n" SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
+	}
+	else{
+		printf("*** Processing File %i/%i => 100.00%%\n", beginEvent+maxEvent, beginEvent+maxEvent);
+	}
+
+	//Ask the analyzer to export and draw the plots
+	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
+		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
+		fAnalyzerList[j]->EndOfBurst();
+		fAnalyzerList[j]->EndOfRun();
+		fAnalyzerList[j]->ExportPlot();
+		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
+		fAnalyzerList[j]->WriteTrees();
+		gFile->cd();
+	}
+	fCounterHandler.WriteEventFraction(HistoIO->GetOutputFileName());
 
 	//Complete the analysis
 	timing = clock()-timing;

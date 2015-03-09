@@ -628,24 +628,24 @@ bool IOTree::CheckNewFileOpened(){
 	/// \EndMemberDescr
 
 	int openedFileNumber;
+	TFile *currFile;
 
 	if(fWithMC){
 		openedFileNumber = fMCTruthTree->GetTreeNumber();
-		fCurrentFile = fMCTruthTree->GetFile();
+		currFile = fMCTruthTree->GetFile();
 	}
 	else if(fWithRawHeader){
 		openedFileNumber = fRawHeaderTree->GetTreeNumber();
-		fCurrentFile = fRawHeaderTree->GetFile();
+		currFile = fRawHeaderTree->GetFile();
 	}
 	else if(fTree.size()>0){
 		openedFileNumber = fTree.begin()->second->GetTreeNumber();
-		fCurrentFile = fTree.begin()->second->GetFile();
+		currFile = fTree.begin()->second->GetFile();
 	}
 	else return false;
 
 	if(openedFileNumber>fCurrentFileNumber){
-		fCurrentFileNumber = openedFileNumber;
-		IOHandler::NewFileOpened();
+		IOHandler::NewFileOpened(openedFileNumber, currFile);
 		return true;
 	}
 	return false;

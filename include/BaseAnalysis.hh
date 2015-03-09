@@ -30,6 +30,7 @@ public:
 	void InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 	void ProcessWithTree(int beginEvent, int maxEvent);
+	void ProcessWithHisto(int beginEvent, int maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);

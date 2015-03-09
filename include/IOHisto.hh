@@ -22,6 +22,7 @@ public:
 
 	void SetReferenceFileName(TString fileName);
 	bool CheckNewFileOpened();
+	void LoadEvent(int iEvent);
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);
@@ -31,6 +32,8 @@ public:
 	void UpdateInputHistograms();
 
 private:
+	bool fNewFileOpened;
+
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
