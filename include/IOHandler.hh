@@ -37,6 +37,8 @@ public:
 	virtual bool CheckNewFileOpened();
 	TString GetOutputFileName() const;
 	int GetCurrentFileNumber() const;
+	int GetInputFileNumber() const { return fInputfiles.size(); };
+	virtual void LoadEvent(int iEvent) {};
 
 	//Writing
 	void MkOutputDir(TString name) const;
@@ -47,7 +49,7 @@ public:
 	const IOHandlerType GetIOType() const { return fIOType; };
 
 protected:
-	void NewFileOpened();
+	void NewFileOpened(int index, TFile* currFile);
 
 	IOHandlerType fIOType;
 

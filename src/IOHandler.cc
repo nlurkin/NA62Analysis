@@ -132,11 +132,14 @@ bool IOHandler::CheckNewFileOpened() {
 	return false;
 }
 
-void IOHandler::NewFileOpened(){
+void IOHandler::NewFileOpened(int index, TFile* currFile){
 	/// \MemberDescr
 	/// Method called by TChain when opening a new file.\n
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
+
+	fCurrentFileNumber = index;
+	fCurrentFile = currFile;
 
 	//Print fileName in the output file for future reference
 	MkOutputDir("InputFiles");
