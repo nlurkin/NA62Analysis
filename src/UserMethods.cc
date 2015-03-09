@@ -571,6 +571,7 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
+	cout << fParent->IsTreeType() << endl;
 	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(name, evt, branchName);
 	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
 }

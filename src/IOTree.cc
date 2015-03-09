@@ -92,10 +92,12 @@ void IOTree::RequestTree(TString name, TDetectorVEvent * const evt, TString bran
 	eventIterator it;
 	std::pair<eventIterator, eventIterator> eventRange;
 
+	cout << this << "fTree contains " << fTree.size() << endl;
 	//Create the tree if not yet requested
 	if(fTree.count(name)==0){
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
+	cout << "fTree contains " << fTree.size() << endl;
 
 	//Which branch are we dealing with?
 	if(branchName.CompareTo("")==0){
@@ -104,6 +106,7 @@ void IOTree::RequestTree(TString name, TDetectorVEvent * const evt, TString bran
 		else branchName="Hits";
 	}
 
+	cout << "Adding branch " << branchName << endl;
 	//Is this branch already requested?
 	//If yes delete evt and return (we already have the branching object instance)
 	eventRange = fEvent.equal_range(name);
@@ -611,6 +614,7 @@ void IOTree::PrintInitSummary() const{
 	AnalysisFW::NA62Map<TString,TChain*>::type::const_iterator itTree;
 	StringBalancedTable treeTable("List of requested TTrees");
 
+	cout << this << "fTree contains " << fTree.size() << endl;
 	for(itTree=fTree.begin(); itTree!=fTree.end(); itTree++){
 		treeTable << itTree->first;
 	}
