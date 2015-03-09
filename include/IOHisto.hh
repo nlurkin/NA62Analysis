@@ -8,10 +8,28 @@
 #ifndef IOHISTO_H_
 #define IOHISTO_H_
 
-class IOHisto {
+#include "IOHandler.hh"
+
+class IOHisto : public IOHandler{
 public:
 	IOHisto();
+	IOHisto(const IOHisto &c);
 	virtual ~IOHisto();
+
+	void SetReferenceFileName(TString fileName);
+
+	//Histogram
+	TH1* GetInputHistogram(TString directory, TString name, bool append);
+	TH1* GetReferenceTH1(TString name);
+	TH2* GetReferenceTH2(TString name);
+	TGraph* GetReferenceTGraph(TString name);
+	void UpdateInputHistograms();
+
+private:
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
+
+	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
 };
 
 #endif /* IOHISTO_H_ */

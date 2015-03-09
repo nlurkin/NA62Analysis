@@ -8,18 +8,10 @@
 #ifndef IOTREE_HH_
 #define IOTREE_HH_
 
-#include <map>
-#include <TH1.h>
-#include <TFile.h>
-#include <TChain.h>
-#include <TDetectorVEvent.hh>
-#include "FWEnums.hh"
-#include "Event.hh"
-#include "RawHeader.hh"
-#include "containers.hh"
 #include "IOHandler.hh"
+#include "IOHisto.hh"
 
-class IOTree : public IOHandler{
+class IOTree : public IOHisto{
 public:
 	IOTree();
 	IOTree(const IOTree& c);
@@ -115,9 +107,9 @@ private:
 			TDetectorVEvent* fEvent; ///< Pointer to the event
 	};
 
-	typedef pair<TString, TChain*> chainPair; ///< typedef for elements of map of TChain
-	typedef pair<TString, EventTriplet*> eventPair; ///< typedef for elements of map of EventTriplet
-	typedef pair<TString, ObjectTriplet*> objectPair; ///< typedef for elements of map of ObjectTriplet
+	typedef std::pair<TString, TChain*> chainPair; ///< typedef for elements of map of TChain
+	typedef std::pair<TString, EventTriplet*> eventPair; ///< typedef for elements of map of EventTriplet
+	typedef std::pair<TString, ObjectTriplet*> objectPair; ///< typedef for elements of map of ObjectTriplet
 	typedef AnalysisFW::NA62Map<TString,TChain*>::type::iterator treeIterator; ///< typedef for iterators of map of TChain
 	typedef AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator; ///< typedef for iterators of map of EventTriplet
 	typedef AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator; ///< typedef for iterators of map of ObjectTriplet

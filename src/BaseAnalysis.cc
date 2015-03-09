@@ -3,6 +3,7 @@
 #include <TStyle.h>
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
+#include <TFile.h>
 
 BaseAnalysis::BaseAnalysis(){
 	/// \MemberDescr
