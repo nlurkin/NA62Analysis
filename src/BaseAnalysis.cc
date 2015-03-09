@@ -5,20 +5,20 @@
 #include "StringBalancedTable.hh"
 #include <TFile.h>
 
-BaseAnalysis::BaseAnalysis(){
+BaseAnalysis::BaseAnalysis():
+	fNEvents(-1),
+	fGraphicMode(false),
+	fVerbosity(AnalysisFW::kNo),
+	fInitialized(false),
+	fDetectorAcceptanceInstance(nullptr),
+	fIOHandler(nullptr),
+	fIOHandlerType(IOHandlerType::kNOIO)
+{
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
 
-	fNEvents = -1;
-	fVerbosity = AnalysisFW::kNo;
-	fGraphicMode = false;
-
 	gStyle->SetOptFit(1);
-
-	fDetectorAcceptanceInstance = NULL;
-
-	fInitialized = false;
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -67,7 +67,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fGraphicMode = graphicMode;
 	fIOHandler->OpenOutput(outFileName);
 
-	if(fIOHandlerType==kTREE) InitWithTree(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFile, allowNonExisting, readPlots);
+	if(IsTreeType()) InitWithTree(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFile, allowNonExisting, readPlots);
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -89,7 +89,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	if(fIOHandlerType==kTREE) fNEvents = GetIOTree()->BranchTrees(fNEvents);
+	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
 
 	fInitialized = true;
 }
@@ -115,7 +115,7 @@ void BaseAnalysis::InitWithTree(TString inFileName, TString outFileName, TString
 	//##############################
 	TString anName, anParams;
 
-	IOTree * treeHandler = fIOHandler;
+	IOTree * treeHandler = static_cast<IOTree*>(fIOHandler);
 
 	treeHandler->SetReferenceFileName(refFile);
 	treeHandler->SetAllowNonExisting(allowNonExisting);
@@ -203,7 +203,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	if(fIOHandlerType==kTREE) ProcessWithTree(beginEvent, maxEvent);
+	if(IsTreeType()) ProcessWithTree(beginEvent, maxEvent);
 }
 
 void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
@@ -220,7 +220,7 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 
 	if(!fInitialized) return;
 
-	IOTree *treeIO = fIOHandler;
+	IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
 
 	timing = clock();
 
@@ -371,7 +371,7 @@ void BaseAnalysis::CheckNewFileOpened(){
 		for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 			fAnalyzerList[i]->EndOfBurst();
 		}
-		if(fIOHandlerType==kTREE || fIOHandlerType==kHISTO) GetIOHisto()->UpdateInputHistograms();
+		if(IsHistoType()) GetIOHisto()->UpdateInputHistograms();
 	}
 
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
@@ -409,16 +409,16 @@ TChain* BaseAnalysis::GetTree(TString name) {
 	///	Return a pointer to the TChain
 	/// \EndMemberDescr
 
-	if(fIOHandlerType==kTREE) return GetIOTree()->GetTree(name);
+	if(IsTreeType()) return GetIOTree()->GetTree(name);
 	else return nullptr;
 }
 
 IOTree* BaseAnalysis::GetIOTree() {
-	if(fIOHandlerType==kTREE) return fIOHandler;
+	if(IsTreeType()) return static_cast<IOTree*>(fIOHandler);
 	else return nullptr;
 }
 
 IOHisto* BaseAnalysis::GetIOHisto() {
-	if(fIOHandlerType==kHISTO || fIOHandlerType==kTREE) return fIOHandler;
+	if(IsHistoType()) return static_cast<IOHisto*>(fIOHandler);
 	else return nullptr;
 }
