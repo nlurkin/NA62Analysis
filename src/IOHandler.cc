@@ -5,9 +5,11 @@
  *      Author: ncl
  */
 
+#include "IOHandler.hh"
 #include <iostream>
 #include <fstream>
 #include <TFile.h>
+#include <TObjString.h>
 
 IOHandler::IOHandler():
 	fCurrentFileNumber(-1),

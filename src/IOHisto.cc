@@ -8,6 +8,9 @@
 #include "IOHisto.hh"
 #include <iostream>
 #include <TFile.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TGraph.h>
 
 IOHisto::IOHisto(){
 	/// \MemberDescr

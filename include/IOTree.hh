@@ -10,6 +10,12 @@
 
 #include "IOHandler.hh"
 #include "IOHisto.hh"
+#include "TDetectorVEvent.hh"
+#include "Event.hh"
+#include "RawHeader.hh"
+
+class TChain;
+class TTree;
 
 class IOTree : public IOHisto{
 public:
