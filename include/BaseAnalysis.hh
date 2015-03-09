@@ -26,8 +26,8 @@ public:
 
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots);
-	void InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
+	void InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 	void ProcessWithTree(int beginEvent, int maxEvent);
 
@@ -54,6 +54,9 @@ public:
 
 	bool IsHistoType() { return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE; };
 	bool IsTreeType() { return fIOHandler->GetIOType()==IOHandlerType::kTREE; };
+
+	void SetGraphicMode(bool bVal) { fGraphicMode = bVal; };
+	void SetReadType(IOHandlerType type);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction

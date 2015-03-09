@@ -17,7 +17,6 @@ IOHisto::IOHisto()
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
-
 	fIOType = IOHandlerType::kHISTO;
 }
 

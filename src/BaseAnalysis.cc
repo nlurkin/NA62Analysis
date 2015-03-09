@@ -11,7 +11,7 @@ BaseAnalysis::BaseAnalysis():
 	fVerbosity(AnalysisFW::kNo),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
-	fIOHandler(new IOTree())
+	fIOHandler(nullptr)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -40,7 +40,7 @@ void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
 	fVerbosity = v;
 }
 
-void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots){
+void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
@@ -63,10 +63,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
 
-	fGraphicMode = graphicMode;
 	fIOHandler->OpenOutput(outFileName);
 
-	if(IsTreeType()) InitWithTree(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFile, allowNonExisting, readPlots);
+	if(IsTreeType()) InitWithTree(inFileName, outFileName, params, configFile, NFiles, refFile, allowNonExisting);
 
 	//Parse parameters from file
 	ConfigParser confParser;
@@ -93,7 +92,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fInitialized = true;
 }
 
-void BaseAnalysis::InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting, bool readPlots){
+void BaseAnalysis::InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
@@ -420,4 +419,9 @@ IOTree* BaseAnalysis::GetIOTree() {
 IOHisto* BaseAnalysis::GetIOHisto() {
 	if(IsHistoType()) return static_cast<IOHisto*>(fIOHandler);
 	else return nullptr;
+}
+
+void BaseAnalysis::SetReadType(IOHandlerType type) {
+	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
+	else fIOHandler = new IOTree();
 }

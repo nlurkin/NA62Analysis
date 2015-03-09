@@ -73,7 +73,7 @@ int main(int argc, char** argv){
 	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
-	while ((opt = getopt(argc, argv, "hagB:n:i:l:N:o:v:p:c:r:")) != -1) {
+	while ((opt = getopt(argc, argv, "h0agB:n:i:l:N:o:v:p:c:r:")) != -1) {
 		n_options_read++;
 		switch (opt) {
 		case 'B':
@@ -153,10 +153,13 @@ int main(int argc, char** argv){
 
 	ban = new BaseAnalysis();
 	ban->SetVerbosity(verbosity);
+	ban->SetGraphicMode(graphicMode);
+	if(readPlots) ban->SetReadType(IOHandlerType::kHISTO);
+	else ban->SetReadType(IOHandlerType::kTREE);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName, allowNonExisting, readPlots);
+	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, allowNonExisting);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
