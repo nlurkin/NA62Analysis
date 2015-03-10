@@ -92,6 +92,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
 			}
 			fInputfiles.push_back(inputFileName);
+			++inputFileNumber;
 		}
 		if(inputFileNumber==0){
 			std::cerr << "AnalysisFW: No input file in the list " << inFileName << std::endl;
