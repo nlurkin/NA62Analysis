@@ -20,6 +20,7 @@ public:
 	IOHisto(const IOHisto &c);
 	virtual ~IOHisto();
 
+	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
 	void SetReferenceFileName(TString fileName);
 	bool CheckNewFileOpened();
 	void LoadEvent(int iEvent);
