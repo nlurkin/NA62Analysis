@@ -794,3 +794,22 @@ bool UserMethods::GetWithRawHeader(){
 
 	return false;
 }
+
+TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file where this histogram will be searched
+	/// \param name : Name of the searched histogram
+	/// \return A pointer to the requested histogram if it was found, else a null pointer.
+	///
+	/// Request histograms from input file.
+	/// \EndMemberDescr
+
+	if(!fParent->IsHistoType()){
+		if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+		return nullptr;
+	}
+	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, false);
+
+	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
+	return histo;
+}

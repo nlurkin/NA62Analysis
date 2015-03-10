@@ -130,9 +130,35 @@
 /// 		\code NA62AnalysisBuilder.py build configFileName\endcode
 /// 	<li> Run with <br>
 /// 	\code 
-/// ./yourExecutableName [-hga] <-i InputFile | -l InpuFilesList> [-B NumberOfFilesToProcess] [-n FirstEvent]
-///                      [-N NumberOfEvents] [-o OutputFile] [-v verbosity]
-///                      [-p "analyzer:param=val;param=val&analyzer:param=val&..."] [-c configFile] [-h]
+/// ./yourExecutableName (-i path | -l/--list path) [options]
+/// 
+/// Allowed options:
+///   -h/--help				: Display this help
+///   -v [level]			: Verbosity level.
+/// 						  Possible values: kNo, kUser, kNormal, kDebug or 0,1,2,3;
+///							  Default=kNo; If level not specified: kNormal
+///   -g					: Graphical mode. Starts a ROOT application for display.
+/// 						  Do not automatically exit at the end of the processing, Ctrl-C to exit.
+///   -n/--nevt int			: Maximum number of events to process.
+///   -o/--output path		: Path to output ROOT file. Will be overwritten if already exists.
+///   -p/--params string	: List of parameters to pass to analyzers.
+/// 						  The format of the string is 
+/// 						  "analyzerName:param=val;param=val&analyzerName:param=val&..."
+///   --histo				: Read histograms only and bypass TTree reading.
+///   --start int			: Index of the first event to process.
+/// 						  Event index starts at 0. The n first events will be skipped.
+///   --config path			: Path to a configuration file containing analyzers parameters.
+///   --reffile path		: Path to a ROOT file containing reference plots.
+///   --ignore				: Ignore non-existing trees and continue processing.
+/// 
+/// Mutually exclusive options groups:
+///  Group1:
+///   -i path				: Path to an input ROOT file.
+///  Group2:
+///   -l/--list path		: Path to a text file containing a list of paths to input ROOT files.
+/// 						  One file per line.
+///   -B/--nfiles int		: Maximum number of files to process from the list.
+/// 
 /// 	\endcode
 /// </ol>
 /// 
@@ -157,6 +183,36 @@
 /// 	<li><b>UpdateInterval</b> (default=10, refresh interval for AutoUpdate plots in number of events)
 /// </ul>
 ///
+/// \section HistoRun Running with histograms input instead of TTrees
+/// It is possible to run an Analyzer on input histograms only. To do so, create an Analyzer as usual.<br>
+/// You can use the method
+/// \code
+/// UserMethods::RequestHistogram("ROOT directory name", "histogram name", appendOnNewFile)
+/// \endcode
+/// to request an histogram from the input files. If appendOnNewFile is true, every time a new file is opened the histogram is
+/// fetched from the file and appended to the current histogram. At the end of the processing, the histogram would then be the sum
+/// of all the histograms in the input files. If appendOnNewFile is false the current histogram is always replaced with the more 
+/// recent one fetched from the file.<br>
+/// Calling RequestHistogram should be done in the InitHist method or later. If the histogram is found the method returns a
+/// pointer to it. You can either save the pointer in a member variable of your analyzer or retrieve it later with 
+/// \code
+/// UserMethods::GetInputHistogram("ROOT directory name", "histogram name")
+/// \endcode
+/// Note that both methods return a TH1* pointer. It is your responsibility to cast it into the correct histogram type
+/// (TH1I*, TH1D*, ..., TH2I*, TH2D*, ...).<br>
+/// There are two possible ways to analyze input histograms. 
+/// <ul>
+/// 	<li> Running NA62Analysis the usual way. The requested TTrees are read and for each event the Process method is called. Every time
+/// 		 a new file is opened, the Analyzer::StartOfBurst() method is called, notifying the Analyzer that a new file has been
+/// 		 opened and therefore that a new histogram has been read.
+/// 	<li> Running NA62Analysis with the --histo option. This will prevent the framework to read the input TTrees, reading only the
+/// 		 histograms from the input files. The same notification mechanism as above applies. However the notion of event is modified
+/// 		 and instead of calling the Analyzer::Process method for each event, the method is called once for each input file.<br>
+/// 		 If you try to access any TTree related information in this mode, a warning message is printed. Also a NULL pointer is returned
+/// 		 instead of the requested information. It is always your responsibility to test the return value of methods and not try to access
+/// 		 them if NULL.
+/// </ul>
+/// 
 /// \section Troubleshooting Troubleshooting
 ///
 /// <ul>

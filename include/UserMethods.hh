@@ -179,6 +179,7 @@ public:
 
 	//Request input histogram
 	TH1* RequestHistogram(TString directory, TString name, bool appendOnNewFile);
+	TH1* GetInputHistogram(TString directory, TString name);
 	TH1* GetReferenceTH1(TString name);
 	TH2* GetReferenceTH2(TString name);
 	TGraph* GetReferenceTGraph(TString name);

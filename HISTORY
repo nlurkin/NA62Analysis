@@ -2,6 +2,18 @@
 NA62Analysis Project
 ################################################################
 
+2015-03-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 452
+        - Fix bug with --start option
+        - Rewrite usage and options handling. Now allows long-style option.  
+        - Fix PhysicsObjects dictionary is not generated. Use one LinkDef file for each
+          PhysicsObjects. The name must be LinkDef_POName.h
+        - Implement Histogram reading without input TTree. Analyzers using only histograms
+          can use this option to bypass the need to have an input TTree and to read it all.
+          The option is --histo. See http://sergiant.web.cern.ch/sergiant/NA62FW/html/analysis.html
+          for more details.
+        - Update documentation
+
 2015-03-02  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 441
         - Fix PhysicsObjects are not getting the extra include dirs from the config 

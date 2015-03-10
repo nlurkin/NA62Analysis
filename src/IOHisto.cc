@@ -146,13 +146,18 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	///  - If set to false : When a new file is opened by the TChain the current histogram will be replaced by the new one.
 	/// \return A pointer to the requested histogram if it was found, else a null pointer.
 	///
-	/// Request histograms from input file.
+	/// Request histograms from input file. If already exists, directly return the pointer.
 	/// \EndMemberDescr
 
+	TString fullName = directory + TString("/") + name;
+
+	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
+	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
+	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
 	if(!fCurrentFile) return nullptr;
 
 	TH1* tempHisto, *returnHisto=nullptr;
-	TString fullName = directory + TString("/") + name;
+
 
 	tempHisto = (TH1*)fCurrentFile->Get(fullName);
 
