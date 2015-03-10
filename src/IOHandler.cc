@@ -118,7 +118,7 @@ void IOHandler::MkOutputDir(TString name) const{
 	/// Create a new directory in the output file
 	/// \EndMemberDescr
 
-	if(!fOutFile->FindKey("InputFiles")) fOutFile->mkdir(name);
+	if(!fOutFile->FindKey(name)) fOutFile->mkdir(name);
 }
 
 void IOHandler::PrintInitSummary() const{

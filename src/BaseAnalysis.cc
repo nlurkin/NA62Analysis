@@ -67,6 +67,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 	if(IsTreeType()) InitWithTree(inFileName, outFileName, params, configFile, NFiles, refFile, allowNonExisting);
 
+	CheckNewFileOpened();
 	//Parse parameters from file
 	ConfigParser confParser;
 	confParser.ParseFile(configFile);
@@ -129,6 +130,7 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	/// Add an analyzer to the Analyzer lists
 	/// \EndMemberDescr
 
+	an->SetVerbosity(fVerbosity);
 	fAnalyzerList.push_back(an);
 }
 

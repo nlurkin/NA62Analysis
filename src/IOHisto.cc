@@ -147,32 +147,24 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	/// Request histograms from input file.
 	/// \EndMemberDescr
 
-	/*TFile *fd;
-	TH1* tempHisto, *returnHisto=NULL;
+	if(!fCurrentFile) return nullptr;
+
+	TH1* tempHisto, *returnHisto=nullptr;
 	TString fullName = directory + TString("/") + name;
 
-	if(fWithMC){
-		fd = fMCTruthTree->GetFile();
-	}
-	else if(fTree.size()>0){
-		fd = fTree.begin()->second->GetFile();
-	}
-	else return returnHisto;
-
-	tempHisto = (TH1*)fd->Get(fullName);
+	tempHisto = (TH1*)fCurrentFile->Get(fullName);
 
 	if(tempHisto){
 		returnHisto = (TH1*)tempHisto->Clone(fullName);
 		delete tempHisto;
 		if(append){
-			fInputHistoAdd.insert(pair<TString, TH1*>(fullName, returnHisto));
+			fInputHistoAdd.insert(std::pair<TString, TH1*>(fullName, returnHisto));
 		}
 		else{
-			fInputHisto.insert(pair<TString, TH1*>(fullName, returnHisto));
+			fInputHisto.insert(std::pair<TString, TH1*>(fullName, returnHisto));
 		}
 	}
-	return returnHisto;*/
-	return 0;
+	return returnHisto;
 }
 
 void IOHisto::SetReferenceFileName(TString fileName) {
@@ -225,6 +217,11 @@ void IOHisto::UpdateInputHistograms(){
 
 bool IOHisto::CheckNewFileOpened() {
 	bool ret = fNewFileOpened;
+	if(fNewFileOpened){
+		gFile = fOutFile;
+		gFile->cd();
+		NewFileOpened(fCurrentFileNumber, fCurrentFile);
+	}
 	fNewFileOpened = false;
 	return ret;
 }
@@ -232,7 +229,16 @@ bool IOHisto::CheckNewFileOpened() {
 void IOHisto::LoadEvent(int iEvent) {
 	if(iEvent<GetInputFileNumber()){
 		if(fCurrentFile) fCurrentFile->Close();
-		NewFileOpened(iEvent, TFile::Open(fInputfiles[iEvent], "READ"));
+		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
+		fCurrentFileNumber = iEvent;
 		fNewFileOpened = true;
 	}
+}
+
+bool IOHisto::OpenInput(TString inFileName, int nFiles,
+		AnalysisFW::VerbosityLevel verbosity) {
+
+	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
+	LoadEvent(0);
+	return true;
 }
