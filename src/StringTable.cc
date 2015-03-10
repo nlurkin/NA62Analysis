@@ -6,10 +6,9 @@
  */
 
 #include "StringTable.hh"
+
 #include <iostream>
 #include <iomanip>
-using namespace std;
-
 
 StringTable::StringTable(TString title):
 		fColumns(0),
@@ -58,8 +57,8 @@ void StringTable::AddColumn(TString id, TString title){
 	/// Add a column to the table.
 	/// \EndMemberDescr
 
-	fOrder.insert(pair<TString, int>(id, fColumns));
-	fContent.push_back(vector<TString>());
+	fOrder.insert(std::pair<TString, int>(id, fColumns));
+	fContent.push_back(std::vector<TString>());
 	fContent[fColumns].push_back(title);
 	fColumns++;
 	fRows++;
@@ -73,8 +72,8 @@ void StringTable::AddColumn(int nbr){
 	/// \EndMemberDescr
 
 	while(nbr>0){
-		fOrder.insert(pair<TString, int>(fColumns, fColumns));
-		fContent.push_back(vector<TString>());
+		fOrder.insert(std::pair<TString, int>(fColumns, fColumns));
+		fContent.push_back(std::vector<TString>());
 		fColumns++;
 		fRows++;
 		nbr--;
@@ -112,6 +111,7 @@ void StringTable::AddValue(unsigned int column, TString value){
 StringTable& StringTable::operator<<(TString value){
 	/// \MemberDescr
 	/// \param value : value to add
+	/// \return Reference to current StringTable instance
 	///
 	/// Append a value to the table at the current column. The current column is incremented and goes from left to right and up to down.
 	/// \EndMemberDescr
@@ -126,6 +126,7 @@ StringTable& StringTable::operator<<(TString value){
 StringTable& StringTable::operator<<(int value){
 	/// \MemberDescr
 	/// \param value : value to add
+	/// \return Reference to current StringTable instance
 	///
 	/// Append a value to the table at the current column. The current column is incremented and goes from left to right and up to down.
 	/// \EndMemberDescr
@@ -140,6 +141,7 @@ StringTable& StringTable::operator<<(int value){
 StringTable& StringTable::operator<<(StringTable& (*f)(StringTable&)){
 	/// \MemberDescr
 	/// \param f : function to apply
+	/// \return Reference to current StringTable instance
 	///
 	/// Apply the function to the stream
 	/// \EndMemberDescr
@@ -191,7 +193,7 @@ void StringTable::Print(TString prefix) const{
 	/// Example \\t to add a tabulation in front of the whole table.
 	/// \EndMemberDescr
 
-	Print(prefix, cout);
+	Print(prefix, std::cout);
 }
 
 void StringTable::Print(TString prefix, ostream &s) const{
@@ -205,16 +207,16 @@ void StringTable::Print(TString prefix, ostream &s) const{
 
 	ComputeWidth();
 
-	s << prefix << FormatCellMiddle(fTitle, '-', fTableWidth) << endl;
+	s << prefix << FormatCellMiddle(fTitle, '-', fTableWidth) << std::endl;
 	for(int i=0; i<GetRowsMaxWidth(); i++){
 		s << prefix << "|";
 		for(int j=0; j<fColumns; j++){
 			if(i<GetRowsMaxWidth(j)) s << FormatCell(fContent[j][i], ' ', fColWidth[j]) << "|";
 			else s << FormatCell("", ' ', fColWidth[j]) << "|";
 		}
-		s << endl;
+		s << std::endl;
 	}
-	s << prefix << FormatCellMiddle("", '-', fTableWidth) << endl << endl;
+	s << prefix << FormatCellMiddle("", '-', fTableWidth) << std::endl << std::endl;
 }
 
 void StringTable::ComputeWidth() const{
@@ -255,6 +257,7 @@ TString StringTable::FormatCell(TString v, char fill, int width) const{
 	/// \param v : value of the cell
 	/// \param fill : character to append to v to fit the width
 	/// \param width : width of the cell in characters
+	/// \return Formatted TString
 	///
 	/// Format the cell content to fit the specified width.
 	/// \EndMemberDescr
@@ -275,6 +278,7 @@ TString StringTable::FormatCellMiddle(TString v, char fill, int width) const{
 	/// \param v : value of the cell
 	/// \param fill : character to prepend and append to v to fit the width
 	/// \param width : width of the cell in characters
+	/// \return Formatted TString
 	///
 	/// Format the cell content to fit the specified width. The value is aligned in the middle of the cell.
 	/// \EndMemberDescr
@@ -288,7 +292,7 @@ TString StringTable::FormatCellMiddle(TString v, char fill, int width) const{
 
 int StringTable::GetRowsMaxWidth() const {
 	/// \MemberDescr
-	/// Return the width (in characters) of the largest row.
+	/// \return Width (in characters) of the largest row.
 	/// \EndMemberDescr
 
 	int max = 0;
@@ -302,8 +306,7 @@ int StringTable::GetRowsMaxWidth() const {
 int StringTable::GetRowsMaxWidth(int i) const {
 	/// \MemberDescr
 	/// \param i : index of the row
-	///
-	/// Return the width of the specified row (in characters)
+	/// \return Width of the specified row (in characters)
 	/// \EndMemberDescr
 
 	return fContent[i].size();

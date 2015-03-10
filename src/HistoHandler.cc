@@ -5,13 +5,16 @@
  *      Author: ncl
  */
 
-#include <iostream>
-#include <TFile.h>
 #include "HistoHandler.hh"
-#include "StringTable.hh"
-#include "functions.hh"
+
+#include <iostream>
+
+#include <TFile.h>
 #include <TGraphQQ.h>
 #include <TF1.h>
+
+#include "StringTable.hh"
+#include "functions.hh"
 
 HistoHandler::HistoHandler():
 			fUpdateRate(10)
@@ -34,6 +37,8 @@ HistoHandler::HistoHandler(const HistoHandler& c):
 			fUpdateRate(c.fUpdateRate)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
+	///
 	/// Copy constructor
 	/// \EndMemberDescr
 }
@@ -583,7 +588,7 @@ void HistoHandler::SetUpdateInterval(int interval){
 
 int HistoHandler::GetUpdateInterval() const{
 	/// \MemberDescr
-	/// Return the update interval for the plots
+	/// \return Update interval for the plots
 	/// \EndMemberDescr
 
 	return fUpdateRate;
@@ -633,6 +638,7 @@ double HistoHandler::compareToReferencePlot(const TH1* const hRef, const TH1* co
 	/// \param hRef : Pointer to the reference plot
 	/// \param h2 : Pointer to the plot to compare
 	/// \param KS : If true, use Kolmogorov-Smirnov test, else use chi square test
+	/// \return Probability for the histograms to be the same distribution
 	///
 	/// Compare similarity between two 1D histograms, returning the probability of
 	///	the tested (h2) histogram following the same distribution as the reference (hRef)
@@ -674,8 +680,8 @@ double HistoHandler::compareToReferencePlot(const TH1* const hRef, const TH1* co
 TH1* HistoHandler::GetTH1(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the TH1 to retrieve
+	/// \return Previously booked histogram with the specified name.
 	///
-	/// Return the previously booked histogram with the specified name.
 	///	If the histogram does not exist or is not of TH1 type, print an error
 	///	message and return NULL.
 	/// \EndMemberDescr
@@ -694,8 +700,8 @@ TH1* HistoHandler::GetTH1(TString name) {
 TH2* HistoHandler::GetTH2(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the TH2 to retrieve
+	/// \return Previously booked histogram with the specified name.
 	///
-	/// Return the previously booked histogram with the specified name.
 	///	If the histogram does not exist or is not of TH2 type, print an error
 	///	message and return NULL.
 	/// \EndMemberDescr
@@ -714,8 +720,8 @@ TH2* HistoHandler::GetTH2(TString name) {
 TGraph* HistoHandler::GetTGraph(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the TGraph to retrieve
+	/// \return Previously booked graph with the specified name.
 	///
-	/// Return the previously booked graph with the specified name.
 	///	If the graph does not exist or is not of TGraph type, print an error
 	///	message and return NULL.
 	/// \EndMemberDescr
@@ -746,6 +752,8 @@ void HistoHandler::Mkdir(TString name, TString analyzerName) const{
 
 HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1() {
 	/// \MemberDescr
+	/// \return Iterator to the TH1
+	///
 	/// Create a TH1Iterator over all the TH1 stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
@@ -768,6 +776,7 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1() {
 HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
+	/// \return Iterator to the TH1
 	///
 	/// Create a TH1Iterator over all the TH1 whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr
@@ -791,6 +800,8 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1(TString baseName) {
 
 HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2() {
 	/// \MemberDescr
+	/// \return Iterator to the TH2
+	///
 	/// Create a TH2Iterator over all the TH2 stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
@@ -813,6 +824,7 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2() {
 HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
+	/// \return Iterator to the TH2
 	///
 	/// Create a TH2Iterator over all the TH2 whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr
@@ -836,6 +848,8 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2(TString baseName) {
 
 HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph() {
 	/// \MemberDescr
+	/// \return Iterator to the TGraph
+	///
 	/// Create a TGraphIterator over all the TGraph stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
@@ -858,6 +872,7 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph() {
 HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
+	/// \return Iterator to the TGraph
 	///
 	/// Create a TGraphIterator over all the TGraph whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr

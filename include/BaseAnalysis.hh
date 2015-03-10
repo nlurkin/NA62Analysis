@@ -4,7 +4,7 @@
 #include "Analyzer.hh"
 #include "DetectorAcceptance.hh"
 #include "CounterHandler.hh"
-#include "IOHandler.hh"
+#include "IOTree.hh"
 #include "containers.hh"
 
 /// \class BaseAnalysis
@@ -26,8 +26,10 @@ public:
 
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, bool graphicMode, TString refFile, bool allowNonExisting);
+	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
+	void ProcessWithTree(int beginEvent, int maxEvent);
+	void ProcessWithHisto(int beginEvent, int maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
@@ -42,11 +44,34 @@ public:
 	void CheckNewFileOpened();
 
 	IOHandler * GetIOHandler();
+	IOTree * GetIOTree();
+	IOHisto * GetIOHisto();
 
 	CounterHandler* GetCounterHandler();
 
 	int GetNEvents();
 	TChain* GetTree(TString name);
+
+	bool IsHistoType() {
+		/// \MemberDescr
+		/// \return true if IO Handler is compatible with Histo type
+		/// \EndMemberDescr
+		return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE;
+	};
+	bool IsTreeType() {
+		/// \MemberDescr
+		/// \return true if IO Handler is compatible with Tree type
+		/// \EndMemberDescr
+		return fIOHandler->GetIOType()==IOHandlerType::kTREE;
+	};
+
+	void SetGraphicMode(bool bVal) {
+		/// \MemberDescr
+		/// \param bVal : Graphic mode On/Off flag
+		/// \EndMemberDescr
+		fGraphicMode = bVal;
+	};
+	void SetReadType(IOHandlerType type);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
@@ -68,7 +93,7 @@ protected:
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
-	IOHandler fIOHandler; ///< Handler for all IO objects
+	IOHandler* fIOHandler; ///< Handler for all IO objects
 };
 
 #endif

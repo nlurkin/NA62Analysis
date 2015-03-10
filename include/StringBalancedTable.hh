@@ -32,7 +32,7 @@ public:
 	void Print(TString prefix);
 	void Print(TString prefix, ostream &s);
 private:
-	vector<TString> fValuesList; ///< List of values in the table
+	std::vector<TString> fValuesList; ///< List of values in the table
 };
 
 #endif /* STRINGBALANCEDTABLE_HH_ */

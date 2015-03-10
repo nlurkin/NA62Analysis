@@ -8,7 +8,6 @@
 #include "ParticleTree.hh"
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
 ParticleTree::ParticleTree():
 		fpdgID(0),
@@ -20,13 +19,17 @@ ParticleTree::ParticleTree():
 	/// \EndMemberDescr
 }
 
-ParticleTree::ParticleTree(int id, int pdgId, TString name):
-		fpdgID(pdgId),
+ParticleTree::ParticleTree(int id, int pdgID, TString name):
+		fpdgID(pdgID),
 		fId(id),
 		fName(name),
 		fParticle(NULL)
 {
 	/// \MemberDescr
+	/// \param id : Particle index
+	/// \param pdgID : PDG Id of the particle
+	/// \param name : Text name of the particle
+	///
 	/// Constructor setting particle properties
 	/// \EndMemberDescr
 }
@@ -52,7 +55,7 @@ ParticleTree::ParticleTree(const ParticleTree& c):
 		fParticle(c.fParticle)
 {
 	/// \MemberDescr
-	/// \param ptr : Pointer to the KinePart
+	/// \param c : Reference object to copy
 	///
 	/// Constructor setting particle properties
 	/// \EndMemberDescr
@@ -74,7 +77,7 @@ void ParticleTree::SetParticleProperties(int id, int pdgID, TString name){
 
 int ParticleTree::GetID() const{
 	/// \MemberDescr
-	/// Return the particle id
+	/// \return Particle id
 	/// \EndMemberDescr
 
 	return fId;
@@ -82,7 +85,7 @@ int ParticleTree::GetID() const{
 
 KinePart* ParticleTree::GetKinePart() const{
 	/// \MemberDescr
-	/// Return the KinePart pointer
+	/// \return KinePart pointer
 	/// \EndMemberDescr
 
 	return fParticle;
@@ -90,7 +93,7 @@ KinePart* ParticleTree::GetKinePart() const{
 
 int ParticleTree::GetParentID() const{
 	/// \MemberDescr
-	/// Return the parent id of the particle if KinePart is set
+	/// \return Parent id of the particle if KinePart is set
 	/// \EndMemberDescr
 
 	if(fParticle!=NULL) return fParticle->GetParentID();
@@ -102,7 +105,7 @@ ParticleTree::~ParticleTree() {
 	/// Destructor
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::iterator it;
+	std::vector<ParticleTree*>::iterator it;
 
 	for(it=fChildrens.begin(); it!=fChildrens.end(); it++){
 		delete (*it);
@@ -123,11 +126,12 @@ void ParticleTree::AddChildren(ParticleTree *child){
 ParticleTree *ParticleTree::GetChildren(int id){
 	/// \MemberDescr
 	/// \param id : id of the particle to be found and returned
+	/// \return Particle with the specified id.
 	///
-	/// Return particle with the specified id. Can be itself, direct or non-direct children
+	/// Can be itself, direct or non-direct children
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::iterator it;
+	std::vector<ParticleTree*>::iterator it;
 	ParticleTree *r = NULL;
 	if(fId==id) return this; //If this is the right particle, return it
 	else{
@@ -143,8 +147,9 @@ ParticleTree *ParticleTree::GetChildren(int id){
 ParticleTree *ParticleTree::operator [](unsigned int i){
 	/// \MemberDescr
 	/// \param i : number of the children to be returned
+	/// \returns Child i.
 	///
-	/// Access operator. Returns the children i.
+	/// Access operator.
 	/// \EndMemberDescr
 
 	if(fChildrens.size()<i) return fChildrens[i];
@@ -153,39 +158,43 @@ ParticleTree *ParticleTree::operator [](unsigned int i){
 
 void ParticleTree::PrintHorizontal(TString prefix, int cellSize, int level) const{
 	/// \MemberDescr
+	/// \param prefix : Prefix for each line
+	/// \param cellSize : Size of each text cell
+	/// \param level : Current printing level
+	///
 	/// Locate and print the next particle in the tree. Can be itself, direct or non direct children.\n
 	/// Final result for the tree should look like\n
 	/// K+    -> pi+   \n
 	///       -> pi0    -> gamma \n
 	///                 -> gamma
 	/// \EndMemberDescr
-	vector<ParticleTree*>::const_iterator it;
+	std::vector<ParticleTree*>::const_iterator it;
 
-	if(level==1) cout << prefix;
-	if(fName.Length()!=0) cout << setw(cellSize) << fName;
-	else cout << setw(cellSize) << fpdgID;
+	if(level==1) std::cout << prefix;
+	if(fName.Length()!=0) std::cout << std::setw(cellSize) << fName;
+	else std::cout << std::setw(cellSize) << fpdgID;
 
 	if(fChildrens.size()==0) {
-		cout << endl;
+		std::cout << std::endl;
 		return;
 	}
 	for(it=fChildrens.begin(); it!=fChildrens.end(); ++it){
-		if(it!=fChildrens.begin()) cout << prefix << setw((cellSize+3)*level) << " ->";
-		else cout << " ->";
+		if(it!=fChildrens.begin()) std::cout << prefix << std::setw((cellSize+3)*level) << " ->";
+		else std::cout << " ->";
 		(*it)->PrintHorizontal(prefix, cellSize, level+1);
 	}
 }
 
-bool ParticleTree::GetFinalState(vector<KinePart*> &array) const{
+bool ParticleTree::GetFinalState(std::vector<KinePart*> &array) const{
 	/// \MemberDescr
 	/// \param array : Address of the array to be filled
+	/// \return false if the pointers are not filled.
 	///
 	/// Fill the input array with the pointers to the particles in the leaves.
-	/// Return false if the pointers are not filled.
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::const_iterator it;
-	vector<KinePart*> tempVector;
+	std::vector<ParticleTree*>::const_iterator it;
+	std::vector<KinePart*> tempVector;
 
 	if(!fParticle) return false;
 
@@ -200,18 +209,18 @@ bool ParticleTree::GetFinalState(vector<KinePart*> &array) const{
 	return true;
 }
 
-bool ParticleTree::GetLevel(vector<KinePart*> &array, int level, bool full) const{
+bool ParticleTree::GetLevel(std::vector<KinePart*> &array, int level, bool full) const{
 	/// \MemberDescr
 	/// \param array : Address of the array to be filled
 	/// \param level : Level number below the current node to return
 	/// \param full : If true will also return the final particles in the branches thatc stopped before the given level
+	/// \return false if the pointers are not filled.
 	///
 	/// Fill the input array with the pointers to the particles at the given tree level below the current node.
-	/// Return false if the pointers are not filled.
 	/// \EndMemberDescr
 
-	vector<ParticleTree*>::const_iterator it;
-	vector<KinePart*> tempVector;
+	std::vector<ParticleTree*>::const_iterator it;
+	std::vector<KinePart*> tempVector;
 
 	if(!fParticle) return false;
 

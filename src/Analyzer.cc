@@ -1,8 +1,7 @@
 #include "Analyzer.hh"
+
 #include "BaseAnalysis.hh"
 #include "StringTable.hh"
-
-using namespace std;
 
 Analyzer::Analyzer(BaseAnalysis *ba) :
 		UserMethods(ba),
@@ -14,6 +13,7 @@ Analyzer::Analyzer(BaseAnalysis *ba) :
 		fParticleInterface(ParticleInterface::GetParticleInterface())
 {
 	/// \MemberDescr
+	/// \param ba : Parent BaseAnalysis instance
 	/// Constructor
 	/// \EndMemberDescr
 }
@@ -32,6 +32,7 @@ Analyzer::Analyzer(const Analyzer& c) :
 		fParticleInterface(ParticleInterface::GetParticleInterface())
 {
 	/// \MemberDescr
+	/// \param c : Reference object to copy
 	/// Constructor
 	/// \EndMemberDescr
 }
@@ -52,7 +53,7 @@ void Analyzer::PrintName() const{
 
 TString Analyzer::GetAnalyzerName() const{
 	/// \MemberDescr
-	/// Return the name of the Analyzer
+	/// \return Name of the Analyzer
 	/// \EndMemberDescr
 
 	return fAnalyzerName;
@@ -71,6 +72,7 @@ void Analyzer::ExportEvent(){
 bool Analyzer::GetExportEvent() const{
 	/// \MemberDescr
 	/// Did the analyzer asked to export the event?
+	/// \return true if export was requested. Else false.
 	/// \EndMemberDescr
 
 	return fExportEvent;
@@ -145,7 +147,7 @@ TString Analyzer::StringFromParam(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the parameter (previously defined with AddParam)
 	///
-	/// Return the value of a parameter as TString
+	/// \return Value of the requested parameter as TString
 	/// \EndMemberDescr
 
 	param_t p = fParams.find(name)->second;
@@ -184,6 +186,7 @@ bool Analyzer::CheckType(TString type) const{
 	/// \param type : type to check
 	///
 	/// Check that the given param type is allowed
+	/// \return true if the string type is one of the allowed ones. Else false.
 	/// \EndMemberDescr
 
 	if(type.CompareTo("char")) return true;
@@ -343,12 +346,14 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	///	histogram. The reference histogram is an histogram with same name extracted
 	/// from the reference file. If no reference file is specified in the command line
 	/// parameters, this method returns immediately.
+	/// \return -1 in case of failure (no histogram). Else returns the value returned by HistoHandler::compareToReferencePlot.
 	/// \EndMemberDescr
 
 	TH1* h = fHisto.GetTH1(h1);
 	TString name = h->GetName();
 
-	TH1* hRef = fParent->GetIOHandler()->GetReferenceTH1(name);
+	if(!fParent->IsHistoType()) return -1;
+	TH1* hRef = fParent->GetIOHisto()->GetReferenceTH1(name);
 
 	if(!hRef || !h) return -1.;
 	return fHisto.compareToReferencePlot(hRef, h, KS);
@@ -357,7 +362,7 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 void Analyzer::FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity) {
 	/// \MemberDescr
 	/// \param mcTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
-	/// \param verbose : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
+	/// \param verbosity : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
 	///
 	/// Extract informations from current Event and store them internally for later easy access
 	/// \EndMemberDescr
@@ -365,12 +370,13 @@ void Analyzer::FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verb
 	fMCSimple.GetRealInfos(mcTruthEvent, verbosity);
 }
 
-void Analyzer::printIncompleteMCWarning(int i) const{
+void Analyzer::printIncompleteMCWarning(int iEvent) const{
 	/// \MemberDescr
+	/// \param iEvent : Event index
 	/// Print a warning message when MC event is not complete.
 	/// \EndMemberDescr
 
-	cout << fAnalyzerName << ": Incomplete MC Event for event " << i << endl;
+	cout << fAnalyzerName << ": Incomplete MC Event for event " << iEvent << endl;
 	if(!fIncompleteMCWarned){
 		cout << "Warning in analyzer " << fAnalyzerName << ": Incomplete MC event detected." << endl;
 		cout << "This analyzer is not allowed to run without the exact required event. If you want to change this behavior,"
@@ -437,6 +443,7 @@ KinePart* Analyzer::CreateStandardCandidate(TString treeName){
 	/// \param treeName : name of the TTree to which the Candidate has to be added
 	///
 	/// Create a new KinePart and add it in the specified standardized output tree
+	/// \return Pointer to a new KinePart.
 	/// \EndMemberDescr
 
 	KinePart * p = (KinePart*)fExportCandidates[treeName].ConstructedAt(fExportCandidatesNumber[treeName]);

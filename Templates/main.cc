@@ -1,3 +1,4 @@
+#include <getopt.h>
 #include <iostream>
 #include <signal.h>
 
@@ -14,22 +15,35 @@ TApplication *theApp = 0;
 
 void usage(char* name)
 {
-	cout << "Usage: \t"<< name << " [-hga] < -i InputFile.root | -l InputFilesList.txt [-B #MaxFiles] > [-n #FirstEvent]" << endl;
-	cout << "\t\t[-N #Events] [-o OutputFile.root] [-r ReferenceFile.root] [-v verbosity] [-c configFile]" << endl;
-	cout << "[-p \"analyzerName:param=val;param=val&analyzerName:param=val&...\"]" << endl;
-	cout << "\t -h : Display this help" << endl;
-	cout << "\t -g : Graphical mode. Starts a ROOT application for display. Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
-	cout << "\t -i : Path to an input ROOT file." << endl;
-	cout << "\t -l : Path to a text file containing a list of paths to input ROOT files. One file per line." << endl;
-	cout << "\t -B : Maximum number of files to process from the list." << endl;
-	cout << "\t -n : Index of the first event to process. Event index starts at 0. The n first events will be skipped." << endl;
-	cout << "\t -N : Maximum number of events to process." << endl;
-	cout << "\t -o : Path to output ROOT file. Will be overwritten if already exists." << endl;
-	cout << "\t -r : Path to a file containing reference plots." << endl;
-	cout << "\t -v : Verbosity level." << endl;
-	cout << "\t -p : List of parameters to pass to analyzers." << endl;
-	cout << "\t -c : Path to a configuration file containing analyzers parameters." << endl;
-	cout << "\t -a : Allow non-existing trees." << endl;
+	cout << endl;
+	cout << "Usage: \t"<< name << " (-i path | -l/--list path) [options]" << endl << endl;
+	cout << "Allowed options:" << endl;
+	cout << "  -h/--help\t\t: Display this help" << endl;
+	cout << "  -v [level]\t\t: Verbosity level." << endl
+		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kDebug or 0,1,2,3;" << endl
+		 << "\t\t\t  Default=kNo; If level not specified: kNormal" << endl;
+	cout << "  -g\t\t\t: Graphical mode. Starts a ROOT application for display." << endl
+		 << "\t\t\t  Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
+	cout << "  -n/--nevt int\t\t: Maximum number of events to process." << endl;
+	cout << "  -o/--output path\t: Path to output ROOT file. Will be overwritten if already exists." << endl;
+	cout << "  -p/--params string\t: List of parameters to pass to analyzers." << endl
+		 << "\t\t\t  The format of the string is " << endl
+		 << "\t\t\t  \"analyzerName:param=val;param=val&analyzerName:param=val&...\"" << endl;
+	cout << "  --histo\t\t: Read histograms only and bypass TTree reading." << endl;
+	cout << "  --start int\t\t: Index of the first event to process." << endl
+		 << "\t\t\t  Event index starts at 0. The n first events will be skipped." << endl;
+	cout << "  --config path\t\t: Path to a configuration file containing analyzers parameters." << endl;
+	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
+	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
+	cout << endl;
+	cout << "Mutually exclusive options groups:" << endl;
+	cout << " Group1:" << endl;
+	cout << "  -i path\t\t: Path to an input ROOT file." << endl;
+	cout << " Group2:" << endl;
+	cout << "  -l/--list path\t: Path to a text file containing a list of paths to input ROOT files." << endl
+		 << "\t\t\t  One file per line." << endl;
+	cout << "  -B/--nfiles int\t: Maximum number of files to process from the list." << endl;
+	cout << endl << endl;
 }
 
 void sighandler(int sig)
@@ -65,68 +79,89 @@ int main(int argc, char** argv){
 	Int_t NFiles = 0;
 	bool graphicMode = false;
 	bool fromList = false;
-	bool allowNonExisting = false;
+	bool ignoreNonExisting = false;
 	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
+	bool readPlots = false;
 
 	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
-	while ((opt = getopt(argc, argv, "hagB:n:i:l:N:o:v:p:c:r:")) != -1) {
+	int flReadPlots = 0;
+	int flIgnoreNonExisting = 0;
+
+	struct option longopts[] = {
+			{ "list",	required_argument,	NULL,	'l'},
+			{ "nfiles",	required_argument,	NULL,	'B'},
+			{ "nevt",	required_argument,	NULL,	'n'},
+			{ "output",	required_argument,	NULL,	'o'},
+			{ "params",	required_argument,	NULL,	'p'},
+			{ "histo",	no_argument,		&flReadPlots,	1},
+			{ "start",	required_argument,	NULL,		'0'},
+			{ "config",	required_argument,	NULL,		'1'},
+			{ "reffile",required_argument,	NULL,		'2'},
+			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
+			{0,0,0,0}
+	};
+
+	while ((opt = getopt_long(argc, argv, "hi:v::gl:B:n:o:p:0:1:2:", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
-		case 'B':
-			NFiles = TString(optarg).Atoi();
-			break;
-		case 'i':
-			//Input file
+		// Short options only cases
+		case 'i': /* Input file */
 			inFileName = TString(optarg);
-			break;
-		case 'l':
-			//Input files list
-			if(!NFiles) NFiles = 1;
-			inFileName = TString(optarg);
-			fromList = true;
-			break;
-		case 'n':
-			//First event to process
-			NEvt = TString(optarg).Atoi();
-			break;
-		case 'N':
-			//Number of events to process
-			evtNb = TString(optarg).Atoi();
-			break;
-		case 'o':
-			//Output file
-			outFileName = TString(optarg);
 			break;
 		case 'v':
 			//Verbosity
-			argTS = TString(optarg);
-			if(argTS.IsDec()) verbosity = (AnalysisFW::VerbosityLevel)argTS.Atoi();
-			else{
-				if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNo;
-				if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kUser;
-				if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNormal;
-				if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kDebug;
+			if(optarg){
+				argTS = TString(optarg);
+				if(argTS.IsDec()) verbosity = (AnalysisFW::VerbosityLevel)argTS.Atoi();
+				else{
+					if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNo;
+					if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kUser;
+					if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNormal;
+					if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kDebug;
+				}
 			}
-			break;
-		case 'p':
-			//Analyzer params
-			params = TString(optarg);
-			break;
-		case 'c':
-			//Config file to parse
-			configFile = TString(optarg);
-			break;
-		case 'r':
-			refFileName = TString(optarg);
+			else verbosity = AnalysisFW::kNormal;
 			break;
 		case 'g':
 			graphicMode = true;
 			break;
-		case 'a':
-			allowNonExisting = true;
+
+		// Mixed short-long options cases
+		case 'l': /* Input files list, long_option: list */
+			if(!NFiles) NFiles = 1;
+			inFileName = TString(optarg);
+			fromList = true;
 			break;
+		case 'B': /* Number of files to read, long_option: nfiles */
+			NFiles = TString(optarg).Atoi();
+			break;
+		case 'n': /* Maximum number of events to process, long_option: nevt */
+			evtNb = TString(optarg).Atoi();
+			break;
+		case 'o': /* Output file path, long_option: output */
+			outFileName = TString(optarg);
+			break;
+		case 'p': /* Analyzer params, long_options: params */
+			params = TString(optarg);
+			break;
+
+		// long options only cases
+		case '0':	/* First event to process, long_option: start */
+			NEvt = TString(optarg).Atoi();
+			break;
+		case '1': /* Config file to parse, long_option: config */
+			configFile = TString(optarg);
+			break;
+		case '2': /* Reference file path, long_option: reffile */
+			refFileName = TString(optarg);
+			break;
+
+		case 0: /* getopt_long() set a variable, continue */
+			break;
+
+		// Default (includes help)
 		default: /* '?' */
 			usage(argv[0]);
 			return 0;
@@ -143,15 +178,21 @@ int main(int argc, char** argv){
 		return 0;
 	}
 
+	ignoreNonExisting = flIgnoreNonExisting;
+	readPlots = flReadPlots;
+
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
 
 	ban = new BaseAnalysis();
 	ban->SetVerbosity(verbosity);
+	ban->SetGraphicMode(graphicMode);
+	if(readPlots) ban->SetReadType(IOHandlerType::kHISTO);
+	else ban->SetReadType(IOHandlerType::kTREE);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, graphicMode, refFileName, allowNonExisting);
+	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();

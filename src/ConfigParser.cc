@@ -6,15 +6,17 @@
  */
 
 #include "ConfigParser.hh"
-#include "Analyzer.hh"
+
 #include <string>
 #include <iostream>
 #include <fstream>
+
 #include <TString.h>
 #include <TPRegexp.h>
 #include <TObjArray.h>
 #include <TObjString.h>
-using namespace std;
+
+#include "Analyzer.hh"
 
 ConfigParser::ConfigParser() {
 	/// \MemberDescr
@@ -27,6 +29,7 @@ ConfigParser::ConfigParser(const ConfigParser& c):
 	fCurrentAnalyzer(c.fCurrentAnalyzer)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
 	/// Copy constructor
 	/// \EndMemberDescr
 }
@@ -145,6 +148,8 @@ void ConfigParser::ApplyParams(Analyzer * const analyzer) const{
 
 void ConfigParser::ParseCLI(TString params){
 	/// \MemberDescr
+	/// \param params : Parameter string passed in the command line
+	///
 	/// Parse command line interface parameter line
 	/// \EndMemberDescr
 

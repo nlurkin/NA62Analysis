@@ -8,12 +8,12 @@
 #ifndef CONFIGPARSER_H_
 #define CONFIGPARSER_H_
 
-#include <TString.h>
 #include <map>
-using namespace std;
 
-typedef pair<TString, TString> t_ParamPair;
-typedef vector< t_ParamPair > t_ParamValue;
+#include <TString.h>
+
+typedef std::pair<TString, TString> t_ParamPair;
+typedef std::vector< t_ParamPair > t_ParamValue;
 
 class Analyzer;
 
@@ -56,7 +56,7 @@ public:
 private:
 	void AnalyzeLine(TString line);
 
-	map<TString, t_ParamValue> fList;	///< Map of ParameterName,ParameterValue pairs
+	std::map<TString, t_ParamValue> fList;	///< Map of ParameterName,ParameterValue pairs
 	TString fCurrentAnalyzer;			///< Name of the current Analyzer section
 };
 

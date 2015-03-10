@@ -1,11 +1,13 @@
 #include "DetectorAcceptance.hh"
-#include "Riostream.h"
+
 #include <iostream>
 #include <string>
+
+#include <Riostream.h>
 #include <TGeoManager.h>
-#include "functions.hh"
 #include <TVirtualGeoTrack.h>
-using namespace std;
+
+#include "functions.hh"
 
 DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
 		fVerbosity(AnalysisFW::kNo),
@@ -51,7 +53,7 @@ DetectorAcceptance::DetectorAcceptance(const DetectorAcceptance& c):
 		fMagnetEffect(false)
 {
 	/// \MemberDescr
-	/// \param GeometryFile : path to the geometry file (root)
+	/// \param c : Reference object to copy
 	///
 	/// Constructor. Imports the geometry.
 	/// \EndMemberDescr
@@ -85,8 +87,8 @@ DetectorAcceptance::~DetectorAcceptance(){
 bool DetectorAcceptance::GetDetAcceptance(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
+	/// \return true if the Detector det has been crossed by particle
 	///
-	/// Return true if the Detector det has been crossed by particle\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -95,8 +97,8 @@ bool DetectorAcceptance::GetDetAcceptance(volume det) const{
 TVector3 DetectorAcceptance::GetDetPosition(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
+	/// \return the position where the particle first crossed the detector det. (0,0,0) if not crossed.
 	///
-	/// Return the position where the particle first crossed the detector det. (0,0,0) if not crossed.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -105,8 +107,8 @@ TVector3 DetectorAcceptance::GetDetPosition(volume det) const{
 double DetectorAcceptance::GetDetLength(volume det) const{
 	/// \MemberDescr
 	/// \param det : Detector part to check
+	/// \return Path length in specified detector in mm.
 	///
-	/// Return the path length in detector det in mm.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -116,8 +118,8 @@ double DetectorAcceptance::GetDetLength(volume det) const{
 bool DetectorAcceptance::GetGTKAcceptance(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
+	/// \return true if the GTK station det has been crossed by particle
 	///
-	/// Return true if the GTK station det has been crossed by particle\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -126,8 +128,8 @@ bool DetectorAcceptance::GetGTKAcceptance(GTKVol det) const{
 TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
+	/// \return the position where the particle first crossed the GTK station det. (0,0,0) if not crossed.
 	///
-	/// Return the position where the particle first crossed the GTK station det. (0,0,0) if not crossed.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -136,8 +138,8 @@ TVector3 DetectorAcceptance::GetGTKPosition(GTKVol det) const{
 double DetectorAcceptance::GetGTKLength(GTKVol det) const{
 	/// \MemberDescr
 	/// \param det : GTK station to check
+	/// \return the path length in GTK station det in mm.
 	///
-	/// Return the path length in GTK station det in mm.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -147,8 +149,8 @@ double DetectorAcceptance::GetGTKLength(GTKVol det) const{
 bool DetectorAcceptance::GetStrawAcceptance(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
+	/// \return true if the Spectrometer plane det has been crossed by particle
 	///
-	/// Return true if the Spectrometer plane det has been crossed by particle\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -157,8 +159,8 @@ bool DetectorAcceptance::GetStrawAcceptance(StrawVol det) const{
 TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
+	/// \return the position where the particle first crossed the Spectrometer plane det. (0,0,0) if not crossed.
 	///
-	/// Return the position where the particle first crossed the Spectrometer plane det. (0,0,0) if not crossed.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -167,8 +169,8 @@ TVector3 DetectorAcceptance::GetStrawPosition(StrawVol det) const{
 double DetectorAcceptance::GetStrawLength(StrawVol det) const{
 	/// \MemberDescr
 	/// \param det : Straw station to check
+	/// \return the path length in Straw station det in mm.
 	///
-	/// Return the path length in Straw station det in mm.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -178,8 +180,8 @@ double DetectorAcceptance::GetStrawLength(StrawVol det) const{
 bool DetectorAcceptance::GetLAVAcceptance(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
+	/// \return true if the LAV station det has been crossed by particle
 	///
-	/// Return true if the LAV station det has been crossed by particle\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -188,8 +190,8 @@ bool DetectorAcceptance::GetLAVAcceptance(LAVVol det) const{
 TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
+	/// \return the position where the particle first crossed the LAV station det. (0,0,0) if not crossed.
 	///
-	/// Return the position where the particle first crossed the LAV station det. (0,0,0) if not crossed.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -198,8 +200,8 @@ TVector3 DetectorAcceptance::GetLAVPosition(LAVVol det) const{
 double DetectorAcceptance::GetLAVLength(LAVVol det) const{
 	/// \MemberDescr
 	/// \param det : LAV station to check
+	/// \return the path length in LAV station det in mm.
 	///
-	/// Return the path length in LAV station det in mm.\n
 	/// WARNING : need to call FillPath before to be populated
 	/// \EndMemberDescr
 
@@ -647,6 +649,7 @@ DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t
 	/// \param z : z coordinate
 	///
 	/// Say in which detector volume the given point is
+	/// \return Detector volume in which this point is located
 	/// \EndMemberDescr
 
 	fGeoManager->GetTopVolume();
@@ -658,8 +661,9 @@ DetectorAcceptance::volume DetectorAcceptance::CheckDetectorAcceptPoint(Double_t
 
 DetectorAcceptance::volume DetectorAcceptance::FirstTouchedDetector() const{
 	/// \MemberDescr
-	/// Return the first detector crossed.\n
-	/// WARNING : need to call FillPath before to be populated
+	/// \return First detector volume crossed.
+	///
+	/// WARNING : need to call FillPath beforehand to populate
 	/// \EndMemberDescr
 
 	for(int i=0; i<13; i++){
@@ -677,6 +681,7 @@ bool DetectorAcceptance::MagnetEffect(const TVector3 StartPosition, const TVecto
 	/// \param middleMomentum : Momentum of the particle at Z of the beginning of the magnet
 	/// \param endPosition : Final Position of the particle
 	/// \param endMomentum : Final momentum of the particle
+	/// \return true if propagation through the magnet is successful
 	///
 	/// Compute the positions and momenta of particle at the start and at the end of the spectrometer magnet.
 	/// \EndMemberDescr
@@ -798,6 +803,7 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Final Position of the particle
 	/// \param EndMomentum : Final momentum of the particle
+	/// \return true if propagation through the magnet is successful.
 	///
 	/// Analytic propagation of a charged particle. It takes into account the\n
 	/// presence of the bending magnet of the Spectrometer.\n
@@ -820,7 +826,7 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 
 TGeoManager* DetectorAcceptance::GetGeoManager() const{
 	/// \MemberDescr
-	/// Return the pointer to the TGeoManager instance.
+	/// \return Pointer to the TGeoManager instance.
 	/// \EndMemberDescr
 
 	return fGeoManager;
