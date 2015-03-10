@@ -1,7 +1,7 @@
 MACRO(SUBDIRLIST dir result)
 	FILE(GLOB children ${dir}/*)
 	FILE(GLOB svn ${dir}/.svn)
-	IF(${svn}) 
+	IF(NOT "${svn}" STREQUAL "") 
 	    LIST(REMOVE_ITEM children ${svn})
 	ENDIF()
 	SET(dirlist "")

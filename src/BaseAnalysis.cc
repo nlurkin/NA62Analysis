@@ -69,11 +69,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		IOTree * treeHandler = static_cast<IOTree*>(fIOHandler);
 
 		treeHandler->SetReferenceFileName(refFile);
-<<<<<<< HEAD
 		treeHandler->SetIgnoreNonExisting(ignoreNonExisting);
-=======
-		treeHandler->SetAllowNonExisting(allowNonExisting);
->>>>>>> branch 'feature/plotsRead' of git@github.com:nlurkin/NA62Analysis.git
 
 		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
 	}

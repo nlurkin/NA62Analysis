@@ -134,7 +134,6 @@ int main(int argc, char** argv){
 			inFileName = TString(optarg);
 			fromList = true;
 			break;
-<<<<<<< HEAD
 		case 'B': /* Number of files to read, long_option: nfiles */
 			NFiles = TString(optarg).Atoi();
 			break;
@@ -163,11 +162,6 @@ int main(int argc, char** argv){
 			break;
 
 		// Default (includes help)
-=======
-		case '0':
-			readPlots = true;
-			break;
->>>>>>> branch 'feature/plotsRead' of git@github.com:nlurkin/NA62Analysis.git
 		default: /* '?' */
 			usage(argv[0]);
 			return 0;
@@ -198,11 +192,7 @@ int main(int argc, char** argv){
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-<<<<<<< HEAD
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
-=======
-	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, allowNonExisting);
->>>>>>> branch 'feature/plotsRead' of git@github.com:nlurkin/NA62Analysis.git
 	ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
