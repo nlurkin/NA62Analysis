@@ -200,15 +200,16 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	//##############################
 	//Begin event loop
 	//##############################
-	for (int i=beginEvent; i < beginEvent+maxEvent; i++)
+	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
+	for (int i=beginEvent; i < processEvents; i++)
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
 			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
+				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, processEvents, ((double)i/(double)processEvents)*100); fflush(stdout);
 			}
 			else{
-				printf("*** Processing Event %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
+				printf("*** Processing Event %i/%i => %.2f%%\n", i, processEvents, ((double)i/(double)processEvents)*100);
 			}
 		}
 
@@ -240,10 +241,10 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	}
 
 	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => 100.00%%\n" SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
+		printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => 100.00%%\n" SHELL_COLOR_NONE, processEvents, processEvents);
 	}
 	else{
-		printf("*** Processing Event %i/%i => 100.00%%\n", beginEvent+maxEvent, beginEvent+maxEvent);
+		printf("*** Processing Event %i/%i => 100.00%%\n", processEvents, processEvents);
 	}
 
 	//Ask the analyzer to export and draw the plots

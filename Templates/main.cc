@@ -22,7 +22,7 @@ void usage(char* name)
 	cout << "\t -i : Path to an input ROOT file." << endl;
 	cout << "\t -l : Path to a text file containing a list of paths to input ROOT files. One file per line." << endl;
 	cout << "\t -B : Maximum number of files to process from the list." << endl;
-	cout << "\t -n : Index of the first event to process. The n-1 first events will be skipped." << endl;
+	cout << "\t -n : Index of the first event to process. Event index starts at 0. The n first events will be skipped." << endl;
 	cout << "\t -N : Maximum number of events to process." << endl;
 	cout << "\t -o : Path to output ROOT file. Will be overwritten if already exists." << endl;
 	cout << "\t -r : Path to a file containing reference plots." << endl;
