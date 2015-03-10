@@ -504,14 +504,14 @@ int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 }
 
 
-void IOTree::SetAllowNonExisting(bool allowNonExisting) {
+void IOTree::SetIgnoreNonExisting(bool bFlag) {
 	/// \MemberDescr
-	/// allowNonExisting : if false, exit if one or several TTree is missing in the input file
+	/// bFlag : if false, exit if one or several TTree is missing in the input file
 	///
 	/// Determine if the framework is allowed to run when one or several TTrees
 	/// are missing in the input file.
 	/// \EndMemberDescr
-	fAllowNonExisting = allowNonExisting;
+	fAllowNonExisting = bFlag;
 }
 
 

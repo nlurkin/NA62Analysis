@@ -40,7 +40,7 @@ void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
 	fVerbosity = v;
 }
 
-void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting){
+void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool ignoreNonExisting){
 	/// \MemberDescr
 	/// \param inFileName : path to the input file / path to the file containing the list of input files
 	/// \param outFileName : path to the output file
@@ -69,7 +69,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		IOTree * treeHandler = static_cast<IOTree*>(fIOHandler);
 
 		treeHandler->SetReferenceFileName(refFile);
-		treeHandler->SetAllowNonExisting(allowNonExisting);
+		treeHandler->SetIgnoreNonExisting(ignoreNonExisting);
 
 		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
 	}

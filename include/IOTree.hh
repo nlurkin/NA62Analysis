@@ -34,7 +34,7 @@ public:
 	bool RequestTree(TString name, TString branchName, TString className, void* const obj);
 	int BranchTrees(int eventNb);
 	TChain* GetTree(TString name);
-	void SetAllowNonExisting(bool allowNonExisting);
+	void SetIgnoreNonExisting(bool bFlag);
 
 	//Events
 	TDetectorVEvent *GetEvent(TString name, TString branchName="");
