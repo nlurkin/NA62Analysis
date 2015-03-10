@@ -504,6 +504,7 @@ int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 }
 
 
+<<<<<<< HEAD
 void IOTree::SetIgnoreNonExisting(bool bFlag) {
 	/// \MemberDescr
 	/// bFlag : if false, exit if one or several TTree is missing in the input file
@@ -512,6 +513,16 @@ void IOTree::SetIgnoreNonExisting(bool bFlag) {
 	/// are missing in the input file.
 	/// \EndMemberDescr
 	fAllowNonExisting = bFlag;
+=======
+void IOTree::SetAllowNonExisting(bool allowNonExisting) {
+	/// \MemberDescr
+	/// allowNonExisting : if false, exit if one or several TTree is missing in the input file
+	///
+	/// Determine if the framework is allowed to run when one or several TTrees
+	/// are missing in the input file.
+	/// \EndMemberDescr
+	fAllowNonExisting = allowNonExisting;
+>>>>>>> branch 'feature/plotsRead' of git@github.com:nlurkin/NA62Analysis.git
 }
 
 
