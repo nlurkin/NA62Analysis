@@ -1,10 +1,11 @@
-#include <iostream>
 #include "NeuralNetwork.hh"
+
+#include <iostream>
+
 #include <TTree.h>
 #include <TMultiLayerPerceptron.h>
 #include <TMLPAnalyzer.h>
 #include <TCanvas.h>
-using namespace std;
 
 NeuralNetwork::NeuralNetwork() {
 	/// \MemberDescr
@@ -113,7 +114,7 @@ void NeuralNetwork::Train(int epoch){
 
 	Create();
 
-	if(fVerbosity>=AnalysisFW::kNormal) cout << "Training NN with " << fNumberSignal << " signal and " << fNumberBckg << " background samples" << endl;
+	if(fVerbosity>=AnalysisFW::kNormal) std::cout << "Training NN with " << fNumberSignal << " signal and " << fNumberBckg << " background samples" << std::endl;
 	fMlp->Train(epoch, "text,graph,update=10");
 
 	TCanvas *c1 = new TCanvas("c1", "Network Analysis");
@@ -134,6 +135,8 @@ void NeuralNetwork::Train(int epoch){
 double NeuralNetwork::Evaluate(){
 	/// \MemberDescr
 	/// Evaluate the output of the previously trained or loaded NN on the current event
+	///
+	/// \return Output of the Neural Network
 	/// \EndMemberDescr
 
 	double *params = new double[fInputs.size()];

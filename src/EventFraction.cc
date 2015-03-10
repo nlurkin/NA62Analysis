@@ -4,16 +4,17 @@
  *  Created on: May 21, 2013
  *      Author: nlurkin
  */
+#include "EventFraction.hh"
+
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
 #include <TGraphAsymmErrors.h>
 #include <TH1D.h>
-#include <cmath>
 
-#include "EventFraction.hh"
 #include "StringTable.hh"
-using namespace std;
 
 EventFraction::EventFraction():
 		fName("DefaultName"),
@@ -32,6 +33,8 @@ EventFraction::EventFraction(const EventFraction& c):
 		fPrecision(c.fPrecision)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
+	///
 	///	Copy constructor
 	/// \EndMemberDescr
 }
@@ -61,7 +64,7 @@ void EventFraction::AddCounter(TString name, int * const v){
 	///	Add a counter to the table
 	/// \EndMemberDescr
 
-	fCounters.insert(pair<TString,int*>(name, v));
+	fCounters.insert(std::pair<TString,int*>(name, v));
 	fSequence.push_back(name);
 }
 
@@ -70,7 +73,7 @@ void EventFraction::DumpTable() const{
 	///	Print the table on stdout
 	/// \EndMemberDescr
 
-	PrintToStream(cout);
+	PrintToStream(std::cout);
 }
 
 void EventFraction::PrintToStream(ostream &s) const{
@@ -80,7 +83,7 @@ void EventFraction::PrintToStream(ostream &s) const{
 	///	Print the table on an output stream
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
+	std::vector<TString>::const_iterator it;
 
 	TGraphAsymmErrors as;
 	TH1D g("g", "", fCounters.size(), 0, fCounters.size());
@@ -172,7 +175,7 @@ void EventFraction::DefineSampleSizeCounter(TString name){
 	/// \EndMemberDescr
 
 	if(fCounters.count(name)==0){
-		cerr << "Error : " << name << " does not exist or has not been added to " << fName << " EventFraction. Cannot define it as sample size" << endl;
+		std::cerr << "Error : " << name << " does not exist or has not been added to " << fName << " EventFraction. Cannot define it as sample size" << std::endl;
 		return;
 	}
 	fSampleSizeCounter = name;
@@ -185,9 +188,9 @@ TString EventFraction::FormatDouble(double v) const{
 	///	Format a double value to match the requested precision
 	/// \EndMemberDescr
 
-	stringstream ss;
+	std::stringstream ss;
 	ss.precision(GetPrecision(v));
-	ss << fixed << v;
+	ss << std::fixed << v;
 
 	return ss.str();
 }

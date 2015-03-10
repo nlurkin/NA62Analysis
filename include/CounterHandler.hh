@@ -9,6 +9,7 @@
 #define COUNTERHANDLER_HH_
 
 #include <map>
+
 #include "EventFraction.hh"
 #include "containers.hh"
 

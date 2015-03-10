@@ -9,6 +9,7 @@
 #define USERMETHODS_HH_
 
 #include <map>
+
 #include <TString.h>
 #include <TChain.h>
 #include <TGraph.h>
@@ -16,6 +17,7 @@
 #include <TH2I.h>
 #include <TH2F.h>
 #include <TDetectorVEvent.hh>
+
 #include "HistoHandler.hh"
 #include "FWEnums.hh"
 #include "MCSimple.hh"
@@ -24,8 +26,6 @@ class BaseAnalysis;
 class DetectorAcceptance;
 class RawHeader;
 class Event;
-
-using namespace std;
 
 /// \class UserMethods
 /// \Brief
@@ -86,42 +86,84 @@ public:
 	//Alias for user to make difference between TH1 and TH2
 	inline void FillHisto2(TString name, TString x, double y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHisto(TString, TString, double, double)
 		/// \EndMemberDescr
 	FillHisto(name,x,y,w);};
 	inline void FillHisto2(TString name, TString x, TString y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHisto(TString, TString, TString, double)
 		/// \EndMemberDescr
 	FillHisto(name,x,y,w);};
 	inline void FillHisto2(TString name, double x, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram.
+		/// \param x : abscissa
+		/// \param w : weight
+		///
 		/// Alias to FillHisto(TString, double, double)
 		/// \EndMemberDescr
 	FillHisto(name,x,w);};
 	inline void FillHisto2(TString name, double x, double y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHisto(TString, double, double, double)
 		/// \EndMemberDescr
 	FillHisto(name,x,y,w);};
 
 	inline void FillHisto2Array(TString name, int index, TString x, double y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram. The index will be appended
+		///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHistoArray(TString, int, TString, double, double)
 		/// \EndMemberDescr
 	FillHistoArray(name, index, x, y, w);};
 	inline void FillHisto2Array(TString name, int index, TString x, TString y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram. The index will be appended
+		///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHistoArray(TString, int, TString, TString, double)
 		/// \EndMemberDescr
 	FillHistoArray(name, index, x, y, w);};
 	inline void FillHisto2Array(TString name, int index, double x, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram. The index will be appended
+		///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
+		/// \param x : abscissa
+		/// \param w : weight
+		///
 		/// Alias to FillHistoArray(TString, int, double, double)
 		/// \EndMemberDescr
 	FillHistoArray(name, index, x, w);};
 	inline void FillHisto2Array(TString name, int index, double x, double y, double w) {
 		/// \MemberDescr
+		/// \param name : Name of the histogram. The index will be appended
+		///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
+		/// \param x : abscissa
+		/// \param y : ordinate
+		/// \param w : weight
+		///
 		/// Alias to FillHistoArray(TString, int, double, double, double)
 		/// \EndMemberDescr
 	FillHistoArray(name, index, x, y, w);};
@@ -169,8 +211,7 @@ public:
 		/// \MemberDescr
 		/// \param name : name of the output
 		/// \param state : is filled with the current state of the output
-		///
-		/// Return an output variable and the corresponding state (template version)
+		/// \return an output variable and the corresponding state (template version)
 		/// \EndMemberDescr
 
 		return (T*)GetOutputVoid(name, state);
@@ -210,8 +251,8 @@ public:
 		/// \MemberDescr
 		/// \param name : Name of the TTree from which the object is read
 		/// \param branchName : name of the branch to retrieve (optional)
+		/// \return the pointer to the object corresponding to the given tree (template version).
 		///
-		/// Return the pointer to the object corresponding to the given tree (template version).
 		/// If branchName is left empty and there is only 1 branch requested on this tree, this
 		/// single branch is returned. If there is more than 1 branch requested on this tree,
 		/// return the first one.

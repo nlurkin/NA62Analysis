@@ -6,9 +6,12 @@
  */
 
 #include "IOTree.hh"
-#include <TChain.h>
-#include <iostream>
+
 #include <signal.h>
+#include <iostream>
+
+#include <TChain.h>
+
 #include "StringBalancedTable.hh"
 
 IOTree::IOTree():

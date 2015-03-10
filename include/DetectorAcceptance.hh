@@ -1,15 +1,16 @@
 #ifndef DETECTORACCEPTANCE_HH
 #define DETECTORACCEPTANCE_HH
 
-#include <TString.h>
-#include <iostream>
+#include <map>
 #include <string>
+#include <iostream>
+
+#include <TString.h>
 #include <TGeoManager.h>
 #include <TVector3.h>
 #include <TCanvas.h>
-#include <map>
+
 #include "FWEnums.hh"
-using namespace std;
 
 /// \class DetectorAcceptance
 /// \Brief 
@@ -83,10 +84,10 @@ private:
 	void buildDetectorsDictionaries();
 
 	//Node name parsing
-	volume ParseDetector(string str) const;
-	GTKVol ParseGTK(string str) const;
-	StrawVol ParseStraw(string str) const;
-	LAVVol ParseLAV(string str) const;
+	volume ParseDetector(std::string str) const;
+	GTKVol ParseGTK(std::string str) const;
+	StrawVol ParseStraw(std::string str) const;
+	LAVVol ParseLAV(std::string str) const;
 
 	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 	TGeoManager *fGeoManager; ///< TGeoManager
@@ -111,8 +112,8 @@ private:
 	TCanvas *fCanvas;	///< Canvas for drawing
 
 	//Dictionaries
-	map<int, int> fLAVDictionary;	///< Map for correspondence between geometry element index and LAV station index
-	map<int, int> fGTKDictionary;	///< Map for correspondence between geometry element index and GTK station index
+	std::map<int, int> fLAVDictionary;	///< Map for correspondence between geometry element index and LAV station index
+	std::map<int, int> fGTKDictionary;	///< Map for correspondence between geometry element index and GTK station index
 
 	//For keeping track of magnet effect
 	TVector3 fMomentumAfterMagnet;	///< Particle momentum after MNP33 magnet

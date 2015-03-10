@@ -7,10 +7,11 @@
 
 #include "StringBalancedTable.hh"
 #include <iostream>
-using namespace std;
 
 StringBalancedTable::StringBalancedTable(TString t) : StringTable(t){
 	/// \MemberDescr
+	/// \param t : Name of the table
+	///
 	/// Default constructor
 	/// \MemberDescr
 
@@ -21,6 +22,8 @@ StringBalancedTable::StringBalancedTable(const StringBalancedTable& c) :
 		fValuesList(c.fValuesList)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
+	///
 	/// Copy constructor
 	/// \MemberDescr
 
@@ -36,6 +39,7 @@ StringBalancedTable::~StringBalancedTable() {
 StringBalancedTable& StringBalancedTable::operator <<(TString v){
 	/// \MemberDescr
 	/// \param v : value to append
+	/// \return Reference to current StringBalancedTable instance
 	///
 	/// Append a value to the list
 	/// \MemberDescr
@@ -52,7 +56,7 @@ void StringBalancedTable::Print(TString prefix){
 	/// Example \\t to add a tabulation in front of the whole table.
 	/// \MemberDescr
 
-	Print(prefix, cout);
+	Print(prefix, std::cout);
 }
 
 void StringBalancedTable::Print(TString prefix, ostream &s){
@@ -65,7 +69,7 @@ void StringBalancedTable::Print(TString prefix, ostream &s){
 	/// \MemberDescr
 
 	int size, colsNumber;
-	vector<TString>::iterator it;
+	std::vector<TString>::iterator it;
 
 	size = fValuesList.size();
 

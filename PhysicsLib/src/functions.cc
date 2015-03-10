@@ -4,8 +4,6 @@
 #include <sstream>
 
 #include "functions.hh"
-using namespace std;
-using namespace NA62Constants;
 
 /// \file functions.cc
 /// DISCLAIMER: This file needs reviewing. Most of the functions in this file are here by legacy
@@ -19,6 +17,7 @@ TVector3 propagate(TVector3 pos, TVector3 p, double z){
 	/// \param z : projection position
 	///
 	/// Propagate the particle to z position
+	/// \return TVector3 representing the propagated position
 	/// \EndMemberDescr
 
 	TVector3 result;
@@ -32,6 +31,7 @@ TString printVector2( TVector2 v )
 	/// \param v : Vector to format
 	///
 	/// Output correct format for printing TVector2 coordinates
+	/// \return Formatted string representation of TVector2
 	/// \EndMemberDescr
 
 	ostringstream ss;
@@ -45,6 +45,7 @@ TString printVector3( TVector3 v )
 	/// \param v : Vector to format
 	///
 	/// Output correct format for printing TVector3 coordinates
+	/// \return Formatted string representation of TVector3
 	/// \EndMemberDescr
 
 	ostringstream ss;
@@ -58,6 +59,7 @@ TString printVector4( TLorentzVector v )
 	/// \param v : Vector to format
 	///
 	/// Output correct format for printing TLorentzVector coordinates
+	/// \return Formatted string representation of TLorentzVector
 	/// \EndMemberDescr
 
 	ostringstream ss;
@@ -82,6 +84,7 @@ bool IsInDetector(double propagation_pos, double prod_pos, double min_pos, doubl
 	///
 	/// Say if the particle is in the detector volume. For polygonal detectors.\n
 	/// WARNING : Approximations are always made with this function. Use the DetectorAcceptance class instead.
+	/// \return true if the particle is in the volume. Else false.
 	/// \EndMemberDescr
 
 	int i, j=crnr_nb-1;
@@ -132,6 +135,7 @@ bool IsInDetector(double propagation_pos, double prod_pos, double min_pos, doubl
 	///
 	/// Say if the particle is in the detector volume. For cylindrical detectors<br>
 	/// WARNING : Approximations are always made with this function. Use the DetectorAcceptance class instead.
+	/// \return true if the particle is in the volume. Else false.
 	/// \EndMemberDescr
 
 	double sq_radius_front = (pow(x_front-centerx,2) + pow(y_front-centery, 2));
@@ -161,6 +165,7 @@ TVector3 spec_propagate( const TVector3 StartPosition, const TVector3 StartMomen
 	/// Analytic propagation of a charged particle. It takes into account the\n
 	/// presence of the bending magnet of the Spectrometer if fZEnd is greater\n
 	/// than the Z coordinate of the center of the spectrometer.\n
+	/// \return TVector3 of the propagated particle through the magnetic field
 	/// \EndMemberDescr
 
 	TVector3 EndPosition, EndMomentum;
@@ -230,7 +235,7 @@ double distance3D(TVector3 p1, TVector3 p2){
 	/// \param p1 : point 1
 	/// \param p2 : point 2
 	///
-	/// Return the distance between two points in 3D space
+	/// \return Distance between two points in 3D space
 	/// \EndMemberDescr
 
 	return sqrt(pow(p1.X()-p2.X(), 2) + pow(p1.Y()-p2.Y(), 2) + pow(p1.Z()-p2.Z(), 2));
@@ -242,7 +247,7 @@ double distance2D(TVector3 p1, TVector3 p2, TString plane){
 	/// \param p2 : point 2
 	/// \param plane : plane on which the distance is computed
 	///
-	/// Return the distance between two points in 2D space
+	/// \return Distance between two points in 2D space
 	/// \EndMemberDescr
 
 	plane.ToUpper();

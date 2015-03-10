@@ -6,7 +6,9 @@
  */
 
 #include "IOHisto.hh"
+
 #include <iostream>
+
 #include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -216,6 +218,12 @@ void IOHisto::UpdateInputHistograms(){
 }
 
 bool IOHisto::CheckNewFileOpened() {
+	/// \MemberDescr
+	/// \return true if a new file has been opened. false otherwise.
+	///
+	/// Check if a new file has been opened
+	/// \EndMemberDescr
+
 	bool ret = fNewFileOpened;
 	if(fNewFileOpened){
 		gFile = fOutFile;
@@ -227,6 +235,11 @@ bool IOHisto::CheckNewFileOpened() {
 }
 
 void IOHisto::LoadEvent(int iEvent) {
+	/// \MemberDescr
+	/// \param iEvent : Index of the file to load
+	///
+	/// Load the file at index iEvent
+	/// \EndMemberDescr
 	if(iEvent<GetInputFileNumber()){
 		if(fCurrentFile) fCurrentFile->Close();
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
@@ -237,6 +250,14 @@ void IOHisto::LoadEvent(int iEvent) {
 
 bool IOHisto::OpenInput(TString inFileName, int nFiles,
 		AnalysisFW::VerbosityLevel verbosity) {
+	/// \MemberDescr
+	/// \param inFileName : Path to the input root file, or file containing a list of input root files
+	/// \param nFiles : Number of files to read
+	/// \param verbosity : Verbosity level
+	/// \return true in case of success. Else false
+	///
+	/// Open input files
+	/// \EndMemberDescr
 
 	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
 	LoadEvent(0);
