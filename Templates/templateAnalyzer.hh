@@ -7,7 +7,6 @@
 #include "MCSimple.hh"
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
-using namespace std;
 
 class TH1I;
 class TH2F;

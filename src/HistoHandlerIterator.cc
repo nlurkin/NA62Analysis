@@ -6,6 +6,7 @@
  */
 
 #include "HistoHandler.hh"
+
 #include <vector>
 
 /// \class HistoHandler::Iterator

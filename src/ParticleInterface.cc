@@ -7,13 +7,11 @@
 
 #include "ParticleInterface.hh"
 
-using namespace std;
-
 ParticleInterface *ParticleInterface::fParticleInterface = 0;
 
 ParticleInterface *ParticleInterface::GetParticleInterface(){
 	/// \MemberDescr
-	/// Return a pointer to the unique instance of G4ParticleInterface
+	/// \return Pointer to the unique instance of G4ParticleInterface
 	/// \EndMemberDescr
 
 	if(!fParticleInterface) fParticleInterface = new ParticleInterface();
@@ -38,8 +36,7 @@ ParticleInterface::~ParticleInterface() {
 const TParticlePDG* ParticleInterface::FindParticle(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg code of the particle
-	///
-	/// Return the G4ParticleDefinition corresponding to the provided particle pdg code
+	/// \return G4ParticleDefinition corresponding to the provided particle pdg code
 	/// \EndMemberDescr
 
 	return fTable->GetParticle(pdgID);
@@ -48,8 +45,7 @@ const TParticlePDG* ParticleInterface::FindParticle(int pdgID) const{
 const TParticlePDG* ParticleInterface::FindParticle(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the particle
-	///
-	/// Return the G4ParticleDefinition corresponding to the provided particle name
+	/// \return G4ParticleDefinition corresponding to the provided particle name
 	/// \EndMemberDescr
 
 	return fTable->GetParticle(name.Data());
@@ -58,8 +54,7 @@ const TParticlePDG* ParticleInterface::FindParticle(TString name) const{
 TString ParticleInterface::GetParticleName(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg code of the particle
-	///
-	/// Return the name of the particle with the specified pdg code
+	/// \return Name of the particle with the specified PDG code
 	/// \EndMemberDescr
 
 	TParticlePDG *p = fTable->GetParticle(pdgID);
@@ -72,8 +67,7 @@ TString ParticleInterface::GetParticleName(int pdgID) const{
 int ParticleInterface::GetParticlePDGid(TString name) const{
 	/// \MemberDescr
 	/// \param name : name of the particle
-	///
-	/// Return the pdg code of the specified particle
+	/// \return PDG code of the specified particle
 	/// \EndMemberDescr
 
 	TParticlePDG *p = fTable->GetParticle(name.Data());

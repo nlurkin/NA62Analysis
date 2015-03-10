@@ -4,14 +4,13 @@
  *  Created on: Jun 10, 2013
  *      Author: nlurkin
  */
-
-#include <TString.h>
-#include <vector>
-#include <map>
-using namespace std;
-
 #ifndef STRINGTABLE_HH_
 #define STRINGTABLE_HH_
+
+#include <vector>
+#include <map>
+
+#include <TString.h>
 
 /// \class StringTable
 /// \Brief 
@@ -33,16 +32,16 @@ public:
 	StringTable(const StringTable& c);
 	virtual ~StringTable();
 
-	void Print(TString prefix) const;
-	void Print(TString prefix, ostream &s) const;
+	virtual void Print(TString prefix) const;
+	virtual void Print(TString prefix, ostream &s) const;
 
 	void AddColumn(TString id, TString title);
 	void AddValue(TString column, TString value);
 	void AddValue(unsigned int column, TString value);
 
-	StringTable& operator<<(TString value);
-	StringTable& operator<<(int value);
-	StringTable& operator<<(StringTable& (*f)(StringTable&));
+	virtual StringTable& operator<<(TString value);
+	virtual StringTable& operator<<(int value);
+	virtual StringTable& operator<<(StringTable& (*f)(StringTable&));
 
 	void NewRow();
 	void AddSeparatorRow();
@@ -61,9 +60,9 @@ protected:
 
 	int fCurrCol; ///< Current column index
 
-	vector< vector<TString> > fContent; ///< Cells content
-	map<TString, int> fOrder; ///< Columns sequence
-	mutable vector<int> fColWidth; ///< Columns width in character
+	std::vector< std::vector<TString> > fContent; ///< Cells content
+	std::map<TString, int> fOrder; ///< Columns sequence
+	mutable std::vector<int> fColWidth; ///< Columns width in character
 
 	TString fTitle; ///< Title of the table
 };

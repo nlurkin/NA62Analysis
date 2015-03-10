@@ -1,8 +1,14 @@
-#include <iostream>
-#include <TVector3.h>
 #include <signal.h>
+#include <iostream>
 #include <set>
 #include <queue>
+
+#include <TVector3.h>
+#include <TChain.h>
+#include <TLorentzVector.h>
+#include <TH1I.h>
+#include <TH2I.h>
+#include <TH2F.h>
 
 #include "TGigaTrackerEvent.hh"
 #include "TIRCEvent.hh"
@@ -19,14 +25,7 @@
 #include "KinePart.hh"
 #include "Event.hh"
 
-#include <TChain.h>
-#include <TLorentzVector.h>
-#include <TH1I.h>
-#include <TH2I.h>
-#include <TH2F.h>
-
 #include "NA62Constants.hh"
-using namespace std;
 
 /**
  * DISCLAIMER: This file needs reviewing. Most of the functions in this file are here by legacy

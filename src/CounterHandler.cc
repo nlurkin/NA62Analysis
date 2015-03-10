@@ -19,6 +19,7 @@ CounterHandler::CounterHandler(const CounterHandler& c):
 		fCounters(c.fCounters)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
 	/// Copy constructor
 	/// \EndMemberDescr
 }
@@ -39,6 +40,7 @@ CounterHandler::~CounterHandler() {
 
 void CounterHandler::WriteEventFraction(TString fileName) const{
 	/// \MemberDescr
+	/// \param fileName : Path to the target file for writing
 	/// Dump the EventFraction
 	/// \EndMemberDescr
 
@@ -57,7 +59,7 @@ void CounterHandler::NewEventFraction(TString name){
 	/// Create a new EventFraction instance
 	/// \EndMemberDescr
 
-	fEventFraction.insert(pair<TString,EventFraction*>(name, new EventFraction(name)));
+	fEventFraction.insert(std::pair<TString,EventFraction*>(name, new EventFraction(name)));
 }
 void CounterHandler::AddCounterToEventFraction(TString efName, TString cName){
 	/// \MemberDescr
@@ -74,9 +76,9 @@ void CounterHandler::AddCounterToEventFraction(TString efName, TString cName){
 		if((ptr2=fCounters.find(cName))!=fCounters.end()){
 			ptr->second->AddCounter(cName, &ptr2->second);
 		}
-		else cerr << "Counter " << cName << " doesn't exist." << endl;
+		else std::cerr << "Counter " << cName << " doesn't exist." << std::endl;
 	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
+	else std::cerr << "EventFraction table " << efName << " doesn't exist." << std::endl;
 }
 void CounterHandler::DefineSampleSizeCounter(TString efName, TString cName){
 	/// \MemberDescr
@@ -92,9 +94,9 @@ void CounterHandler::DefineSampleSizeCounter(TString efName, TString cName){
 		if(fCounters.count(cName)>0){
 			ptr->second->DefineSampleSizeCounter(cName);
 		}
-		else cerr << "Counter " << cName << " doesn't exist." << endl;
+		else std::cerr << "Counter " << cName << " doesn't exist." << std::endl;
 	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
+	else std::cerr << "EventFraction table " << efName << " doesn't exist." << std::endl;
 }
 void CounterHandler::SetSignificantDigits(TString efName, int v){
 	/// \MemberDescr
@@ -109,7 +111,7 @@ void CounterHandler::SetSignificantDigits(TString efName, int v){
 	if((ptr=fEventFraction.find(efName))!=fEventFraction.end()){
 		ptr->second->SetPrecision(v);
 	}
-	else cerr << "EventFraction table " << efName << " doesn't exist." << endl;
+	else std::cerr << "EventFraction table " << efName << " doesn't exist." << std::endl;
 }
 
 void CounterHandler::BookCounter(TString name){
@@ -119,7 +121,7 @@ void CounterHandler::BookCounter(TString name){
 	/// Book a new counter
 	/// \EndMemberDescr
 
-	fCounters.insert(pair<TString,int>(name, 0));
+	fCounters.insert(std::pair<TString,int>(name, 0));
 }
 void CounterHandler::IncrementCounter(TString name){
 	/// \MemberDescr
@@ -143,7 +145,7 @@ void CounterHandler::IncrementCounter(TString name, int v){
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second += v;
 	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
+	else std::cerr << "Counter " << name << " doesn't exist." << std::endl;
 }
 void CounterHandler::DecrementCounter(TString name){
 	/// \MemberDescr
@@ -167,7 +169,7 @@ void CounterHandler::DecrementCounter(TString name, int v){
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second -= v;
 	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
+	else std::cerr << "Counter " << name << " doesn't exist." << std::endl;
 }
 void CounterHandler::SetCounterValue(TString name, int v){
 	/// \MemberDescr
@@ -182,13 +184,13 @@ void CounterHandler::SetCounterValue(TString name, int v){
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		ptr->second = v;
 	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
+	else std::cerr << "Counter " << name << " doesn't exist." << std::endl;
 }
 int CounterHandler::GetCounterValue(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the counter
 	///
-	/// Get the value of a previously booked counter
+	/// \return Value of a previously booked counter
 	/// \EndMemberDescr
 
 	AnalysisFW::NA62Map<TString,int>::type::const_iterator ptr;
@@ -196,7 +198,7 @@ int CounterHandler::GetCounterValue(TString name) const{
 	if((ptr=fCounters.find(name))!=fCounters.end()){
 		return ptr->second;
 	}
-	else cerr << "Counter " << name << " doesn't exist." << endl;
+	else std::cerr << "Counter " << name << " doesn't exist." << std::endl;
 	return -1;
 }
 

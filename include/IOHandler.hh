@@ -12,6 +12,7 @@
 #include <TFile.h>
 #include "FWEnums.hh"
 
+/// Type of IOHandler: Not specified yet, histogram IO, TTree IO
 enum class IOHandlerType {kNOIO, kHISTO, kTREE};
 
 /// \class IOHandler
@@ -37,7 +38,12 @@ public:
 	virtual bool CheckNewFileOpened();
 	TString GetOutputFileName() const;
 	int GetCurrentFileNumber() const;
-	int GetInputFileNumber() const { return fInputfiles.size(); };
+	int GetInputFileNumber() const {
+		/// \MemberDescr
+		/// \return Number of input files
+		/// \EndMemberDescr
+		return fInputfiles.size();
+	};
 	virtual void LoadEvent(int iEvent) {};
 
 	//Writing
@@ -46,12 +52,17 @@ public:
 	//Printing
 	virtual void PrintInitSummary() const;
 
-	const IOHandlerType GetIOType() const { return fIOType; };
+	const IOHandlerType GetIOType() const {
+		/// \MemberDescr
+		/// \return Type of IO handler
+		/// \EndMemberDescr
+		return fIOType;
+	};
 
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
-	IOHandlerType fIOType;
+	IOHandlerType fIOType; ///< Type of IO handler
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain
 

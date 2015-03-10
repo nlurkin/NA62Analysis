@@ -6,8 +6,10 @@
  */
 
 #include "IOHandler.hh"
+
 #include <iostream>
 #include <fstream>
+
 #include <TFile.h>
 #include <TObjString.h>
 
@@ -30,6 +32,8 @@ IOHandler::IOHandler(const IOHandler& c):
 	fCurrentFile(c.fCurrentFile)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
+	///
 	/// Copy constructor
 	/// \EndMemberDescr
 }
@@ -52,6 +56,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
 	/// \param verbosity : verbosity level
+	/// \return true if success, else false
 	///
 	/// Open and register the input files.
 	/// \EndMemberDescr
@@ -99,6 +104,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 bool IOHandler::OpenOutput(TString outFileName){
 	/// \MemberDescr
 	/// \param outFileName : Path to the output file
+	/// \return true if success, else false
 	///
 	/// Open the output file
 	/// \EndMemberDescr
@@ -134,6 +140,9 @@ bool IOHandler::CheckNewFileOpened() {
 
 void IOHandler::NewFileOpened(int index, TFile* currFile){
 	/// \MemberDescr
+	/// \param index : Index of the new file
+	/// \param currFile : Pointer to the new file
+	///
 	/// Method called by TChain when opening a new file.\n
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
@@ -151,16 +160,14 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 
 TString IOHandler::GetOutputFileName() const{
 	/// \MemberDescr
-	///
-	/// Return the base name of the output file
+	/// \return Base name of the output file
 	/// \EndMemberDescr
 
 	return fOutFileName;
 }
 int IOHandler::GetCurrentFileNumber() const{
 	/// \MemberDescr
-	///
-	/// Return the index of the currently opened file
+	/// \return Index of the currently opened file
 	/// \EndMemberDescr
 
 	return fCurrentFileNumber;

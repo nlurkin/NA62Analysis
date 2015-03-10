@@ -7,7 +7,6 @@
 #include "UserMethods.hh"
 #include "IOHandler.hh"
 
-using namespace std;
 typedef pair<TString, void*> param_t;
 
 /// \class Analyzer
@@ -125,7 +124,7 @@ protected:
 
 	//Collection of warning messages
 	void printNoMCWarning() const;
-	void printIncompleteMCWarning(int i) const;
+	void printIncompleteMCWarning(int iEvent) const;
 
 	mutable bool fNoMCWarned; ///< Has the user been warned that No MC data have been found and that he can change this behavior?
 	mutable bool fIncompleteMCWarned; ///< Has the user been warned that the MC event does not match the requested one in fMCSimple and that he can change this behavior?

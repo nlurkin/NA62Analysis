@@ -27,7 +27,6 @@ public:
 	void AddAnalyzer(Analyzer * const an);
 	void SetVerbosity(AnalysisFW::VerbosityLevel v);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
-	void InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 	void ProcessWithTree(int beginEvent, int maxEvent);
 	void ProcessWithHisto(int beginEvent, int maxEvent);
@@ -53,10 +52,25 @@ public:
 	int GetNEvents();
 	TChain* GetTree(TString name);
 
-	bool IsHistoType() { return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE; };
-	bool IsTreeType() { return fIOHandler->GetIOType()==IOHandlerType::kTREE; };
+	bool IsHistoType() {
+		/// \MemberDescr
+		/// \return true if IO Handler is compatible with Histo type
+		/// \EndMemberDescr
+		return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE;
+	};
+	bool IsTreeType() {
+		/// \MemberDescr
+		/// \return true if IO Handler is compatible with Tree type
+		/// \EndMemberDescr
+		return fIOHandler->GetIOType()==IOHandlerType::kTREE;
+	};
 
-	void SetGraphicMode(bool bVal) { fGraphicMode = bVal; };
+	void SetGraphicMode(bool bVal) {
+		/// \MemberDescr
+		/// \param bVal : Graphic mode On/Off flag
+		/// \EndMemberDescr
+		fGraphicMode = bVal;
+	};
 	void SetReadType(IOHandlerType type);
 
 private:

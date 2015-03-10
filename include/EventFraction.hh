@@ -10,9 +10,10 @@
 
 #include <iostream>
 #include <map>
+
 #include <TString.h>
+
 #include "containers.hh"
-using namespace std;
 
 /// \class EventFraction
 /// \Brief 
@@ -49,7 +50,7 @@ private:
 	void PrintToStream(ostream &s) const;
 
 	AnalysisFW::NA62Map<TString,int*>::type fCounters; ///< Map of counters
-	vector<TString> fSequence; ///< Define the display order of the counters
+	std::vector<TString> fSequence; ///< Define the display order of the counters
 	TString fName; ///< Name of the EventFraction
 	TString fSampleSizeCounter;	///< Name of the counter defining the sample size
 	int fPrecision; ///< Display precision

@@ -5,14 +5,14 @@
  *      Author: nlurkin
  */
 
-#include <vector>
-#include <TString.h>
-#include "KinePart.hh"
-
-using namespace std;
-
 #ifndef PARTICLETREE_HH_
 #define PARTICLETREE_HH_
+
+#include <vector>
+
+#include <TString.h>
+
+#include "KinePart.hh"
 
 /// \class ParticleTree
 /// \Brief 
@@ -41,14 +41,14 @@ public:
 
 	void AddChildren(ParticleTree *child);
 	ParticleTree *GetChildren(int id);
-	bool GetFinalState(vector<KinePart*> &array) const;
-	bool GetLevel(vector<KinePart*> &array, int level, bool full) const;
+	bool GetFinalState(std::vector<KinePart*> &array) const;
+	bool GetLevel(std::vector<KinePart*> &array, int level, bool full) const;
 
 	ParticleTree *operator[](unsigned int i);
 	void PrintHorizontal(TString prefix="", int cellSize=10, int level=1) const;
 
 private:
-	vector<ParticleTree*> fChildrens; ///< Children nodes
+	std::vector<ParticleTree*> fChildrens; ///< Children nodes
 	int fpdgID; ///< PDG id of the particle
 	int fId; ///< Sequence id of the particle
 	TString fName; ///< Name of the particle

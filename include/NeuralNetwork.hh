@@ -3,8 +3,8 @@
 
 #include <TMultiLayerPerceptron.h>
 #include <TMLPAnalyzer.h>
+
 #include "FWEnums.hh"
-using namespace std;
 
 /// \class NeuralNetwork
 /// \Brief 
@@ -41,9 +41,9 @@ private:
 	void Create();
 
 	//Containers for the components of the NN
-	vector<TString> fInputsName; ///< Container for the names of the input variables
-	vector<void*> fInputs; ///< Container for the pointers to the input variables
-	vector<int> fLayers; ///< Definition of the NN structure
+	std::vector<TString> fInputsName; ///< Container for the names of the input variables
+	std::vector<void*> fInputs; ///< Container for the pointers to the input variables
+	std::vector<int> fLayers; ///< Definition of the NN structure
 	int fNNOutputResult; ///< Store the output of the NN
 
 	int fNumberBckg; ///< Number of background entries

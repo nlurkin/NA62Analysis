@@ -2,12 +2,14 @@
 #define SKIMMINGNOSTRAWMUONSTRACKS_HH
 
 #include <stdlib.h>
+
 #include <vector>
+
+#include <TCanvas.h>
+
 #include "Analyzer.hh"
 #include "MCSimple.hh"
 #include "DetectorAcceptance.hh"
-#include <TCanvas.h>
-using namespace std;
 
 class TH1I;
 class TH2F;

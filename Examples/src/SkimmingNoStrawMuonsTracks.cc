@@ -1,13 +1,16 @@
 //Mandatory includes
 #include "SkimmingNoStrawMuonsTracks.hh"
+
 #include <stdlib.h>
 #include <iostream>
+
+#include <TChain.h>
+
+#include "Event.hh"
+
+#include "Persistency.hh"
 #include "MCSimple.hh"
 #include "functions.hh"
-#include "Event.hh"
-#include <TChain.h>
-#include "Persistency.hh"
-using namespace std;
 
 /// \class SkimmingNoStrawMuonsTracks
 /// \Brief

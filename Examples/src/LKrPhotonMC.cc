@@ -1,15 +1,19 @@
 //Mandatory includes
 #include "LKrPhotonMC.hh"
+
 #include <stdlib.h>
 #include <iostream>
+
+#include <TChain.h>
+
+#include "Event.hh"
+
+#include "TRecoLKrCandidateMC.hh"
 #include "MCSimple.hh"
 #include "functions.hh"
-#include "Event.hh"
-#include <TChain.h>
 #include "Persistency.hh"
 using namespace std;
 
-#include "TRecoLKrCandidateMC.hh"
 
 /// \class LKrPhotonMC
 /// \Brief

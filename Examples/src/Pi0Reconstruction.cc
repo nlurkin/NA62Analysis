@@ -1,12 +1,16 @@
 //Mandatory includes
 #include "Pi0Reconstruction.hh"
+
 #include <stdlib.h>
 #include <iostream>
-#include "MCSimple.hh"
-#include "functions.hh"
-#include "Event.hh"
+
 #include <TChain.h>
 #include <TFile.h>
+
+#include "Event.hh"
+
+#include "MCSimple.hh"
+#include "functions.hh"
 #include "Persistency.hh"
 using namespace std;
 

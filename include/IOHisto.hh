@@ -10,6 +10,7 @@
 
 #include "IOHandler.hh"
 #include "containers.hh"
+
 class TH1;
 class TH2;
 class TGraph;
@@ -33,7 +34,7 @@ public:
 	void UpdateInputHistograms();
 
 private:
-	bool fNewFileOpened;
+	bool fNewFileOpened; ///< Indicates if a new file has been opened
 
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files

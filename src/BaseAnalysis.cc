@@ -1,9 +1,10 @@
 #include "BaseAnalysis.hh"
 
 #include <TStyle.h>
+#include <TFile.h>
+
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
-#include <TFile.h>
 
 BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
@@ -24,7 +25,6 @@ BaseAnalysis::~BaseAnalysis(){
 	/// \MemberDescr
 	/// Destructor.
 	/// \EndMemberDescr
-	//AnalysisFW::NA62Map<TString, MCSimple*>::type::iterator it;
 
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
 }
@@ -47,8 +47,8 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	///	\param params : list of command line parameters to parse and pass to analyzers
 	/// \param configFile : path to a runtime configuration file to be parsed and defining parameters for analyzers.
 	///	\param NFiles : Maximum number of input files to process
-	/// \param graphicMode : Graphical mode. Display plots on screen (call DrawPlots on analyzers).
 	/// \param refFile : Eventual name of a file containing reference plots
+	/// \param allowNonExisting : Continue processing if input tree is not found
 	///
 	/// Add all the input files to TChains and to Analyzers and create branches.\n
 	/// Initialize the output trees (Histograms) and create branches.
@@ -65,7 +65,14 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 	fIOHandler->OpenOutput(outFileName);
 
-	if(IsTreeType()) InitWithTree(inFileName, outFileName, params, configFile, NFiles, refFile, allowNonExisting);
+	if(IsTreeType()){
+		IOTree * treeHandler = static_cast<IOTree*>(fIOHandler);
+
+		treeHandler->SetReferenceFileName(refFile);
+		treeHandler->SetAllowNonExisting(allowNonExisting);
+
+		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
+	}
 
 	CheckNewFileOpened();
 	//Parse parameters from file
@@ -92,35 +99,6 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
 
 	fInitialized = true;
-}
-
-void BaseAnalysis::InitWithTree(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting){
-	/// \MemberDescr
-	/// \param inFileName : path to the input file / path to the file containing the list of input files
-	/// \param outFileName : path to the output file
-	///	\param params : list of command line parameters to parse and pass to analyzers
-	/// \param configFile : path to a runtime configuration file to be parsed and defining parameters for analyzers.
-	///	\param NFiles : Maximum number of input files to process
-	/// \param graphicMode : Graphical mode. Display plots on screen (call DrawPlots on analyzers).
-	/// \param refFile : Eventual name of a file containing reference plots
-	///
-	/// Add all the input files to TChains and to Analyzers and create branches.\n
-	/// Initialize the output trees (Histograms) and create branches.
-	/// \EndMemberDescr
-
-	//##############################
-	//Get data from Files
-	//Check integrity
-	//Check all the data are present
-	//##############################
-	TString anName, anParams;
-
-	IOTree * treeHandler = static_cast<IOTree*>(fIOHandler);
-
-	treeHandler->SetReferenceFileName(refFile);
-	treeHandler->SetAllowNonExisting(allowNonExisting);
-
-	fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -408,6 +386,7 @@ DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){
 	/// \MemberDescr
 	/// Return a pointer to the unique global instance of DetectorAcceptance.\n
 	/// If not yet instantiated, instantiate it.
+	/// \return Pointer to the unique global instance of DetectorAcceptance
 	/// \EndMemberDescr
 
 	if(fDetectorAcceptanceInstance==NULL){
@@ -419,7 +398,7 @@ DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){
 
 DetectorAcceptance* BaseAnalysis::IsDetectorAcceptanceInstanciated() const{
 	/// \MemberDescr
-	/// Return a pointer to the unique global instance of DetectorAcceptance if instantiated. Otherwise return null.
+	/// \return Pointer to the unique global instance of DetectorAcceptance if instantiated. Otherwise return null.
 	/// \EndMemberDescr
 
 	return fDetectorAcceptanceInstance;
@@ -479,7 +458,7 @@ void BaseAnalysis::CheckNewFileOpened(){
 
 IOHandler* BaseAnalysis::GetIOHandler() {
 	/// \MemberDescr
-	///	Return a pointer to the IOHandler instance
+	///	\return Pointer to the IOHandler instance
 	/// \EndMemberDescr
 
 	return fIOHandler;
@@ -487,7 +466,7 @@ IOHandler* BaseAnalysis::GetIOHandler() {
 
 CounterHandler* BaseAnalysis::GetCounterHandler() {
 	/// \MemberDescr
-	///	Return a pointer to the CounterHandler instance
+	///	\return Pointer to the CounterHandler instance
 	/// \EndMemberDescr
 
 	return &fCounterHandler;
@@ -495,7 +474,7 @@ CounterHandler* BaseAnalysis::GetCounterHandler() {
 
 int BaseAnalysis::GetNEvents(){
 	/// \MemberDescr
-	///	Return the total number of events loaded from the input files
+	///	\return Total number of events loaded from the input files
 	/// \EndMemberDescr
 	return fNEvents;
 }
@@ -504,7 +483,7 @@ TChain* BaseAnalysis::GetTree(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the TChain
 	///
-	///	Return a pointer to the TChain
+	///	\return Pointer to the TChain
 	/// \EndMemberDescr
 
 	if(IsTreeType()) return GetIOTree()->GetTree(name);

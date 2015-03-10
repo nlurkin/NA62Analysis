@@ -1,11 +1,12 @@
 #include "MCSimple.hh"
-#include "KinePart.hh"
+
 #include <iostream>
 #include <map>
 #include <list>
+
+#include "KinePart.hh"
 #include "functions.hh"
 #include "ParticleTree.hh"
-using namespace std;
 
 
 MCSimple::MCSimple():
@@ -28,6 +29,8 @@ MCSimple::MCSimple(const MCSimple& c):
 		fDecayTree(c.fDecayTree)
 {
 	/// \MemberDescr
+	/// \param c : Reference of the object to copy
+	///
 	/// Copy constructor
 	/// \EndMemberDescr
 }
@@ -143,6 +146,7 @@ int MCSimple::AddParticle(int parent, int type){
 	/// \MemberDescr
 	/// \param parent : id of the parent particle. This id is not the MC id found in the root file but the sequence id of the parent particle.
 	/// \param type : PDG code of the particle
+	/// \return Index of the added particle
 	///
 	/// Insert a new particle signature. Insertion has to be done generation by generation.\n
 	/// The sequence id are inserted with a minus sign to later avoid confusion between sequence id and MC id.\n
@@ -229,8 +233,7 @@ void MCSimple::ClearParticles(){
 vector<KinePart*> MCSimple::operator [](TString name){
 	/// \MemberDescr
 	/// \param name : name of the requested particle
-	///
-	/// Return the corresponding particle vector
+	/// \return Corresponding particle vector
 	/// \EndMemberDescr
 
 	int pdgID;
@@ -242,8 +245,7 @@ vector<KinePart*> MCSimple::operator [](TString name){
 vector<KinePart*> MCSimple::operator [](int pdgCode){
 	/// \MemberDescr
 	/// \param pdgCode : PDG id of the requested particle
-	///
-	/// Return the corresponding particle vector
+	/// \return Corresponding particle vector
 	/// \EndMemberDescr
 
 	return *fParticles[pdgCode];
@@ -252,8 +254,7 @@ vector<KinePart*> MCSimple::operator [](int pdgCode){
 int MCSimple::Size(int pdgID) const{
 	/// \MemberDescr
 	/// \param pdgID : pdg ID of the particle
-	///
-	/// Return the number of particles
+	/// \return Number of particles
 	/// \EndMemberDescr
 
 	if(fParticles.count(pdgID)==0) return 0;
@@ -263,8 +264,7 @@ int MCSimple::Size(int pdgID) const{
 int MCSimple::Size(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the particle
-	///
-	/// Return the number of particles
+	/// \return Number of particles
 	/// \EndMemberDescr
 
 	return Size(GetPdgID(name));
@@ -306,7 +306,7 @@ void MCSimple::PrintDecayTree() const{
 
 vector<KinePart*> MCSimple::GetFinalState(){
 	/// \MemberDescr
-	/// Return a vector containing a pointer to every KinePart with no daughters (Final State)
+	/// \return Vector containing a pointer to every KinePart with no daughters (Final State)
 	/// \EndMemberDescr
 
 	vector<KinePart*> v;
@@ -319,8 +319,7 @@ vector<KinePart*> MCSimple::GetDecayLevel(int level, bool full){
 	/// \MemberDescr
 	/// \param level : Level to fetch in the decay tree
 	/// \param full : If true, will also return the final particles that did not reach the requested level.
-	///
-	/// Return a vector containing a pointer to every KinePart at the requested level in the decay tree.
+	/// \return Vector containing a pointer to every KinePart at the requested level in the decay tree.
 	/// \EndMemberDescr
 
 	vector<KinePart*> v;
