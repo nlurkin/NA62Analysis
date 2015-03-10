@@ -7,10 +7,10 @@ Requirements
 
 This framework need Geant4, ROOT and NA62MC to be compiled and has been tested
 with the following versions :
-	gcc 4.6.3 | 4.1.2
-	Geant4.9.5p03
-	ROOT 5.34.04 | 5.34.05
-	NA62MC rev_245, rev_255, rev_263
+    gcc 4.6.3 | 4.1.2
+    Geant4.9.5p03
+    ROOT 5.34.04 | 5.34.05
+    NA62MC rev_245, rev_255, rev_263
 
 Take care of compiling each of these with the same version of gcc.
 Although only tested with these versions, it's most likely to work without 
@@ -170,11 +170,34 @@ If you want to run the program with a set of analyzers
       NA62AnalysisBuilder.py build configFileName
 
   o Run with
-      ./yourExecutableName [-hga] <-i InputFile | -l InpuFilesList> 
-                           [-B NumberOfFilesToProcess] [-n FirstEvent]
-                           [-N NumberOfEvents] [-o OutputFile] [-v verbosity]
-                           [-p "analyzer:param=val;param=val&analyzer:param=val&..."]
-                           [-c configFile] [-h]
+      ./yourExecutableName (-i path | -l/--list path) [options]
+
+      Allowed options:
+       -h/--help            : Display this help
+       -v [level]           : Verbosity level.
+                              Possible values: kNo, kUser, kNormal, kDebug or 0,1,2,3;
+                              Default=kNo; If level not specified: kNormal
+       -g                   : Graphical mode. Starts a ROOT application for display.
+                              Do not automatically exit at the end of the processing, Ctrl-C to exit.
+       -n/--nevt int        : Maximum number of events to process.
+       -o/--output path     : Path to output ROOT file. Will be overwritten if already exists.
+       -p/--params string   : List of parameters to pass to analyzers.
+                              The format of the string is 
+                              "analyzerName:param=val;param=val&analyzerName:param=val&..."
+       --histo              : Read histograms only and bypass TTree reading.
+       --start int          : Index of the first event to process.
+                              Event index starts at 0. The n first events will be skipped.
+       --config path        : Path to a configuration file containing analyzers parameters.
+       --reffile path       : Path to a ROOT file containing reference plots.
+       --ignore             : Ignore non-existing trees and continue processing.
+
+     Mutually exclusive options groups:
+      Group1:
+        -i path             : Path to an input ROOT file.
+      Group2:
+        -l/--list path      : Path to a text file containing a list of paths to input ROOT files.
+                              One file per line.
+        -B/--nfiles int     : Maximum number of files to process from the list.
 
 The runtime configuration file will advantageously replace long list of command line parameters 
 (with -p). The format of the configuration file is the following:
