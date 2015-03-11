@@ -3,6 +3,12 @@ NA62Analysis Project
 ################################################################
 
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 456
+        - Fix bug when using input histograms in StartOfBurst or EndOfBurst
+		  - Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
+		  - Correct --start option description 
+
+2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 452
         - Fix bug with --start option
         - Rewrite usage and options handling. Now allows long-style option.  
