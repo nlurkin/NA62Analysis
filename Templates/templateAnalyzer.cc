@@ -245,6 +245,7 @@ void templateAnalyzer::Process(int iEvent){
 	/// 	fHisto.GetTH1("histoName");// for TH1
 	/// 	fHisto.GetTH2("histoName");// for TH2
 	/// 	fHisto.GetGraph("graphName");// for TGraph and TGraphAsymmErrors
+	///     fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
 	/// \endcode
 	/// To fill the histograms you can use\n
 	/// \code
@@ -377,6 +378,7 @@ void templateAnalyzer::DrawPlot(){
 	/// 	fHisto.GetTH1("histoName");// for TH1
 	/// 	fHisto.GetTH2("histoName");// for TH2
 	/// 	fHisto.GetGraph("graphName");// for TGraph and TGraphAsymmErrors
+	///     fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
 	/// \endcode
 	/// and manipulate it as usual (TCanvas, Draw, ...)\n
 	/// \EndMemberDescr

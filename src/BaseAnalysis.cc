@@ -74,7 +74,8 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
 	}
 
-	CheckNewFileOpened();
+	fIOHandler->LoadEvent(0);
+	fIOHandler->CheckNewFileOpened();
 	//Parse parameters from file
 	ConfigParser confParser;
 	confParser.ParseFile(configFile);
@@ -315,7 +316,6 @@ void BaseAnalysis::ProcessWithHisto(int beginEvent, int maxEvent){
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 		fAnalyzerList[j]->StartOfRun();
-		fAnalyzerList[j]->StartOfBurst();
 	}
 
 	//##############################

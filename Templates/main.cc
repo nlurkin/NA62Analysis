@@ -31,7 +31,7 @@ void usage(char* name)
 		 << "\t\t\t  \"analyzerName:param=val;param=val&analyzerName:param=val&...\"" << endl;
 	cout << "  --histo\t\t: Read histograms only and bypass TTree reading." << endl;
 	cout << "  --start int\t\t: Index of the first event to process." << endl
-		 << "\t\t\t  Event index starts at 0. The n first events will be skipped." << endl;
+		 << "\t\t\t  Event index starts at 0." << endl;
 	cout << "  --config path\t\t: Path to a configuration file containing analyzers parameters." << endl;
 	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;

@@ -737,6 +737,29 @@ TGraph* HistoHandler::GetTGraph(TString name) {
 	}
 }
 
+TH1* HistoHandler::GetHisto(TString name) {
+	/// \MemberDescr
+	/// \param name : Name of the histogram to retrieve (TH1, TH2)
+	/// \return Previously booked histogram with the specified name.
+	///
+	///	If the histogram does not exist, print an error message and return NULL.
+	/// \EndMemberDescr
+
+	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
+	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+
+	if((ptr1=fHisto.find(name))!=fHisto.end()){
+		return ptr1->second;
+	}
+	else if((ptr2=fHisto2.find(name))!=fHisto2.end()){
+		return ptr2->second;
+	}
+	else{
+		cerr << "Histogram " << name << " does not exist." << endl;
+		return NULL;
+	}
+}
+
 void HistoHandler::Mkdir(TString name, TString analyzerName) const{
 	/// \MemberDescr
 	/// \param name: Name of the directory to create

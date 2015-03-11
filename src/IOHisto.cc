@@ -265,6 +265,5 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles,
 	/// \EndMemberDescr
 
 	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
-	LoadEvent(0);
 	return true;
 }

@@ -146,7 +146,7 @@
 /// 						  "analyzerName:param=val;param=val&analyzerName:param=val&..."
 ///   --histo				: Read histograms only and bypass TTree reading.
 ///   --start int			: Index of the first event to process.
-/// 						  Event index starts at 0. The n first events will be skipped.
+/// 						  Event index starts at 0.
 ///   --config path			: Path to a configuration file containing analyzers parameters.
 ///   --reffile path		: Path to a ROOT file containing reference plots.
 ///   --ignore				: Ignore non-existing trees and continue processing.
