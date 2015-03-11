@@ -228,10 +228,10 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 		//Print current event
 		if ( i % i_offset == 0 ){
 			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i+1, processEvents, ((double)i/(double)processEvents)*100); fflush(stdout);
+				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, processEvents, ((double)i/(double)processEvents)*100); fflush(stdout);
 			}
 			else{
-				printf("*** Processing Event %i/%i => %.2f%%\n", i+1, processEvents, ((double)i/(double)processEvents)*100);
+				printf("*** Processing Event %i/%i => %.2f%%\n", i, processEvents, ((double)i/(double)processEvents)*100);
 			}
 		}
 
@@ -326,10 +326,10 @@ void BaseAnalysis::ProcessWithHisto(int beginEvent, int maxEvent){
 		//Print current event
 		if ( i % i_offset == 0 ){
 			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing File %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i+1, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
+				printf(SHELL_COLOR_LRED "*** Processing File %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
 			}
 			else{
-				printf("*** Processing File %i/%i => %.2f%%\n", i+1, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
+				printf("*** Processing File %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
 			}
 		}
 
