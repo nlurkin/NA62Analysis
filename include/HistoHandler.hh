@@ -137,6 +137,7 @@ public:
 	TH1* GetTH1(TString name);
 	TH2* GetTH2(TString name);
 	TGraph* GetTGraph(TString name);
+	TH1* GetHisto(TString name);
 
 	IteratorTH1 GetIteratorTH1();
 	IteratorTH1 GetIteratorTH1(TString baseName);
