@@ -372,6 +372,12 @@ void templateAnalyzer::DrawPlot(){
 	/// \code
 	/// 	DrawAllPlots();
 	/// \endcode
-	/// Or do as usual (TCanvas, Draw, ...)\n
+	/// Or get the pointer to the histogram with\n
+	/// \code
+	/// 	fHisto.GetTH1("histoName");// for TH1
+	/// 	fHisto.GetTH2("histoName");// for TH2
+	/// 	fHisto.GetGraph("graphName");// for TGraph and TGraphAsymmErrors
+	/// \endcode
+	/// and manipulate it as usual (TCanvas, Draw, ...)\n
 	/// \EndMemberDescr
 }
