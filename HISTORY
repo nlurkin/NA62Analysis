@@ -2,7 +2,7 @@
 NA62Analysis Project
 ################################################################
 
-2015-03-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 452
         - Fix bug with --start option
         - Rewrite usage and options handling. Now allows long-style option.  
