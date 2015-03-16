@@ -9,6 +9,7 @@
 ///		<li>\ref Troubleshooting
 ///	</ul>
 ///
+/// For documentation about the functionalities that are available and how to write an Analyzer, please refer to the templateAnalyzer class documentation.
 ///	\section requirements Requirements 
 /// This framework need Geant4, ROOT and NA62MC to be compiled and has been tested with the following versions :<br>
 /// <ul>
