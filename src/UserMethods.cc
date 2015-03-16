@@ -844,7 +844,7 @@ std::vector<TString> UserMethods::GetListOfDirs(TString directory) {
 	/// Request list of directories in the input file.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetListOfKeys(directory);
+	return fParent->GetIOHandler()->GetListOfDirs(directory);
 }
 
 std::vector<TString> UserMethods::GetListOfTH1(TString directory) {
