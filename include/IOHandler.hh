@@ -21,13 +21,32 @@ enum class IOHandlerType {kNOIO, kHISTO, kTREE};
 /// \EndBrief
 ///
 /// \Detailed
-/// Implements the IO methods for histograms, TTrees, ...\n
+/// Implements the base IO methods\n
 /// Manage input event files (loading, specific processing before closing a file or after opening it)\n
-/// Load input files with reference histograms and give access to these histograms, update them.\n
-/// TTree management (input and output).
 /// \EndDetailed
 class IOHandler {
 public:
+	/// \struct keyPair_t
+	/// \Brief
+	/// Structure defining an input ROOT file key (name, class name)
+	/// \EndBrief
+	///
+	/// \Detailed
+	/// Structure defining an input ROOT file key (name, class name)
+	/// \EndDetailed
+	typedef struct keyPair_t {
+		keyPair_t(TString name, TString className){
+			/// \MemberDescr
+			/// \param name: Name of the object
+			/// \param className: ClassName of the object
+			/// \return Constructor
+			/// \EndMemberDescr
+			this->name = name; this->className = className;
+		};
+		TString name; ///< Name of the object
+		TString className; ///< Class name of the object
+	} keyPair; ///< Typedef to struct keyPair_t
+
 	IOHandler();
 	IOHandler(const IOHandler& c);
 	virtual ~IOHandler();
@@ -44,7 +63,20 @@ public:
 		/// \EndMemberDescr
 		return fInputfiles.size();
 	};
-	virtual void LoadEvent(int iEvent) {};
+	virtual void LoadEvent(int iEvent) {
+		/// \MemberDescr
+		/// \param iEvent: Event index to load
+		/// Dummy LoadEvent
+		/// \EndMemberDescr
+	};
+	std::vector<keyPair> GetListOfKeys(TString dir);
+	std::vector<TString> GetListOfDirs(TString dir);
+	std::vector<TString> GetListOfTH1(TString dir);
+	std::vector<TString> GetListOfTH2(TString dir);
+	std::vector<TString> GetListOfTGraph(TString dir);
+	std::vector<TString> GetListOfHisto(TString dir);
+
+	bool CheckDirExists(TString dir);
 
 	//Writing
 	void MkOutputDir(TString name) const;
@@ -71,7 +103,7 @@ protected:
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 
-	std::vector<TString> fInputfiles;
+	std::vector<TString> fInputfiles; ///< Vector of input file path
 };
 
 #endif /* IOHANDLER_HH_ */

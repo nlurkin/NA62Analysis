@@ -492,16 +492,30 @@ TChain* BaseAnalysis::GetTree(TString name) {
 }
 
 IOTree* BaseAnalysis::GetIOTree() {
+	/// \MemberDescr
+	/// \return Pointer to IOTree ifIOHandler is of Tree Type
+	/// \EndMemberDescr
+
 	if(IsTreeType()) return static_cast<IOTree*>(fIOHandler);
 	else return nullptr;
 }
 
 IOHisto* BaseAnalysis::GetIOHisto() {
+	/// \MemberDescr
+	/// \return Pointer to IOHisto ifIOHandler is of Histo Type
+	/// \EndMemberDescr
+
 	if(IsHistoType()) return static_cast<IOHisto*>(fIOHandler);
 	else return nullptr;
 }
 
 void BaseAnalysis::SetReadType(IOHandlerType type) {
+	/// \MemberDescr
+	/// \param type: Type of IOHandler to use
+	///
+	/// Create the correct instance of IOHandler
+	/// \EndMemberDescr
+
 	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
 	else fIOHandler = new IOTree();
 }

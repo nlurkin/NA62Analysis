@@ -30,6 +30,8 @@ IOHisto::IOHisto(const IOHisto &c):
 	fReferenceFileName(c.fReferenceFileName)
 {
 	/// \MemberDescr
+	/// \param c: Reference to the object to copy
+	///
 	/// Copy Constructor
 	/// \EndMemberDescr
 
@@ -45,8 +47,7 @@ IOHisto::~IOHisto() {
 TH1* IOHisto::GetReferenceTH1(TString name){
 	/// \MemberDescr
 	/// \param name : Name of the requested reference histogram
-	///
-	/// Return the reference histogram from the reference file
+	/// \return Pointer to the reference histogram from the reference file
 	/// \EndMemberDescr
 
 	TFile *fd;
@@ -76,8 +77,7 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 TH2* IOHisto::GetReferenceTH2(TString name){
 	/// \MemberDescr
 	/// \param name : Name of the requested reference histogram
-	///
-	/// Return the reference histogram from the reference file
+	/// \return Pointer to the reference histogram from the reference file
 	/// \EndMemberDescr
 
 	TFile *fd;
@@ -108,8 +108,7 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 TGraph* IOHisto::GetReferenceTGraph(TString name){
 	/// \MemberDescr
 	/// \param name : Name of the requested reference histogram
-	///
-	/// Return the reference histogram from the reference file
+	/// \return Pointer to the reference histogram from the reference file
 	/// \EndMemberDescr
 
 	TFile *fd;
@@ -154,7 +153,10 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
 	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
 	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
-	if(!fCurrentFile) return nullptr;
+	if(!fCurrentFile) {
+		std::cerr << "No input file open to extract histogram." << std::endl;
+		return nullptr;
+	}
 
 	TH1* tempHisto, *returnHisto=nullptr;
 
