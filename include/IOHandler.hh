@@ -74,7 +74,7 @@ public:
 	std::vector<TString> GetListOfTH1(TString dir);
 	std::vector<TString> GetListOfTH2(TString dir);
 	std::vector<TString> GetListOfTGraph(TString dir);
-	std::vector<TString> GetListOfHisto(TString dir);
+	std::vector<TString> GetListOfHistos(TString dir);
 
 	bool CheckDirExists(TString dir);
 

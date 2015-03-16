@@ -95,7 +95,7 @@ std::vector<TString> IOHandler::GetListOfDirs(TString dir) {
 	return dirs;
 }
 
-std::vector<TString> IOHandler::GetListOfHisto(TString dir) {
+std::vector<TString> IOHandler::GetListOfHistos(TString dir) {
 	/// \MemberDescr
 	/// \param dir : Directory to search
 	/// \return A list of histograms in the searched directory in the input ROOT file.

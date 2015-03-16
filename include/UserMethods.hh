@@ -191,7 +191,7 @@ public:
 	std::vector<TString> GetListOfTH1(TString directory="");
 	std::vector<TString> GetListOfTH2(TString directory="");
 	std::vector<TString> GetListOfTGraph(TString directory="");
-	std::vector<TString> GetListOfHisto(TString directory="");
+	std::vector<TString> GetListOfHistos(TString directory="");
 
 	//###### Event fraction related
 	//EventFraction methods

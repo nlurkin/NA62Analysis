@@ -880,7 +880,7 @@ std::vector<TString> UserMethods::GetListOfTGraph(TString directory) {
 	return fParent->GetIOHandler()->GetListOfTGraph(directory);
 }
 
-std::vector<TString> UserMethods::GetListOfHisto(TString directory) {
+std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file
 	/// \return A vector of histograms available in the given directory
@@ -888,5 +888,5 @@ std::vector<TString> UserMethods::GetListOfHisto(TString directory) {
 	/// Request list of histograms in the input file.
 	/// \EndMemberDescr
 
-	return fParent->GetIOHandler()->GetListOfHisto(directory);
+	return fParent->GetIOHandler()->GetListOfHistos(directory);
 }
