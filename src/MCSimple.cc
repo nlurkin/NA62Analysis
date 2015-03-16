@@ -193,8 +193,7 @@ void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particle
 TString MCSimple::GetParticleName(int pdgID) const {
 	/// \MemberDescr
 	/// \param pdgID : PDG ID of the particle
-	///
-	/// Return the name of the particle corresponding to the given PDG ID.
+	/// \return Name of the particle corresponding to the given PDG ID.
 	/// \EndMemberDescr
 
 	TString name;
@@ -206,8 +205,7 @@ TString MCSimple::GetParticleName(int pdgID) const {
 int MCSimple::GetPdgID(TString name) const{
 	/// \MemberDescr
 	/// \param name : Name of the particle
-	///
-	/// Return the PDG ID of the particle corresponding to the given name.
+	/// \return PDG ID of the particle corresponding to the given name.
 	/// \EndMemberDescr
 
 	int id;

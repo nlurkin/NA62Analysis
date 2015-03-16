@@ -21,6 +21,7 @@
 #include "HistoHandler.hh"
 #include "FWEnums.hh"
 #include "MCSimple.hh"
+#include "IOHandler.hh"
 
 class BaseAnalysis;
 class DetectorAcceptance;
@@ -183,6 +184,14 @@ public:
 	TH1* GetReferenceTH1(TString name);
 	TH2* GetReferenceTH2(TString name);
 	TGraph* GetReferenceTGraph(TString name);
+
+	//IOHandler calls
+	std::vector<IOHandler::keyPair> GetListOfKeys(TString directory="");
+	std::vector<TString> GetListOfDirs(TString directory="");
+	std::vector<TString> GetListOfTH1(TString directory="");
+	std::vector<TString> GetListOfTH2(TString directory="");
+	std::vector<TString> GetListOfTGraph(TString directory="");
+	std::vector<TString> GetListOfHisto(TString directory="");
 
 	//###### Event fraction related
 	//EventFraction methods

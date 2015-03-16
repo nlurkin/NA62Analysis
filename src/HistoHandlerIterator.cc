@@ -114,6 +114,7 @@ HistoHandler::Iterator<PointerType>& HistoHandler::Iterator<PointerType>::operat
 {
 	/// \MemberDescr
 	/// \param c : Iterator to copy-assign
+	/// \return Reference to itself
 	///
 	/// Copy assignment operator. Keeps track of how many copies are created.
 	/// \EndMemberDescr
@@ -145,9 +146,9 @@ template <typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator==(const Iterator<PointerType>& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right-hand side Iterator to compare
+	/// \return True if the vector iterator of rhs is the same as the internal vector iterator.
 	///
-	/// Compare this Iterator with another Iterator. Return true if the vector iterator
-	/// of rhs is the same as the internal vector iterator.
+	/// Compare this Iterator with another Iterator.
 	/// \EndMemberDescr
 
 	return fIterator==rhs.fIterator;
@@ -157,9 +158,9 @@ template <typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator==(const typename std::vector<PointerType*>::iterator& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right-hand side Iterator to compare
+	/// \return True if the vector iterator rhs is the same as the internal vector iterator.
 	///
-	/// Compare this Iterator with a vector iterator. Return true if the vector iterator
-	/// rhs is the same as the internal vector iterator.
+	/// Compare this Iterator with a vector iterator.
 	/// \EndMemberDescr
 
 	return fIterator==rhs;
@@ -169,9 +170,9 @@ template <typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator!=(const Iterator<PointerType>& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right-hand side Iterator to compare
+	/// \return True if the vector iterator if rhs is different of the internal vector iterator.
 	///
-	/// Compare this Iterator with another Iterator. Return true if the vector iterator
-	/// if rhs is different of the internal vector iterator.
+	/// Compare this Iterator with another Iterator.
 	/// \EndMemberDescr
 
 	return fIterator!=rhs.fIterator;
@@ -181,9 +182,9 @@ template <typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator!=(const typename std::vector<PointerType*>::iterator& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right-hand side Iterator to compare
+	/// \return True if the vector iterator rhs is different of the internal vector iterator.
 	///
-	/// Compare this Iterator with a vector iterator. Return true if the vector iterator
-	/// rhs is different of the internal vector iterator.
+	/// Compare this Iterator with a vector iterator.
 	/// \EndMemberDescr
 
 	return fIterator!=rhs;
@@ -192,6 +193,8 @@ bool HistoHandler::Iterator<PointerType>::operator!=(const typename std::vector<
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator*(){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Dereference the Iterator.
 	/// \EndMemberDescr
 
@@ -201,6 +204,8 @@ PointerType* HistoHandler::Iterator<PointerType>::operator*(){
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator->(){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Dereference the Iterator.
 	/// \EndMemberDescr
 
@@ -210,6 +215,8 @@ PointerType* HistoHandler::Iterator<PointerType>::operator->(){
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator++(int){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Increment the Iterator and dereference it (postfix).
 	/// \EndMemberDescr
 
@@ -219,6 +226,8 @@ PointerType* HistoHandler::Iterator<PointerType>::operator++(int){
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator--(int){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Decrement the Iterator and dereference it (postfix).
 	/// \EndMemberDescr
 
@@ -228,6 +237,8 @@ PointerType* HistoHandler::Iterator<PointerType>::operator--(int){
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator++(){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Increment the Iterator and dereference it (prefix).
 	/// \EndMemberDescr
 
@@ -237,6 +248,8 @@ PointerType* HistoHandler::Iterator<PointerType>::operator++(){
 template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator--(){
 	/// \MemberDescr
+	/// \return Pointer to the object pointed by the Iterator
+	///
 	/// Decrement the Iterator and dereference it (prefix).
 	/// \EndMemberDescr
 
@@ -247,8 +260,7 @@ template <typename PointerType>
 int HistoHandler::Iterator<PointerType>::operator-(const Iterator<PointerType>& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right hand side Iterator
-	///
-	/// Return the distance between iterators (lhs-rhs).
+	/// \return Distance between iterators (lhs-rhs).
 	/// \EndMemberDescr
 
 	return fIterator-rhs.fIterator;
@@ -258,8 +270,7 @@ template <typename PointerType>
 int HistoHandler::Iterator<PointerType>::operator-(const typename std::vector<PointerType*>::iterator& rhs) const{
 	/// \MemberDescr
 	/// \param rhs : Right hand side vector iterator
-	///
-	/// Return the distance between iterators (lhs-rhs).
+	/// \return Distance between iterators (lhs-rhs).
 	/// \EndMemberDescr
 
 	return fIterator-rhs;
@@ -269,8 +280,7 @@ template <typename PointerType>
 HistoHandler::Iterator<PointerType> HistoHandler::Iterator<PointerType>::operator-(int rhs) const{
 	/// \MemberDescr
 	/// \param rhs : decrement value
-	///
-	/// Return a copy of the Iterator decremented by rhs.
+	/// \return Copy of the Iterator decremented by rhs.
 	/// \EndMemberDescr
 
 	return HistoHandler::Iterator<PointerType>(*this, fIterator-rhs);
@@ -280,8 +290,7 @@ template <typename PointerType>
 HistoHandler::Iterator<PointerType> HistoHandler::Iterator<PointerType>::operator+(int rhs) const{
 	/// \MemberDescr
 	/// \param rhs : increment value
-	///
-	/// Return a copy of the Iterator incremented by rhs.
+	/// \return Copy of the Iterator incremented by rhs.
 	/// \EndMemberDescr
 
 	return HistoHandler::Iterator<PointerType>(*this, fIterator+rhs);
@@ -291,8 +300,9 @@ template <typename PointerType>
 PointerType* HistoHandler::Iterator<PointerType>::operator[](int rhs){
 	/// \MemberDescr
 	/// \param rhs : offset to apply
+	/// \return the object at position rhs.
 	///
-	/// Offset dereference operator. Return the object at position rhs.
+	/// Offset dereference operator.
 	/// \EndMemberDescr
 
 	return *(fList->begin()+rhs);
@@ -302,6 +312,7 @@ template <typename PointerType>
 HistoHandler::Iterator<PointerType>& HistoHandler::Iterator<PointerType>::operator-=(int rhs){
 	/// \MemberDescr
 	/// \param rhs : decrement value
+	/// \return Reference to itself
 	///
 	/// Decrement this Iterator by rhs.
 	/// \EndMemberDescr
@@ -314,6 +325,7 @@ template <typename PointerType>
 HistoHandler::Iterator<PointerType>& HistoHandler::Iterator<PointerType>::operator+=(int rhs){
 	/// \MemberDescr
 	/// \param rhs : increment value
+	/// \return Reference to itself
 	///
 	/// Increment this Iterator by rhs.
 	/// \EndMemberDescr
@@ -326,8 +338,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator <(const Iterator<PointerType>& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is smaller than 0 (lhs < rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is smaller than 0 (lhs < rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs.fIterator)<0;
@@ -337,8 +350,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator <(const typename std::vector<PointerType*>::iterator& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is smaller than 0 (lhs < rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is smaller than 0 (lhs < rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs)<0;
@@ -348,8 +362,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator <=(const Iterator<PointerType>& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is smaller or equal to 0 (lhs <= rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is smaller or equal to 0 (lhs <= rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs.fIterator)<=0;
@@ -359,8 +374,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator <=(const typename std::vector<PointerType*>::iterator& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is smaller or equal to 0 (lhs <= rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is smaller or equal to 0 (lhs <= rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs)<=0;
@@ -370,8 +386,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator >(const Iterator<PointerType>& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is greater than 0 (lhs > rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is greater than 0 (lhs > rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs.fIterator)>0;
@@ -381,8 +398,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator >(const typename std::vector<PointerType*>::iterator& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is greater than 0 (lhs > rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is greater than 0 (lhs > rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs)>0;
@@ -392,8 +410,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator >=(const Iterator<PointerType>& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is greater or equale to 0 (lhs >= rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is greater or equale to 0 (lhs >= rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs.fIterator)>=0;
@@ -403,8 +422,9 @@ template<typename PointerType>
 bool HistoHandler::Iterator<PointerType>::operator >=(const typename std::vector<PointerType*>::iterator& rhs) const {
 	/// \MemberDescr
 	/// \param rhs : Iterator to compare
+	/// \return True if the distance between both Iterators is greater or equale to 0 (lhs >= rhs).
 	///
-	/// Compare iterators. Return true if the distance between both Iterators is greater or equale to 0 (lhs >= rhs).
+	/// Compare iterators.
 	/// \EndMemberDescr
 
 	return (fIterator-rhs)>=0;
@@ -414,8 +434,9 @@ bool HistoHandler::Iterator<PointerType>::operator >=(const typename std::vector
 template <typename PointerType>
 typename std::vector<PointerType*>::iterator HistoHandler::Iterator<PointerType>::End(){
 	/// \MemberDescr
-	/// Return the past-the-end reference of this Iterator. If an Iterator is equal
-	/// to this reference, the traversal is over.
+	/// \return Past-the-end reference of this Iterator.
+	///
+	/// If an Iterator is equal to this reference, the traversal is over.
 	/// \EndMemberDescr
 
 	return fList->end();
@@ -424,7 +445,7 @@ typename std::vector<PointerType*>::iterator HistoHandler::Iterator<PointerType>
 template <typename PointerType>
 typename std::vector<PointerType*>::iterator HistoHandler::Iterator<PointerType>::Begin(){
 	/// \MemberDescr
-	/// Return the first element.
+	/// \return First element.
 	/// \EndMemberDescr
 
 	return fList->begin();

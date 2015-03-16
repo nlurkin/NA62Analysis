@@ -488,6 +488,7 @@ void DetectorAcceptance::DrawPoint(double x, double y, double z) const{
 DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \return Detector Volume designated by the string
 	///
 	/// Parse the volume string to know to which detector it correspond.
 	/// \EndMemberDescr
@@ -533,6 +534,7 @@ DetectorAcceptance::volume DetectorAcceptance::ParseDetector(string str) const{
 DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \return GTK Volume designated by the string
 	///
 	/// Parse detector string to know which GTK station it correspond.
 	/// \EndMemberDescr
@@ -565,6 +567,7 @@ DetectorAcceptance::GTKVol DetectorAcceptance::ParseGTK(string str) const{
 DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \return Straw Volume designated by the string
 	///
 	/// Parse detector string to know which Spectrometer plane it correspond.
 	/// \EndMemberDescr
@@ -584,6 +587,7 @@ DetectorAcceptance::StrawVol DetectorAcceptance::ParseStraw(string str) const{
 DetectorAcceptance::LAVVol DetectorAcceptance::ParseLAV(string str) const{
 	/// \MemberDescr
 	/// \param str : string of the volume
+	/// \return LAV Volume designated by the string
 	///
 	/// Parse detector string to know which LAV station it corresponds
 	/// \EndMemberDescr
@@ -752,6 +756,7 @@ bool DetectorAcceptance::MagPropagateBefore(const TVector3 StartPosition, const 
 	/// \param StartMomentum : InitialMomentum of the particle
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Position of the particle at Z of the beginning start of the magnet
+	/// \return False if the momentum is perpendicular to the magnetic field
 	///
 	/// Analytic propagation of a charged particle to the beginning of the spectrometer\n
 	/// \EndMemberDescr
@@ -803,7 +808,7 @@ bool DetectorAcceptance::MagPropagate( const TVector3 StartPosition, const TVect
 	/// \param fEndZ : End z coordinate of the track
 	/// \param EndPosition : Final Position of the particle
 	/// \param EndMomentum : Final momentum of the particle
-	/// \return true if propagation through the magnet is successful.
+	/// \return True if propagation through the magnet is successful.
 	///
 	/// Analytic propagation of a charged particle. It takes into account the\n
 	/// presence of the bending magnet of the Spectrometer.\n
