@@ -43,6 +43,8 @@ IOTree::IOTree(const IOTree &c):
 	fAllowNonExisting(false)
 {
 	/// \MemberDescr
+	/// \param c: Reference to the object to copy
+	///
 	/// Copy constructor
 	/// \EndMemberDescr
 
@@ -128,6 +130,7 @@ bool IOTree::RequestTree(TString name, TString branchName, TString className, vo
 	/// \param branchName : Name of the Branch to retrieve
 	/// \param className : Name of the class type in this branch
 	/// \param obj : Pointer to an instance of any class
+	/// \return False if the branch is already requested. The pointer given here should be deleted
 	///
 	/// Request a tree in the input file. If already requested before, do nothing.
 	/// \EndMemberDescr
@@ -155,6 +158,7 @@ bool IOTree::RequestTree(TString name, TString branchName, TString className, vo
 int IOTree::BranchTrees(int eventNb){
 	/// \MemberDescr
 	///	\param eventNb : Number of events that should be read in the tree
+	/// \return Number of events found in the Tree
 	///
 	/// Effectively read all the requested trees in the input file and branch them
 	/// \EndMemberDescr
@@ -188,8 +192,8 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 	/// \MemberDescr
 	/// \param name : Name of the TTree from which the event is read
 	/// \param branchName : Name of the branch
+	/// \return Pointer to the event corresponding to the given tree and the given branch.
 	///
-	/// Return the pointer to the event corresponding to the given tree and the given branch.
 	/// If branchName is left empty and there is only 1 branch requested on this tree, this
 	/// single branch is returned. If there is more than 1 branch requested on this tree,
 	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
@@ -299,8 +303,7 @@ void IOTree::LoadEvent(int iEvent){
 
 Event* IOTree::GetMCTruthEvent(){
 	/// \MemberDescr
-	///
-	/// Return a pointer to the MCTruthEvent
+	/// \return Pointer to the MCTruthEvent
 	/// \EndMemberDescr
 
 	return fMCTruthEvent;
@@ -308,6 +311,7 @@ Event* IOTree::GetMCTruthEvent(){
 
 bool IOTree::GetWithMC() const{
 	/// \MemberDescr
+	/// \return True if the Event Tree is present
 	///
 	/// Do we have MC available in the files?
 	/// \EndMemberDescr
@@ -317,8 +321,7 @@ bool IOTree::GetWithMC() const{
 
 RawHeader* IOTree::GetRawHeaderEvent(){
 	/// \MemberDescr
-	///
-	/// Return a pointer to the RawHeader
+	/// \return Pointer to the RawHeader
 	/// \EndMemberDescr
 
 	return fRawHeaderEvent;
@@ -326,6 +329,7 @@ RawHeader* IOTree::GetRawHeaderEvent(){
 
 bool IOTree::GetWithRawHeader() const{
 	/// \MemberDescr
+	/// \return True if the RawHeader Tree is present
 	///
 	/// Do we have RawHeader available in the files?
 	/// \EndMemberDescr
@@ -336,8 +340,7 @@ bool IOTree::GetWithRawHeader() const{
 TChain* IOTree::GetTree(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the TTree to retrieve
-	///
-	///	Return a pointer to the specified TTree
+	///	\return Pointer to the specified TTree
 	/// \EndMemberDescr
 	treeIterator it;
 
@@ -404,6 +407,9 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 
 int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 	/// \MemberDescr
+	/// \param verbosity: Verbosity level
+	/// \return Number of events in the Event Tree
+	///
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
 	/// \EndMemberDescr
 
@@ -456,6 +462,9 @@ int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 
 int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 	/// \MemberDescr
+	/// \param verbosity: Verbosity level
+	/// \return Number of events in the RawHeader Tree
+	///
 	/// Branch the RawHeader trees.
 	/// \EndMemberDescr
 
@@ -506,7 +515,7 @@ int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 
 void IOTree::SetIgnoreNonExisting(bool bFlag) {
 	/// \MemberDescr
-	/// bFlag : if false, exit if one or several TTree is missing in the input file
+	/// \param bFlag : if false, exit if one or several TTree is missing in the input file
 	///
 	/// Determine if the framework is allowed to run when one or several TTrees
 	/// are missing in the input file.
@@ -520,6 +529,7 @@ bool IOTree::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLeve
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
 	/// \param verbosity : verbosity level
+	/// \return True if the input files are checked and valid
 	///
 	/// Open and register the input files.
 	/// \EndMemberDescr
@@ -543,6 +553,7 @@ bool IOTree::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosi
 	/// \MemberDescr
 	/// \param fileName : Name of the file to open
 	///	\param verbosity : Verbosity level
+	/// \return True if the file can be opened
 	///
 	/// Open the input file to check if MC are present and if yes, what's the name of the TTree
 	/// \EndMemberDescr
@@ -626,6 +637,8 @@ void IOTree::PrintInitSummary() const{
 
 bool IOTree::CheckNewFileOpened(){
 	/// \MemberDescr
+	/// \return True if a new file has been opened
+	///
 	/// Method called by TChain when opening a new file.\n
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr

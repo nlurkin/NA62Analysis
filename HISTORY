@@ -2,11 +2,16 @@
 NA62Analysis Project
 ################################################################
 
+2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 467
+        - Fix typo in doc
+        - Implement GetListOf... for input files (Keys, Dirs, Histo, TH1, TH2, TGraph)
+
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 456
         - Fix bug when using input histograms in StartOfBurst or EndOfBurst
-		  - Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
-		  - Correct --start option description 
+		- Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
+		- Correct --start option description 
 
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 452

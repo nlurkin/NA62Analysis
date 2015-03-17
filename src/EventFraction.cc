@@ -184,6 +184,7 @@ void EventFraction::DefineSampleSizeCounter(TString name){
 TString EventFraction::FormatDouble(double v) const{
 	/// \MemberDescr
 	/// \param v : Number to format
+	/// \return String representing the double
 	///
 	///	Format a double value to match the requested precision
 	/// \EndMemberDescr
@@ -208,8 +209,7 @@ void EventFraction::SetPrecision(int v){
 int EventFraction::GetPrecision(double v) const{
 	/// \MemberDescr
 	/// \param v : Number to format
-	///
-	///	Return the number of decimal places needed for the requested precision
+	///	\return Number of decimal places needed for the requested precision
 	/// \EndMemberDescr
 
 	if(fPrecision==0) return 7;

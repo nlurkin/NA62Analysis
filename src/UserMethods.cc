@@ -556,6 +556,9 @@ DetectorAcceptance *UserMethods::GetDetectorAcceptanceInstance(){
 
 const void* UserMethods::GetOutputVoid(TString name, OutputState &state) const {
 	/// \MemberDescr
+	/// \param name: Name of the output variable to get
+	/// \param state: Reference to the outputState of the output variable
+	///
 	/// Internal interface to BaseAnalysis for GetOutput method
 	/// \EndMemberDescr
 
@@ -712,6 +715,7 @@ TChain* UserMethods::GetTree(TString name) {
 
 void* UserMethods::GetObjectVoid(TString name){
 	/// \MemberDescr
+	/// \param name: Name of the object
 	/// Internal interface to BaseAnalysis for GetObject method
 	/// \EndMemberDescr
 
@@ -723,6 +727,12 @@ void* UserMethods::GetObjectVoid(TString name){
 
 bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
 	/// \MemberDescr
+	/// \param name: Name of the tree
+	/// \param branchName: Name of the branch in the requested tree
+	/// \param className: Name of the class in the requested branch
+	/// \param obj: Pointer to an object of class className
+	/// \return True if successful
+	///
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
@@ -812,4 +822,71 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 
 	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
 	return histo;
+}
+
+std::vector<IOHandler::keyPair> UserMethods::GetListOfKeys(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of keys available in the given directory. The key contains
+	/// the name of the object (key.name) and the className of the object (key.className)
+	///
+	/// Request list of keys in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfKeys(directory);
+}
+
+std::vector<TString> UserMethods::GetListOfDirs(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of directories available in the given directory
+	///
+	/// Request list of directories in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfDirs(directory);
+}
+
+std::vector<TString> UserMethods::GetListOfTH1(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of TH1 type histograms available in the given directory
+	///
+	/// Request list of TH1 type histograms in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfTH1(directory);
+}
+
+std::vector<TString> UserMethods::GetListOfTH2(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of TH2 type histograms available in the given directory
+	///
+	/// Request list of TH2 type histograms in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfTH2(directory);
+}
+
+std::vector<TString> UserMethods::GetListOfTGraph(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of TGraph type histograms available in the given directory
+	///
+	/// Request list of TGraph type histograms in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfTGraph(directory);
+}
+
+std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
+	/// \MemberDescr
+	/// \param directory : Directory in the input ROOT file
+	/// \return A vector of histograms available in the given directory
+	///
+	/// Request list of histograms in the input file.
+	/// \EndMemberDescr
+
+	return fParent->GetIOHandler()->GetListOfHistos(directory);
 }

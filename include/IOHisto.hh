@@ -15,6 +15,15 @@ class TH1;
 class TH2;
 class TGraph;
 
+/// \class IOHisto
+/// \Brief
+/// Class containing and handling every IO histograms
+/// \EndBrief
+///
+/// \Detailed
+/// Inherits IOHandler and implements the IO methods for histograms\n
+/// Load input files with reference histograms and give access to these histograms, update them.\n
+/// \EndDetailed
 class IOHisto : public IOHandler{
 public:
 	IOHisto();

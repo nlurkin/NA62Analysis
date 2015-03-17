@@ -156,12 +156,12 @@ If you want to run the program with a set of analyzers
 
   o Create a config file containing the following line:
       exec = name-Of-Executable-To-Generate
-      analyzers = List-Of-Analyzer-You-Want-To-Run-Separated-By-White-Spaces
+      analyzers = List-Of-Analyzers-You-Want-To-Run-Separated-By-White-Spaces
       libs = List-Of-Additional-Libraries-To-Link-With
       libsdirs = List-Of-Additional-Directories-To-Search-For-Libraries
       incdirs = List-Of-Additional-Directories-To-Search-For-Include-Files
       
-      If one of the analyzer specified in the list does not exist, a prompt will propose you
+      If one of the analyzers specified in the list does not exist, a prompt will propose you
       to create it. For this reason, the syntax 
       	AnalyzerName(InputType TreeName, ...)
       is valid in the config file as well.

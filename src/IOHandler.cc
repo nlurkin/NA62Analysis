@@ -12,6 +12,7 @@
 
 #include <TFile.h>
 #include <TObjString.h>
+#include <TKey.h>
 
 IOHandler::IOHandler():
 	fIOType(IOHandlerType::kNOIO),
@@ -49,6 +50,174 @@ IOHandler::~IOHandler(){
 		fOutFile->Close();
 		std::cout << "#############        DONE         #############" << std::endl;
 	}
+}
+
+bool IOHandler::CheckDirExists(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to check
+	/// \return True if the directory exists in the input file (and the input file is open)
+	///
+	/// Check if a directory exists in the input ROOT file.
+	/// \EndMemberDescr
+	if(!fCurrentFile) return false;
+
+	return fCurrentFile->GetDirectory(dir)!=0;
+}
+
+bool IOHandler::CheckNewFileOpened() {
+	/// \MemberDescr
+	/// \return False
+	/// \EndMemberDescr
+
+	return false;
+}
+
+int IOHandler::GetCurrentFileNumber() const{
+	/// \MemberDescr
+	/// \return Index of the currently opened file
+	/// \EndMemberDescr
+
+	return fCurrentFileNumber;
+}
+
+std::vector<TString> IOHandler::GetListOfDirs(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of directories in the searched directory in the input ROOT file.
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	std::vector<TString> dirs;
+
+	for(auto k : keys){
+		if(k.className.CompareTo("TDirectoryFile")>=0) dirs.push_back(k.name);
+	}
+	return dirs;
+}
+
+std::vector<TString> IOHandler::GetListOfHistos(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of histograms in the searched directory in the input ROOT file.
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	std::vector<TString> histo;
+
+	for(auto k : keys){
+		if(k.className.CompareTo("TH1")>=0) histo.push_back(k.name);
+		else if(k.className.CompareTo("TH2")>=0) histo.push_back(k.name);
+		else if(k.className.CompareTo("TGraph")>=0) histo.push_back(k.name);
+	}
+	return histo;
+}
+
+std::vector<IOHandler::keyPair> IOHandler::GetListOfKeys(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of keys in the searched directory in the input ROOT file. The key contains
+	/// the name of the object (key.name) and the className of the object (key.className)
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys;
+
+	if(!CheckDirExists(dir)){
+		std::cerr << "The requested directory " << dir << " does not exist in input file" << std::endl;
+		return keys;
+	}
+	TList *kList = fCurrentFile->GetDirectory(dir)->GetListOfKeys();
+	TKey *k;
+
+	for(int i=0; i<kList->GetEntries(); i++){
+		k = (TKey*)kList->At(i);
+		keys.push_back(keyPair_t(k->GetName(), k->GetClassName()));
+	}
+
+	return keys;
+}
+
+std::vector<TString> IOHandler::GetListOfTGraph(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of TGraph in the searched directory in the input ROOT file.
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	std::vector<TString> histo;
+
+	for(auto k : keys){
+		if(k.className.CompareTo("TGraph")>=0) histo.push_back(k.name);
+	}
+	return histo;
+}
+
+std::vector<TString> IOHandler::GetListOfTH1(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of TH1 in the searched directory in the input ROOT file.
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	std::vector<TString> histo;
+
+	for(auto k : keys){
+		if(k.className.CompareTo("TH1")>=0) histo.push_back(k.name);
+	}
+
+	return histo;
+}
+
+std::vector<TString> IOHandler::GetListOfTH2(TString dir) {
+	/// \MemberDescr
+	/// \param dir : Directory to search
+	/// \return A list of TH2 in the searched directory in the input ROOT file.
+	/// \EndMemberDescr
+
+	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	std::vector<TString> histo;
+
+	for(auto k : keys){
+		if(k.className.CompareTo("TH2")>=0) histo.push_back(k.name);
+	}
+	return histo;
+}
+
+TString IOHandler::GetOutputFileName() const{
+	/// \MemberDescr
+	/// \return Base name of the output file
+	/// \EndMemberDescr
+
+	return fOutFileName;
+}
+
+void IOHandler::MkOutputDir(TString name) const{
+	/// \MemberDescr
+	/// \param name : Name of the directory
+	///
+	/// Create a new directory in the output file
+	/// \EndMemberDescr
+
+	if(!fOutFile->FindKey(name)) fOutFile->mkdir(name);
+}
+
+void IOHandler::NewFileOpened(int index, TFile* currFile){
+	/// \MemberDescr
+	/// \param index : Index of the new file
+	/// \param currFile : Pointer to the new file
+	///
+	/// Method called by TChain when opening a new file.\n
+	/// It will signal a new burst to the analyzers
+	/// \EndMemberDescr
+
+	fCurrentFileNumber = index;
+	fCurrentFile = currFile;
+
+	//Print fileName in the output file for future reference
+	MkOutputDir("InputFiles");
+	gFile->cd("InputFiles");
+	TObjString fileName(fCurrentFile->GetName());
+	fileName.Write();
+	gFile->cd();
 }
 
 bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
@@ -118,59 +287,9 @@ bool IOHandler::OpenOutput(TString outFileName){
 	return true;
 }
 
-void IOHandler::MkOutputDir(TString name) const{
-	/// \MemberDescr
-	/// \param name : Name of the directory
-	///
-	/// Create a new directory in the output file
-	/// \EndMemberDescr
-
-	if(!fOutFile->FindKey(name)) fOutFile->mkdir(name);
-}
-
 void IOHandler::PrintInitSummary() const{
 	/// \MemberDescr
 	///
 	/// Print the summary after initialization
 	/// \EndMemberDescr
 }
-
-bool IOHandler::CheckNewFileOpened() {
-	return false;
-}
-
-void IOHandler::NewFileOpened(int index, TFile* currFile){
-	/// \MemberDescr
-	/// \param index : Index of the new file
-	/// \param currFile : Pointer to the new file
-	///
-	/// Method called by TChain when opening a new file.\n
-	/// It will signal a new burst to the analyzers
-	/// \EndMemberDescr
-
-	fCurrentFileNumber = index;
-	fCurrentFile = currFile;
-
-	//Print fileName in the output file for future reference
-	MkOutputDir("InputFiles");
-	gFile->cd("InputFiles");
-	TObjString fileName(fCurrentFile->GetName());
-	fileName.Write();
-	gFile->cd();
-}
-
-TString IOHandler::GetOutputFileName() const{
-	/// \MemberDescr
-	/// \return Base name of the output file
-	/// \EndMemberDescr
-
-	return fOutFileName;
-}
-int IOHandler::GetCurrentFileNumber() const{
-	/// \MemberDescr
-	/// \return Index of the currently opened file
-	/// \EndMemberDescr
-
-	return fCurrentFileNumber;
-}
-

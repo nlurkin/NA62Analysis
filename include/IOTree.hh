@@ -18,6 +18,15 @@
 class TChain;
 class TTree;
 
+/// \class IOTree
+/// \Brief
+/// Class containing and handling every IO TTree
+/// \EndBrief
+///
+/// \Detailed
+/// Inherits IOHandler and implements the IO methods for TTrees\n
+/// TTree management (input and output).
+/// \EndDetailed
 class IOTree : public IOHisto{
 public:
 	IOTree();

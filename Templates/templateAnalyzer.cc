@@ -145,6 +145,21 @@ void templateAnalyzer::InitHist(){
 	///	\code
 	/// 	DefineSampleSizeCounter("Cuts", "Total");
 	/// \endcode
+	/// You can check the content of the input file (directory, histograms, generic key) in any directory with the following methods
+	/// \code
+	/// 	GetListOfKeys("CedarMonitoring"); // CedarMonitoring directory
+	/// 	GetListOfHisto(""); // Top directory
+	/// 	GetListOfTH1("CedarMonitoring");
+	/// 	GetListOfTH2("CedarMonitoring");
+	/// 	GetListOfTGraph("CedarMonitoring");
+	/// 	GetListOfDirs("");
+	/// \endcode
+	/// The first one returns a vector of IOHandler::keyPair containing the name and class name of the object
+	/// \code
+	/// 	vector<IOHandler::keyPair> keys = GetListOfKeys("CedarMonitoring");
+	/// 	cout << keys[0].name << " " << keys[0].className << endl;
+	/// \endcode
+	/// The others returns a vector of TString containing the name of the objects.\n
 	/// You can retrieve histograms from the input ROOT file (Anything derived from TH1) with\n
 	///	\code
 	/// 	RequestHistogram("TDirectoryName", "HistogramName", appendOnNewFile);
