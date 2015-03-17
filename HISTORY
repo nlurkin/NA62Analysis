@@ -2,8 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 467
         - Fix typo in doc
-        - Implement several GetListOf... for input files (Keys, Dirs, Histo, TH1, TH2, TGraph)
+        - Implement GetListOf... for input files (Keys, Dirs, Histo, TH1, TH2, TGraph)
 
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 456
