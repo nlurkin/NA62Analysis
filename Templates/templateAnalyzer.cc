@@ -236,8 +236,8 @@ void templateAnalyzer::Process(int iEvent){
 	///	This class also provide two methods to switch between particle name and pdgID if necessary.\n
 	///	Example\n
 	/// \code
-	///		double kaonMass = fParticleInterface->FindParticle(321).Mass();
-	///		double pi0Lifetime = fParticleInterface->FindParticle("pi0").Lifetime();
+	/// 	double kaonMass = fParticleInterface->FindParticle(321).Mass();
+	/// 	double pi0Lifetime = fParticleInterface->FindParticle("pi0").Lifetime();
 	/// \endcode
 	/// You can retrieve the events from the trees with\n
 	/// \code
@@ -259,8 +259,8 @@ void templateAnalyzer::Process(int iEvent){
 	/// \code
 	/// 	fHisto.GetTH1("histoName");// for TH1
 	/// 	fHisto.GetTH2("histoName");// for TH2
-	/// 	fHisto.GetGraph("graphName");// for TGraph and TGraphAsymmErrors
-	///     fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
+	/// 	fHisto.GetTGraph("graphName");// for TGraph and TGraphAsymmErrors
+	/// 	fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
 	/// \endcode
 	/// To fill the histograms you can use\n
 	/// \code
