@@ -4,9 +4,11 @@
 #include <TStyle.h>
 #include <TFile.h>
 
-#include "ConfigParser.hh"
+#include "AnalyzerParam.hh"
 #include "StringBalancedTable.hh"
 #include "TermManip.hh"
+
+namespace NA62Conf = NA62Analysis::Configuration;
 
 BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
@@ -80,7 +82,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fIOHandler->LoadEvent(0);
 	fIOHandler->CheckNewFileOpened();
 	//Parse parameters from file
-	ConfigParser confParser;
+	NA62Conf::AnalyzerParam confParser;
 	confParser.ParseFile(configFile);
 	//Parse parameters from commandLine
 	confParser.ParseCLI(params);

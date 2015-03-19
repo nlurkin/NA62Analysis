@@ -12,35 +12,51 @@
 
 #include <TString.h>
 
-typedef std::pair<TString, TString> t_ParamPair;
-typedef std::vector< t_ParamPair > t_ParamValue;
+namespace NA62Analysis {
+namespace Configuration {
 
-class Analyzer;
+typedef std::pair<TString, TString> ParamPair;
+class ConfigNamespace {
+public:
+	ConfigNamespace(TString name) : fName(name){};
+	ConfigNamespace(){};
+
+	bool ParamExists(TString paramName) const;
+	void AddParam(TString name, TString value){
+		fParamsList.insert(ParamPair(name, value));
+	}
+	const std::map<TString, TString>& GetParams() const;
+	TString GetParam(TString name) const;
+
+	void Print() const;
+private:
+	TString fName;
+	std::map<TString, TString> fParamsList;
+};
+
+typedef std::pair<TString, ConfigNamespace> NSPair;
 
 /// \class ConfigParser
 /// \Brief 
-/// This class will parse a configuration file and assign the values to the variables
+/// This class will parse a configuration file and create a repository of pairs (param,value)
+/// for each namespace.
 /// \EndBrief 
 ///
 /// \Detailed
-/// It can parse strings passed from command line, or configuration files. When analyzers are
-/// provided to the parser, it applies the relevant parameters.\n
-/// Command line string looks like
-/// \code
-/// 	analyzerName1:param1=val1;param2=val2&analyzerName2:param1=value1;paramx=valuex ...
-/// \endcode
+/// It can parse strings passed from configuration files that looks like
 /// The configuration file looks like
 /// \code
-/// 	[[analyzerName1]]
+/// 	[[namespace1]]
 /// 	param1 = val1
 /// 	param2 = val2
 ///
-/// 	[[analyzerName2]]
+/// 	[[namespace2]]
 /// 	param1 = value1
 /// 	paramx = valuex
 ///
 /// 	...
 /// \endcode
+/// The parameters and values are accessible in their namespace.
 /// \EndDetailed
 
 class ConfigParser {
@@ -50,14 +66,19 @@ public:
 	virtual ~ConfigParser();
 
 	void ParseFile(TString fileName);
-	void ParseCLI(TString params);
-	void ApplyParams(Analyzer* const analyzer) const;
 	void Print() const;
-private:
-	void AnalyzeLine(TString line);
 
-	std::map<TString, t_ParamValue> fList;	///< Map of ParameterName,ParameterValue pairs
-	TString fCurrentAnalyzer;			///< Name of the current Analyzer section
+	bool NamespaceExists(TString ns) const;
+	const ConfigNamespace& GetNamespace(TString ns) const;
+
+protected:
+	void ParseLine(TString line);
+
+	std::map<TString, ConfigNamespace> fNSList;	///< Map of namespaces
+	ConfigNamespace fDefault; ///< Default namespace
 };
+
+} /* namespace Configuration */
+} /* namespace NA62Analysis */
 
 #endif /* CONFIGPARSER_H_ */

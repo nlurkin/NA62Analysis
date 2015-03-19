@@ -16,7 +16,8 @@
 #include <TObjArray.h>
 #include <TObjString.h>
 
-#include "Analyzer.hh"
+namespace NA62Analysis {
+namespace Configuration {
 
 ConfigParser::ConfigParser() {
 	/// \MemberDescr
@@ -25,8 +26,7 @@ ConfigParser::ConfigParser() {
 }
 
 ConfigParser::ConfigParser(const ConfigParser& c):
-	fList(c.fList),
-	fCurrentAnalyzer(c.fCurrentAnalyzer)
+	fNSList(c.fNSList)
 {
 	/// \MemberDescr
 	/// \param c : Reference of the object to copy
@@ -48,25 +48,36 @@ void ConfigParser::ParseFile(TString fileName){
 	/// \EndMemberDescr
 
 	ifstream s;
-	string line;
+	std::string line;
 
 	if(fileName.Length()>0){
 		s.open(fileName);
 		if(s.is_open()){
 			while(s.good()){
 				getline(s, line);
-				AnalyzeLine(line);
+				ParseLine(line);
 			}
 		}
 		else{
-			cerr << "Configuration parser: Unable to open configuration file " << fileName << endl;
+			std::cerr << "Configuration parser: Unable to open configuration file " << fileName << std::endl;
 		}
 
 		s.close();
 	}
 }
 
-void ConfigParser::AnalyzeLine(TString line){
+bool ConfigParser::NamespaceExists(TString ns) const {
+	return fNSList.count(ns)>0;
+}
+
+const ConfigNamespace& ConfigParser::GetNamespace(TString ns) const {
+	auto nsRef = fNSList.find(ns);
+
+	if(nsRef != fNSList.end()) return nsRef->second;
+	else return fDefault;
+}
+
+void ConfigParser::ParseLine(TString line){
 	/// \MemberDescr
 	/// \param line : line to be processed
 	///
@@ -85,6 +96,8 @@ void ConfigParser::AnalyzeLine(TString line){
 	TString paramValue;
 	TString tempString;
 
+	TString currentNS;
+
 	results = commExp.MatchS(line);
 	if(results->GetEntries()>=2) tempString = ((TObjString*)results->At(1))->GetString();
 	else tempString = line;
@@ -93,8 +106,9 @@ void ConfigParser::AnalyzeLine(TString line){
 
 	results = anExp.MatchS(tempString);
 	if(results->GetEntries()==2){
-		//New analyzer section
-		fCurrentAnalyzer = ((TObjString*)results->At(1))->GetString();
+		//New namespace section
+		currentNS = ((TObjString*)results->At(1))->GetString();
+		fNSList.insert(NSPair(currentNS, ConfigNamespace(currentNS)));
 	}
 	results->Delete();
 	delete results;
@@ -105,7 +119,7 @@ void ConfigParser::AnalyzeLine(TString line){
 		params = ((TObjString*)results->At(2))->GetString().Tokenize(" ");
 		for(int i=0; i<params->GetEntries(); i++){
 			paramValue = ((TObjString*)params->At(i))->GetString();
-			fList[fCurrentAnalyzer].push_back(t_ParamPair(paramName, paramValue));
+			fNSList[currentNS].AddParam(paramName, paramValue);
 		}
 		params->Delete();
 		delete params;
@@ -116,81 +130,39 @@ void ConfigParser::AnalyzeLine(TString line){
 
 void ConfigParser::Print() const{
 	/// \MemberDescr
+	/// Print all the Namespaces
+	/// \EndMemberDescr
+
+	for(auto &ns : fNSList){
+		ns.second.Print();
+	}
+}
+
+bool ConfigNamespace::ParamExists(TString paramName) const {
+	return fParamsList.count(paramName)>0;
+}
+
+const std::map<TString, TString>& ConfigNamespace::GetParams() const {
+	return fParamsList;
+}
+
+TString ConfigNamespace::GetParam(TString name) const {
+	auto paramRef = fParamsList.find(name);
+
+	if(paramRef != fParamsList.end()) return paramRef->second;
+	else return "";
+}
+
+void ConfigNamespace::Print() const{
+	/// \MemberDescr
 	/// Print all the ParamName,ParamValue pairs
 	/// \EndMemberDescr
 
-	map<TString, t_ParamValue>::const_iterator it;
-	t_ParamValue::const_iterator pIt;
-
-	for(it = fList.begin(); it!=fList.end(); it++){
-		cout << "Analyzer " << it->first << endl;
-		for(pIt = it->second.begin(); pIt != it->second.end(); pIt++){
-			cout << pIt->first << " : " << pIt->second << endl;
-		}
+	std::cout << "[[ " << fName << " ]]" << std::endl;
+	for(auto &param : fParamsList){
+		std::cout << param.first << " : " << param.second << std::endl;
 	}
 }
 
-void ConfigParser::ApplyParams(Analyzer * const analyzer) const{
-	/// \MemberDescr
-	/// \param analyzer : pointer to the analyzer
-	///
-	/// Apply all the ParamName,ParamValue pairs to the specified analyzer
-	/// \EndMemberDescr
-
-	t_ParamValue::const_iterator pIt;
-
-	if(fList.count(analyzer->GetAnalyzerName())>0){
-		for(pIt = fList.find(analyzer->GetAnalyzerName())->second.begin(); pIt != fList.find(analyzer->GetAnalyzerName())->second.end(); pIt++){
-			analyzer->ApplyParam(pIt->first, pIt->second);
-		}
-	}
-}
-
-void ConfigParser::ParseCLI(TString params){
-	/// \MemberDescr
-	/// \param params : Parameter string passed in the command line
-	///
-	/// Parse command line interface parameter line
-	/// \EndMemberDescr
-
-	TObjArray *ans, *p;
-	TObjArray *pars, *values;
-	TString paramsLine;
-
-	TString paramValue, paramName;
-
-	ans = params.Tokenize("&");
-	for(int i=0; i<ans->GetEntries(); i++){
-		p = ((TObjString*)ans->At(i))->GetString().Tokenize(":");
-		if(p->GetEntries()==2){
-			//Got the analyzer
-			fCurrentAnalyzer = ((TObjString*)p->At(0))->GetString();
-			//Parse parameters now
-			paramsLine = ((TObjString*)p->At(1))->GetString();
-			pars = paramsLine.Tokenize(";");
-			for(int j=0; j<pars->GetEntries(); j++){
-				values = ((TObjString*)pars->At(j))->GetString().Tokenize("=");
-				if(values->GetEntries()==2){
-					paramName = ((TObjString*)values->At(0))->GetString();
-					paramValue = ((TObjString*)values->At(1))->GetString();
-					fList[fCurrentAnalyzer].push_back(t_ParamPair(paramName, paramValue));
-				}
-				else{
-					cerr << "Configuration parser: Parameter name or value not specified " << pars->At(j)->GetName() << endl;
-				}
-				values->Delete();
-				delete values;
-			}
-			pars->Delete();
-			delete pars;
-		}
-		else{
-			cerr << "Configuration parser: Parameters list not specified for analyzer " << p->At(i)->GetName() << endl;
-		}
-		p->Delete();
-		delete p;
-	}
-
-	ans->Delete();
-	delete ans;
-}
+} /* namespace Configuration */
+} /* namespace NA62Analysis */
