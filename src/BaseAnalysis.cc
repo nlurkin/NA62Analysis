@@ -1,5 +1,6 @@
 #include "BaseAnalysis.hh"
 
+#include <sstream>
 #include <TStyle.h>
 #include <TFile.h>
 
@@ -183,31 +184,23 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	if(IsTreeType()) ProcessWithTree(beginEvent, maxEvent);
-	else if(IsHistoType()) ProcessWithHisto(beginEvent, maxEvent);
-}
-
-void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
-	/// \MemberDescr
-	/// \param beginEvent : index of the first event to be processed
-	/// \param maxEvent : maximum number of events to be processed
-	///
-	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
-	/// \EndMemberDescr
-
 	int i_offset;
 	clock_t timing;
 	bool exportEvent = false;
 
 	if(!fInitialized) return;
 
-	IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
+	//IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
 
 	timing = clock();
 
+	std::string displayType;
+	if(IsTreeType()) displayType = "Event";
+	else if (IsHistoType()) displayType = "File";
+
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " events, beginning with event " << beginEvent << endl;
+	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
@@ -216,27 +209,24 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 		fAnalyzerList[j]->StartOfRun();
-		fAnalyzerList[j]->StartOfBurst();
+		if(IsTreeType()) fAnalyzerList[j]->StartOfBurst();
 	}
 
 	//##############################
 	//Begin event loop
 	//##############################
+	int defaultPrecision = cout.precision();
 	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
+
 	for (int i=beginEvent; i < processEvents; i++)
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
-			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, processEvents, ((double)i/(double)processEvents)*100); fflush(stdout);
-			}
-			else{
-				printf("*** Processing Event %i/%i => %.2f%%\n", i, processEvents, ((double)i/(double)processEvents)*100);
-			}
+			printCurrentEvent(i, processEvents, defaultPrecision, displayType, timing);
 		}
 
 		// Load event infos
-		treeIO->LoadEvent(i);
+		fIOHandler->LoadEvent(i);
 		CheckNewFileOpened();
 
 		PreProcess();
@@ -245,7 +235,7 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(treeIO->GetWithMC()) fAnalyzerList[j]->FillMCSimple( treeIO->GetMCTruthEvent(), fVerbosity);
+			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent(), fVerbosity);
 
 			fAnalyzerList[j]->Process(i);
 			fAnalyzerList[j]->UpdatePlots(i);
@@ -259,15 +249,10 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
-		if(exportEvent) treeIO->WriteEvent();
+		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
 	}
 
-	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => 100.00%%\n" SHELL_COLOR_NONE, processEvents, processEvents);
-	}
-	else{
-		printf("*** Processing Event %i/%i => 100.00%%\n", processEvents, processEvents);
-	}
+	printCurrentEvent(processEvents-1, processEvents-1, defaultPrecision, displayType, timing);
 
 	//Ask the analyzer to export and draw the plots
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
@@ -279,103 +264,8 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
-	treeIO->WriteTree();
-	fCounterHandler.WriteEventFraction(treeIO->GetOutputFileName());
-
-	//Complete the analysis
-	timing = clock()-timing;
-	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
-	cout << endl << "Analysis complete" << endl << "###################################" << endl;
-}
-
-void BaseAnalysis::ProcessWithHisto(int beginEvent, int maxEvent){
-	/// \MemberDescr
-	/// \param beginEvent : index of the first event to be processed
-	/// \param maxEvent : maximum number of events to be processed
-	///
-	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
-	/// \EndMemberDescr
-
-	int i_offset;
-	clock_t timing;
-
-	if(!fInitialized) return;
-
-	IOHisto *HistoIO = static_cast<IOHisto*>(fIOHandler);
-
-	timing = clock();
-
-	//Print event processing summary
-	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " files, beginning with file " << beginEvent << endl;
-
-	i_offset = maxEvent/100.;
-	if(i_offset==0) i_offset=1;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: i_offset : " << i_offset << endl;
-
-	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-		fAnalyzerList[j]->StartOfRun();
-	}
-
-	//##############################
-	//Begin event loop
-	//##############################
-	for (int i=beginEvent; i < beginEvent+maxEvent; i++)
-	{
-		//Print current event
-		if ( i % i_offset == 0 ){
-			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing File %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
-			}
-			else{
-				printf("*** Processing File %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
-			}
-		}
-
-
-		// Load event infos
-
-		HistoIO->LoadEvent(i);
-		CheckNewFileOpened();
-
-		PreProcess();
-		//Process event in Analyzer
-		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			//Get reality
-			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-
-			fAnalyzerList[j]->Process(i);
-			fAnalyzerList[j]->UpdatePlots(i);
-			gFile->cd();
-		}
-
-		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			//if(exportEvent) fAnalyzerList[j]->FillTrees();
-			fAnalyzerList[j]->PostProcess();
-			gFile->cd();
-		}
-	}
-
-	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED "*** Processing File %i/%i => 100.00%%\n" SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
-	}
-	else{
-		printf("*** Processing File %i/%i => 100.00%%\n", beginEvent+maxEvent, beginEvent+maxEvent);
-	}
-
-	//Ask the analyzer to export and draw the plots
-	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-		fAnalyzerList[j]->EndOfBurst();
-		fAnalyzerList[j]->EndOfRun();
-		fAnalyzerList[j]->ExportPlot();
-		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
-		fAnalyzerList[j]->WriteTrees();
-		gFile->cd();
-	}
-	fCounterHandler.WriteEventFraction(HistoIO->GetOutputFileName());
+	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
+	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
 	timing = clock()-timing;
@@ -518,4 +408,26 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 
 	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
 	else fIOHandler = new IOTree();
+}
+
+void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, string displayType, clock_t startTime) {
+	clock_t currTime = clock();
+	stringstream ss;
+
+	//Print current event
+	if(fGraphicMode) cout << SHELL_COLOR_LRED;
+
+	float eta = 0;
+	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/iEvent)/CLOCKS_PER_SEC;
+	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents-1;
+	cout << std::setw(35) << std::left << ss.str() << " => ";
+	cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
+	cout << std::setw(10) << "ETA: " << eta << "s";
+
+	if(fGraphicMode) cout << SHELL_COLOR_NONE << "\r" << std::flush;
+	else cout << endl;
+
+	//Reset to default
+	cout.precision(defaultPrecision);
+	cout.unsetf(ios_base::floatfield);
 }
