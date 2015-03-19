@@ -33,35 +33,6 @@
  * at this point.
  */
 
-
-#define ENABLE_SHELL_COLOR  1
-#if ENABLE_SHELL_COLOR == 1
-#define SHELL_COLOR_RED     "\033[0;31m"
-#define SHELL_COLOR_LRED    "\033[1;31m"
-#define SHELL_COLOR_GREEN   "\033[0;32m"
-#define SHELL_COLOR_LGREEN  "\033[1;32m"
-#define SHELL_COLOR_BROWN   "\033[0;33m"
-#define SHELL_COLOR_LBROWN  "\033[1;33m"
-#define SHELL_COLOR_BLUE    "\033[0;34m"
-#define SHELL_COLOR_LBLUE   "\033[1;34m"
-#define SHELL_COLOR_PURPLE  "\033[0;35m"
-#define SHELL_COLOR_LPURPLE "\033[1;35m"
-#define SHELL_COLOR_NONE    "\033[0m"
-#else
-#define SHELL_COLOR_RED     ""
-#define SHELL_COLOR_LRED    ""
-#define SHELL_COLOR_GREEN   ""
-#define SHELL_COLOR_LGREEN  ""
-#define SHELL_COLOR_BROWN   ""
-#define SHELL_COLOR_LBROWN  ""
-#define SHELL_COLOR_BLUE    ""
-#define SHELL_COLOR_LBLUE   ""
-#define SHELL_COLOR_PURPLE  ""
-#define SHELL_COLOR_LPURPLE ""
-#define SHELL_COLOR_NONE    ""
-#endif
-#define CLEAN_OUTPUT true
-
 #ifndef FUNCTIONS_HH
 #define FUNCTIONS_HH
 

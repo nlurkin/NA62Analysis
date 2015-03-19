@@ -6,7 +6,7 @@ NA62Analysis Project
         - Set the default to "Read All" when reading a list of files. Add -b
           as additional alias for -B/--nfiles (Do not work with the -g option because
           of ROOT interference)
-        - 
+        - Add elements to manipulate output stream colors
 
 2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 467

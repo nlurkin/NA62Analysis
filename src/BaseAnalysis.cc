@@ -6,6 +6,7 @@
 
 #include "ConfigParser.hh"
 #include "StringBalancedTable.hh"
+#include "TermManip.hh"
 
 BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
@@ -20,6 +21,7 @@ BaseAnalysis::BaseAnalysis():
 	/// \EndMemberDescr
 
 	gStyle->SetOptFit(1);
+	manip::enableManip = false;
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -252,7 +254,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
 	}
 
-	printCurrentEvent(processEvents-1, processEvents-1, defaultPrecision, displayType, timing);
+	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
+	cout << endl;
 
 	//Ask the analyzer to export and draw the plots
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
@@ -415,7 +418,7 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	stringstream ss;
 
 	//Print current event
-	if(fGraphicMode) cout << SHELL_COLOR_LRED;
+	if(fGraphicMode) cout << manip::red << manip::bold;
 
 	float eta = 0;
 	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/iEvent)/CLOCKS_PER_SEC;
@@ -424,7 +427,7 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
 	cout << std::setw(10) << "ETA: " << eta << "s";
 
-	if(fGraphicMode) cout << SHELL_COLOR_NONE << "\r" << std::flush;
+	if(fGraphicMode) cout << manip::reset << "\r" << std::flush;
 	else cout << endl;
 
 	//Reset to default
