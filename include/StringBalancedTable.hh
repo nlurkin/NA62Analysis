@@ -27,10 +27,11 @@ public:
 	StringBalancedTable(const StringBalancedTable& c);
 	virtual ~StringBalancedTable();
 
+	using StringTable::operator<<;
 	StringBalancedTable& operator<<(TString v);
 
-	void Print(TString prefix);
-	void Print(TString prefix, ostream &s);
+	void Print(TString prefix) const;
+	void Print(TString prefix, ostream &s) const;
 private:
 	std::vector<TString> fValuesList; ///< List of values in the table
 };

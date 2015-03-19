@@ -24,6 +24,7 @@ IOHisto::IOHisto():
 }
 
 IOHisto::IOHisto(const IOHisto &c):
+	IOHandler(c),
 	fNewFileOpened(false),
 	fInputHistoAdd(c.fInputHistoAdd),
 	fInputHisto(c.fInputHisto),

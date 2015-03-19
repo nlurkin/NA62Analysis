@@ -30,6 +30,7 @@ IOTree::IOTree():
 }
 
 IOTree::IOTree(const IOTree &c):
+	IOHisto(c),
 	fTree(c.fTree),
 	fEvent(c.fEvent),
 	fObject(c.fObject),

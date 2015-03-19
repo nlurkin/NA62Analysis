@@ -250,7 +250,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	}else{
 		TString inputFileName;
 		std::ifstream inputList(inFileName.Data());
-		while(inputFileName.ReadLine(inputList) && inputFileNumber < nFiles){
+		while(inputFileName.ReadLine(inputList) && (nFiles>0 && inputFileNumber < nFiles)){
 			if(verbosity>=AnalysisFW::kNormal) std::cout << "AnalysisFW: Adding file " << inputFileName << std::endl;
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
                                 TString svcClass = getenv("STAGE_SVCCLASS");

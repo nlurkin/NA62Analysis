@@ -63,7 +63,7 @@ public:
 		/// \EndMemberDescr
 		return fInputfiles.size();
 	};
-	virtual void LoadEvent(int iEvent) {
+	virtual void LoadEvent(int) {
 		/// \MemberDescr
 		/// \param iEvent: Event index to load
 		/// Dummy LoadEvent
@@ -84,7 +84,7 @@ public:
 	//Printing
 	virtual void PrintInitSummary() const;
 
-	const IOHandlerType GetIOType() const {
+	IOHandlerType GetIOType() const {
 		/// \MemberDescr
 		/// \return Type of IO handler
 		/// \EndMemberDescr
