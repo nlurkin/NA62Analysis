@@ -8,7 +8,6 @@
 #include "BaseAnalysis.hh"
 
 $$ANALYZERSINCLUDE$$
-using namespace std;
 
 BaseAnalysis *ban = 0;
 TApplication *theApp = 0;
@@ -42,7 +41,8 @@ void usage(char* name)
 	cout << " Group2:" << endl;
 	cout << "  -l/--list path\t: Path to a text file containing a list of paths to input ROOT files." << endl
 		 << "\t\t\t  One file per line." << endl;
-	cout << "  -B/--nfiles int\t: Maximum number of files to process from the list." << endl;
+	cout << "  -B/-b/--nfiles int\t: Maximum number of files to process from the list. (Default: All)" << endl
+		 << "\t\t\t  !Warning. When using -g option, do not use the -b but -B or --nfiles." << endl;
 	cout << endl << endl;
 }
 
@@ -103,7 +103,7 @@ int main(int argc, char** argv){
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v::gl:B:n:o:p:0:1:2:", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v::gl:B:b:n:o:p:0:1:2:", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -130,11 +130,14 @@ int main(int argc, char** argv){
 
 		// Mixed short-long options cases
 		case 'l': /* Input files list, long_option: list */
-			if(!NFiles) NFiles = 1;
+			if(!NFiles) NFiles = -1;
 			inFileName = TString(optarg);
 			fromList = true;
 			break;
 		case 'B': /* Number of files to read, long_option: nfiles */
+			NFiles = TString(optarg).Atoi();
+			break;
+		case 'b': /* Number of files to read, long_option: nfiles */
 			NFiles = TString(optarg).Atoi();
 			break;
 		case 'n': /* Maximum number of events to process, long_option: nevt */
