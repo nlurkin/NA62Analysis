@@ -24,10 +24,9 @@ using namespace NA62Constants;
 ///
 /// \EndDetailed
 
-SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(Core::BaseAnalysis *ba) : Analyzer(ba)
+SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(Core::BaseAnalysis *ba) : Analyzer(ba, "SkimmingNoStrawMuonsTracks")
 {
 	useMUV = false;
-	fAnalyzerName = "SkimmingNoStrawMuonsTracks";
 
 	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
 	RequestTree("RICH", new TRecoRICHEvent);

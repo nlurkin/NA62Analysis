@@ -14,12 +14,26 @@
 namespace NA62Analysis {
 
 UserMethods::UserMethods(Core::BaseAnalysis *ba):
+		Verbose("UserMethods"),
 		fParent(ba)
 {
 	/// \MemberDescr
 	/// \param ba : Pointer to the parent BaseAnalysis instance
 	///
 	/// Constructor
+	/// \EndMemberDescr
+}
+
+UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name):
+		Verbose(name),
+		fAnalyzerName(name),
+		fParent(ba)
+{
+	/// \MemberDescr
+	/// \param ba : Pointer to the parent BaseAnalysis instance
+	/// \param name : Display name
+	///
+	/// Constructor with name
 	/// \EndMemberDescr
 }
 

@@ -30,6 +30,7 @@ namespace Core {
 class IOHisto : public IOHandler{
 public:
 	IOHisto();
+	IOHisto(std::string name);
 	IOHisto(const IOHisto &c);
 	virtual ~IOHisto();
 

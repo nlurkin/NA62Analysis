@@ -51,6 +51,7 @@ public:
 	enum OutputState {kOUninit, kOValid, kOInvalid};
 
 	UserMethods(Core::BaseAnalysis *ba);
+	UserMethods(Core::BaseAnalysis *ba, std::string name);
 	UserMethods(const UserMethods&);
 	virtual ~UserMethods();
 

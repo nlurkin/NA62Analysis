@@ -12,6 +12,7 @@ namespace NA62Analysis {
 
 
 MCSimple::MCSimple():
+	Verbose("MCSimple"),
 	fStatus(kEmpty),
 	fParticleInterface(ParticleInterface::GetParticleInterface()),
 	fDecayTree(NULL)

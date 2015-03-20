@@ -6,7 +6,7 @@
 namespace NA62Analysis {
 
 Analyzer::Analyzer(Core::BaseAnalysis *ba) :
-		UserMethods(ba),
+		UserMethods(ba, "Analyzer"),
 		fNoMCWarned(false),
 		fIncompleteMCWarned(false),
 		fDetectorAcceptanceInstance(NULL),
@@ -16,7 +16,25 @@ Analyzer::Analyzer(Core::BaseAnalysis *ba) :
 {
 	/// \MemberDescr
 	/// \param ba : Parent BaseAnalysis instance
+	///
 	/// Constructor
+	/// \EndMemberDescr
+}
+
+Analyzer::Analyzer(Core::BaseAnalysis *ba, std::string name) :
+		UserMethods(ba, name),
+		fNoMCWarned(false),
+		fIncompleteMCWarned(false),
+		fDetectorAcceptanceInstance(NULL),
+		fState(kUninit),
+		fExportEvent(false),
+		fParticleInterface(ParticleInterface::GetParticleInterface())
+{
+	/// \MemberDescr
+	/// \param ba : Parent BaseAnalysis instance
+	/// \param name : Display name
+	///
+	/// Constructor with name
 	/// \EndMemberDescr
 }
 
@@ -224,6 +242,7 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 			if(paramValue.CompareTo("kNo", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kNo);
 			if(paramValue.CompareTo("kUser", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kUser);
 			if(paramValue.CompareTo("kNormal", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kNormal);
+			if(paramValue.CompareTo("kExtended", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kExtended);
 			if(paramValue.CompareTo("kDebug", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kDebug);
 		}
 	}

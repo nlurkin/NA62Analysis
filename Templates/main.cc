@@ -19,7 +19,7 @@ void usage(char* name)
 	cout << "Allowed options:" << endl;
 	cout << "  -h/--help\t\t: Display this help" << endl;
 	cout << "  -v [level]\t\t: Verbosity level." << endl
-		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kDebug or 0,1,2,3;" << endl
+		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kExtended, kDebug or 0,1,2,3,4;" << endl
 		 << "\t\t\t  Default=kNo; If level not specified: kNormal" << endl;
 	cout << "  -g\t\t\t: Graphical mode. Starts a ROOT application for display." << endl
 		 << "\t\t\t  Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
@@ -105,7 +105,7 @@ int main(int argc, char** argv){
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v::gl:B:b:n:o:p:0:1:2:", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -121,6 +121,7 @@ int main(int argc, char** argv){
 					if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kNo;
 					if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kUser;
 					if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kNormal;
+					if(argTS.CompareTo("kExtended", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kExtended;
 					if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kDebug;
 				}
 			}

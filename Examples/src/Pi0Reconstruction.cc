@@ -26,9 +26,8 @@ using namespace NA62Constants;
 ///
 /// \EndDetailed
 
-Pi0Reconstruction::Pi0Reconstruction(Core::BaseAnalysis *ba) : Analyzer(ba)
+Pi0Reconstruction::Pi0Reconstruction(Core::BaseAnalysis *ba) : Analyzer(ba, "Pi0Reconstruction")
 {
-	fAnalyzerName = "Pi0Reconstruction";
 
 	RequestTree("LKr", new TRecoLKrEvent);
 

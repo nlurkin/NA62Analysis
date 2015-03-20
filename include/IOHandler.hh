@@ -51,6 +51,7 @@ public:
 	} keyPair; ///< Typedef to struct keyPair_t
 
 	IOHandler();
+	IOHandler(std::string name);
 	IOHandler(const IOHandler& c);
 	virtual ~IOHandler();
 

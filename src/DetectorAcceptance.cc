@@ -12,6 +12,7 @@
 namespace NA62Analysis {
 
 DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
+		Verbose("DetectorAcceptance"),
 		fGeoManager(TGeoManager::Import(GeometryFile)),
 		fFile(GeometryFile),
 		fTrackNumber(0),

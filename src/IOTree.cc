@@ -18,6 +18,7 @@ namespace NA62Analysis {
 namespace Core {
 
 IOTree::IOTree():
+	IOHisto("IOTree"),
 	fMCTruthTree(0),
 	fMCTruthEvent(new Event()),
 	fRawHeaderTree(0),
@@ -433,7 +434,7 @@ int IOTree::FillMCTruth(){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		std::cout << someLevel() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << normal() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
 		if ( TString("event").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "event";
 		}
@@ -442,13 +443,13 @@ int IOTree::FillMCTruth(){
 		}
 		if(branchName.CompareTo("") != 0)
 		{
-			std::cout << someLevel() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << normal() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
 			if ( TString("Event").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
 				std::cerr  << "Input file corrupted, bad reco class found for " << fMCTruthTree->GetTree()->GetName() << std::endl;
 			}
 			else{
-				std::cout << someLevel() << "AnalysisFW: Found TRecoMCTruthEvent (" << fMCTruthTree->GetEntries() << ")" << std::endl;
+				std::cout << normal() << "AnalysisFW: Found TRecoMCTruthEvent (" << fMCTruthTree->GetEntries() << ")" << std::endl;
 				fMCTruthTree->SetBranchAddress(branchName, &fMCTruthEvent );
 				if ( eventNb < 0 )
 				{
@@ -488,19 +489,19 @@ int IOTree::FillRawHeader(){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		std::cout << someLevel() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << normal() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
 		if ( TString("RawHeader").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "RawHeader";
 		}
 		if(branchName.CompareTo("") != 0)
 		{
-			std::cout << someLevel() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << normal() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
 			if ( TString("RawHeader").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
 				std::cerr  << "Input file corrupted, bad RawHeader class found for " << fRawHeaderTree->GetTree()->GetName() << std::endl;
 			}
 			else{
-				std::cout << someLevel() << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << std::endl;
+				std::cout << normal() << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << std::endl;
 				fRawHeaderTree->SetBranchAddress(branchName, &fRawHeaderEvent );
 				if ( eventNb < 0 )
 				{
@@ -574,14 +575,14 @@ bool IOTree::checkInputFile(TString fileName){
 	else if(keys->FindObject("Run_0")) fMCTruthTree = new TChain("Run_0");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
-		std::cout << someLevel() << "AnalysisFW: No MC data found" << std::endl;
+		std::cout << normal() << "AnalysisFW: No MC data found" << std::endl;
 		fWithMC = false;
 	}
 
 	fWithRawHeader = true;
 	if(keys->FindObject("RawHeader")) fRawHeaderTree = new TChain("RawHeader");
 	else{
-		std::cout << someLevel() << "AnalysisFW: No Raw Header found" << std::endl;
+		std::cout << normal() << "AnalysisFW: No Raw Header found" << std::endl;
 		fWithRawHeader = false;
 	}
 

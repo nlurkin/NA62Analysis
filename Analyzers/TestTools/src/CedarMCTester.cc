@@ -27,7 +27,7 @@ using namespace NA62Constants;
 /// Describe your Analyzer
 /// \EndDetailed
 
-CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba)
+CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba, "CedarMCTester")
 {
     /// \MemberDescr
     /// \param ba : parent BaseAnalysis
@@ -47,7 +47,6 @@ CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba)
     ///use of local instance\n
     ///	fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 
-    fAnalyzerName = "CedarMCTester";
     RequestTree("Cedar",new TCedarEvent);
 
     fDivider = "";

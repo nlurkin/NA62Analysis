@@ -31,10 +31,8 @@ using namespace NA62Constants;
 /// distance is minimum and lower than 50mm.
 /// \EndDetailed
 
-LKrPhotonMC::LKrPhotonMC(Core::BaseAnalysis *ba) : Analyzer(ba)
+LKrPhotonMC::LKrPhotonMC(Core::BaseAnalysis *ba) : Analyzer(ba, "LKrPhotonMC")
 {
-	fAnalyzerName = "LKrPhotonMC";
-
 	fCandidates = new TClonesArray("TRecoLKrCandidateMC", 10);
 	RequestTree("LKr", new TRecoLKrEvent);
 	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);

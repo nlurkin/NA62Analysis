@@ -28,10 +28,8 @@ using namespace NA62Constants;
 ///	the output is set as invalid.
 /// \EndDetailed
 
-VertexCDA::VertexCDA(Core::BaseAnalysis *ba) : Analyzer(ba)
+VertexCDA::VertexCDA(Core::BaseAnalysis *ba) : Analyzer(ba, "VertexCDA")
 {
-	fAnalyzerName = "VertexCDA";
-
 	//Specify the trees you want to use and the event class corresponding
 	//Don't try to load MCTruth tree (RUN_0 or Event). Use the MCTruthEvent in Process function instead. Problems wen opening twice the same tree.
 	//Example with RecoEvent

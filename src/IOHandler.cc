@@ -28,6 +28,20 @@ IOHandler::IOHandler():
 	/// \EndMemberDescr
 }
 
+IOHandler::IOHandler(std::string name):
+	Verbose(name),
+	fIOType(IOHandlerType::kNOIO),
+	fCurrentFileNumber(-1),
+	fOutFile(0),
+	fCurrentFile(NULL)
+{
+	/// \MemberDescr
+	/// \param name : Display name
+	///
+	/// Constructor with name
+	/// \EndMemberDescr
+}
+
 IOHandler::IOHandler(const IOHandler& c):
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),

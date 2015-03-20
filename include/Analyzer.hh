@@ -30,6 +30,7 @@ public:
 	enum AnalyzerState {kReady, kUninit};
 
 	Analyzer(Core::BaseAnalysis* ba);
+	Analyzer(Core::BaseAnalysis* ba, std::string name);
 	Analyzer(const Analyzer& c);
 	virtual ~Analyzer();
 

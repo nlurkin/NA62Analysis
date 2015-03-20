@@ -18,10 +18,23 @@ namespace NA62Analysis {
 namespace Core {
 
 IOHisto::IOHisto():
+	IOHandler("IOHisto"),
 	fNewFileOpened(false)
 {
 	/// \MemberDescr
 	/// Constructor
+	/// \EndMemberDescr
+	fIOType = IOHandlerType::kHISTO;
+}
+
+IOHisto::IOHisto(std::string name):
+	IOHandler(name),
+	fNewFileOpened(false)
+{
+	/// \MemberDescr
+	/// \param name : Display name
+	///
+	/// Constructor with name
 	/// \EndMemberDescr
 	fIOType = IOHandlerType::kHISTO;
 }

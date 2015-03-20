@@ -13,6 +13,7 @@ namespace NA62Analysis {
 namespace Core {
 
 BaseAnalysis::BaseAnalysis():
+	Verbose("BaseAnalysis"),
 	fNEvents(-1),
 	fGraphicMode(false),
 	fInitialized(false),
@@ -196,11 +197,11 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	cout << PrintLevel(Verbosity::kSomeLevel) << "AnalysisFW: Treating ";// << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
+	cout << normal() << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
-	cout << someLevel() << "AnalysisFW: i_offset : " << i_offset << endl;
+	cout << normal() << "AnalysisFW: i_offset : " << i_offset << endl;
 
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());

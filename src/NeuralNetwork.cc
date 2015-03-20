@@ -10,7 +10,9 @@
 namespace NA62Analysis {
 
 
-NeuralNetwork::NeuralNetwork() {
+NeuralNetwork::NeuralNetwork() :
+	Verbose("NeuralNetwork")
+{
 	/// \MemberDescr
 	/// Experimental feature. Not completely developed.
 	/// Constructor

@@ -27,7 +27,7 @@ using namespace NA62Constants;
 /// /TODO second list
 /// \EndDetailed
 
-templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba)
+templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templateAnalyzer")
 {
 	/// \MemberDescr
 	/// \param ba : parent BaseAnalysis
@@ -56,8 +56,6 @@ templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba)
 	///	\code
 	///		fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 	/// \endcode
-
-	fAnalyzerName = "templateAnalyzer";
 
 /*$$TREEREQUEST$$*/
 
