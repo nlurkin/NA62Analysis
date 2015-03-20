@@ -450,3 +450,107 @@ KinePart* Analyzer::CreateStandardCandidate(TString treeName){
 	fExportCandidatesNumber[treeName]++;
 	return p;
 }
+
+void Analyzer::AddParam(TString name, char *address, char defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("char", address)));
+}
+
+void Analyzer::AddParam(TString name, int *address, int defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("int", address)));
+}
+
+void Analyzer::AddParam(TString name, long *address, long defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("long", address)));
+}
+
+void Analyzer::AddParam(TString name, bool *address, bool defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("bool", address)));
+}
+
+void Analyzer::AddParam(TString name, float *address, float defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("float", address)));
+}
+
+void Analyzer::AddParam(TString name, double *address, double defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("double", address)));
+}
+
+void Analyzer::AddParam(TString name, string *address, string defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("string", address)));
+}
+
+void Analyzer::AddParam(TString name, TString *address, TString defaultValue) {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param address : Pointer to the variable that will be assigned the parameter value
+	/// \param defaultValue : Default value if the parameter is not specified
+	///
+	/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+	/// The value can be overwritten using a runtime configuration file or the -p command line option.
+	/// \EndMemberDescr
+	*address = defaultValue;
+	fParams.insert(pair<TString, param_t>(name, param_t("TString", address)));
+}

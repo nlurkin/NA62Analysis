@@ -101,7 +101,8 @@ public:
 		/// \param address : Pointer to the variable that will be assigned the parameter value
 		/// \param defaultValue : Default value if the parameter is not specified
 		///
-		/// Add a new branch to an existing output tree.
+		/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+		/// The value can be overwritten using a runtime configuration file or the -p command line option.
 		/// \EndMemberDescr
 		if(!CheckType(type)){
 			cout << "Error when adding parameter " << name << " : type not supported " << type << endl;
@@ -110,6 +111,15 @@ public:
 		*address = defaultValue;
 		fParams.insert(pair<TString, param_t>(name, param_t(type, address)));
 	}
+	void AddParam(TString name, char    *address, char    defaultValue);
+	void AddParam(TString name, int     *address, int     defaultValue);
+	void AddParam(TString name, long    *address, long    defaultValue);
+	void AddParam(TString name, bool    *address, bool    defaultValue);
+	void AddParam(TString name, float   *address, float   defaultValue);
+	void AddParam(TString name, double  *address, double  defaultValue);
+	void AddParam(TString name, string  *address, string  defaultValue);
+	void AddParam(TString name, TString *address, TString defaultValue);
+
 	void ApplyParam(TString paramName, TString paramValue);
 
 	double compareToReferencePlot(TString h1, bool KS);
