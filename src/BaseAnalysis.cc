@@ -22,8 +22,10 @@ BaseAnalysis::BaseAnalysis():
 	/// Constructor
 	/// \EndMemberDescr
 
+
+	NA62Conf::SettingsReader().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
-	manip::enableManip = false;
+	manip::enableManip = NA62Conf::SettingsReader::global::fUseColors && isatty(fileno(stdout));
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -420,17 +422,19 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	stringstream ss;
 
 	//Print current event
-	if(fGraphicMode) cout << manip::red << manip::bold;
+	if(NA62Conf::SettingsReader::global::fUseColors) cout << manip::red << manip::bold;
 
 	float eta = 0;
-	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/iEvent)/CLOCKS_PER_SEC;
+	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
 	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents-1;
 	cout << std::setw(35) << std::left << ss.str() << " => ";
 	cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
-	cout << std::setw(10) << "ETA: " << eta << "s";
+	if(iEvent==0) cout << std::setw(10) << "ETA: " << "----s";
+	else cout << std::setw(10) << "ETA: " << eta << "s";
 
-	if(fGraphicMode) cout << manip::reset << "\r" << std::flush;
-	else cout << endl;
+	if(NA62Conf::SettingsReader::global::fUseColors) cout << manip::reset;
+	if(NA62Conf::SettingsReader::global::fProcessOutputNewLine) cout << endl;
+	else cout << std::setw(10) << "\r" << std::flush;
 
 	//Reset to default
 	cout.precision(defaultPrecision);
