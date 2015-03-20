@@ -17,6 +17,13 @@ using namespace NA62Constants;
 ///
 /// \Detailed
 /// Describe your Analyzer
+/// All the following classes are available for you to use. Check their documentation for more information:\n
+/// /TODO list here
+///
+/// You might also be interested in checking the documentation for the following classes. However you should not
+/// in general have to create instances of these. If necessary a pointer to the existing instance is usually
+/// available or provided by specific methods.
+/// /TODO second list
 /// \EndDetailed
 
 templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
@@ -66,15 +73,15 @@ void templateAnalyzer::InitOutput(){
 	/// The name of the analyzer will be prepended to the outputName (to avoid collisions with other analyzers)\n
 	/// variableName should be the name of a variable declared in the definition of the class\n
 	/// \n
-	/// Call: \n
+	/// Call one of: \n
 	///	\code
-	/// 	AddParam("paramName", "paramType", &variableName, defaultValue);
+	/// 	AddParam("paramName", &variableName, defaultValue);
 	/// \endcode
 	/// for each parameter of the analyzer. These parameters can be set when starting the FW from the command line with the -p option.\n
 	/// paramName is the name of the parameter in the command line\n
-	/// paramType is the type of the parameter (allowed : bool, int, long, float, double, char, string, TString)\n
 	/// variableName is the name of the variable that should be declared in the definition of the class\n
 	/// defaultValue is the default value if not specified in the command line\n
+	/// The allowed types for parameters are the following: bool, int, long, float, double, char, string, TString\n
 	/// \n
 	/// To create a new TTree in the output file, call: \n
 	///	\code

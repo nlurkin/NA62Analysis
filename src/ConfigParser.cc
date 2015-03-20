@@ -67,6 +67,7 @@ void ConfigParser::ParseFile(TString fileName){
 }
 
 bool ConfigParser::NamespaceExists(TString ns) const {
+	ns.ToLower();
 	return fNSList.count(ns)>0;
 }
 
@@ -85,7 +86,7 @@ void ConfigParser::ParseLine(TString line){
 	/// \EndMemberDescr
 
 	TPRegexp commExp("(.*?)//.*");
-	TPRegexp anExp("\\[\\[(.*)\\]\\]");
+	TPRegexp anExp("\\[\\[\\s*(.*?)\\s*\\]\\]");
 	TPRegexp paramExp("(.*?)[ ]*=[ ]*(.*)");
 	TPRegexp plotUpdateExp("AutoUpdate = (.*)");
 
@@ -96,8 +97,6 @@ void ConfigParser::ParseLine(TString line){
 	TString paramValue;
 	TString tempString;
 
-	TString currentNS;
-
 	results = commExp.MatchS(line);
 	if(results->GetEntries()>=2) tempString = ((TObjString*)results->At(1))->GetString();
 	else tempString = line;
@@ -107,8 +106,9 @@ void ConfigParser::ParseLine(TString line){
 	results = anExp.MatchS(tempString);
 	if(results->GetEntries()==2){
 		//New namespace section
-		currentNS = ((TObjString*)results->At(1))->GetString();
-		fNSList.insert(NSPair(currentNS, ConfigNamespace(currentNS)));
+		fCurrentNS = ((TObjString*)results->At(1))->GetString();
+		fCurrentNS.ToLower();
+		fNSList.insert(NSPair(fCurrentNS, ConfigNamespace(fCurrentNS)));
 	}
 	results->Delete();
 	delete results;
@@ -116,10 +116,11 @@ void ConfigParser::ParseLine(TString line){
 	results = paramExp.MatchS(tempString);
 	if(results->GetEntries()==3){
 		paramName = ((TObjString*)results->At(1))->GetString();
+		paramName.ToLower();
 		params = ((TObjString*)results->At(2))->GetString().Tokenize(" ");
 		for(int i=0; i<params->GetEntries(); i++){
 			paramValue = ((TObjString*)params->At(i))->GetString();
-			fNSList[currentNS].AddParam(paramName, paramValue);
+			fNSList[fCurrentNS].AddParam(paramName, paramValue);
 		}
 		params->Delete();
 		delete params;
@@ -139,6 +140,7 @@ void ConfigParser::Print() const{
 }
 
 bool ConfigNamespace::ParamExists(TString paramName) const {
+	paramName.ToLower();
 	return fParamsList.count(paramName)>0;
 }
 
@@ -147,10 +149,63 @@ const std::map<TString, TString>& ConfigNamespace::GetParams() const {
 }
 
 TString ConfigNamespace::GetParam(TString name) const {
+	name.ToLower();
 	auto paramRef = fParamsList.find(name);
 
 	if(paramRef != fParamsList.end()) return paramRef->second;
 	else return "";
+}
+
+void ConfigNamespace::SetValue(TString name, char& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Data()[0];
+}
+
+void ConfigNamespace::SetValue(TString name, bool& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()){
+		if(param->second.IsDigit()) ref = param->second.Atoi();
+		else if(param->second.CompareTo("true", TString::kIgnoreCase)==0) ref = true;
+		else if(param->second.CompareTo("false", TString::kIgnoreCase)==0) ref = false;
+	}
+}
+
+void ConfigNamespace::SetValue(TString name, int &ref) const{
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atoi();
+}
+
+void ConfigNamespace::SetValue(TString name, long & ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atoll();
+}
+
+void ConfigNamespace::SetValue(TString name, float& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atof();
+}
+
+void ConfigNamespace::SetValue(TString name, double& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atof();
+}
+
+void ConfigNamespace::SetValue(TString name, std::string& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Data();
+}
+
+void ConfigNamespace::SetValue(TString name, TString& ref) const {
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second;
 }
 
 void ConfigNamespace::Print() const{
@@ -160,9 +215,10 @@ void ConfigNamespace::Print() const{
 
 	std::cout << "[[ " << fName << " ]]" << std::endl;
 	for(auto &param : fParamsList){
-		std::cout << param.first << " : " << param.second << std::endl;
+		std::cout << param.first << " = " << param.second << std::endl;
 	}
 }
+
 
 } /* namespace Configuration */
 } /* namespace NA62Analysis */
