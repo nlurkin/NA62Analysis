@@ -47,7 +47,7 @@ void Verbose::SetVerbosity(Verbosity::VerbosityLevel v){
 	/// Change verbosity
 	/// \EndMemberDescr
 
-	std::cout << user() << "Setting verbosity to " << v << std::endl;
+	std::cout << normal() << "Setting verbosity to " << v << std::endl;
 	fVerbosityLevel = v;
 }
 

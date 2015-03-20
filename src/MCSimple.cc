@@ -109,7 +109,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 			}
 			else{
 				//Parent not found. Should not happen
-				cout << normal() << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << endl;
+				cout << extended() << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << endl;
 				ritPTree++;
 			}
 		}
@@ -125,7 +125,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 	else{
 		fStatus = kMissing;
 		for(it=testStruct.begin(); it!=testStruct.end(); it++){
-			cout << normal() << "Missing particle " << (*it).first.second << " with parent " << (*it).first.first << endl;
+			cout << extended() << "Missing particle " << (*it).first.second << " with parent " << (*it).first.first << endl;
 		}
 	}
 
