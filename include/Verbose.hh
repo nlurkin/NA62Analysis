@@ -12,37 +12,51 @@
 
 #include "FWEnums.hh"
 
+#define PRINTVAR(v) #v << "= " << v << " "
+
 namespace NA62Analysis {
 
 class Verbose {
 public:
 	Verbose();
+	Verbose(std::string name);
 	virtual ~Verbose();
 
 	void SetVerbosity(Verbosity::VerbosityLevel v);
 
-	Verbosity::VerbosityLevel GetVerbosityLevel() const;
+	Verbosity::VerbosityLevel GetVerbosityLevel() const { return fVerbosityLevel; };
+	Verbosity::VerbosityLevel GetTestLevel() const { return fVerbosityTest; };
+	std::string GetModuleName() const { return fModuleName; };
 
-	void SetStream(std::ostream &s) { fCurrentStream=&s;};
+	void SetStream(std::ostream &s) const { fCurrentStream=&s;};
 	std::ostream& GetStream() const { return *fCurrentStream;};
-	const Verbose& PrintLevel(Verbosity::VerbosityLevel v) const { return *this; };
-	bool TestLevel(Verbosity::VerbosityLevel level) const;
 
+	const Verbose& PrintLevel(Verbosity::VerbosityLevel v) const { fVerbosityTest = v; return *this; };
+	bool TestLevel(Verbosity::VerbosityLevel level) const;
+	bool CanPrint() const;
+
+	//Standard levels stream manipulators (shortcuts for PrintLevel)
 	const Verbose& user() const { return PrintLevel(Verbosity::kUser); };
 	const Verbose& normal() const { return PrintLevel(Verbosity::kNormal); };
+	const Verbose& extended() const { return PrintLevel(Verbosity::kExtended); };
 	const Verbose& debug() const { return PrintLevel(Verbosity::kDebug); };
-	const Verbose& someLevel() const { return PrintLevel(Verbosity::kSomeLevel); };
+
+	static std::string GetVerbosityLevelName(Verbosity::VerbosityLevel v);
 
 private:
-	Verbosity::VerbosityLevel fVerbosityLevel; ///< Verbosity of the program
-	mutable Verbosity::VerbosityLevel fVerbosityTest; ///< Transient members. Store the currently requested verbosity output
-	std::ostream *fCurrentStream; ///< Store the current ostream on which we write
+	static Verbosity::VerbosityLevel fVerbosityLevel; ///< Verbosity of the program
+	mutable Verbosity::VerbosityLevel fVerbosityTest; ///< Transient member. Store the currently requested verbosity output
+	std::string fModuleName; ///< Name to display in the output
+	mutable std::ostream *fCurrentStream; ///< Transient member. Store the current ostream on which we write
 };
 
 template <class T>
-Verbose& operator<<(Verbose &level, T x) { level.GetStream() << x; return level;};
-Verbose& operator<<(Verbose &level, std::ostream& (*f)(std::ostream&));
-Verbose& operator <<(std::ostream& s, const Verbose &level);
+const Verbose& operator<<(const Verbose &level, T x) {
+	if(level.CanPrint()) level.GetStream() << x;
+	return level;
+};
+const Verbose& operator<<(const Verbose &level, std::ostream& (*f)(std::ostream&));
+const Verbose& operator <<(std::ostream& s, const Verbose &level);
 
 
 } /* namespace NA62Analysis */

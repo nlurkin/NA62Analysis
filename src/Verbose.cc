@@ -6,40 +6,82 @@
  */
 
 #include "Verbose.hh"
+
 #include <iostream>
+#include <iomanip>
 
 namespace NA62Analysis {
 
 Verbose::Verbose() :
-	fVerbosityLevel(Verbosity::kNo),
 	fVerbosityTest(Verbosity::kNo),
+	fModuleName("[ NA62Analysis ]"),
 	fCurrentStream(&std::cout)
 {
-	// TODO Auto-generated constructor stub
+	/// \MemberDescr
+	/// Constructor
+	/// \EndMemberDescr
+}
 
+Verbose::Verbose(std::string name) :
+	fVerbosityTest(Verbosity::kNo),
+	fModuleName("[ " + name + " ]"),
+	fCurrentStream(&std::cout)
+{
+	/// \MemberDescr
+	/// \param name : Module display name
+	///
+	/// Constructor with name
+	/// \EndMemberDescr
 }
 
 Verbose::~Verbose() {
-	// TODO Auto-generated destructor stub
+	/// \MemberDescr
+	/// Destructor
+	/// \EndMemberDescr
 }
 
 void Verbose::SetVerbosity(Verbosity::VerbosityLevel v){
 	/// \MemberDescr
-	/// \param v : value of the verbosity
+	/// \param v : Verbosity value
 	///
 	/// Change verbosity
 	/// \EndMemberDescr
 
-	if(v >= Verbosity::kUser) std::cout << "AnalysisFW: Setting verbosity to " << v << std::endl;
+	std::cout << user() << "Setting verbosity to " << v << std::endl;
 	fVerbosityLevel = v;
 }
 
-Verbose& operator<<(Verbose &level, std::ostream& (*f)(std::ostream&)) { level.GetStream() << f; return level;};
-Verbose& operator <<(std::ostream& s, Verbose &level) {
+const Verbose& operator<<(const Verbose &level, std::ostream& (*f)(std::ostream&)) {
+	if(level.CanPrint()) level.GetStream() << f;
+	return level;
+};
+
+const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 	level.SetStream(s);
-	s << "My level: " << level.GetVerbosityLevel();
+	if(level.CanPrint()){
+		s << std::left << std::setw(6) << Verbose::GetVerbosityLevelName(level.GetTestLevel())
+		  << " - " << std::setw(15) << level.GetModuleName() << " ";
+	}
 	return level;
 }
 
-} /* namespace NA62Analysis */
+bool Verbose::TestLevel(Verbosity::VerbosityLevel level) const {
+	if(level<=fVerbosityLevel) return true;
+	else return false;
+}
 
+bool Verbose::CanPrint() const {
+	if(fVerbosityTest<=fVerbosityLevel) return true;
+	else return false;
+}
+
+std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
+	if(v==Verbosity::kUser) return "USER";
+	else if(v==Verbosity::kNormal) return "NORMAL";
+	else if(v==Verbosity::kDebug) return "DEBUG";
+	else if(v==Verbosity::kExtended) return "EXTEND";
+	return ""; //Do not happen
+}
+
+Verbosity::VerbosityLevel Verbose::fVerbosityLevel = Verbosity::kNo;
+} /* namespace NA62Analysis */
