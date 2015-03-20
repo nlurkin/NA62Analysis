@@ -14,6 +14,9 @@
 #include <TObjString.h>
 #include <TKey.h>
 
+namespace NA62Analysis {
+namespace Core {
+
 IOHandler::IOHandler():
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
@@ -220,7 +223,7 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	gFile->cd();
 }
 
-bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
+bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	/// \MemberDescr
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
@@ -237,7 +240,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		return false;
 	}
 	if(nFiles == 0){
-		if(verbosity >= AnalysisFW::kNormal) std::cout << "AnalysisFW: Adding file " << inFileName << std::endl;
+		std::cout << normal() << "AnalysisFW: Adding file " << inFileName << std::endl;
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
                         TString svcClass = getenv("STAGE_SVCCLASS");
                         if(svcClass=="") svcClass="na62";
@@ -251,7 +254,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		TString inputFileName;
 		std::ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
-			if(verbosity>=AnalysisFW::kNormal) std::cout << "AnalysisFW: Adding file " << inputFileName << std::endl;
+			std::cout << normal() << "AnalysisFW: Adding file " << inputFileName << std::endl;
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
                                 TString svcClass = getenv("STAGE_SVCCLASS");
                                 if(svcClass=="") svcClass="na62";
@@ -293,3 +296,6 @@ void IOHandler::PrintInitSummary() const{
 	/// Print the summary after initialization
 	/// \EndMemberDescr
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

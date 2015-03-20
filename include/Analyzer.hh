@@ -7,6 +7,12 @@
 #include "UserMethods.hh"
 #include "IOHandler.hh"
 
+//TODO remove these 2 lines
+//using namespace NA62Analysis;
+//using namespace Core;
+
+namespace NA62Analysis {
+
 typedef pair<TString, void*> param_t;
 
 /// \class Analyzer
@@ -23,7 +29,7 @@ public:
 	/// Possible states for the analyzer
 	enum AnalyzerState {kReady, kUninit};
 
-	Analyzer(BaseAnalysis* ba);
+	Analyzer(Core::BaseAnalysis* ba);
 	Analyzer(const Analyzer& c);
 	virtual ~Analyzer();
 
@@ -63,7 +69,6 @@ public:
 	void PrintName() const;
 	TString GetAnalyzerName() const ;
 	void PrintInitSummary() const;
-	void SetVerbosity(AnalysisFW::VerbosityLevel l);
 
 	//Methods for exporting an event
 	void ExportEvent();
@@ -123,7 +128,7 @@ public:
 	void ApplyParam(TString paramName, TString paramValue);
 
 	double compareToReferencePlot(TString h1, bool KS);
-	void FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity);
+	void FillMCSimple(Event* mcTruthEvent);
 
 
 protected:
@@ -158,4 +163,5 @@ protected:
 	MCSimple fMCSimple; ///< MCSimple instance
 };
 
+} /* namespace NA62Analysis */
 #endif

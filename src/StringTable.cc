@@ -10,6 +10,8 @@
 #include <iostream>
 #include <iomanip>
 
+namespace NA62Analysis {
+
 StringTable::StringTable(TString title):
 		fColumns(0),
 		fRows(0),
@@ -311,3 +313,5 @@ int StringTable::GetRowsMaxWidth(int i) const {
 
 	return fContent[i].size();
 }
+
+} /* namespace NA62Analysis */

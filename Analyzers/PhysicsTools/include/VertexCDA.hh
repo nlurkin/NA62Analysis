@@ -20,10 +20,10 @@ class TH2F;
 class TGraph;
 class TTree;
 
-class VertexCDA : public Analyzer
+class VertexCDA : public NA62Analysis::Analyzer
 {
 	public:
-		VertexCDA(BaseAnalysis *ba);
+		VertexCDA(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void DefineMCSimple();
 		void InitOutput();

@@ -7,13 +7,14 @@
 #include "AnalyzerParam.hh"
 #include "StringBalancedTable.hh"
 #include "TermManip.hh"
+#include "SettingsReader.hh"
 
-namespace NA62Conf = NA62Analysis::Configuration;
+namespace NA62Analysis {
+namespace Core {
 
 BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
 	fGraphicMode(false),
-	fVerbosity(AnalysisFW::kNo),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr)
@@ -23,9 +24,9 @@ BaseAnalysis::BaseAnalysis():
 	/// \EndMemberDescr
 
 
-	NA62Conf::SettingsReader().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
+	Configuration::SettingsReader().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
-	manip::enableManip = NA62Conf::SettingsReader::global::fUseColors && isatty(fileno(stdout));
+	NA62Analysis::manip::enableManip = Configuration::SettingsReader::global::fUseColors && isatty(fileno(stdout));
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -34,17 +35,6 @@ BaseAnalysis::~BaseAnalysis(){
 	/// \EndMemberDescr
 
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
-}
-
-void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
-	/// \MemberDescr
-	/// \param v : value of the verbosity
-	///
-	/// Change verbosity
-	/// \EndMemberDescr
-
-	if(v >= AnalysisFW::kNormal) cout << "AnalysisFW: Setting verbosity to " << v << endl;
-	fVerbosity = v;
 }
 
 void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool ignoreNonExisting){
@@ -68,7 +58,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//##############################
 	TString anName, anParams;
 
-	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
+	if(!fIOHandler->OpenInput(inFileName, NFiles)) return;
 
 	fIOHandler->OpenOutput(outFileName);
 
@@ -78,13 +68,13 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		treeHandler->SetReferenceFileName(refFile);
 		treeHandler->SetIgnoreNonExisting(ignoreNonExisting);
 
-		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
+		fNEvents = std::max(treeHandler->FillMCTruth(), treeHandler->FillRawHeader());
 	}
 
 	fIOHandler->LoadEvent(0);
 	fIOHandler->CheckNewFileOpened();
 	//Parse parameters from file
-	NA62Conf::AnalyzerParam confParser;
+	Configuration::AnalyzerParam confParser;
 	confParser.ParseFile(configFile);
 	//Parse parameters from commandLine
 	confParser.ParseCLI(params);
@@ -116,7 +106,7 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	/// Add an analyzer to the Analyzer lists
 	/// \EndMemberDescr
 
-	an->SetVerbosity(fVerbosity);
+	an->SetVerbosity(GetVerbosityLevel());
 	fAnalyzerList.push_back(an);
 }
 
@@ -151,7 +141,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	/// Return an output variable and the corresponding state
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator ptr;
+	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator ptr;
 
 	if((ptr=fOutput.find(name))!=fOutput.end()){
 		state = fOutputStates.find(name)->second;
@@ -169,8 +159,8 @@ void BaseAnalysis::PreProcess(){
 	/// Pre-processing method. Reset the states of the output
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,Analyzer::OutputState>::type::iterator itState;
-	AnalysisFW::NA62Map<TString,void*>::type::iterator itOut;
+	NA62Analysis::NA62Map<TString,Analyzer::OutputState>::type::iterator itState;
+	NA62Analysis::NA62Map<TString,void*>::type::iterator itOut;
 
 	for(itState = fOutputStates.begin(); itState!=fOutputStates.end(); itState++){
 		itState->second = Analyzer::kOInvalid;
@@ -206,11 +196,11 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
+	cout << PrintLevel(Verbosity::kSomeLevel) << "AnalysisFW: Treating ";// << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: i_offset : " << i_offset << endl;
+	cout << someLevel() << "AnalysisFW: i_offset : " << i_offset << endl;
 
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
@@ -241,7 +231,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent(), fVerbosity);
+			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
 			fAnalyzerList[j]->Process(i);
 			fAnalyzerList[j]->UpdatePlots(i);
@@ -308,7 +298,7 @@ void BaseAnalysis::PrintInitSummary() const{
 	/// \EndMemberDescr
 
 	vector<Analyzer*>::const_iterator itAn;
-	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator itOutput;
+	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator itOutput;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
 	StringBalancedTable outputTable("List of Outputs");
@@ -422,7 +412,7 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	stringstream ss;
 
 	//Print current event
-	if(NA62Conf::SettingsReader::global::fUseColors) cout << manip::red << manip::bold;
+	if(Configuration::SettingsReader::global::fUseColors) cout << manip::red << manip::bold;
 
 	float eta = 0;
 	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
@@ -432,11 +422,15 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	if(iEvent==0) cout << std::setw(10) << "ETA: " << "----s";
 	else cout << std::setw(10) << "ETA: " << eta << "s";
 
-	if(NA62Conf::SettingsReader::global::fUseColors) cout << manip::reset;
-	if(NA62Conf::SettingsReader::global::fProcessOutputNewLine) cout << endl;
+	if(Configuration::SettingsReader::global::fUseColors) cout << manip::reset;
+	if(Configuration::SettingsReader::global::fProcessOutputNewLine) cout << endl;
 	else cout << std::setw(10) << "\r" << std::flush;
 
 	//Reset to default
 	cout.precision(defaultPrecision);
 	cout.unsetf(ios_base::floatfield);
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
+

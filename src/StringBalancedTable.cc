@@ -8,6 +8,8 @@
 #include "StringBalancedTable.hh"
 #include <iostream>
 
+namespace NA62Analysis {
+
 StringBalancedTable::StringBalancedTable(TString t) : StringTable(t){
 	/// \MemberDescr
 	/// \param t : Name of the table
@@ -86,3 +88,5 @@ void StringBalancedTable::Print(TString prefix, ostream &s) const{
 
 	StringTable::Print(prefix, s);
 }
+
+} /* namespace NA62Analysis */

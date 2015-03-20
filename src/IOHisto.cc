@@ -14,6 +14,9 @@
 #include <TH2.h>
 #include <TGraph.h>
 
+namespace NA62Analysis {
+namespace Core {
+
 IOHisto::IOHisto():
 	fNewFileOpened(false)
 {
@@ -151,7 +154,7 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 
 	TString fullName = directory + TString("/") + name;
 
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
 	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
 	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
 	if(!fCurrentFile) {
@@ -192,7 +195,7 @@ void IOHisto::UpdateInputHistograms(){
 	/// Update the input histograms with the one coming from the current input file.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
 
@@ -256,8 +259,7 @@ void IOHisto::LoadEvent(int iEvent) {
 	}
 }
 
-bool IOHisto::OpenInput(TString inFileName, int nFiles,
-		AnalysisFW::VerbosityLevel verbosity) {
+bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 	/// \MemberDescr
 	/// \param inFileName : Path to the input root file, or file containing a list of input root files
 	/// \param nFiles : Number of files to read
@@ -267,6 +269,9 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles,
 	/// Open input files
 	/// \EndMemberDescr
 
-	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
+	if(!IOHandler::OpenInput(inFileName, nFiles)) return false;
 	return true;
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

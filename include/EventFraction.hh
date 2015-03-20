@@ -15,6 +15,8 @@
 
 #include "containers.hh"
 
+namespace NA62Analysis {
+
 /// \class EventFraction
 /// \Brief 
 /// Class containing a list of counters.
@@ -49,11 +51,13 @@ private:
 
 	void PrintToStream(ostream &s) const;
 
-	AnalysisFW::NA62Map<TString,int*>::type fCounters; ///< Map of counters
+	NA62Analysis::NA62Map<TString,int*>::type fCounters; ///< Map of counters
 	std::vector<TString> fSequence; ///< Define the display order of the counters
 	TString fName; ///< Name of the EventFraction
 	TString fSampleSizeCounter;	///< Name of the counter defining the sample size
 	int fPrecision; ///< Display precision
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* EVENTFRACTION_HH_ */

@@ -9,6 +9,9 @@
 #include <TFile.h>
 #include "Persistency.hh"
 using namespace std;
+using namespace NA62Analysis;
+using namespace NA62Constants;
+
 
 /// \class VertexCDA
 /// \Brief
@@ -25,7 +28,7 @@ using namespace std;
 ///	the output is set as invalid.
 /// \EndDetailed
 
-VertexCDA::VertexCDA(BaseAnalysis *ba) : Analyzer(ba)
+VertexCDA::VertexCDA(Core::BaseAnalysis *ba) : Analyzer(ba)
 {
 	fAnalyzerName = "VertexCDA";
 

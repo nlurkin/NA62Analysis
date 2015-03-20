@@ -45,26 +45,26 @@ template<> struct hash<TString>
 };
 }
 
-namespace AnalysisFW{
+namespace NA62Analysis {
 template <class K, class V>
 	struct NA62Map{ typedef std::unordered_map<K,V> type; ///< C++ trick for template typedef.
 	};	///< Defines the type of map used in the framework (C++11 enabled)
 	template <class K, class V>
 	struct NA62MultiMap{ typedef std::unordered_multimap<K,V> type; ///< C++ trick for template typedef.
 	};	///< Defines the type of multimap used in the framework (C++11 enabled)
-}
+} /* namespace NA62Analysis */
 #else
 
 
 #include <map>
-namespace AnalysisFW{
+namespace NA62Analysis {
 	template <class K, class V>
 	struct NA62Map{ typedef std::map<K,V> type; ///< C++ trick for template typedef.
 	}; ///< Defines the type of map used in the framework (C++11 disabled)
 	template <class K, class V>
 	struct NA62MultiMap{ typedef std::multimap<K,V> type; ///< C++ trick for template typedef.
 	}; ///< Defines the type of multimap used in the framework (C++11 disabled)
-}
+} /* namespace NA62Analysis */
 
 #endif
 

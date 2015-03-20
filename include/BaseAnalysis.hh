@@ -6,6 +6,10 @@
 #include "CounterHandler.hh"
 #include "IOTree.hh"
 #include "containers.hh"
+#include "Verbose.hh"
+
+namespace NA62Analysis {
+namespace Core {
 
 /// \class BaseAnalysis
 /// \Brief 
@@ -18,14 +22,13 @@
 /// the user when requested, communication between different parts of the framework, writing the output files.
 /// \EndDetailed
 
-class BaseAnalysis
+class BaseAnalysis : public Verbose
 {
 public:
 	BaseAnalysis();
 	~BaseAnalysis();
 
 	void AddAnalyzer(Analyzer * const an);
-	void SetVerbosity(AnalysisFW::VerbosityLevel v);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 
@@ -79,13 +82,12 @@ private:
 protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
-	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity of the program
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
 
 	vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
-	AnalysisFW::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
-	AnalysisFW::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
+	NA62Analysis::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
+	NA62Analysis::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
 
 	//AnalysisFW::NA62Map<TString, MCSimple*>::type fMCSimple; ///< Container for MCSimple
 
@@ -94,5 +96,8 @@ protected:
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
 };
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
 
 #endif

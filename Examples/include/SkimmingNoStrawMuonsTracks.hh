@@ -19,10 +19,10 @@ class TTree;
 //Change everywhere SkimmingNoStrawMuonsTracks by you Analyzer name
 //Add the protected and private members and methods you want to add
 
-class SkimmingNoStrawMuonsTracks : public Analyzer
+class SkimmingNoStrawMuonsTracks : public NA62Analysis::Analyzer
 {
 	public:
-		SkimmingNoStrawMuonsTracks(BaseAnalysis *ba);
+		SkimmingNoStrawMuonsTracks(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple();

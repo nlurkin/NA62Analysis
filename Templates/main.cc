@@ -9,7 +9,7 @@
 
 $$ANALYZERSINCLUDE$$
 
-BaseAnalysis *ban = 0;
+NA62Analysis::Core::BaseAnalysis *ban = 0;
 TApplication *theApp = 0;
 
 void usage(char* name)
@@ -61,6 +61,8 @@ void sighandler(int sig)
 }
 
 int main(int argc, char** argv){
+	using NA62Analysis::Verbosity::VerbosityLevel;
+
 	// Setting signals
 	signal(SIGXCPU, sighandler);
 	signal(SIGTERM, sighandler);
@@ -80,7 +82,7 @@ int main(int argc, char** argv){
 	bool graphicMode = false;
 	bool fromList = false;
 	bool ignoreNonExisting = false;
-	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
+	VerbosityLevel verbosity = VerbosityLevel::kNo;
 	bool readPlots = false;
 
 	// Browsing arguments
@@ -114,15 +116,15 @@ int main(int argc, char** argv){
 			//Verbosity
 			if(optarg){
 				argTS = TString(optarg);
-				if(argTS.IsDec()) verbosity = (AnalysisFW::VerbosityLevel)argTS.Atoi();
+				if(argTS.IsDec()) verbosity = (VerbosityLevel)argTS.Atoi();
 				else{
-					if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNo;
-					if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kUser;
-					if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNormal;
-					if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kDebug;
+					if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kNo;
+					if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kUser;
+					if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kNormal;
+					if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = VerbosityLevel::kDebug;
 				}
 			}
-			else verbosity = AnalysisFW::kNormal;
+			else verbosity = VerbosityLevel::kNormal;
 			break;
 		case 'g':
 			graphicMode = true;
@@ -187,11 +189,11 @@ int main(int argc, char** argv){
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
 
-	ban = new BaseAnalysis();
+	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetVerbosity(verbosity);
 	ban->SetGraphicMode(graphicMode);
-	if(readPlots) ban->SetReadType(IOHandlerType::kHISTO);
-	else ban->SetReadType(IOHandlerType::kTREE);
+	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
+	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 

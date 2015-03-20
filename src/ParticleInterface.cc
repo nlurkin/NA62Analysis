@@ -7,6 +7,8 @@
 
 #include "ParticleInterface.hh"
 
+namespace NA62Analysis {
+
 ParticleInterface *ParticleInterface::fParticleInterface = 0;
 
 ParticleInterface *ParticleInterface::GetParticleInterface(){
@@ -84,3 +86,6 @@ void ParticleInterface::PrintTable() const{
 
 	fTable->Print();
 }
+
+} /* namespace NA62Analysis */
+

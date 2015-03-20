@@ -14,6 +14,8 @@
 
 #include "KinePart.hh"
 
+namespace NA62Analysis {
+
 /// \class ParticleTree
 /// \Brief 
 /// Class representing particle decay chain for on-screen printing.
@@ -54,5 +56,7 @@ private:
 	TString fName; ///< Name of the particle
 	KinePart *fParticle; ///< Pointer to kinePart
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* PARTICLETREE_HH_ */

@@ -8,6 +8,7 @@
 #include "Event.hh"
 #include "Persistency.hh"
 using namespace std;
+using namespace NA62Analysis;
 using namespace NA62Constants;
 
 /// \class templateAnalyzer
@@ -26,7 +27,7 @@ using namespace NA62Constants;
 /// /TODO second list
 /// \EndDetailed
 
-templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
+templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba)
 {
 	/// \MemberDescr
 	/// \param ba : parent BaseAnalysis

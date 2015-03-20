@@ -15,6 +15,9 @@ class TH1;
 class TH2;
 class TGraph;
 
+namespace NA62Analysis {
+namespace Core {
+
 /// \class IOHisto
 /// \Brief
 /// Class containing and handling every IO histograms
@@ -30,7 +33,7 @@ public:
 	IOHisto(const IOHisto &c);
 	virtual ~IOHisto();
 
-	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
+	bool OpenInput(TString inFileName, int nFiles);
 	void SetReferenceFileName(TString fileName);
 	bool CheckNewFileOpened();
 	void LoadEvent(int iEvent);
@@ -45,10 +48,13 @@ public:
 private:
 	bool fNewFileOpened; ///< Indicates if a new file has been opened
 
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type fInputHisto; ///< Container for input histograms for which we do not append the values of the new files
 
 	TString fReferenceFileName; ///< Name of the file containing reference plots to compare with
 };
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
 
 #endif /* IOHISTO_H_ */

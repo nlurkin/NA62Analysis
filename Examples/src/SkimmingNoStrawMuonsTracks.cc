@@ -12,6 +12,9 @@
 #include "MCSimple.hh"
 #include "functions.hh"
 
+using namespace NA62Analysis;
+using namespace NA62Constants;
+
 /// \class SkimmingNoStrawMuonsTracks
 /// \Brief
 /// Example Analyzer skimming the input file from events containing muon tracks in RICH.
@@ -21,7 +24,7 @@
 ///
 /// \EndDetailed
 
-SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analyzer(ba)
+SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(Core::BaseAnalysis *ba) : Analyzer(ba)
 {
 	useMUV = false;
 	fAnalyzerName = "SkimmingNoStrawMuonsTracks";

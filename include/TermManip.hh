@@ -10,6 +10,7 @@
 
 #include <ostream>
 
+namespace NA62Analysis {
 namespace manip {
 	extern bool enableManip;
 
@@ -61,6 +62,7 @@ extern TermManip cyan;
 extern TermManip white;
 
 } /* namespace manip */
+} /* namespace NA62Analysis */
 
 
 

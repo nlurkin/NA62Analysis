@@ -7,7 +7,7 @@
 
 #include "TermManip.hh"
 
-
+namespace NA62Analysis {
 namespace manip {
 
 TermManip reset   (Code::NONE);
@@ -23,4 +23,5 @@ TermManip cyan    (Code::FG_CYAN);
 TermManip white   (Code::FG_WHITE);
 
 bool enableManip = false;
-}
+} /* namespace manip */
+} /* namespace NA62Analysis */

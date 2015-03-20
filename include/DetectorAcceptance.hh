@@ -10,7 +10,9 @@
 #include <TVector3.h>
 #include <TCanvas.h>
 
-#include "FWEnums.hh"
+#include "Verbose.hh"
+
+namespace NA62Analysis {
 
 /// \class DetectorAcceptance
 /// \Brief 
@@ -26,7 +28,7 @@
 ///	information at your convenience.
 /// \EndDetailed
 
-class DetectorAcceptance
+class DetectorAcceptance : public Verbose
 {
 public:
 	/// List of volumes of the geometry
@@ -89,7 +91,6 @@ private:
 	StrawVol ParseStraw(std::string str) const;
 	LAVVol ParseLAV(std::string str) const;
 
-	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 	TGeoManager *fGeoManager; ///< TGeoManager
 	TString fFile; ///< Geometry file
 
@@ -122,6 +123,8 @@ private:
 	TVector3 fPositionCenterMagnet;	///< Particle position in MNP33 magnet
 	bool fMagnetEffect;	///< Did we already computed the magnet effect?
 };
+
+} /* namespace NA62Analysis */
 
 #endif
 

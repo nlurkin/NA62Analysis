@@ -4,7 +4,9 @@
 #include <TMultiLayerPerceptron.h>
 #include <TMLPAnalyzer.h>
 
-#include "FWEnums.hh"
+#include "Verbose.hh"
+
+namespace NA62Analysis {
 
 /// \class NeuralNetwork
 /// \Brief 
@@ -15,7 +17,7 @@
 ///
 /// \EndDetailed
 
-class NeuralNetwork {
+class NeuralNetwork : public Verbose {
 public:
 	NeuralNetwork();
 	~NeuralNetwork();
@@ -53,8 +55,8 @@ private:
 	TTree *fTrainingTree; ///< Tree containing the training set
 
 	bool fCreated; ///< Does the network already exists
-
-	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* NEURALNETWORK_HH_ */

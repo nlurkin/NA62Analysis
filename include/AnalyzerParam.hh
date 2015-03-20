@@ -10,9 +10,10 @@
 
 #include "ConfigParser.hh"
 
+namespace NA62Analysis {
+
 class Analyzer;
 
-namespace NA62Analysis {
 namespace Configuration {
 
 /// \class AnalyzerParam

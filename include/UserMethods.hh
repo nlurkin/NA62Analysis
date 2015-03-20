@@ -22,11 +22,18 @@
 #include "FWEnums.hh"
 #include "MCSimple.hh"
 #include "IOHandler.hh"
+#include "Verbose.hh"
 
-class BaseAnalysis;
-class DetectorAcceptance;
 class RawHeader;
 class Event;
+
+namespace NA62Analysis {
+
+class DetectorAcceptance;
+namespace Core {
+class BaseAnalysis;
+} /* namespace Core */
+
 
 /// \class UserMethods
 /// \Brief
@@ -37,12 +44,13 @@ class Event;
 /// This class defines a list of methods already implemented in members objects of the analyzer but that we must keep
 ///	in the analyzer class as well for backward compatibility and/or shorter syntax.
 /// \EndDetailed
-class UserMethods {
+class UserMethods : public Verbose
+{
 public:
 	/// List of possible states for the output variables.
 	enum OutputState {kOUninit, kOValid, kOInvalid};
 
-	UserMethods(BaseAnalysis *ba);
+	UserMethods(Core::BaseAnalysis *ba);
 	UserMethods(const UserMethods&);
 	virtual ~UserMethods();
 
@@ -77,12 +85,12 @@ public:
 	void FillHistoArray(TString baseName, int index, double x);
 	void FillHistoArray(TString baseName, int index, double x, double y, double w);
 
-	HistoHandler::IteratorTH1 GetIteratorTH1();
-	HistoHandler::IteratorTH1 GetIteratorTH1(TString baseName);
-	HistoHandler::IteratorTH2 GetIteratorTH2();
-	HistoHandler::IteratorTH2 GetIteratorTH2(TString baseName);
-	HistoHandler::IteratorTGraph GetIteratorTGraph();
-	HistoHandler::IteratorTGraph GetIteratorTGraph(TString baseName);
+	Core::HistoHandler::IteratorTH1 GetIteratorTH1();
+	Core::HistoHandler::IteratorTH1 GetIteratorTH1(TString baseName);
+	Core::HistoHandler::IteratorTH2 GetIteratorTH2();
+	Core::HistoHandler::IteratorTH2 GetIteratorTH2(TString baseName);
+	Core::HistoHandler::IteratorTGraph GetIteratorTGraph();
+	Core::HistoHandler::IteratorTGraph GetIteratorTGraph(TString baseName);
 
 	//Alias for user to make difference between TH1 and TH2
 	inline void FillHisto2(TString name, TString x, double y, double w) {
@@ -186,7 +194,7 @@ public:
 	TGraph* GetReferenceTGraph(TString name);
 
 	//IOHandler calls
-	std::vector<IOHandler::keyPair> GetListOfKeys(TString directory="");
+	std::vector<Core::IOHandler::keyPair> GetListOfKeys(TString directory="");
 	std::vector<TString> GetListOfDirs(TString directory="");
 	std::vector<TString> GetListOfTH1(TString directory="");
 	std::vector<TString> GetListOfTH2(TString directory="");
@@ -254,7 +262,7 @@ public:
 	bool GetWithRawHeader();
 
 	//###### Other methods
-	bool PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const;
+	bool PrintVerbose(NA62Analysis::Verbosity::VerbosityLevel printAbove) const;
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	template <class T>
 	T* GetObject(TString name, TString branchName = ""){
@@ -282,12 +290,12 @@ private:
 	void* GetObjectVoid(TString name);
 
 protected:
-	HistoHandler fHisto; ///< Local instance of HistoHandler
+	Core::HistoHandler fHisto; ///< Local instance of HistoHandler
 
 	TString fAnalyzerName; ///< Name of the analyzer
-	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
 
-	BaseAnalysis *fParent; ///< Pointer to the BaseAnalysis instance containing the analyze
+	Core::BaseAnalysis *fParent; ///< Pointer to the BaseAnalysis instance containing the analyze
 };
 
+} /* namespace NA62Analysis */
 #endif /* USERMETHODS_HH_ */

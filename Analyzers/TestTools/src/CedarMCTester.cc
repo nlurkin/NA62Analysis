@@ -14,6 +14,9 @@
 #include "TEllipse.h"
 #include <numeric>
 
+using namespace NA62Analysis;
+using namespace NA62Constants;
+
 
 /// \class CedarMCTester
 /// \Brief 
@@ -24,7 +27,7 @@
 /// Describe your Analyzer
 /// \EndDetailed
 
-CedarMCTester::CedarMCTester(BaseAnalysis *ba) : Analyzer(ba)
+CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba)
 {
     /// \MemberDescr
     /// \param ba : parent BaseAnalysis

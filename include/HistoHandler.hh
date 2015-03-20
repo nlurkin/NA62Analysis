@@ -19,6 +19,9 @@
 
 #include "containers.hh"
 
+namespace NA62Analysis {
+namespace Core {
+
 /// \class HistoHandler
 /// \Brief
 /// Class containing and handling histograms
@@ -149,19 +152,19 @@ private:
 	void Mkdir(TString name, TString analyzerName) const;
 
 	//Histogram containers
-	AnalysisFW::NA62Map<TString,TH1*>::type fHisto; ///< Container for TH1
-	AnalysisFW::NA62Map<TString,TH2*>::type fHisto2; ///< Container for the TH2
-	AnalysisFW::NA62Map<TString,TGraph*>::type fGraph; ///< Container for the TGraph
-	AnalysisFW::NA62Map<TString,int>::type fPoint; ///< Container for the number of points in each TGraph
+	NA62Analysis::NA62Map<TString,TH1*>::type fHisto; ///< Container for TH1
+	NA62Analysis::NA62Map<TString,TH2*>::type fHisto2; ///< Container for the TH2
+	NA62Analysis::NA62Map<TString,TGraph*>::type fGraph; ///< Container for the TGraph
+	NA62Analysis::NA62Map<TString,int>::type fPoint; ///< Container for the number of points in each TGraph
 	std::vector<TCanvas*> fCanvas; ///< Container for the TCanvas
-	AnalysisFW::NA62Map<TString,TTree*>::type fOutTree; ///< Container for the output TTrees
+	NA62Analysis::NA62Map<TString,TTree*>::type fOutTree; ///< Container for the output TTrees
 	std::vector<TString> fHistoOrder; ///< Container for the booking order
-	AnalysisFW::NA62Map<TString,IteratorTH1>::type fTH1IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
-	AnalysisFW::NA62Map<TString,IteratorTH2>::type fTH2IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
-	AnalysisFW::NA62Map<TString,IteratorTGraph>::type fTGraphIteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
+	NA62Analysis::NA62Map<TString,IteratorTH1>::type fTH1IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
+	NA62Analysis::NA62Map<TString,IteratorTH2>::type fTH2IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
+	NA62Analysis::NA62Map<TString,IteratorTGraph>::type fTGraphIteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)
 
 	std::set<TString> fAutoUpdateList; ///< List of histogram being regularly updated on screen during processing
-	AnalysisFW::NA62Map<TString,TString>::type fPlotsDirectory; ///< Matching between plot name and directory name
+	NA62Analysis::NA62Map<TString,TString>::type fPlotsDirectory; ///< Matching between plot name and directory name
 
 	int fUpdateRate; ///< Event interval at which the plots should be updated
 };
@@ -234,5 +237,7 @@ bool operator>=(typename std::vector<PointerType*>::iterator lhs, const HistoHan
 	return rhs<=lhs;
 }
 
+} /* namespace Core */
+} /* namespace NA62Analysis */
 
 #endif /* HISTOHANDLER_HH_ */

@@ -14,6 +14,9 @@
 #include "Persistency.hh"
 using namespace std;
 
+using namespace NA62Analysis;
+using namespace NA62Constants;
+
 /// \class Pi0Reconstruction
 /// \Brief
 /// Example Analyzer reconstructing a pi0 from 2 photon clusters on LKr.
@@ -23,7 +26,7 @@ using namespace std;
 ///
 /// \EndDetailed
 
-Pi0Reconstruction::Pi0Reconstruction(BaseAnalysis *ba) : Analyzer(ba)
+Pi0Reconstruction::Pi0Reconstruction(Core::BaseAnalysis *ba) : Analyzer(ba)
 {
 	fAnalyzerName = "Pi0Reconstruction";
 

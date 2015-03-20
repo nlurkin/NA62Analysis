@@ -9,8 +9,9 @@
 
 #include "functions.hh"
 
+namespace NA62Analysis {
+
 DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
-		fVerbosity(AnalysisFW::kNo),
 		fGeoManager(TGeoManager::Import(GeometryFile)),
 		fFile(GeometryFile),
 		fTrackNumber(0),
@@ -32,14 +33,11 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
 		fDetLength[i] = 0.;
 	}
 
-	if(fVerbosity>=AnalysisFW::kNormal){
-		cout << "Detector acceptance enum definitions: " << endl << "CEDAR:" << kCEDAR << "\tGTK:" << kGTK << "\tCHANTI:" << kCHANTI << "\tLAV:" << kLAV << "\tSpectrometer:" << kSpectrometer << "\tIRC:" << kIRC << endl;
-		cout << "CHOD:" << kCHOD << "\tLKr:" << kLKr << "\tSAC:" << kSAC << "\tMUV0:" << kMUV0 << "\tMUV1:" << kMUV1 << "\tMUV2:" << kMUV2 << "\tMUV3:" << kMUV3 << "\tHAC:" << kHAC << "\t\tVOID:" << kVOID << endl;
-	}
+	cout << normal() << "Detector acceptance enum definitions: " << endl << "CEDAR:" << kCEDAR << "\tGTK:" << kGTK << "\tCHANTI:" << kCHANTI << "\tLAV:" << kLAV << "\tSpectrometer:" << kSpectrometer << "\tIRC:" << kIRC << endl;
+	cout << normal() << "CHOD:" << kCHOD << "\tLKr:" << kLKr << "\tSAC:" << kSAC << "\tMUV0:" << kMUV0 << "\tMUV1:" << kMUV1 << "\tMUV2:" << kMUV2 << "\tMUV3:" << kMUV3 << "\tHAC:" << kHAC << "\t\tVOID:" << kVOID << endl;
 }
 
 DetectorAcceptance::DetectorAcceptance(const DetectorAcceptance& c):
-		fVerbosity(c.fVerbosity),
 		fGeoManager(TGeoManager::Import(fFile)),
 		fFile(c.fFile),
 		fTrackNumber(c.fTrackNumber),
@@ -873,3 +871,5 @@ void DetectorAcceptance::buildDetectorsDictionaries(){
 		}
 	}
 }
+
+} /* namespace NA62Analysis */

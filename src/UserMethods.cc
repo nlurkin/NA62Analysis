@@ -11,8 +11,9 @@
 
 #include "BaseAnalysis.hh"
 
-UserMethods::UserMethods(BaseAnalysis *ba):
-		fVerbosity(AnalysisFW::kNo),
+namespace NA62Analysis {
+
+UserMethods::UserMethods(Core::BaseAnalysis *ba):
 		fParent(ba)
 {
 	/// \MemberDescr
@@ -23,7 +24,6 @@ UserMethods::UserMethods(BaseAnalysis *ba):
 }
 
 UserMethods::UserMethods(const UserMethods &c):
-		fVerbosity(c.fVerbosity),
 		fParent(c.fParent)
 {
 	/// \MemberDescr
@@ -388,17 +388,17 @@ void UserMethods::SetUpdateInterval(int interval){
 	/// Set the update interval for the plots
 	/// \EndMemberDescr
 
-	if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting plot update interval to " << interval << endl;
+	cout << PrintVerbose(Verbosity::kNormal) << "Setting plot update interval to " << interval << endl;
 	fHisto.SetUpdateInterval(interval);
 }
 
-bool UserMethods::PrintVerbose(AnalysisFW::VerbosityLevel printAbove) const{
+bool UserMethods::PrintVerbose(Verbosity::VerbosityLevel printAbove) const{
 	/// \MemberDescr
 	/// \param printAbove : Verbosity level threshold
 	/// \return true if verbosity level is high enough to print
 	/// \EndMemberDescr
 
-	if(fVerbosity >= printAbove){
+	if(GetVerbosityLevel() >= printAbove){
 		cout << fAnalyzerName << ": ";
 		return true;
 	}
@@ -578,7 +578,7 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(name, evt, branchName);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << user() << "[WARNING] Not reading TTrees" << endl;
 }
 
 TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
@@ -595,7 +595,7 @@ TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(name, branchName);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 	return nullptr;
 }
 
@@ -605,7 +605,7 @@ Event* UserMethods::GetMCEvent(){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent();
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 	return nullptr;
 }
 
@@ -615,7 +615,7 @@ RawHeader* UserMethods::GetRawHeader(){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetRawHeaderEvent();
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 	return nullptr;
 }
 
@@ -632,7 +632,7 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	/// \EndMemberDescr
 
 	if(!fParent->IsHistoType()){
-		if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+		cout << normal() << "[WARNING] Not reading Histos" << endl;
 		return nullptr;
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, appendOnNewFile);
@@ -641,7 +641,7 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	return histo;
 }
 
-HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1() {
+Core::HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1() {
 	/// \MemberDescr
 	/// \return Iterator to TH1
 	///
@@ -651,7 +651,7 @@ HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1() {
 	return fHisto.GetIteratorTH1();
 }
 
-HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1(TString baseName) {
+Core::HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
 	/// \return Iterator to TH1
@@ -662,7 +662,7 @@ HistoHandler::IteratorTH1 UserMethods::GetIteratorTH1(TString baseName) {
 	return fHisto.GetIteratorTH1(baseName);
 }
 
-HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2() {
+Core::HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2() {
 	/// \MemberDescr
 	/// \return Iterator to TH2
 	///
@@ -672,7 +672,7 @@ HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2() {
 	return fHisto.GetIteratorTH2();
 }
 
-HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2(TString baseName) {
+Core::HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
 	/// \return Iterator to TH2
@@ -683,7 +683,7 @@ HistoHandler::IteratorTH2 UserMethods::GetIteratorTH2(TString baseName) {
 	return fHisto.GetIteratorTH2(baseName);
 }
 
-HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph() {
+Core::HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph() {
 	/// \MemberDescr
 	/// \return Iterator to TGraph
 	///
@@ -693,7 +693,7 @@ HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph() {
 	return fHisto.GetIteratorTGraph();
 }
 
-HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph(TString baseName) {
+Core::HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph(TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
 	/// \return Iterator to TGraph
@@ -720,7 +720,7 @@ void* UserMethods::GetObjectVoid(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetObject(name);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 
 	return nullptr;
 }
@@ -737,7 +737,7 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->RequestTree(name, branchName, className, obj);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 
 	return false;
 }
@@ -749,7 +749,7 @@ TH1* UserMethods::GetReferenceTH1(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH1(name);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+	else cout << normal() << "[WARNING] Not reading Histos" << endl;
 
 	return nullptr;
 }
@@ -761,7 +761,7 @@ TH2* UserMethods::GetReferenceTH2(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH2(name);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+	else cout << normal() << "[WARNING] Not reading Histos" << endl;
 
 	return nullptr;
 }
@@ -773,7 +773,7 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTGraph(name);
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+	else cout << normal() << "[WARNING] Not reading Histos" << endl;
 
 	return nullptr;
 }
@@ -790,7 +790,7 @@ bool UserMethods::GetWithMC(){
 	/// \return true if the input file contains MC events
 	/// \EndMemberDescr
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithMC();
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 
 	return false;
 }
@@ -800,7 +800,7 @@ bool UserMethods::GetWithRawHeader(){
 	/// \return true if the input file contains RawHeader
 	/// \EndMemberDescr
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithRawHeader();
-	else if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading TTrees" << endl;
+	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
 
 	return false;
 }
@@ -815,7 +815,7 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	/// \EndMemberDescr
 
 	if(!fParent->IsHistoType()){
-		if(PrintVerbose(AnalysisFW::kNormal)) cout << "[WARNING] Not reading Histos" << endl;
+		cout << normal() << "[WARNING] Not reading Histos" << endl;
 		return nullptr;
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, false);
@@ -824,7 +824,7 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	return histo;
 }
 
-std::vector<IOHandler::keyPair> UserMethods::GetListOfKeys(TString directory) {
+std::vector<Core::IOHandler::keyPair> UserMethods::GetListOfKeys(TString directory) {
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file
 	/// \return A vector of keys available in the given directory. The key contains
@@ -890,3 +890,5 @@ std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
 
 	return fParent->GetIOHandler()->GetListOfHistos(directory);
 }
+
+} /* namespace NA62Analysis */

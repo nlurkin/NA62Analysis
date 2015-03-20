@@ -12,6 +12,8 @@
 
 #include <TString.h>
 
+namespace NA62Analysis {
+
 /// \class StringTable
 /// \Brief 
 /// Class for pretty table printing. Each cell value is stored as string.
@@ -70,5 +72,6 @@ protected:
 StringTable& endr(StringTable& s);
 StringTable& sepr(StringTable& s);
 
+} /* namespace NA62Analysis */
 
 #endif /* STRINGTABLE_HH_ */

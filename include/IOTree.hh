@@ -11,12 +11,14 @@
 #include "TDetectorVEvent.hh"
 #include "Event.hh"
 
-#include "IOHandler.hh"
 #include "IOHisto.hh"
 #include "RawHeader.hh"
 
 class TChain;
 class TTree;
+
+namespace NA62Analysis {
+namespace Core {
 
 /// \class IOTree
 /// \Brief
@@ -34,8 +36,8 @@ public:
 	virtual ~IOTree();
 
 	//IO Files
-	bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
-	bool checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity);
+	bool OpenInput(TString inFileName, int nFiles);
+	bool checkInputFile(TString fileName);
 	bool CheckNewFileOpened();
 
 	//TTree
@@ -48,8 +50,8 @@ public:
 	//Events
 	TDetectorVEvent *GetEvent(TString name, TString branchName="");
 	void* GetObject(TString name, TString branchName="");
-	int FillMCTruth(AnalysisFW::VerbosityLevel verbosity);
-	int FillRawHeader(AnalysisFW::VerbosityLevel verbosity);
+	int FillMCTruth();
+	int FillRawHeader();
 	void LoadEvent(int iEvent);
 	Event* GetMCTruthEvent();
 	bool GetWithMC() const;
@@ -126,13 +128,13 @@ private:
 	typedef std::pair<TString, TChain*> chainPair; ///< typedef for elements of map of TChain
 	typedef std::pair<TString, EventTriplet*> eventPair; ///< typedef for elements of map of EventTriplet
 	typedef std::pair<TString, ObjectTriplet*> objectPair; ///< typedef for elements of map of ObjectTriplet
-	typedef AnalysisFW::NA62Map<TString,TChain*>::type::iterator treeIterator; ///< typedef for iterators of map of TChain
-	typedef AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator; ///< typedef for iterators of map of EventTriplet
-	typedef AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator; ///< typedef for iterators of map of ObjectTriplet
+	typedef NA62Analysis::NA62Map<TString,TChain*>::type::iterator treeIterator; ///< typedef for iterators of map of TChain
+	typedef NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator; ///< typedef for iterators of map of EventTriplet
+	typedef NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator; ///< typedef for iterators of map of ObjectTriplet
 
-	AnalysisFW::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
-	AnalysisFW::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events
-	AnalysisFW::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects
+	NA62Analysis::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
+	NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events
+	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects
 
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
 	Event *fMCTruthEvent; ///< MC Event
@@ -140,12 +142,15 @@ private:
 	TChain *fRawHeaderTree; ///< Container for the RawHeader TTrees
 	RawHeader *fRawHeaderEvent; ///< RawHeader
 
-	AnalysisFW::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
+	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
 	bool fWithMC; ///< Do we have MC in the file?
 	bool fWithRawHeader; ///< Do we have RawHeader in the file?
 
 	bool fAllowNonExisting; ///< Do we allow non existing trees
 };
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
 
 #endif /* IOTREE_HH_ */

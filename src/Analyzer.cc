@@ -3,7 +3,9 @@
 #include "BaseAnalysis.hh"
 #include "StringTable.hh"
 
-Analyzer::Analyzer(BaseAnalysis *ba) :
+namespace NA62Analysis {
+
+Analyzer::Analyzer(Core::BaseAnalysis *ba) :
 		UserMethods(ba),
 		fNoMCWarned(false),
 		fIncompleteMCWarned(false),
@@ -109,7 +111,7 @@ void Analyzer::SetParamValue(TString name, TString val){
 		return;
 	}
 	param_t p = fParams[name];
-	if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting parameter " << name << " of type " << p.first << " with value " << val << endl;
+	if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) cout << "Setting parameter " << name << " of type " << p.first << " with value " << val << endl;
 
 	if(p.first.CompareTo("char")==0){
 		*(char*)(p.second) = *(val.Data());
@@ -211,18 +213,18 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	if(paramName.CompareTo("AutoUpdate", TString::kIgnoreCase)==0){
 		//Add AutoUpdate plot
 		fHisto.SetPlotAutoUpdate(paramValue,fAnalyzerName);
-		if(PrintVerbose(AnalysisFW::kNormal)) cout << "Setting plot " << paramValue << " as AutoUpdate." << endl;
+		if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) cout << "Setting plot " << paramValue << " as AutoUpdate." << endl;
 	}
 	else if(paramName.CompareTo("UpdateInterval", TString::kIgnoreCase)==0){
 		fHisto.SetUpdateInterval(paramValue.Atoi());
 	}
 	else if(paramName.CompareTo("Verbose", TString::kIgnoreCase)==0){
-		if(paramValue.IsDec()) SetVerbosity((AnalysisFW::VerbosityLevel)paramValue.Atoi());
+		if(paramValue.IsDec()) SetVerbosity((NA62Analysis::Verbosity::VerbosityLevel)paramValue.Atoi());
 		else{
-			if(paramValue.CompareTo("kNo", TString::kIgnoreCase)==0) SetVerbosity(AnalysisFW::kNo);
-			if(paramValue.CompareTo("kUser", TString::kIgnoreCase)==0) SetVerbosity(AnalysisFW::kUser);
-			if(paramValue.CompareTo("kNormal", TString::kIgnoreCase)==0) SetVerbosity(AnalysisFW::kNormal);
-			if(paramValue.CompareTo("kDebug", TString::kIgnoreCase)==0) SetVerbosity(AnalysisFW::kDebug);
+			if(paramValue.CompareTo("kNo", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kNo);
+			if(paramValue.CompareTo("kUser", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kUser);
+			if(paramValue.CompareTo("kNormal", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kNormal);
+			if(paramValue.CompareTo("kDebug", TString::kIgnoreCase)==0) SetVerbosity(NA62Analysis::Verbosity::kDebug);
 		}
 	}
 	else SetParamValue(paramName, paramValue);
@@ -245,7 +247,7 @@ void Analyzer::PrintInitSummary() const{
 	paramTable.AddColumn("type", "Type");
 	paramTable.AddColumn("value", "Value");
 	paramTable << sepr;
-	paramTable << "Verbose" << "int" << fVerbosity;
+	paramTable << "Verbose" << "int" << GetVerbosityLevel();
 	paramTable << "AutoUpdate Rate" << "int" << fHisto.GetUpdateInterval();
 	for(it=fParams.begin(); it!=fParams.end(); it++){
 		paramTable << it->first << it->second.first << StringFromParam(it->first);
@@ -269,15 +271,6 @@ void Analyzer::PrintInitSummary() const{
 	fMCSimple.PrintInit();
 
 	cout << "================================================================================" << endl;
-}
-
-void Analyzer::SetVerbosity(AnalysisFW::VerbosityLevel l){
-	/// \MemberDescr
-	///	\param l : verbosity level
-	///
-	///	Set the verbosity level of the Analyzer
-	/// \EndMemberDescr
-	fVerbosity = l;
 }
 
 void Analyzer::OpenNewTree(TString name, TString title){
@@ -359,7 +352,7 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 	return fHisto.compareToReferencePlot(hRef, h, KS);
 }
 
-void Analyzer::FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity) {
+void Analyzer::FillMCSimple(Event* mcTruthEvent) {
 	/// \MemberDescr
 	/// \param mcTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
 	/// \param verbosity : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
@@ -367,7 +360,7 @@ void Analyzer::FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verb
 	/// Extract informations from current Event and store them internally for later easy access
 	/// \EndMemberDescr
 
-	fMCSimple.GetRealInfos(mcTruthEvent, verbosity);
+	fMCSimple.GetRealInfos(mcTruthEvent);
 }
 
 void Analyzer::printIncompleteMCWarning(int iEvent) const{
@@ -554,3 +547,5 @@ void Analyzer::AddParam(TString name, TString *address, TString defaultValue) {
 	*address = defaultValue;
 	fParams.insert(pair<TString, param_t>(name, param_t("TString", address)));
 }
+
+} /* namespace NA62Analysis */

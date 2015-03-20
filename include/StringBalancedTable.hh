@@ -10,6 +10,8 @@
 
 #include "StringTable.hh"
 
+namespace NA62Analysis {
+
 /// \class StringBalancedTable
 /// \Brief 
 /// Extension of StringTable to print a list of values in a 2D array for
@@ -35,5 +37,7 @@ public:
 private:
 	std::vector<TString> fValuesList; ///< List of values in the table
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* STRINGBALANCEDTABLE_HH_ */

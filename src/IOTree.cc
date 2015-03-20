@@ -14,6 +14,9 @@
 
 #include "StringBalancedTable.hh"
 
+namespace NA62Analysis {
+namespace Core {
+
 IOTree::IOTree():
 	fMCTruthTree(0),
 	fMCTruthEvent(new Event()),
@@ -406,7 +409,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 	std::cerr << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << std::endl;
 }
 
-int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
+int IOTree::FillMCTruth(){
 	/// \MemberDescr
 	/// \param verbosity: Verbosity level
 	/// \return Number of events in the Event Tree
@@ -430,7 +433,7 @@ int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		if(verbosity >= AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << someLevel() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
 		if ( TString("event").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "event";
 		}
@@ -439,13 +442,13 @@ int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 		}
 		if(branchName.CompareTo("") != 0)
 		{
-			if(verbosity >= AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << someLevel() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
 			if ( TString("Event").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
 				std::cerr  << "Input file corrupted, bad reco class found for " << fMCTruthTree->GetTree()->GetName() << std::endl;
 			}
 			else{
-				if(verbosity>=AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: Found TRecoMCTruthEvent (" << fMCTruthTree->GetEntries() << ")" << std::endl;
+				std::cout << someLevel() << "AnalysisFW: Found TRecoMCTruthEvent (" << fMCTruthTree->GetEntries() << ")" << std::endl;
 				fMCTruthTree->SetBranchAddress(branchName, &fMCTruthEvent );
 				if ( eventNb < 0 )
 				{
@@ -461,7 +464,7 @@ int IOTree::FillMCTruth(AnalysisFW::VerbosityLevel verbosity){
 	return eventNb;
 }
 
-int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
+int IOTree::FillRawHeader(){
 	/// \MemberDescr
 	/// \param verbosity: Verbosity level
 	/// \return Number of events in the RawHeader Tree
@@ -485,19 +488,19 @@ int IOTree::FillRawHeader(AnalysisFW::VerbosityLevel verbosity){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		if(verbosity >= AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << someLevel() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
 		if ( TString("RawHeader").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "RawHeader";
 		}
 		if(branchName.CompareTo("") != 0)
 		{
-			if(verbosity >= AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << someLevel() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
 			if ( TString("RawHeader").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
 				std::cerr  << "Input file corrupted, bad RawHeader class found for " << fRawHeaderTree->GetTree()->GetName() << std::endl;
 			}
 			else{
-				if(verbosity>=AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << std::endl;
+				std::cout << someLevel() << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << std::endl;
 				fRawHeaderTree->SetBranchAddress(branchName, &fRawHeaderEvent );
 				if ( eventNb < 0 )
 				{
@@ -525,7 +528,7 @@ void IOTree::SetIgnoreNonExisting(bool bFlag) {
 }
 
 
-bool IOTree::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
+bool IOTree::OpenInput(TString inFileName, int nFiles){
 	/// \MemberDescr
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
@@ -535,13 +538,13 @@ bool IOTree::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLeve
 	/// Open and register the input files.
 	/// \EndMemberDescr
 
-	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
+	if(!IOHandler::OpenInput(inFileName, nFiles)) return false;
 
 	treeIterator it;
 	bool inputChecked = false;
 
 	for(auto fileName : fInputfiles){
-		if(!inputChecked && checkInputFile(fileName, verbosity))
+		if(!inputChecked && checkInputFile(fileName))
 			inputChecked = true;
 		if(fWithMC) fMCTruthTree->AddFile(fileName);
 		if(fWithRawHeader) fRawHeaderTree->AddFile(fileName);
@@ -550,7 +553,7 @@ bool IOTree::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLeve
 	return inputChecked;
 }
 
-bool IOTree::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosity){
+bool IOTree::checkInputFile(TString fileName){
 	/// \MemberDescr
 	/// \param fileName : Name of the file to open
 	///	\param verbosity : Verbosity level
@@ -571,14 +574,14 @@ bool IOTree::checkInputFile(TString fileName, AnalysisFW::VerbosityLevel verbosi
 	else if(keys->FindObject("Run_0")) fMCTruthTree = new TChain("Run_0");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
-		if(verbosity>=AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: No MC data found" << std::endl;
+		std::cout << someLevel() << "AnalysisFW: No MC data found" << std::endl;
 		fWithMC = false;
 	}
 
 	fWithRawHeader = true;
 	if(keys->FindObject("RawHeader")) fRawHeaderTree = new TChain("RawHeader");
 	else{
-		if(verbosity>=AnalysisFW::kSomeLevel) std::cout << "AnalysisFW: No Raw Header found" << std::endl;
+		std::cout << someLevel() << "AnalysisFW: No Raw Header found" << std::endl;
 		fWithRawHeader = false;
 	}
 
@@ -592,7 +595,7 @@ void IOTree::WriteEvent(){
 	/// \EndMemberDescr
 
 	treeIterator it;
-	AnalysisFW::NA62Map<TString,TTree*>::type::iterator itTree;
+	NA62Analysis::NA62Map<TString,TTree*>::type::iterator itTree;
 
 	if(fExportTrees.size()==0){
 		for(it=fTree.begin(); it!= fTree.end(); it++){
@@ -611,7 +614,7 @@ void IOTree::WriteTree() const{
 	/// Write the output trees in the output file
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TTree*>::type::const_iterator itTree;
+	NA62Analysis::NA62Map<TString,TTree*>::type::const_iterator itTree;
 
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		itTree->second->Write();
@@ -626,7 +629,7 @@ void IOTree::PrintInitSummary() const{
 
 	IOHandler::PrintInitSummary();
 
-	AnalysisFW::NA62Map<TString,TChain*>::type::const_iterator itTree;
+	NA62Analysis::NA62Map<TString,TChain*>::type::const_iterator itTree;
 	StringBalancedTable treeTable("List of requested TTrees");
 
 	for(itTree=fTree.begin(); itTree!=fTree.end(); itTree++){
@@ -667,3 +670,6 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	return false;
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

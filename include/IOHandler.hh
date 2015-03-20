@@ -10,7 +10,10 @@
 
 #include <TString.h>
 #include <TFile.h>
-#include "FWEnums.hh"
+#include "Verbose.hh"
+
+namespace NA62Analysis {
+namespace Core {
 
 /// Type of IOHandler: Not specified yet, histogram IO, TTree IO
 enum class IOHandlerType {kNOIO, kHISTO, kTREE};
@@ -24,7 +27,7 @@ enum class IOHandlerType {kNOIO, kHISTO, kTREE};
 /// Implements the base IO methods\n
 /// Manage input event files (loading, specific processing before closing a file or after opening it)\n
 /// \EndDetailed
-class IOHandler {
+class IOHandler : public Verbose {
 public:
 	/// \struct keyPair_t
 	/// \Brief
@@ -52,7 +55,7 @@ public:
 	virtual ~IOHandler();
 
 	//IO Files
-	virtual bool OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity);
+	virtual bool OpenInput(TString inFileName, int nFiles);
 	virtual bool OpenOutput(TString outFileName);
 	virtual bool CheckNewFileOpened();
 	TString GetOutputFileName() const;
@@ -106,4 +109,6 @@ protected:
 	std::vector<TString> fInputfiles; ///< Vector of input file path
 };
 
+} /* namespace Core */
+} /* namespace NA62Analysis */
 #endif /* IOHANDLER_HH_ */
