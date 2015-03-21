@@ -62,10 +62,10 @@ private:
 	TString GetParticleName(int pdgID) const;
 	int GetPdgID(TString name) const;
 	void ClearParticles();
-	void ReplaceID(multimap<pair<int,int>, int> &s, int seqID, int particleID);
+	void ReplaceID(std::multimap<std::pair<int,int>, int> &s, int seqID, int particleID);
 
-	map<int, vector<KinePart*>* > fParticles; ///< Container for particle vectors
-	multimap<pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect
+	std::map<int, std::vector<KinePart*>* > fParticles; ///< Container for particle vectors
+	std::multimap<std::pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect
 	const ParticleInterface* const fParticleInterface; ///< Pointer to the particle interface
 
 	ParticleTree *fDecayTree; ///< Sorting of the particles in tree

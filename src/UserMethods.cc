@@ -358,7 +358,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x, double y
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches){
+void UserMethods::ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches){
 	/// \MemberDescr
 	/// \param trees : pointer to the list of TTrees
 	/// \param branches : point to the list of branches
@@ -402,7 +402,7 @@ void UserMethods::SetUpdateInterval(int interval){
 	/// Set the update interval for the plots
 	/// \EndMemberDescr
 
-	cout << PrintVerbose(Verbosity::kNormal) << "Setting plot update interval to " << interval << endl;
+	std::cout << PrintVerbose(Verbosity::kNormal) << "Setting plot update interval to " << interval << std::endl;
 	fHisto.SetUpdateInterval(interval);
 }
 
@@ -413,7 +413,7 @@ bool UserMethods::PrintVerbose(Verbosity::VerbosityLevel printAbove) const{
 	/// \EndMemberDescr
 
 	if(GetVerbosityLevel() >= printAbove){
-		cout << fAnalyzerName << ": ";
+		std::cout << fAnalyzerName << ": ";
 		return true;
 	}
 	return false;
@@ -592,7 +592,7 @@ void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branch
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(name, evt, branchName);
-	else cout << user() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
 }
 
 TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
@@ -609,7 +609,7 @@ TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(name, branchName);
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
@@ -619,7 +619,7 @@ Event* UserMethods::GetMCEvent(){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent();
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
@@ -629,7 +629,7 @@ RawHeader* UserMethods::GetRawHeader(){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetRawHeaderEvent();
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
@@ -646,12 +646,12 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	/// \EndMemberDescr
 
 	if(!fParent->IsHistoType()){
-		cout << normal() << "[WARNING] Not reading Histos" << endl;
+		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 		return nullptr;
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, appendOnNewFile);
 
-	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
+	if(!histo) std::cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << std::endl;
 	return histo;
 }
 
@@ -734,7 +734,7 @@ void* UserMethods::GetObjectVoid(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetObject(name);
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return nullptr;
 }
@@ -751,7 +751,7 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 	/// \EndMemberDescr
 
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->RequestTree(name, branchName, className, obj);
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
@@ -763,7 +763,7 @@ TH1* UserMethods::GetReferenceTH1(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH1(name);
-	else cout << normal() << "[WARNING] Not reading Histos" << endl;
+	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
@@ -775,7 +775,7 @@ TH2* UserMethods::GetReferenceTH2(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH2(name);
-	else cout << normal() << "[WARNING] Not reading Histos" << endl;
+	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
@@ -787,7 +787,7 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 	/// \EndMemberDescr
 
 	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTGraph(name);
-	else cout << normal() << "[WARNING] Not reading Histos" << endl;
+	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
@@ -804,7 +804,7 @@ bool UserMethods::GetWithMC(){
 	/// \return true if the input file contains MC events
 	/// \EndMemberDescr
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithMC();
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
@@ -814,7 +814,7 @@ bool UserMethods::GetWithRawHeader(){
 	/// \return true if the input file contains RawHeader
 	/// \EndMemberDescr
 	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithRawHeader();
-	else cout << normal() << "[WARNING] Not reading TTrees" << endl;
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
@@ -829,12 +829,12 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	/// \EndMemberDescr
 
 	if(!fParent->IsHistoType()){
-		cout << normal() << "[WARNING] Not reading Histos" << endl;
+		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 		return nullptr;
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, false);
 
-	if(!histo) cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << endl;
+	if(!histo) std::cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << std::endl;
 	return histo;
 }
 

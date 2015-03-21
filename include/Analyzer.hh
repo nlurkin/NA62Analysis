@@ -13,7 +13,7 @@
 
 namespace NA62Analysis {
 
-typedef pair<TString, void*> param_t;
+typedef std::pair<TString, void*> param_t;
 
 /// \class Analyzer
 /// \Brief 
@@ -87,7 +87,7 @@ public:
 		/// Add a new branch to an existing output tree.
 		/// \EndMemberDescr
 		if(fOutTree.count(name)==0){
-			cerr << fAnalyzerName << ": Output TTree " << name << " does not exist" << endl;
+			std::cerr << fAnalyzerName << ": Output TTree " << name << " does not exist" << std::endl;
 		}
 		else{
 			fOutTree[name]->Branch(branchName, pointer);
@@ -111,7 +111,7 @@ public:
 		/// The value can be overwritten using a runtime configuration file or the -p command line option.
 		/// \EndMemberDescr
 		if(!CheckType(type)){
-			cout << "Error when adding parameter " << name << " : type not supported " << type << endl;
+			std::cout << "Error when adding parameter " << name << " : type not supported " << type << std::endl;
 			return;
 		}
 		*address = defaultValue;
@@ -123,7 +123,7 @@ public:
 	void AddParam(TString name, bool    *address, bool    defaultValue);
 	void AddParam(TString name, float   *address, float   defaultValue);
 	void AddParam(TString name, double  *address, double  defaultValue);
-	void AddParam(TString name, string  *address, string  defaultValue);
+	void AddParam(TString name, std::string  *address, std::string  defaultValue);
 	void AddParam(TString name, TString *address, TString defaultValue);
 
 	void ApplyParam(TString paramName, TString paramValue);
@@ -147,17 +147,17 @@ protected:
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Pointer to DetectorAcceptance instance. Initialize if used.
 
-	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
+	std::map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 
 	//Parameters container
-	map<TString,param_t> fParams; ///< Container for parameters
+	std::map<TString,param_t> fParams; ///< Container for parameters
 
 	AnalyzerState fState; ///< State of the analyzer
 
 	bool fExportEvent; ///< Do we request to export this event?
 
-	map<TString, TClonesArray> fExportCandidates; ///< Array containing candidates to be recorded in the standard output tree
-	map<TString, int> fExportCandidatesNumber; ///< Number of Export candidates
+	std::map<TString, TClonesArray> fExportCandidates; ///< Array containing candidates to be recorded in the standard output tree
+	std::map<TString, int> fExportCandidatesNumber; ///< Number of Export candidates
 
 	ParticleInterface *fParticleInterface; ///< Pointer to the ParticleInterface instance
 

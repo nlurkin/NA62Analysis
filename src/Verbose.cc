@@ -100,14 +100,15 @@ std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
 	return ""; //Do not happen
 }
 
-Verbosity::VerbosityLevel Verbose::GetVerbosityLevelName(TString v) {
-	if(v.CompareTo("kuser", kIgnoreCase)==0) return Verbosity::kUser;
-	else if(v.CompareTo("knormal", kIgnoreCase)==0) return Verbosity::kNormal;
-	else if(v.CompareTo("kextended", kIgnoreCase)==0) return Verbosity::kExtended;
-	else if(v.CompareTo("kdebug", kIgnoreCase)==0) return Verbosity::kDebug;
-	else if(v.CompareTo("ktrace", kIgnoreCase)==0) return Verbosity::kTrace;
+Verbosity::VerbosityLevel Verbose::GetVerbosityLevelFromName(TString v) {
+	if(v.CompareTo("kuser", TString::kIgnoreCase)==0) return Verbosity::kUser;
+	else if(v.CompareTo("knormal", TString::kIgnoreCase)==0) return Verbosity::kNormal;
+	else if(v.CompareTo("kextended", TString::kIgnoreCase)==0) return Verbosity::kExtended;
+	else if(v.CompareTo("kdebug", TString::kIgnoreCase)==0) return Verbosity::kDebug;
+	else if(v.CompareTo("ktrace", TString::kIgnoreCase)==0) return Verbosity::kTrace;
 	return Verbosity::kNormal;
 }
 
 Verbosity::VerbosityLevel Verbose::fVerbosityLevel = Verbosity::kNo;
+
 } /* namespace NA62Analysis */

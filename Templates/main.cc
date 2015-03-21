@@ -6,6 +6,7 @@
 #include <TApplication.h>
 
 #include "BaseAnalysis.hh"
+#include "Verbose.hh"
 
 $$ANALYZERSINCLUDE$$
 
@@ -117,7 +118,7 @@ int main(int argc, char** argv){
 			if(optarg){
 				argTS = TString(optarg);
 				if(argTS.IsDec()) verbosity = (VerbosityLevel)argTS.Atoi();
-				else verbosity = Verbose::GetVerbosityLevelFromName(argTS);
+				else verbosity = NA62Analysis::Verbose::GetVerbosityLevelFromName(argTS);
 			}
 			else verbosity = VerbosityLevel::kNormal;
 			break;

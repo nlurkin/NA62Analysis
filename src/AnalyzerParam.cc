@@ -80,7 +80,7 @@ void AnalyzerParam::ParseCLI(TString params){
 					fNSList[currentNS].AddParam(paramName, paramValue);
 				}
 				else{
-					cerr << "Configuration parser: Parameter name or value not specified " << pars->At(j)->GetName() << endl;
+					std::cerr << "Configuration parser: Parameter name or value not specified " << pars->At(j)->GetName() << std::endl;
 				}
 				values->Delete();
 				delete values;
@@ -89,7 +89,7 @@ void AnalyzerParam::ParseCLI(TString params){
 			delete pars;
 		}
 		else{
-			cerr << "Configuration parser: Parameters list not specified for analyzer " << p->At(i)->GetName() << endl;
+			std::cerr << "Configuration parser: Parameters list not specified for analyzer " << p->At(i)->GetName() << std::endl;
 		}
 		p->Delete();
 		delete p;

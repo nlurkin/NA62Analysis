@@ -119,8 +119,8 @@ void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// Register an output
 	/// \EndMemberDescr
 
-	fOutput.insert(pair<TString, const void* const>(name, address));
-	fOutputStates.insert(pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
+	fOutput.insert(std::pair<TString, const void* const>(name, address));
+	fOutputStates.insert(std::pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
 
 void BaseAnalysis::SetOutputState(TString name, Analyzer::OutputState state){
@@ -150,7 +150,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	}
 	else{
 		state = Analyzer::kOUninit;
-		cerr << "Output " << name << " not found" << endl;
+		std::cerr << "Output " << name << " not found" << std::endl;
 		return 0;
 	}
 }
@@ -197,11 +197,11 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	cout << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << endl;
+	std::cout << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << std::endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
-	cout << "AnalysisFW: i_offset : " << i_offset << endl;
+	std::cout << "AnalysisFW: i_offset : " << i_offset << std::endl;
 
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
@@ -212,7 +212,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	//##############################
 	//Begin event loop
 	//##############################
-	int defaultPrecision = cout.precision();
+	int defaultPrecision = std::cout.precision();
 	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
 
 	for (int i=beginEvent; i < processEvents; i++)
@@ -250,7 +250,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	}
 
 	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
-	cout << endl;
+	std::cout << std::endl;
 
 	//Ask the analyzer to export and draw the plots
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
@@ -267,8 +267,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Complete the analysis
 	timing = clock()-timing;
-	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
-	cout << endl << "Analysis complete" << endl << "###################################" << endl;
+	std::cout << std::endl << "###################################" << std::endl << "Processing time : " << ((float)timing/(float)CLOCKS_PER_SEC) << " seconds";
+	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
 }
 
 DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){
@@ -298,7 +298,7 @@ void BaseAnalysis::PrintInitSummary() const{
 	/// Print summary after initialization.
 	/// \EndMemberDescr
 
-	vector<Analyzer*>::const_iterator itAn;
+	std::vector<Analyzer*>::const_iterator itAn;
 	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator itOutput;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
@@ -313,14 +313,14 @@ void BaseAnalysis::PrintInitSummary() const{
 	}
 
 
-	cout << "================================================================================" << endl;
-	cout << endl << "\t *** Global settings for AnalysisFW ***" << endl << endl;
+	std::cout << "================================================================================" << std::endl;
+	std::cout << std::endl << "\t *** Global settings for AnalysisFW ***" << std::endl << std::endl;
 
 	anTable.Print("\t");
 	fCounterHandler.PrintInitSummary();
 	outputTable.Print("\t");
 	fIOHandler->PrintInitSummary();
-	cout << "================================================================================" << endl;
+	std::cout << "================================================================================" << std::endl;
 }
 
 void BaseAnalysis::CheckNewFileOpened(){
@@ -408,28 +408,28 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 	else fIOHandler = new IOTree();
 }
 
-void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, string displayType, clock_t startTime) {
+void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, clock_t startTime) {
 	clock_t currTime = clock();
-	stringstream ss;
+	std::stringstream ss;
 
 	//Print current event
-	if(Configuration::SettingsReader::global::fUseColors) cout << manip::red << manip::bold;
+	if(Configuration::SettingsReader::global::fUseColors) std::cout << manip::red << manip::bold;
 
 	float eta = 0;
 	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
 	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents-1;
-	cout << std::setw(35) << std::left << ss.str() << " => ";
-	cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
-	if(iEvent==0) cout << std::setw(10) << "ETA: " << "----s";
-	else cout << std::setw(10) << "ETA: " << eta << "s";
+	std::cout << std::setw(35) << std::left << ss.str() << " => ";
+	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
+	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
+	else std::cout << std::setw(10) << "ETA: " << eta << "s";
 
-	if(Configuration::SettingsReader::global::fUseColors) cout << manip::reset;
-	if(Configuration::SettingsReader::global::fProcessOutputNewLine) cout << endl;
-	else cout << std::setw(10) << "\r" << std::flush;
+	if(Configuration::SettingsReader::global::fUseColors) std::cout << manip::reset;
+	if(Configuration::SettingsReader::global::fProcessOutputNewLine) std::cout << std::endl;
+	else std::cout << std::setw(10) << "\r" << std::flush;
 
 	//Reset to default
-	cout.precision(defaultPrecision);
-	cout.unsetf(ios_base::floatfield);
+	std::cout.precision(defaultPrecision);
+	std::cout.unsetf(std::ios_base::floatfield);
 }
 
 } /* namespace Core */

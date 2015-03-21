@@ -84,7 +84,7 @@ protected:
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
 
-	vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
+	std::vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
 	NA62Analysis::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
 	NA62Analysis::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers

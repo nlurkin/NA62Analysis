@@ -68,7 +68,7 @@ void Analyzer::PrintName() const{
 	/// Print the name of the Analyzer
 	/// \EndMemberDescr
 
-	cout << fAnalyzerName << endl;
+	std::cout << fAnalyzerName << std::endl;
 }
 
 TString Analyzer::GetAnalyzerName() const{
@@ -103,8 +103,8 @@ void Analyzer::PreProcess(){
 	/// Called before Process(). Resets the fExportEvent variable.
 	/// \EndMemberDescr
 
-	map<TString, TClonesArray>::iterator itArr;
-	map<TString, int>::iterator itNum;
+	std::map<TString, TClonesArray>::iterator itArr;
+	std::map<TString, int>::iterator itNum;
 
 	fExportEvent = false;
 
@@ -125,22 +125,22 @@ void Analyzer::SetParamValue(TString name, TString val){
 	/// \EndMemberDescr
 
 	if(fParams.count(name)==0){
-		cerr << "Parameter " << name << " does not exist for analyzer " << fAnalyzerName << endl;
+		std::cerr << "Parameter " << name << " does not exist for analyzer " << fAnalyzerName << std::endl;
 		return;
 	}
 	param_t p = fParams[name];
-	if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) cout << "Setting parameter " << name << " of type " << p.first << " with value " << val << endl;
+	if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) std::cout << "Setting parameter " << name << " of type " << p.first << " with value " << val << std::endl;
 
 	if(p.first.CompareTo("char")==0){
 		*(char*)(p.second) = *(val.Data());
 	}
 	else if(p.first.CompareTo("int")==0){
 		if(val.IsDigit()) *(int*)(p.second) = val.Atoi();
-		else cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << endl;
+		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("long")==0){
 		if(val.IsDigit()) *(long*)(p.second) = val.Atoll();
-		else cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << endl;
+		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("bool")==0){
 		if(val.IsDigit()) *(bool*)(p.second) = val.Atoi();
@@ -149,14 +149,14 @@ void Analyzer::SetParamValue(TString name, TString val){
 	}
 	else if(p.first.CompareTo("float")==0){
 		if(val.IsFloat()) *(float*)(p.second) = val.Atof();
-		else cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << endl;
+		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("double")==0){
 		if(val.IsFloat()) *(double*)(p.second) = val.Atof();
-		else cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << endl;
+		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("string")==0){
-		(*(string*)(p.second)) = val.Data();
+		(*(std::string*)(p.second)) = val.Data();
 	}
 	else if(p.first.CompareTo("TString")==0){
 		*(TString*)(p.second) = val;
@@ -193,7 +193,7 @@ TString Analyzer::StringFromParam(TString name) const{
 		r+=(*(double*)(p.second));
 	}
 	else if(p.first.CompareTo("string")==0){
-		r+=(*(string*)(p.second));
+		r+=(*(std::string*)(p.second));
 	}
 	else if(p.first.CompareTo("TString")==0){
 		r+=(*(TString*)(p.second));
@@ -231,7 +231,7 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	if(paramName.CompareTo("AutoUpdate", TString::kIgnoreCase)==0){
 		//Add AutoUpdate plot
 		fHisto.SetPlotAutoUpdate(paramValue,fAnalyzerName);
-		if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) cout << "Setting plot " << paramValue << " as AutoUpdate." << endl;
+		if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) std::cout << "Setting plot " << paramValue << " as AutoUpdate." << std::endl;
 	}
 	else if(paramName.CompareTo("UpdateInterval", TString::kIgnoreCase)==0){
 		fHisto.SetUpdateInterval(paramValue.Atoi());
@@ -255,7 +255,7 @@ void Analyzer::PrintInitSummary() const{
 	/// Print a summary of the Analyzer after initialization. List of booked histograms, list of parameters, ...
 	/// \EndMemberDescr
 
-	map<TString, param_t>::const_iterator it;
+	std::map<TString, param_t>::const_iterator it;
 
 	StringTable paramTable("List of parameters");
 
@@ -279,17 +279,17 @@ void Analyzer::PrintInitSummary() const{
 		else sDetAcc = "Local";
 	}
 
-	cout << "================================================================================" << endl;
-	cout << endl << "\t *** Settings for Analyzer: " << fAnalyzerName << " ***" << endl << endl;
+	std::cout << "================================================================================" << std::endl;
+	std::cout << std::endl << "\t *** Settings for Analyzer: " << fAnalyzerName << " ***" << std::endl << std::endl;
 
 	paramTable.Print("\t");
 	fHisto.PrintInitSummary();
 
-	cout << "\tDetector acceptance requested ? " << sDetAcc << endl << endl;
+	std::cout << "\tDetector acceptance requested ? " << sDetAcc << std::endl << std::endl;
 
 	fMCSimple.PrintInit();
 
-	cout << "================================================================================" << endl;
+	std::cout << "================================================================================" << std::endl;
 }
 
 void Analyzer::OpenNewTree(TString name, TString title){
@@ -300,7 +300,7 @@ void Analyzer::OpenNewTree(TString name, TString title){
 	/// Create a new TTree in the output file
 	/// \EndMemberDescr
 	TTree *outTree = new TTree(name, title);
-	fOutTree.insert(pair<TString, TTree*>(name, outTree));
+	fOutTree.insert(std::pair<TString, TTree*>(name, outTree));
 }
 
 void Analyzer::FillTrees(){
@@ -308,8 +308,8 @@ void Analyzer::FillTrees(){
 	/// Fill the TTrees created via OpenNewTree() or CreateStandardTree()
 	/// \EndMemberDescr
 
-	map<TString, TTree*>::iterator it;
-	map<TString, TClonesArray>::iterator itCand;
+	std::map<TString, TTree*>::iterator it;
+	std::map<TString, TClonesArray>::iterator itCand;
 
 	for(it=fOutTree.begin(); it!=fOutTree.end(); it++){
 		it->second->Fill();
@@ -326,7 +326,7 @@ void Analyzer::WriteTrees(){
 	/// Write the TTrees created via OpenNewTree() in the output file
 	/// \EndMemberDescr
 
-	map<TString, TTree*>::iterator it;
+	std::map<TString, TTree*>::iterator it;
 
 	for(it=fOutTree.begin(); it!=fOutTree.end(); it++){
 		it->second->Write();
@@ -339,10 +339,10 @@ void Analyzer::printNoMCWarning() const{
 	/// \EndMemberDescr
 
 	if(!fNoMCWarned){
-		cout << "Warning in analyzer " << fAnalyzerName << ": No MC data detected in this file." << endl;
-		cout << "This analyzer is not allowed to run without MC data. If you want to change this behavior,"
-				"please comment the following line in the Process method of the analyzer :" << endl;
-		cout << "\"if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}\"" << endl;
+		std::cout << "Warning in analyzer " << fAnalyzerName << ": No MC data detected in this file." << std::endl;
+		std::cout << "This analyzer is not allowed to run without MC data. If you want to change this behavior,"
+				"please comment the following line in the Process method of the analyzer :" << std::endl;
+		std::cout << "\"if(fMCSimple.fStatus == MCSimple::kEmpty){printNoMCWarning();return;}\"" << std::endl;
 
 		fNoMCWarned = true;
 	}
@@ -388,12 +388,12 @@ void Analyzer::printIncompleteMCWarning(int iEvent) const{
 	/// Print a warning message when MC event is not complete.
 	/// \EndMemberDescr
 
-	cout << fAnalyzerName << ": Incomplete MC Event for event " << iEvent << endl;
+	std::cout << fAnalyzerName << ": Incomplete MC Event for event " << iEvent << std::endl;
 	if(!fIncompleteMCWarned){
-		cout << "Warning in analyzer " << fAnalyzerName << ": Incomplete MC event detected." << endl;
-		cout << "This analyzer is not allowed to run without the exact required event. If you want to change this behavior,"
-				"please comment the following line in the Process method of the analyzer :" << endl;
-		cout << "\"if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}\"" << endl;
+		std::cout << "Warning in analyzer " << fAnalyzerName << ": Incomplete MC event detected." << std::endl;
+		std::cout << "This analyzer is not allowed to run without the exact required event. If you want to change this behavior,"
+				"please comment the following line in the Process method of the analyzer :" << std::endl;
+		std::cout << "\"if(fMCSimple.fStatus == MCSimple::kMissing){printIncompleteMCWarning(iEvent);return;}\"" << std::endl;
 
 		fIncompleteMCWarned = true;
 	}
@@ -443,8 +443,8 @@ void Analyzer::CreateStandardTree(TString name, TString title){
 	/// Create a standardized output tree containing a list of KineParts. Use CreateStandardCandidate() to fill it.
 	/// \EndMemberDescr
 
-	fExportCandidatesNumber.insert(pair<TString, int>(name,0));
-	fExportCandidates.insert(pair<TString, TClonesArray>(name, TClonesArray("KinePart", 10)));
+	fExportCandidatesNumber.insert(std::pair<TString, int>(name,0));
+	fExportCandidates.insert(std::pair<TString, TClonesArray>(name, TClonesArray("KinePart", 10)));
 
 	OpenNewTree(name, title);
 	AddBranch<TClonesArray>(name, "fCandidates", &fExportCandidates[name]);
@@ -541,7 +541,7 @@ void Analyzer::AddParam(TString name, double *address, double defaultValue) {
 	fParams.insert(pair<TString, param_t>(name, param_t("double", address)));
 }
 
-void Analyzer::AddParam(TString name, string *address, string defaultValue) {
+void Analyzer::AddParam(TString name, std::string *address, std::string defaultValue) {
 	/// \MemberDescr
 	/// \param name : Name of the parameter
 	/// \param address : Pointer to the variable that will be assigned the parameter value

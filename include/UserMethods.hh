@@ -183,7 +183,7 @@ public:
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
 	//Export all histograms into output trees
-	void ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches);
+	void ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches);
 	//Save all plots into output file
 	void SaveAllPlots();
 
