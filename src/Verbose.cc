@@ -14,8 +14,8 @@ namespace NA62Analysis {
 
 Verbose::Verbose() :
 	fLocalVerbosityActive(false),
-	fVerbosityTest(Verbosity::kNo),
 	fLocalVerbosityLevel(Verbosity::kNo),
+	fVerbosityTest(Verbosity::kNo),
 	fModuleName("[ NA62Analysis ]"),
 	fCurrentStream(&std::cout)
 {
@@ -26,8 +26,8 @@ Verbose::Verbose() :
 
 Verbose::Verbose(std::string name) :
 	fLocalVerbosityActive(false),
-	fVerbosityTest(Verbosity::kNo),
 	fLocalVerbosityLevel(Verbosity::kNo),
+	fVerbosityTest(Verbosity::kNo),
 	fModuleName("[ " + name + " ]"),
 	fCurrentStream(&std::cout)
 {
@@ -82,7 +82,7 @@ const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 }
 
 bool Verbose::TestLevel(Verbosity::VerbosityLevel level) const {
-	if(fLocalVerbosityActive && (level<=fLocalVerbosityLevel)) return true
+	if(fLocalVerbosityActive && (level<=fLocalVerbosityLevel)) return true;
 	else if(!fLocalVerbosityActive && (level<=fVerbosityLevel)) return true;
 	else return false;
 }

@@ -25,7 +25,7 @@ public:
 	void SetVerbosity(Verbosity::VerbosityLevel v);
 	void SetGlobalVerbosity(Verbosity::VerbosityLevel v);
 
-	Verbosity::VerbosityLevel GetVerbosityLevel() const { return fVerbosityLevel; };
+	Verbosity::VerbosityLevel GetVerbosityLevel() const { return fLocalVerbosityActive ? fLocalVerbosityLevel : fVerbosityLevel; };
 	Verbosity::VerbosityLevel GetTestLevel() const { return fVerbosityTest; };
 	std::string GetModuleName() const { return fModuleName; };
 
