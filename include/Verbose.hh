@@ -43,6 +43,7 @@ public:
 	const Verbose& debug() const { return PrintLevel(Verbosity::kDebug); };
 
 	static std::string GetVerbosityLevelName(Verbosity::VerbosityLevel v);
+	static Verbosity::VerbosityLevel GetVerbosityLevelFromName(TString v);
 
 private:
 	bool fLocalVerbosityActive; ///< Should local verbosity level be used?

@@ -94,9 +94,19 @@ bool Verbose::CanPrint() const {
 std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
 	if(v==Verbosity::kUser) return "USER";
 	else if(v==Verbosity::kNormal) return "NORMAL";
-	else if(v==Verbosity::kDebug) return "DEBUG";
 	else if(v==Verbosity::kExtended) return "EXTEND";
+	else if(v==Verbosity::kDebug) return "DEBUG";
+	else if(v==Verbosity::kTrace) return "TRACE";
 	return ""; //Do not happen
+}
+
+Verbosity::VerbosityLevel Verbose::GetVerbosityLevelName(TString v) {
+	if(v.CompareTo("kuser", kIgnoreCase)==0) return Verbosity::kUser;
+	else if(v.CompareTo("knormal", kIgnoreCase)==0) return Verbosity::kNormal;
+	else if(v.CompareTo("kextended", kIgnoreCase)==0) return Verbosity::kExtended;
+	else if(v.CompareTo("kdebug", kIgnoreCase)==0) return Verbosity::kDebug;
+	else if(v.CompareTo("ktrace", kIgnoreCase)==0) return Verbosity::kTrace;
+	return Verbosity::kNormal;
 }
 
 Verbosity::VerbosityLevel Verbose::fVerbosityLevel = Verbosity::kNo;
