@@ -13,18 +13,43 @@ using namespace NA62Constants;
 
 /// \class templateAnalyzer
 /// \Brief 
-/// Describe your Analyzer
+/// Short description of your Analyzer
 /// \EndBrief
 ///
 /// \Detailed
-/// Describe your Analyzer
+/// Detailed description of your Analyzer\n\n
+/// For examples of working Analyzer you can have a look at the examples in the Examples/ directory:\n
+/// LKrPhotonMC \n
+/// Pi0Reconstruction \n
+/// SkimmingNoStrawMuonsTracks \n
+/// Or the framework analyzers that can be found in the Analyzers/ directories: \n
+/// CedarMCTester \n
+/// VertexCDA \n
+/// \n
 /// All the following classes are available for you to use. Check their documentation for more information:\n
-/// /TODO list here
+/// NA62Analysis::manip::TermManip \n
+/// NA62Analysis::Analyzer \n
+/// NA62Analysis::CounterHandler \n
+/// NA62Analysis::DetectorAcceptance \n
+/// NA62Analysis::EventFraction \n
+/// NA62Analysis::MCSimple \n
+/// NA62Analysis::NeuralNetwork \n
+/// NA62Analysis::ParticleInterface \n
+/// NA62Analysis::ParticleTree \n
+/// NA62Analysis::StringBalancedTable \n
+/// NA62Analysis::StringTable \n
+/// NA62Analysis::UserMethods \n
+/// NA62Analysis::Verbose \n
 ///
 /// You might also be interested in checking the documentation for the following classes. However you should not
 /// in general have to create instances of these. If necessary a pointer to the existing instance is usually
-/// available or provided by specific methods.
-/// /TODO second list
+/// available or provided by specific methods.\n
+/// NA62Analysis::Core::IOHisto \n
+/// NA62Analysis::Core::IOTree \n
+/// NA62Analysis::Core::IOHandler \n
+/// NA62Analysis::Core::HistoHandler \n
+/// NA62Analysis::Core::HistoHandler::Iterator \n
+///
 /// \EndDetailed
 
 templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templateAnalyzer")

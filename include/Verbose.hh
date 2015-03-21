@@ -10,6 +10,8 @@
 
 #include <ostream>
 
+#include <TString.h>
+
 #include "FWEnums.hh"
 
 #define PRINTVAR(v) #v << "= " << v << " "

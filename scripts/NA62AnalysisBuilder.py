@@ -739,6 +739,7 @@ def prepareUserFolder(args):
 	readAndReplace("%s/Templates/config" % FWPath, "%s/config" % path, {})
 	shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % path)
 	shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % path)
+	updateSettings(path, FWPath)
 	writeUserVersion(path)
 	
 	print "\nYour new user directory has been created. \nTo continue, go in %s, edit your config file, verify and source env.(c)sh, and run \nNA62AnalysisBuilder.py config" % path
