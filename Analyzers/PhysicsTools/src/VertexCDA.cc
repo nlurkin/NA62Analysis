@@ -30,23 +30,9 @@ using namespace NA62Constants;
 
 VertexCDA::VertexCDA(Core::BaseAnalysis *ba) : Analyzer(ba, "VertexCDA")
 {
-	//Specify the trees you want to use and the event class corresponding
-	//Don't try to load MCTruth tree (RUN_0 or Event). Use the MCTruthEvent in Process function instead. Problems wen opening twice the same tree.
-	//Example with RecoEvent
-	//	AddTree("GigaTracker", new TRecoGigaTrackerEvent);
-	//Example with MC Event
-	//	AddTree("GigaTracker", new TGigaTrackerEvent);
-
+	//Request GigaTracker and Spectrometer reco trees
 	RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
 	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
-	/*AddTree("GigaTracker", new TRecoGigaTrackerEvent);
-	AddTree("Spectrometer", new TRecoSpectrometerEvent);*/
-
-	//Initialize DetectorAcceptance if needed
-	//use of global instance
-	//	fDetectorAcceptanceInstance = GetDetectorAcceptanceInstance();
-	//use of local instance
-	//	fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.gdml");
 }
 
 
@@ -54,18 +40,14 @@ VertexCDA::VertexCDA(Core::BaseAnalysis *ba) : Analyzer(ba, "VertexCDA")
 //   Book and Initialize histograms in this function.
 //#####################################################
 void VertexCDA::InitHist(){
-	//Same function to Book TH1, TH2, TGraph and TGraphAsymmErrors
-	//	BookHisto(name, histogram*)
-	//Example
-	//	BookHisto("PartEnergy", new TH2I("PartEnergy", "Energy as a function of particle", 0, 0, 0, Bins, MinEnergy, MaxEnergy));
+	//Create histograms
+	BookHisto(new TH1I("VertexX", "Reconstructed vertex X position; vtx_{x}^{reco}", 250, -250, 250));
+	BookHisto(new TH1I("VertexY", "Reconstructed vertex Y position; vtx_{y}^{reco}", 150, -150, 150));
+	BookHisto(new TH1I("VertexZ", "Reconstructed vertex Z position; vtx_{z}^{reco}", 100, 0, 300000));
 
-	BookHisto(new TH1I("VertexX", "Reconstructed vertex X position", 250, -250, 250));
-	BookHisto(new TH1I("VertexY", "Reconstructed vertex Y position", 150, -150, 150));
-	BookHisto(new TH1I("VertexZ", "Reconstructed vertex Z position", 100, 0, 300000));
-
-	BookHisto(new TH1I("DiffVertexX", "X difference between reco and real vertex", 200, -50, 50));
-	BookHisto(new TH1I("DiffVertexY", "Y difference between reco and real vertex", 200, -50, 50));
-	BookHisto(new TH1I("DiffVertexZ", "Z difference between reco and real vertex", 200, -10000, 10000));
+	BookHisto(new TH1I("DiffVertexX", "X difference between reco and real vertex; vtx_{x}^{reco}-vtx_{x}", 200, -50, 50));
+	BookHisto(new TH1I("DiffVertexY", "Y difference between reco and real vertex; vtx_{y}^{reco}-vtx_{y}", 200, -50, 50));
+	BookHisto(new TH1I("DiffVertexZ", "Z difference between reco and real vertex; vtx_{z}^{reco}-vtx_{z}", 200, -10000, 10000));
 
 	BookHisto(new TH2I("VertexRecoRealX", "Reconstructed vs. Real (X)", 250, -250, 250, 250, -250, 250));
 	BookHisto(new TH2I("VertexRecoRealY", "Reconstructed vs. Real (Y)", 150, -150, 150, 150, -150, 150));
@@ -76,10 +58,14 @@ void VertexCDA::InitHist(){
 
 	BookHistoArray(new TH2I("BeamXY", "BeamXY", 100, -100, 100, 100, -100, 100), 20);
 
+	//Create counters
 	BookCounter("Total_Events");
 	BookCounter("Good_GTK_Mult");
 	BookCounter("Good_Straw_Mult");
 
+	//Create event fraction tables and add the counters we just created in the
+	//table. Define Total_Events as the sample size counter. The fractions will
+	//be computed relative to Total_Events
 	NewEventFraction("Selection");
 	AddCounterToEventFraction("Selection", "Total_Events");
 	AddCounterToEventFraction("Selection", "Good_GTK_Mult");
@@ -91,11 +77,7 @@ void VertexCDA::InitHist(){
 //   Register the output variables of the analyzer
 //#####################################################
 void VertexCDA::InitOutput(){
-	//Call
-	//RegisterOutput("outputName", &variableName)
-	//for each variable that should be in the output of the Analyzer
-	//The name of the analyzer will be prepended to the outputName (to avoid collisions with other analyzers)
-	//variableName should be the name of a variable declared in the definition of the class
+	//Register the reconstructed vertex as output of the analyzer
 	RegisterOutput("Vertex", &fVertex);
 }
 
@@ -103,19 +85,10 @@ void VertexCDA::InitOutput(){
 //   Setup of fMCSimple. You must specify the generated MC particles you want
 //#####################################################
 void VertexCDA::DefineMCSimple(){
-	//Add particles you want to recover from fMCSimple
-	//	ID = fMCSimple.AddParticle(parentID, pdgCode)
-	//parentID : 	0=no parent (=beam particle)
-	//		1=beam particle (1st generation)
-	//		...
-	//Example
+	//As MC input, request only a beam Kaon decaying into positive pion
+	// + anything else
 	int kID = fMCSimple.AddParticle(0, 321); //ask for beam Kaon
 	fMCSimple.AddParticle(kID, 211); //ask for positive Kaon
-
-}
-
-void VertexCDA::PrintClass(){
-	cout << fAnalyzerName << endl;
 }
 
 //#####################################################
@@ -125,17 +98,12 @@ void VertexCDA::PrintClass(){
 //   MCTruthEvent = Complete set of generated KinePart
 //#####################################################
 void VertexCDA::Process(int){
-	//Ask the fMCSimple to have the complete set of particles we specified
-	//If the analysis can run without the complete set, comment the line
-	//if(fMCSimple.fStatus == MCSimple::kMissing) return;
-	//If the analyzer can run without MC data, comment the line
-	//if(fMCSimple.fStatus == MCSimple::kEmpty) return;
-
 	bool badEvent = false;
 	TVector3 KaonPosition, KaonMomentum;
 	TVector3 PipPosition, PipMomentum;
 
 	bool withMC = true;
+	//If MC is not present or not as we requested (K->pi+ + ...), don't do the MC comparison part
 	if(fMCSimple.fStatus != MCSimple::kComplete) withMC = false;
 
 	TRecoGigaTrackerEvent *GTKEvent = (TRecoGigaTrackerEvent*)GetEvent("GigaTracker");
@@ -182,40 +150,6 @@ void VertexCDA::Process(int){
 			FillHistoArray("BeamXY", cat, fMCSimple["pi+"][0]->GetProdPos().X(), fMCSimple["pi+"][0]->GetProdPos().Y());
 		}
 	}
-
-	//You can retrieve MC particles from the fMCSimple Set with
-	//	fMCSimple.fKaon[0] for the kaons
-	//	fMCSimple.fPip[0] for the positive pions
-	//	fMCSimple.fGamma[0] for the photons
-	//The number in the brackets is the index of the particle (if you asked for two photons in the set, you can ask fMCSimple.fGamma[0] for the first one and fMCSimple.fGamma[1] for the second)
-
-	//You can retrieve the events from the trees with
-	//	(eventClass*)fEvent["treeName"];
-
-	//You can retrieve the histograms you booked (for drawing, changing, filling, ...) with
-	//	fHisto["histoName"] for TH1
-	//	fHisto2["histoName"] for TH2
-	//	fGraph["graphName"] for TGraph and TGraphAsymmErrors
-	//Be carefull !! If the histogram you ask for doesn't exist or you ask for an existing histogram
-	//in the wrong recipient (e.g. th2 in fHisto), program will segfault.
-	//To fill the histograms without risk of segfault, you can use
-	//	FillHisto("histoName", values)
-	//where values are the same parameters as if you call histogram->Fill(values) (x,y,weight,...)
-	//Instead of segfault, this function print an error message
-
-	//For use of fGeom, read DetectorAcceptance class
-
-	//To use the output of a different analyzer, use
-	//outputType var = *(outputType*)GetOutput("analyzerName.outputName", state);
-	//Where outputType is the variable type and state is of type outputState
-	//This function returns a void* and you have to explicitly cast it to the real object type
-	//State is set with the state of the variable (kOUninit, kOInvalid ,kOValid). The value of the output should only be trusted if state == kOValid
-	//example : TLorentzVector vertex = *(TLorentzVector*)GetOutput("simpleVertexAnalyzer.vertex", state);
-
-	//Before starting the processing of an event, the state flag of each output variable is reset to kOUninit
-	//When setting the value of an output variable, don't forget to set appropriately the state flag to either kOValid or kOInvalid
-	//to indicate if the value can/can't be used in other analyzer
-	//SetOutputState("outputName", kOValid);
 }
 
 void VertexCDA::PostProcess(){
@@ -226,19 +160,14 @@ void VertexCDA::PostProcess(){
 //   This method is called at the end of processing to save plots.
 //#####################################################
 void VertexCDA::ExportPlot(){
-	//If you want to save them all, just call
 	SaveAllPlots();
-	//Or you can just save the ones you want with
-	//	histogram->Write()
 }
 
 //#####################################################
 //   This method is called at the end of processing to draw plots.
 //#####################################################
 void VertexCDA::DrawPlot(){
-	//If you want to draw all the plots, just call
 	DrawAllPlots();
-	//Or do as usual (TCanvas, Draw, ...)
 }
 
 TVector3 VertexCDA::GetIntersection(TVector3 pos1, TVector3 p1, TVector3 pos2, TVector3 p2){

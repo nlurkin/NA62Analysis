@@ -31,7 +31,6 @@ class VertexCDA : public NA62Analysis::Analyzer
 		void PostProcess();
 		void ExportPlot();
 		void DrawPlot();
-		void PrintClass();
 	private:
 		void Publish();
 		TVector3 GetIntersection(TVector3 pos1, TVector3 p1, TVector3 pos2, TVector3 p2);
