@@ -86,8 +86,8 @@ void ConfigParser::ParseLine(TString line){
 	/// \EndMemberDescr
 
 	TPRegexp commExp("(.*?)//.*");
-	TPRegexp anExp("\\[\\[\\s*(.*?)\\s*\\]\\]");
-	TPRegexp paramExp("(.*?)[ ]*=[ ]*(.*)");
+	TPRegexp anExp("\\[(.*?)\\]");
+	TPRegexp paramExp("(.*?)\\s*=\\s*(.*)");
 	TPRegexp plotUpdateExp("AutoUpdate = (.*)");
 
 	TObjArray *results;

@@ -30,11 +30,11 @@ namespace Configuration {
 /// \endcode
 /// The configuration file looks like
 /// \code
-/// 	[[analyzerName1]]
+/// 	[analyzerName1]
 /// 	param1 = val1
 /// 	param2 = val2
 ///
-/// 	[[analyzerName2]]
+/// 	[analyzerName2]
 /// 	param1 = value1
 /// 	paramx = valuex
 ///

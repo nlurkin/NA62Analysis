@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 from scripts import dependencyGraph
+from ConfigParser import ConfigParser
 try:
 	from argparse import ArgumentParser, RawDescriptionHelpFormatter
 except ImportError:
@@ -184,6 +185,14 @@ def updateHeaderSignature(UserPath):
 						f2.write(m3[0][0]+"fMCSimple."+m3[0][1]+"\n")
 					else:
 						f2.write(line)
+	
+
+def updateSettings(UserPath, FwPath):
+	p = ConfigParser.RawConfigParser()
+	p.read("%s/Templates/settingsna62" % FwPath)
+	p.read("%s/.settingsna62" % UserPath)
+	
+	p.write("%s/.settingsna62" % UserPath)
 	
 	
 def checkUpdate():

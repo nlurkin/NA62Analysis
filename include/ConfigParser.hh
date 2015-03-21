@@ -55,11 +55,11 @@ typedef std::pair<TString, ConfigNamespace> NSPair;
 /// It can parse strings passed from configuration files that looks like
 /// The configuration file looks like
 /// \code
-/// 	[[ namespace1 ]]
+/// 	[namespace1]
 /// 	param1 = val1
 /// 	param2 = val2
 ///
-/// 	[[ namespace2 ]]
+/// 	[namespace2]
 /// 	param1 = value1
 /// 	paramx = valuex
 ///
