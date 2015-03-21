@@ -213,6 +213,8 @@ def checkUpdate():
 			print "\033[94mUpdating user directory from revision %s to revision %s \033[0m\n" % (version,__rev__)
 			if(int(version))<=385:
 				updateHeaderSignature(UserPath)
+			
+			updateSettings(UserPath, FwPath)
 			#Always replace the CMakeLists.txt in case it changed
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
