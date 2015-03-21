@@ -34,7 +34,7 @@ SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(Core::BaseAnalysis *ba) :
 }
 
 void SkimmingNoStrawMuonsTracks::InitOutput(){
-	AddParam("useMUV", "bool", &useMUV, false);
+	AddParam("useMUV", &useMUV, false); //bool
 }
 
 void SkimmingNoStrawMuonsTracks::InitHist(){
