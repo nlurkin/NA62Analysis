@@ -6,7 +6,8 @@ import re
 import shutil
 import subprocess
 from scripts import dependencyGraph
-from ConfigParser import ConfigParser
+import ConfigParser
+
 try:
 	from argparse import ArgumentParser, RawDescriptionHelpFormatter
 except ImportError:
@@ -191,8 +192,9 @@ def updateSettings(UserPath, FwPath):
 	p = ConfigParser.RawConfigParser()
 	p.read("%s/Templates/settingsna62" % FwPath)
 	p.read("%s/.settingsna62" % UserPath)
-	
-	p.write("%s/.settingsna62" % UserPath)
+
+	with open("%s/.settingsna62" % UserPath, "wb") as configFile:
+		p.write(configFile)
 	
 	
 def checkUpdate():
@@ -214,7 +216,7 @@ def checkUpdate():
 			if(int(version))<=385:
 				updateHeaderSignature(UserPath)
 			
-			updateSettings(UserPath, FwPath)
+			updateSettings(UserPath, FWPath)
 			#Always replace the CMakeLists.txt in case it changed
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)

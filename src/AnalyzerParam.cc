@@ -39,9 +39,10 @@ void AnalyzerParam::ApplyParams(Analyzer * const analyzer) const{
 	///
 	/// Apply all the ParamName,ParamValue pairs to the specified analyzer
 	/// \EndMemberDescr
-
-	if(NamespaceExists(analyzer->GetAnalyzerName())){
-		for(auto param : GetNamespace(analyzer->GetAnalyzerName()).GetParams()){
+	TString name = analyzer->GetAnalyzerName();
+	name.ToLower();
+	if(NamespaceExists(name)){
+		for(auto param : GetNamespace(name).GetParams()){
 			analyzer->ApplyParam(param.first, param.second);
 		}
 	}
