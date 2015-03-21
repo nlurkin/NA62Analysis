@@ -213,7 +213,7 @@ void ConfigNamespace::Print() const{
 	/// Print all the ParamName,ParamValue pairs
 	/// \EndMemberDescr
 
-	std::cout << "[[ " << fName << " ]]" << std::endl;
+	std::cout << "[" << fName << "]" << std::endl;
 	for(auto &param : fParamsList){
 		std::cout << param.first << " = " << param.second << std::endl;
 	}

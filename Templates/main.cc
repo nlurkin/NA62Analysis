@@ -191,7 +191,7 @@ int main(int argc, char** argv){
 
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
-	ban->SetVerbosity(verbosity);
+	ban->SetGlobalVerbosity(verbosity);
 	ban->SetGraphicMode(graphicMode);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);

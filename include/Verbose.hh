@@ -23,6 +23,7 @@ public:
 	virtual ~Verbose();
 
 	void SetVerbosity(Verbosity::VerbosityLevel v);
+	void SetGlobalVerbosity(Verbosity::VerbosityLevel v);
 
 	Verbosity::VerbosityLevel GetVerbosityLevel() const { return fVerbosityLevel; };
 	Verbosity::VerbosityLevel GetTestLevel() const { return fVerbosityTest; };
@@ -44,7 +45,9 @@ public:
 	static std::string GetVerbosityLevelName(Verbosity::VerbosityLevel v);
 
 private:
-	static Verbosity::VerbosityLevel fVerbosityLevel; ///< Verbosity of the program
+	bool fLocalVerbosityActive; ///< Should local verbosity level be used?
+	static Verbosity::VerbosityLevel fVerbosityLevel; ///< Global verbosity of the program
+	Verbosity::VerbosityLevel fLocalVerbosityLevel; ///< Verbosity for this module only
 	mutable Verbosity::VerbosityLevel fVerbosityTest; ///< Transient member. Store the currently requested verbosity output
 	std::string fModuleName; ///< Name to display in the output
 	mutable std::ostream *fCurrentStream; ///< Transient member. Store the current ostream on which we write

@@ -13,7 +13,9 @@
 namespace NA62Analysis {
 
 Verbose::Verbose() :
+	fLocalVerbosityActive(false),
 	fVerbosityTest(Verbosity::kNo),
+	fLocalVerbosityLevel(Verbosity::kNo),
 	fModuleName("[ NA62Analysis ]"),
 	fCurrentStream(&std::cout)
 {
@@ -23,7 +25,9 @@ Verbose::Verbose() :
 }
 
 Verbose::Verbose(std::string name) :
+	fLocalVerbosityActive(false),
 	fVerbosityTest(Verbosity::kNo),
+	fLocalVerbosityLevel(Verbosity::kNo),
 	fModuleName("[ " + name + " ]"),
 	fCurrentStream(&std::cout)
 {
@@ -44,10 +48,22 @@ void Verbose::SetVerbosity(Verbosity::VerbosityLevel v){
 	/// \MemberDescr
 	/// \param v : Verbosity value
 	///
-	/// Change verbosity
+	/// Change local verbosity
 	/// \EndMemberDescr
 
 	std::cout << normal() << "Setting verbosity to " << v << std::endl;
+	fLocalVerbosityActive = true;
+	fLocalVerbosityLevel = v;
+}
+
+void Verbose::SetGlobalVerbosity(Verbosity::VerbosityLevel v){
+	/// \MemberDescr
+	/// \param v : Verbosity value
+	///
+	/// Change global verbosity
+	/// \EndMemberDescr
+
+	std::cout << "Setting global verbosity to " << v << std::endl;
 	fVerbosityLevel = v;
 }
 
@@ -66,13 +82,13 @@ const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 }
 
 bool Verbose::TestLevel(Verbosity::VerbosityLevel level) const {
-	if(level<=fVerbosityLevel) return true;
+	if(fLocalVerbosityActive && (level<=fLocalVerbosityLevel)) return true
+	else if(!fLocalVerbosityActive && (level<=fVerbosityLevel)) return true;
 	else return false;
 }
 
 bool Verbose::CanPrint() const {
-	if(fVerbosityTest<=fVerbosityLevel) return true;
-	else return false;
+	return TestLevel(fVerbosityTest);
 }
 
 std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
