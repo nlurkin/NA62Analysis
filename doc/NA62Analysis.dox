@@ -1,12 +1,14 @@
-/// \todo settings
 /// \page analysis NA62Analysis/Tutorial
 ///	<b>Table of content</b>	
 ///	<ul>
 ///		<li>\ref requirements
+///		<li>\ref glossary
 ///		<li>\ref Installation
 ///		<li>\ref rebuild
 ///		<li>\ref update
 ///		<li>\ref QuickStart
+///		<li>\ref HistoRun
+///		<li>\ref Settings
 ///		<li>\ref Troubleshooting
 ///	</ul>
 ///
@@ -14,13 +16,18 @@
 ///	\section requirements Requirements 
 /// This framework need Geant4, ROOT and NA62MC to be compiled and has been tested with the following versions :<br>
 /// <ul>
-/// 	<li>gcc 4.6.3 | 4.1.2
-/// 	<li>Geant4.9.5p03
-/// 	<li>ROOT 5.34.04 | 5.34.05
-/// 	<li>NA62MC rev_245, rev_255, rev_263
+/// 	<li>gcc | 4.1.2 | 4.6.3 | 4.7.2 
+/// 	<li>Geant 4.9.5p03 | 4.9.6p01
+/// 	<li>ROOT 5.34.04 | 5.34.05 | 5.34.17
+/// 	<li>NA62MC All versions
 /// </ul>
 /// Take care of compiling each of these with the same version of gcc.
-/// Although only tested with these versions, it's most likely to work without problem on any other versions
+/// Although only tested with these versions, it's most likely to work without problem on any other versions.\n
+/// NA62Analysis is not tied to a specific revision of NA62MC/NA62Reconstruction (You can always use the latest revision
+/// of NA62Analysis, whatever the revision of NA62MC/NA62Reconstruction) that you are using. What is important is to link
+/// NA62Analysis with the same revision of NA62MC/NA62Reconstruction that was used to create the file. If you change your
+/// revision of NA62MC/NA62Reconstruction, don't forget to change the path in the scripts/env.[c]sh of your user 
+/// directory <b>[UserDir]</b>.
 /// 
 /// Before starting to work with the framework, you should set the NA62MCSOURCE environment variable to point to the directory where you keep your sources of NA62MC. 
 /// 
@@ -213,6 +220,17 @@
 /// 		 If you try to access any TTree related information in this mode, a warning message is printed. Also a NULL pointer is returned
 /// 		 instead of the requested information. It is always your responsibility to test the return value of methods and not try to access
 /// 		 them if NULL.
+/// </ul>
+/// 
+/// \section Settings Settings file
+/// A settings file is used to customize the behavior of NA62Analysis. The file can be found in your user directory <b>[UserDir]</b>
+/// under the name <i>.settingsna62</i>. The file currently contains a global section affecting the whole software, with the 
+/// following options:
+/// <ul> 
+///		<li> UseColors : If set to true NA62Analysis can use colors in the standard and error output.
+/// 	<li> ProcessOutputNewLine : NA62Analysis regularly outputs the number of events already read. If set to true this output
+///			 is printed on a new line every time. If set to false, a carriage return is used instead of a new line and the line
+///			 is replaced.
 /// </ul>
 /// 
 /// \section Troubleshooting Troubleshooting

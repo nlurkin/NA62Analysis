@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-#TODO Check that file is a text file
 import scripts.SimpleConfigParser as SimpleConfigParser
 import os
 import sys
@@ -192,11 +191,26 @@ def updateHeaderSignature(UserPath):
 
 def updateSettings(UserPath, FwPath):
 	p = ConfigParser.RawConfigParser()
+	p.add_section("Global")
 	p.read("%s/Templates/settingsna62" % FwPath)
 	p.read("%s/.settingsna62" % UserPath)
 
 	with open("%s/.settingsna62" % UserPath, "wb") as configFile:
 		p.write(configFile)
+		
+	with open("%s/.settingsna62" % UserPath, "r") as configFile:
+		lines = configFile.readlines()
+		for i,line in enumerate(lines):
+			if line=="[Global]\n":
+				lines.insert(i+1, "; UseColors : If set to true NA62Analysis can use colors in the standard and error output.\n")
+				lines.insert(i+2, "; ProcessOutputNewLine : NA62Analysis regularly outputs the number of events already read.\n")
+				lines.insert(i+3, ";  If set to true this output is printed on a new line every time.\n") 
+				lines.insert(i+4, ";  If set to false, a carriage return is used instead of a new line and the line is replaced.\n")
+				break
+	
+	with open("%s/.settingsna62" % UserPath, "wb") as configFile:
+		configFile.writelines(lines)
+				
 	
 	
 def checkUpdate():
@@ -290,7 +304,27 @@ def readAndReplace(iPath, oPath, searchMap, skipComments=True):
 				for old in searchMap:
 					line = line.replace(old, searchMap[old])
 				f2.write(line)
-	
+# Test if a file is binary or text
+def is_binary(filename):
+    """Return true if the given filename is binary.
+    @raise EnvironmentError: if the file does not exist or cannot be accessed.
+    @attention: found @ http://bytes.com/topic/python/answers/21222-determine-file-type-binary-text on 6/08/2010
+    @author: Trent Mick <TrentM@ActiveState.com>
+    @author: Jorge Orpinel <jorge@orpinel.com>"""
+    fin = open(filename, 'rb')
+    try:
+        CHUNKSIZE = 1024
+        while 1:
+            chunk = fin.read(CHUNKSIZE)
+            if '\0' in chunk: # found null byte
+                return True
+            if len(chunk) < CHUNKSIZE:
+                break # done
+    finally:
+        fin.close()
+
+    return False
+  
 #----- Analyzer handling functions -----
 # Check histogram use and booking coherence 
 def check_histo(an, iPath):
@@ -565,6 +599,9 @@ def build(args):
 		return
 	
 	cp = SimpleConfigParser.SimpleConfigParser()
+	if is_binary(filename):
+		print "Error reading the configuration file. It seems to be a binary file."
+		return
 	cp.read(filename)
 
 	noAnalyzer = False
