@@ -112,7 +112,7 @@ public:
 		/// \endcode
 		/// Use like
 		/// \code
-		/// cout << normal() << "This is a user message: " << var << endl;
+		/// cout << normal() << "This is a normal message: " << var << endl;
 		/// \endcode
 		/// \EndMemberDescr
 		return PrintLevel(Verbosity::kNormal);
@@ -127,7 +127,7 @@ public:
 		/// \endcode
 		/// Use like
 		/// \code
-		/// cout << extended() << "This is a user message: " << var << endl;
+		/// cout << extended() << "This is a extended message: " << var << endl;
 		/// \endcode
 		/// \EndMemberDescr
 		return PrintLevel(Verbosity::kExtended);
@@ -142,7 +142,7 @@ public:
 		/// \endcode
 		/// Use like
 		/// \code
-		/// cout << debug() << "This is a user message: " << var << endl;
+		/// cout << debug() << "This is a debug message: " << var << endl;
 		/// \endcode
 		/// \EndMemberDescr
 		return PrintLevel(Verbosity::kDebug);
@@ -157,7 +157,7 @@ public:
 		/// \endcode
 		/// Use like
 		/// \code
-		/// cout << trace() << "This is a user message: " << var << endl;
+		/// cout << trace() << "This is a trace message: " << var << endl;
 		/// \endcode
 		/// \EndMemberDescr
 		return PrintLevel(Verbosity::kTrace);
