@@ -374,7 +374,6 @@ double Analyzer::compareToReferencePlot(TString h1, bool KS) {
 void Analyzer::FillMCSimple(Event* mcTruthEvent) {
 	/// \MemberDescr
 	/// \param mcTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
-	/// \param verbosity : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
 	///
 	/// Extract informations from current Event and store them internally for later easy access
 	/// \EndMemberDescr

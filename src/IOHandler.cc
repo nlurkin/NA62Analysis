@@ -241,7 +241,6 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	/// \MemberDescr
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
-	/// \param verbosity : verbosity level
 	/// \return true if success, else false
 	///
 	/// Open and register the input files.

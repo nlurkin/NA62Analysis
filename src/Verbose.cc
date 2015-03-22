@@ -68,11 +68,28 @@ void Verbose::SetGlobalVerbosity(Verbosity::VerbosityLevel v){
 }
 
 const Verbose& operator<<(const Verbose &level, std::ostream& (*f)(std::ostream&)) {
+	/// \MemberDescr
+	/// \param level : Reference to Verbose class
+	/// \param f : std::ostream manipulator (endl, flush, ...)
+	///
+	/// Apply manipulator to output stream if requested verbosity level is at
+	/// least equal to the verbosity level.
+	/// \EndMemberDescr
+
 	if(level.CanPrint()) level.GetStream() << f;
 	return level;
 };
 
 const Verbose& operator <<(std::ostream& s, const Verbose &level) {
+	/// \MemberDescr
+	/// \param s : Output stream
+	/// \param level : Reference to Verbose class
+	///
+	/// Start verbose printing to the specified output stream. Print
+	/// requested verbosity level and module name if requested verbosity
+	/// level is at least equal to verbosity level.
+	/// \EndMemberDescr
+
 	level.SetStream(s);
 	if(level.CanPrint()){
 		s << std::left << std::setw(6) << Verbose::GetVerbosityLevelName(level.GetTestLevel())
@@ -82,16 +99,31 @@ const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 }
 
 bool Verbose::TestLevel(Verbosity::VerbosityLevel level) const {
+	/// \MemberDescr
+	/// \param level : Tested verbosity level
+	/// \return True if level is at least equal to the verbosity level
+	/// \EndMemberDescr
+
 	if(fLocalVerbosityActive && (level<=fLocalVerbosityLevel)) return true;
 	else if(!fLocalVerbosityActive && (level<=fVerbosityLevel)) return true;
 	else return false;
 }
 
 bool Verbose::CanPrint() const {
+	/// \MemberDescr
+	/// \return True if the currently used verbosity level is at least
+	/// equal to the verbosity level.
+	/// \EndMemberDescr
+
 	return TestLevel(fVerbosityTest);
 }
 
 std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
+	/// \MemberDescr
+	/// \param v : Verbosity level
+	/// \return String corresponding to the verbosity level
+	/// \EndMemberDescr
+
 	if(v==Verbosity::kUser) return "USER";
 	else if(v==Verbosity::kNormal) return "NORMAL";
 	else if(v==Verbosity::kExtended) return "EXTEND";
@@ -101,6 +133,11 @@ std::string Verbose::GetVerbosityLevelName(Verbosity::VerbosityLevel v) {
 }
 
 Verbosity::VerbosityLevel Verbose::GetVerbosityLevelFromName(TString v) {
+	/// \MemberDescr
+	/// \param v : String representing a verbosity level
+	/// \return Verbosity level corresponding to the string v
+	/// \EndMemberDescr
+
 	if(v.CompareTo("kuser", TString::kIgnoreCase)==0) return Verbosity::kUser;
 	else if(v.CompareTo("knormal", TString::kIgnoreCase)==0) return Verbosity::kNormal;
 	else if(v.CompareTo("kextended", TString::kIgnoreCase)==0) return Verbosity::kExtended;

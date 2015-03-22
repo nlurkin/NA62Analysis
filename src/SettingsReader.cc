@@ -25,6 +25,12 @@ SettingsReader::~SettingsReader() {
 }
 
 void SettingsReader::ParseFile(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName : Path to the settings file to parse
+	///
+	/// Parse a settings file and fill the settings structure.
+	/// \EndMemberDescr
+
 	ConfigParser::ParseFile(fileName);
 
 	if(NamespaceExists("global")){

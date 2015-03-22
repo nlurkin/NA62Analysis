@@ -412,7 +412,6 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 
 int IOTree::FillMCTruth(){
 	/// \MemberDescr
-	/// \param verbosity: Verbosity level
 	/// \return Number of events in the Event Tree
 	///
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
@@ -467,7 +466,6 @@ int IOTree::FillMCTruth(){
 
 int IOTree::FillRawHeader(){
 	/// \MemberDescr
-	/// \param verbosity: Verbosity level
 	/// \return Number of events in the RawHeader Tree
 	///
 	/// Branch the RawHeader trees.
@@ -533,7 +531,6 @@ bool IOTree::OpenInput(TString inFileName, int nFiles){
 	/// \MemberDescr
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
-	/// \param verbosity : verbosity level
 	/// \return True if the input files are checked and valid
 	///
 	/// Open and register the input files.
@@ -557,13 +554,12 @@ bool IOTree::OpenInput(TString inFileName, int nFiles){
 bool IOTree::checkInputFile(TString fileName){
 	/// \MemberDescr
 	/// \param fileName : Name of the file to open
-	///	\param verbosity : Verbosity level
 	/// \return True if the file can be opened
 	///
 	/// Open the input file to check if MC are present and if yes, what's the name of the TTree
 	/// \EndMemberDescr
 
-	TFile *fd = TFile::Open(fileName.Data(), "R");
+	TFile *fd = TFile::Open(fileName.Data#(), "R");
 
 	if(!fd)
 		return kFALSE;

@@ -8,8 +8,8 @@
 #include "IOHandler.hh"
 
 //TODO remove these 2 lines
-//using namespace NA62Analysis;
-//using namespace Core;
+using namespace NA62Analysis;
+using namespace Core;
 
 namespace NA62Analysis {
 

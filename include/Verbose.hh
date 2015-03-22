@@ -18,6 +18,15 @@
 
 namespace NA62Analysis {
 
+/// \class Verbose
+/// \Brief
+/// Base class for any verbose class
+/// \EndBrief
+///
+/// \Detailed
+/// Implement some output stream manipulator for different verbosity levels
+/// \EndDetailed
+
 class Verbose {
 public:
 	Verbose();
@@ -27,22 +36,132 @@ public:
 	void SetVerbosity(Verbosity::VerbosityLevel v);
 	void SetGlobalVerbosity(Verbosity::VerbosityLevel v);
 
-	Verbosity::VerbosityLevel GetVerbosityLevel() const { return fLocalVerbosityActive ? fLocalVerbosityLevel : fVerbosityLevel; };
-	Verbosity::VerbosityLevel GetTestLevel() const { return fVerbosityTest; };
-	std::string GetModuleName() const { return fModuleName; };
+	Verbosity::VerbosityLevel GetVerbosityLevel() const {
+		/// \MemberDescr
+		/// \return Currently used verbosity level (can be local or global)
+		/// \EndMemberDescr
+		return fLocalVerbosityActive ? fLocalVerbosityLevel : fVerbosityLevel;
+	};
+	Verbosity::VerbosityLevel GetTestLevel() const {
+		/// \MemberDescr
+		/// \return Verbosity level currently printed
+		/// \EndMemberDescr
+		return fVerbosityTest;
+	};
+	std::string GetModuleName() const {
+		/// \MemberDescr
+		/// \return Module display name
+		/// \EndMemberDescr
+		return fModuleName;
+	};
 
-	void SetStream(std::ostream &s) const { fCurrentStream=&s;};
-	std::ostream& GetStream() const { return *fCurrentStream;};
+	void SetStream(std::ostream &s) const {
+		/// \MemberDescr
+		/// \param s : Output stream reference
+		///
+		/// Set the output stream to write into
+		/// \EndMemberDescr
+		fCurrentStream=&s;
+	};
+	std::ostream& GetStream() const {
+		/// \MemberDescr
+		/// \return Output stream currently used
+		/// \EndMemberDescr
+		return *fCurrentStream;
+	};
 
-	const Verbose& PrintLevel(Verbosity::VerbosityLevel v) const { fVerbosityTest = v; return *this; };
+	const Verbose& PrintLevel(Verbosity::VerbosityLevel v) const {
+		/// \MemberDescr
+		/// \param v : Verbosity level requested
+		/// \return reference to itself
+		///
+		/// Set the currently printed verbosity level and return a reference
+		/// to itself. Use like
+		/// \code
+		/// cout << PrintLevel(Verbosity::kDebug) << "This is a debug message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		fVerbosityTest = v; return *this;
+	};
 	bool TestLevel(Verbosity::VerbosityLevel level) const;
 	bool CanPrint() const;
 
 	//Standard levels stream manipulators (shortcuts for PrintLevel)
-	const Verbose& user() const { return PrintLevel(Verbosity::kUser); };
-	const Verbose& normal() const { return PrintLevel(Verbosity::kNormal); };
-	const Verbose& extended() const { return PrintLevel(Verbosity::kExtended); };
-	const Verbose& debug() const { return PrintLevel(Verbosity::kDebug); };
+	const Verbose& user() const {
+		/// \MemberDescr
+		/// \return Reference to itself
+		///
+		/// Manipulator for user verbosity level print. Convenience proxy to
+		/// \code
+		/// Printlevel(Verbosity::kUser)
+		/// \endcode
+		/// Use like
+		/// \code
+		/// cout << user() << "This is a user message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		return PrintLevel(Verbosity::kUser);
+	};
+	const Verbose& normal() const {
+		/// \MemberDescr
+		/// \return Reference to itself
+		///
+		/// Manipulator for user verbosity level print. Convenience proxy to
+		/// \code
+		/// Printlevel(Verbosity::kNormal)
+		/// \endcode
+		/// Use like
+		/// \code
+		/// cout << normal() << "This is a user message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		return PrintLevel(Verbosity::kNormal);
+	};
+	const Verbose& extended() const {
+		/// \MemberDescr
+		/// \return Reference to itself
+		///
+		/// Manipulator for user verbosity level print. Convenience proxy to
+		/// \code
+		/// Printlevel(Verbosity::kExtended)
+		/// \endcode
+		/// Use like
+		/// \code
+		/// cout << extended() << "This is a user message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		return PrintLevel(Verbosity::kExtended);
+	};
+	const Verbose& debug() const {
+		/// \MemberDescr
+		/// \return Reference to itself
+		///
+		/// Manipulator for user verbosity level print. Convenience proxy to
+		/// \code
+		/// Printlevel(Verbosity::kDebug);
+		/// \endcode
+		/// Use like
+		/// \code
+		/// cout << debug() << "This is a user message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		return PrintLevel(Verbosity::kDebug);
+	};
+	const Verbose& trace() const {
+		/// \MemberDescr
+		/// \return Reference to itself
+		///
+		/// Manipulator for user verbosity level print. Convenience proxy to
+		/// \code
+		/// Printlevel(Verbosity::kTrace)
+		/// \endcode
+		/// Use like
+		/// \code
+		/// cout << trace() << "This is a user message: " << var << endl;
+		/// \endcode
+		/// \EndMemberDescr
+		return PrintLevel(Verbosity::kTrace);
+	};
 
 	static std::string GetVerbosityLevelName(Verbosity::VerbosityLevel v);
 	static Verbosity::VerbosityLevel GetVerbosityLevelFromName(TString v);
@@ -58,6 +177,14 @@ private:
 
 template <class T>
 const Verbose& operator<<(const Verbose &level, T x) {
+	/// \MemberDescr
+	/// \param level : Reference to Verbose class
+	/// \param x : Value to print (template)
+	/// \return Reference to itself
+	///
+	/// Print value to output stream only of the currently requested verbosity level
+	/// is at least equal to the verbosity level.
+	/// \EndMemberDescr
 	if(level.CanPrint()) level.GetStream() << x;
 	return level;
 };

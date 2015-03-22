@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+
+#TODO Check that file is a text file
 import scripts.SimpleConfigParser as SimpleConfigParser
 import os
 import sys

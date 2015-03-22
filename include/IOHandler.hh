@@ -69,7 +69,7 @@ public:
 	};
 	virtual void LoadEvent(int) {
 		/// \MemberDescr
-		/// \param iEvent: Event index to load
+		/// \param : Event index to load
 		/// Dummy LoadEvent
 		/// \EndMemberDescr
 	};

@@ -35,18 +35,39 @@ namespace manip {
 		BG_WHITE    = 47
 	};
 
+/// \class TermManip
+/// \Brief
+/// Class for output stream manipulation
+/// \EndBrief
+///
+/// \Detailed
+/// Manipulators for the output stream. Enable to simply change text
+///	color or font.
+/// \EndDetailed
 class TermManip {
 public:
-	TermManip(Code c): code(c) {};
+	TermManip(Code c): code(c) {
+		/// \MemberDescr
+		/// \param c : Manipulator ANSI code
+		///
+		/// Constructor
+		/// \EndMemberDescr
+	};
 	virtual ~TermManip() {};
 
 	friend std::ostream&
 	operator<<(std::ostream& os, const TermManip& mod) {
+		/// \MemberDescr
+		/// \param os : Output stream to manipulate
+		/// \param mod : manipulator to apply
+		///
+		/// Insert a manipulator in the stream
+		/// \EndMemberDescr
 		if(manip::enableManip) return os << "\033[" << mod.code << "m";
 		else return os;
 	}
 private:
-	Code code;
+	Code code; ///< Manipulator ANSI code
 };
 
 extern TermManip reset;

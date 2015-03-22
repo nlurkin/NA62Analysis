@@ -15,14 +15,41 @@
 namespace NA62Analysis {
 namespace Configuration {
 
+/// \class ConfigNamespace
+/// \Brief
+/// Configuration namespace.
+/// \EndBrief
+///
+/// \Detailed
+/// Configuration namespace. It contains all the parameter-value pairs
+/// found in the configuration file.
+/// \EndDetailed
+
 typedef std::pair<TString, TString> ParamPair;
 class ConfigNamespace {
 public:
-	ConfigNamespace(TString name) : fName(name){};
-	ConfigNamespace(){};
+	ConfigNamespace(TString name) : fName(name){
+		/// \MemberDescr
+		/// \param name : Name of the namespace
+		///
+		/// Constructor
+		/// \EndMemberDescr
+	};
+	ConfigNamespace(){
+		/// \MemberDescr
+		/// Default constructor
+		/// \EndMemberDescr
+	};
 
 	bool ParamExists(TString paramName) const;
 	void AddParam(TString name, TString value){
+		/// \MemberDescr
+		/// \param name : Parameter name
+		/// \param value : Parameter value
+		///
+		/// Add a new parameter-value pair in the namespace
+		/// \EndMemberDescr
+
 		fParamsList.insert(ParamPair(name, value));
 	}
 	const std::map<TString, TString>& GetParams() const;
@@ -39,8 +66,8 @@ public:
 
 	void Print() const;
 private:
-	TString fName;
-	std::map<TString, TString> fParamsList;
+	TString fName; ///< Name of the namespace
+	std::map<TString, TString> fParamsList; ///< Container for the parameter-value pairs
 };
 
 typedef std::pair<TString, ConfigNamespace> NSPair;

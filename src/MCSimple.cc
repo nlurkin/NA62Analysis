@@ -39,7 +39,6 @@ MCSimple::MCSimple(const MCSimple& c):
 void MCSimple::GetRealInfos( Event* MCTruthEvent){
 	/// \MemberDescr
 	/// \param MCTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
-	/// \param verbose : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
 	/// \todo Possibility to get random event types and just specify the number of generation we want
 	///
 	/// Extract informations from current Event and store them internally for later easy access

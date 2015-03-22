@@ -276,7 +276,6 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 	/// \MemberDescr
 	/// \param inFileName : Path to the input root file, or file containing a list of input root files
 	/// \param nFiles : Number of files to read
-	/// \param verbosity : Verbosity level
 	/// \return true in case of success. Else false
 	///
 	/// Open input files

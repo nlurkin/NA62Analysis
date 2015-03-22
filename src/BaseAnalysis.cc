@@ -409,6 +409,17 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 }
 
 void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, clock_t startTime) {
+	/// \MemberDescr
+	/// \param iEvent: currently processed object
+	/// \param totalEvents: total number of objects
+	/// \param defaultPrecision: default floating point number precision in cout
+	/// \param displayType: Type of object (event, file)
+	/// \param startTime: start time of the processing
+	///
+	/// Print the currently processed object. Formatting done according to settings.
+	/// Also print the percentage of completion and the estimated remaining time.
+	/// \EndMemberDescr
+
 	clock_t currTime = clock();
 	std::stringstream ss;
 

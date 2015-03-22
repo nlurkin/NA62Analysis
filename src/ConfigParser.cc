@@ -67,11 +67,24 @@ void ConfigParser::ParseFile(TString fileName){
 }
 
 bool ConfigParser::NamespaceExists(TString ns) const {
+	/// \MemberDescr
+	/// \param ns : Name of the namespace
+	/// \return true if the namespace is found in the config file
+	///
+	/// Does the specified namespace exist in the config
+	/// \EndMemberDescr
+
 	ns.ToLower();
 	return fNSList.count(ns)>0;
 }
 
 const ConfigNamespace& ConfigParser::GetNamespace(TString ns) const {
+	/// \MemberDescr
+	/// \param ns : Name of the namespace
+	/// \return Reference to the namespace if found. A default empty namespace else.
+	///
+	/// \EndMemberDescr
+
 	auto nsRef = fNSList.find(ns);
 
 	if(nsRef != fNSList.end()) return nsRef->second;
@@ -140,15 +153,30 @@ void ConfigParser::Print() const{
 }
 
 bool ConfigNamespace::ParamExists(TString paramName) const {
+	/// \MemberDescr
+	/// \param paramName : Parameter whose existence is checked
+	/// \return True if the parameter exists in the namespace
+	/// \EndMemberDescr
+
 	paramName.ToLower();
 	return fParamsList.count(paramName)>0;
 }
 
 const std::map<TString, TString>& ConfigNamespace::GetParams() const {
+	/// \MemberDescr
+	/// \return Map of parameter-value pairs
+	/// \EndMemberDescr
+
 	return fParamsList;
 }
 
 TString ConfigNamespace::GetParam(TString name) const {
+	/// \MemberDescr
+	/// \param name : Parameter name
+	/// \return Value of the given parameter (as TString). If the
+	/// parameter does not exist, an empty string
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto paramRef = fParamsList.find(name);
 
@@ -157,12 +185,28 @@ TString ConfigNamespace::GetParam(TString name) const {
 }
 
 void ConfigNamespace::SetValue(TString name, char& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Data()[0];
 }
 
 void ConfigNamespace::SetValue(TString name, bool& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()){
@@ -173,36 +217,84 @@ void ConfigNamespace::SetValue(TString name, bool& ref) const {
 }
 
 void ConfigNamespace::SetValue(TString name, int &ref) const{
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atoi();
 }
 
 void ConfigNamespace::SetValue(TString name, long & ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atoll();
 }
 
 void ConfigNamespace::SetValue(TString name, float& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atof();
 }
 
 void ConfigNamespace::SetValue(TString name, double& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atof();
 }
 
 void ConfigNamespace::SetValue(TString name, std::string& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Data();
 }
 
 void ConfigNamespace::SetValue(TString name, TString& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
 	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second;
@@ -210,7 +302,7 @@ void ConfigNamespace::SetValue(TString name, TString& ref) const {
 
 void ConfigNamespace::Print() const{
 	/// \MemberDescr
-	/// Print all the ParamName,ParamValue pairs
+	/// Print all the parameter-value pairs
 	/// \EndMemberDescr
 
 	std::cout << "[" << fName << "]" << std::endl;
