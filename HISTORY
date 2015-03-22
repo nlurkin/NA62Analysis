@@ -2,6 +2,8 @@
 NA62Analysis Project
 ################################################################
 
+2015-03-xx  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 472
         - Fix various warnings
         - Set the default to "Read All" when reading a list of files. Add -b
           as additional alias for -B/--nfiles (Do not work with the -g option because
