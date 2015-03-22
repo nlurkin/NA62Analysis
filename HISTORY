@@ -8,7 +8,7 @@ NA62Analysis Project
           of ROOT interference)
         - Add elements to manipulate output stream colors
         - Improve verbosity control. Redefined verbosity levels:
-          kNo, kUser, kNormal, kExtended, kDebug, kTrace
+          kNo=0, kUser=1, kNormal=2, kExtended=3, kDebug=4, kTrace=5
           They can easily be used with their corresponding stream manipulators. Ex:
           cout << normal() << "This is a normal message printed only if -v is at least kNormal (2)" << endl;
           The --logtofile option redirect all messages using these manipulators
