@@ -35,6 +35,7 @@ public:
 
 	void SetVerbosity(Verbosity::VerbosityLevel v);
 	void SetGlobalVerbosity(Verbosity::VerbosityLevel v);
+	void SetLogToFile(TString fileName);
 
 	Verbosity::VerbosityLevel GetVerbosityLevel() const {
 		/// \MemberDescr
@@ -166,9 +167,12 @@ public:
 	static std::string GetVerbosityLevelName(Verbosity::VerbosityLevel v);
 	static Verbosity::VerbosityLevel GetVerbosityLevelFromName(TString v);
 
-private:
-	bool fLocalVerbosityActive; ///< Should local verbosity level be used?
+	static bool fLogToFile; ///< Should the logs be written in file instead of specified ostream ?
 	static Verbosity::VerbosityLevel fVerbosityLevel; ///< Global verbosity of the program
+	static std::ofstream fLogFileStream; ///< File output stream used when fLogToFile is true
+
+private:
+	bool fLocalVerbosityActive; ///< Should local verbosity level be used ?
 	Verbosity::VerbosityLevel fLocalVerbosityLevel; ///< Verbosity for this module only
 	mutable Verbosity::VerbosityLevel fVerbosityTest; ///< Transient member. Store the currently requested verbosity output
 	std::string fModuleName; ///< Name to display in the output

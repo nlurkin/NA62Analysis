@@ -27,7 +27,7 @@
 /// of NA62Analysis, whatever the revision of NA62MC/NA62Reconstruction) that you are using. What is important is to link
 /// NA62Analysis with the same revision of NA62MC/NA62Reconstruction that was used to create the file. If you change your
 /// revision of NA62MC/NA62Reconstruction, don't forget to change the path in the scripts/env.[c]sh of your user 
-/// directory <b>[UserDir]</b>.
+/// directory <b>[UserDir]</b>, do a cleanall and recompile.
 /// 
 /// Before starting to work with the framework, you should set the NA62MCSOURCE environment variable to point to the directory where you keep your sources of NA62MC. 
 /// 
@@ -159,6 +159,7 @@
 ///   --config path			: Path to a configuration file containing analyzers parameters.
 ///   --reffile path		: Path to a ROOT file containing reference plots.
 ///   --ignore				: Ignore non-existing trees and continue processing.
+///   --logtofile path		: Write the log output to the specified file instead of standard output.
 /// 
 /// Mutually exclusive options groups:
 ///  Group1:

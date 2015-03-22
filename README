@@ -190,6 +190,7 @@ If you want to run the program with a set of analyzers
        --config path        : Path to a configuration file containing analyzers parameters.
        --reffile path       : Path to a ROOT file containing reference plots.
        --ignore             : Ignore non-existing trees and continue processing.
+       --logtofile path     : Write the log output to the specified file instead of standard output.
 
      Mutually exclusive options groups:
       Group1:

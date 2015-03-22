@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 namespace NA62Analysis {
 
@@ -90,9 +91,10 @@ const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 	/// level is at least equal to verbosity level.
 	/// \EndMemberDescr
 
-	level.SetStream(s);
+	if(Verbose::fLogToFile) level.SetStream(Verbose::fLogFileStream);
+	else level.SetStream(s);
 	if(level.CanPrint()){
-		s << std::left << std::setw(6) << Verbose::GetVerbosityLevelName(level.GetTestLevel())
+		level.GetStream() << std::left << std::setw(6) << Verbose::GetVerbosityLevelName(level.GetTestLevel())
 		  << " - " << std::setw(15) << level.GetModuleName() << " ";
 	}
 	return level;
@@ -146,6 +148,14 @@ Verbosity::VerbosityLevel Verbose::GetVerbosityLevelFromName(TString v) {
 	return Verbosity::kNormal;
 }
 
+void Verbose::SetLogToFile(TString fileName) {
+	Verbose::fLogToFile = true;
+	fLogFileStream.open(fileName.Data(), std::ofstream::out);
+	std::cout << "Logging to file " << fileName << std::endl;
+}
+
 Verbosity::VerbosityLevel Verbose::fVerbosityLevel = Verbosity::kNo;
+bool Verbose::fLogToFile = false;
+std::ofstream Verbose::fLogFileStream;
 
 } /* namespace NA62Analysis */

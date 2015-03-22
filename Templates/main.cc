@@ -35,6 +35,7 @@ void usage(char* name)
 	cout << "  --config path\t\t: Path to a configuration file containing analyzers parameters." << endl;
 	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
+	cout << "  --logtofile path\t: Write the log output to the specified file instead of standard output." << endl;
 	cout << endl;
 	cout << "Mutually exclusive options groups:" << endl;
 	cout << " Group1:" << endl;
@@ -76,6 +77,7 @@ int main(int argc, char** argv){
 	TString params;
 	TString configFile;
 	TString argTS;
+	TString logFile;
 
 	int NEvt = 0;
 	int evtNb = -1;
@@ -86,11 +88,11 @@ int main(int argc, char** argv){
 	VerbosityLevel verbosity = VerbosityLevel::kNo;
 	bool readPlots = false;
 
-	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
 	int flReadPlots = 0;
 	int flIgnoreNonExisting = 0;
+	bool logToFile = false;
 
 	struct option longopts[] = {
 			{ "list",	required_argument,	NULL,	'l'},
@@ -103,6 +105,7 @@ int main(int argc, char** argv){
 			{ "config",	required_argument,	NULL,		'1'},
 			{ "reffile",required_argument,	NULL,		'2'},
 			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
+			{ "logtofile",required_argument,NULL,	'3'},
 			{0,0,0,0}
 	};
 
@@ -158,6 +161,10 @@ int main(int argc, char** argv){
 		case '2': /* Reference file path, long_option: reffile */
 			refFileName = TString(optarg);
 			break;
+		case '3': /* log file, long_option: logtofile */
+			logFile = TString(optarg);
+			logToFile = true;
+			break;
 
 		case 0: /* getopt_long() set a variable, continue */
 			break;
@@ -187,6 +194,8 @@ int main(int argc, char** argv){
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetGlobalVerbosity(verbosity);
+	std::cout << logToFile << " " << logFile << std::endl;
+	if(logToFile) ban->SetLogToFile(logFile);
 	ban->SetGraphicMode(graphicMode);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);

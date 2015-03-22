@@ -4,10 +4,10 @@
 #include <TStyle.h>
 #include <TFile.h>
 
-#include "AnalyzerParam.hh"
+#include "ConfigAnalyzer.hh"
 #include "StringBalancedTable.hh"
 #include "TermManip.hh"
-#include "SettingsReader.hh"
+#include "ConfigSettings.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -25,9 +25,9 @@ BaseAnalysis::BaseAnalysis():
 	/// \EndMemberDescr
 
 
-	Configuration::SettingsReader().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
+	Configuration::ConfigSettings().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
-	NA62Analysis::manip::enableManip = Configuration::SettingsReader::global::fUseColors && isatty(fileno(stdout));
+	NA62Analysis::manip::enableManip = Configuration::ConfigSettings::global::fUseColors && isatty(fileno(stdout));
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -75,7 +75,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	fIOHandler->LoadEvent(0);
 	fIOHandler->CheckNewFileOpened();
 	//Parse parameters from file
-	Configuration::AnalyzerParam confParser;
+	Configuration::ConfigAnalyzer confParser;
 	confParser.ParseFile(configFile);
 	//Parse parameters from commandLine
 	confParser.ParseCLI(params);
@@ -424,7 +424,7 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	std::stringstream ss;
 
 	//Print current event
-	if(Configuration::SettingsReader::global::fUseColors) std::cout << manip::red << manip::bold;
+	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::red << manip::bold;
 
 	float eta = 0;
 	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
@@ -434,8 +434,8 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
 	else std::cout << std::setw(10) << "ETA: " << eta << "s";
 
-	if(Configuration::SettingsReader::global::fUseColors) std::cout << manip::reset;
-	if(Configuration::SettingsReader::global::fProcessOutputNewLine) std::cout << std::endl;
+	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::reset;
+	if(Configuration::ConfigSettings::global::fProcessOutputNewLine) std::cout << std::endl;
 	else std::cout << std::setw(10) << "\r" << std::flush;
 
 	//Reset to default
