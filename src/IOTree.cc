@@ -559,7 +559,7 @@ bool IOTree::checkInputFile(TString fileName){
 	/// Open the input file to check if MC are present and if yes, what's the name of the TTree
 	/// \EndMemberDescr
 
-	TFile *fd = TFile::Open(fileName.Data#(), "R");
+	TFile *fd = TFile::Open(fileName.Data(), "R");
 
 	if(!fd)
 		return kFALSE;
