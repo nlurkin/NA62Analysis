@@ -13,7 +13,7 @@
 namespace NA62Analysis {
 namespace Configuration {
 
-/// \class SettingsReader
+/// \class ConfigSettings
 /// \Brief
 /// Read settings file for the framework
 /// \EndBrief
@@ -31,10 +31,10 @@ namespace Configuration {
 /// an end line. Else a carriage return is used and the line is erased by the next terminal output.
 /// \EndDetailed
 
-class SettingsReader : public ConfigParser{
+class ConfigSettings : public ConfigParser{
 public:
-	SettingsReader();
-	virtual ~SettingsReader();
+	ConfigSettings();
+	virtual ~ConfigSettings();
 
 	void ParseFile(TString fileName);
 

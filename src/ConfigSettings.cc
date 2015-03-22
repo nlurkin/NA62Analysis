@@ -5,26 +5,26 @@
  *      Author: ncl
  */
 
-#include <SettingsReader.hh>
+#include <ConfigSettings.hh>
 
 #include <iostream>
 
 namespace NA62Analysis {
 namespace Configuration {
 
-SettingsReader::SettingsReader() {
+ConfigSettings::ConfigSettings() {
 	/// \MemberDescr
 	/// Default constructor
 	/// \EndMemberDescr
 }
 
-SettingsReader::~SettingsReader() {
+ConfigSettings::~ConfigSettings() {
 	/// \MemberDescr
 	/// Default destructor
 	/// \EndMemberDescr
 }
 
-void SettingsReader::ParseFile(TString fileName) {
+void ConfigSettings::ParseFile(TString fileName) {
 	/// \MemberDescr
 	/// \param fileName : Path to the settings file to parse
 	///
@@ -40,7 +40,7 @@ void SettingsReader::ParseFile(TString fileName) {
 	}
 }
 
-bool SettingsReader::global::fUseColors = true;
-bool SettingsReader::global::fProcessOutputNewLine = true;
+bool ConfigSettings::global::fUseColors = true;
+bool ConfigSettings::global::fProcessOutputNewLine = true;
 } /* namespace Configuration */
 } /* namespace NA62Analysis */

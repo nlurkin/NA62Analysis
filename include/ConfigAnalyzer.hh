@@ -16,7 +16,7 @@ class Analyzer;
 
 namespace Configuration {
 
-/// \class AnalyzerParam
+/// \class ConfigAnalyzer
 /// \Brief
 /// This class will parse a configuration file and assign the values to the declared analyzer param variables
 /// \EndBrief
@@ -42,11 +42,11 @@ namespace Configuration {
 /// \endcode
 /// \EndDetailed
 
-class AnalyzerParam : public ConfigParser {
+class ConfigAnalyzer : public ConfigParser {
 public:
-	AnalyzerParam();
-	AnalyzerParam(const AnalyzerParam& c);
-	virtual ~AnalyzerParam();
+	ConfigAnalyzer();
+	ConfigAnalyzer(const ConfigAnalyzer& c);
+	virtual ~ConfigAnalyzer();
 
 	void ApplyParams(Analyzer* const analyzer) const;
 	void ParseCLI(TString params);

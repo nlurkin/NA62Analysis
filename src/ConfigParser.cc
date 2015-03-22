@@ -55,6 +55,7 @@ void ConfigParser::ParseFile(TString fileName){
 		if(s.is_open()){
 			while(s.good()){
 				getline(s, line);
+				if(line[0]==';') continue;
 				ParseLine(line);
 			}
 		}

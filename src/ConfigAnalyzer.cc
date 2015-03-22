@@ -5,20 +5,20 @@
  *      Author: ncl
  */
 
-#include <AnalyzerParam.hh>
+#include <ConfigAnalyzer.hh>
 
 #include "Analyzer.hh"
 
 namespace NA62Analysis {
 namespace Configuration {
 
-AnalyzerParam::AnalyzerParam() {
+ConfigAnalyzer::ConfigAnalyzer() {
 	/// \MemberDescr
 	/// Default constructor
 	/// \EndMemberDescr
 }
 
-AnalyzerParam::AnalyzerParam(const AnalyzerParam& c):
+ConfigAnalyzer::ConfigAnalyzer(const ConfigAnalyzer& c):
 	ConfigParser(c)
 {
 	/// \MemberDescr
@@ -27,13 +27,13 @@ AnalyzerParam::AnalyzerParam(const AnalyzerParam& c):
 	/// \EndMemberDescr
 }
 
-AnalyzerParam::~AnalyzerParam() {
+ConfigAnalyzer::~ConfigAnalyzer() {
 	/// \MemberDescr
 	/// Default destructor
 	/// \EndMemberDescr
 }
 
-void AnalyzerParam::ApplyParams(Analyzer * const analyzer) const{
+void ConfigAnalyzer::ApplyParams(Analyzer * const analyzer) const{
 	/// \MemberDescr
 	/// \param analyzer : pointer to the analyzer
 	///
@@ -48,7 +48,7 @@ void AnalyzerParam::ApplyParams(Analyzer * const analyzer) const{
 	}
 }
 
-void AnalyzerParam::ParseCLI(TString params){
+void ConfigAnalyzer::ParseCLI(TString params){
 	/// \MemberDescr
 	/// \param params : Parameter string passed in the command line
 	///
