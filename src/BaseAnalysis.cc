@@ -59,6 +59,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//##############################
 	TString anName, anParams;
 
+	std::cout << debug() << "Initializing... " << std::endl;
 	if(!fIOHandler->OpenInput(inFileName, NFiles)) return;
 
 	fIOHandler->OpenOutput(outFileName);
@@ -70,10 +71,14 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		treeHandler->SetIgnoreNonExisting(ignoreNonExisting);
 
 		fNEvents = std::max(treeHandler->FillMCTruth(), treeHandler->FillRawHeader());
+
+		std::cout << debug() << "Using " << fNEvents << " events" << endl;
 	}
 
 	fIOHandler->LoadEvent(0);
 	fIOHandler->CheckNewFileOpened();
+
+	std::cout << debug() << "Parsing parameters" << std::endl;
 	//Parse parameters from file
 	Configuration::ConfigAnalyzer confParser;
 	confParser.ParseFile(configFile);
@@ -107,6 +112,7 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	/// Add an analyzer to the Analyzer lists
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Adding analyzer " << an->GetAnalyzerName() << std::endl;
 	an->SetVerbosity(GetVerbosityLevel());
 	fAnalyzerList.push_back(an);
 }
@@ -119,6 +125,8 @@ void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// Register an output
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Registering output " << name << endl;
+	std::cout << debug() << " at address " << address << endl;
 	fOutput.insert(std::pair<TString, const void* const>(name, address));
 	fOutputStates.insert(std::pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
@@ -150,7 +158,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	}
 	else{
 		state = Analyzer::kOUninit;
-		std::cerr << "Output " << name << " not found" << std::endl;
+		std::cout << normal() << "Output " << name << " not found" << std::endl;
 		return 0;
 	}
 }
@@ -187,8 +195,6 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	if(!fInitialized) return;
 
-	//IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
-
 	timing = clock();
 
 	std::string displayType;
@@ -197,11 +203,11 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	std::cout << "AnalysisFW: Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << std::endl;
+	std::cout << normal() << "Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << std::endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
-	std::cout << "AnalysisFW: i_offset : " << i_offset << std::endl;
+	std::cout << extended() << "i_offset : " << i_offset << std::endl;
 
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
@@ -242,7 +248,6 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			//if(exportEvent) fAnalyzerList[j]->FillTrees();
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
@@ -404,6 +409,8 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 	/// Create the correct instance of IOHandler
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Creating IOHandler of type "
+			<< (type==IOHandlerType::kHISTO ? "kHisto" : "kTree") << std::endl;
 	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
 	else fIOHandler = new IOTree();
 }

@@ -129,7 +129,7 @@ void Analyzer::SetParamValue(TString name, TString val){
 		return;
 	}
 	param_t p = fParams[name];
-	if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) std::cout << "Setting parameter " << name << " of type " << p.first << " with value " << val << std::endl;
+	std::cout << normal() << "Setting parameter " << name << " of type " << p.first << " with value " << val << std::endl;
 
 	if(p.first.CompareTo("char")==0){
 		*(char*)(p.second) = *(val.Data());
@@ -231,7 +231,7 @@ void Analyzer::ApplyParam(TString paramName, TString paramValue){
 	if(paramName.CompareTo("AutoUpdate", TString::kIgnoreCase)==0){
 		//Add AutoUpdate plot
 		fHisto.SetPlotAutoUpdate(paramValue,fAnalyzerName);
-		if(PrintVerbose(NA62Analysis::Verbosity::kNormal)) std::cout << "Setting plot " << paramValue << " as AutoUpdate." << std::endl;
+		std::cout << normal() << "Setting plot " << paramValue << " as AutoUpdate." << std::endl;
 	}
 	else if(paramName.CompareTo("UpdateInterval", TString::kIgnoreCase)==0){
 		fHisto.SetUpdateInterval(paramValue.Atoi());

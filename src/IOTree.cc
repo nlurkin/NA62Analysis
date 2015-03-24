@@ -294,7 +294,7 @@ void IOTree::LoadEvent(int iEvent){
 	eventIterator itEvt;
 	objectIterator itObj;
 
-	std::cout << debug() << "Loading event " << iEvent << "... ";
+	std::cout << debug() << "Loading event " << iEvent << "... " << std::endl;
 	std::pair<eventIterator, eventIterator> eventRange;
 	std::pair<objectIterator, objectIterator> objectRange;
 
@@ -315,8 +315,6 @@ void IOTree::LoadEvent(int iEvent){
 				it->second->GetEntry(iEvent);
 		}
 	}
-
-	std::cout << debug() << " Done" << std::endl;
 
 }
 
@@ -411,8 +409,8 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 						<< branchClass << ") for " << tree->GetTree()->GetName() << std::endl;
 				raise(SIGABRT);
 			}
-			std::cout << normal() << "Found " << branchName << " (" << tree->GetEntries()
-					<< ") of class " << branchClass << std::endl;
+			std::cout << normal() << "Found " << branchName << " of class " << branchClass
+					<< "(" << tree->GetEntries() << ")" << std::endl;
 			tree->SetBranchAddress(branchName, evt);
 			if ( eventNb <= 0 )
 			{
