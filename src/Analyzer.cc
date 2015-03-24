@@ -125,7 +125,7 @@ void Analyzer::SetParamValue(TString name, TString val){
 	/// \EndMemberDescr
 
 	if(fParams.count(name)==0){
-		std::cerr << "Parameter " << name << " does not exist for analyzer " << fAnalyzerName << std::endl;
+		std::cout << normal() << "Parameter " << name << " does not exist" << std::endl;
 		return;
 	}
 	param_t p = fParams[name];
@@ -136,24 +136,25 @@ void Analyzer::SetParamValue(TString name, TString val){
 	}
 	else if(p.first.CompareTo("int")==0){
 		if(val.IsDigit()) *(int*)(p.second) = val.Atoi();
-		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
+		else std::cout << normal() << "Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("long")==0){
 		if(val.IsDigit()) *(long*)(p.second) = val.Atoll();
-		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
+		else std::cout << normal() << "Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("bool")==0){
 		if(val.IsDigit()) *(bool*)(p.second) = val.Atoi();
 		else if(val.CompareTo("true", TString::kIgnoreCase)==0) *(bool*)(p.second) = true;
 		else if(val.CompareTo("false", TString::kIgnoreCase)==0) *(bool*)(p.second) = false;
+		else std::cout << normal() << "Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("float")==0){
 		if(val.IsFloat()) *(float*)(p.second) = val.Atof();
-		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
+		else std::cout << normal() << "Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("double")==0){
 		if(val.IsFloat()) *(double*)(p.second) = val.Atof();
-		else std::cerr << fAnalyzerName << ": Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
+		else std::cout << normal() << "Unable to set parameter " << name << " of type " << p.first << ". The value does not have the correct type" << val << std::endl;
 	}
 	else if(p.first.CompareTo("string")==0){
 		(*(std::string*)(p.second)) = val.Data();
