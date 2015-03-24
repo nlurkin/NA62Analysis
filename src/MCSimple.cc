@@ -58,7 +58,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 	std::cout << debug() << MCTruthEvent->GetNKineParts() << " MC particles found" << std::endl;
 	for (Int_t i=0; i < MCTruthEvent->GetNKineParts(); i++)	{
 		KinePart* kinePart = (KinePart*)MCTruthEvent->GetKineParts()->At(i);
-		std::cout << debug() << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << std::endl;
+		std::cout << extended() << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << ")" << std::endl;
 
 		//Building particle tree.
 		//Loop over all the existing trees (first is the main tree)
@@ -67,14 +67,14 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 			pTreeNode = (*itPTree)->GetChildren(kinePart->GetParentID());
 			if(pTreeNode!=NULL){
 				//Parent found in one of the existing tree. Add this particle as children.
-				std::cout << debug() << "Found parent tree" << std::endl;
+				std::cout << debug() << "Found parent tree ... Adding particle" << std::endl;
 				pTreeNode->AddChildren(new ParticleTree(kinePart));
 				break;
 			}
 		}
 		if(pTreeNode==NULL){
 			//Parent not found in existing trees. Create a new tree with this particle
-			std::cout << debug() << "Creating new tree" << std::endl;
+			std::cout << debug() << "Parent tree not found ... Creating new tree" << std::endl;
 			tempParticleTree.push_back(new ParticleTree(kinePart));
 		}
 
@@ -83,7 +83,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 		std::cout << debug() << "Available signatures :" << std::endl;
 		if(TestLevel(Verbosity::kDebug)){
 			for(it = testStruct.begin(); it!=testStruct.end(); it++){
-				std::cout << it->first.first << "," << it->first.second << "," << it->second << std::endl;
+				std::cout << debug() << it->first.first << "," << it->first.second << "," << it->second << std::endl;
 			}
 		}
 		if((it = testStruct.find(std::pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
@@ -96,11 +96,13 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 	}
 
 	//Merge temporary trees
+	std::cout << debug() << "Merging trees ... " << std::endl;
 	for(ritPTree=tempParticleTree.rbegin(); (ritPTree!=tempParticleTree.rend()) && (tempParticleTree.size()>1);){
 		for(itPTree=tempParticleTree.begin(); itPTree!=tempParticleTree.end(); itPTree++){
 			pTreeNode = (*itPTree)->GetChildren((*ritPTree)->GetParentID());
 			if(pTreeNode!=NULL){
 				//Parent found, add the ritPTree as children of itPTree
+				std::cout << debug() << "Parent tree found ... Merging" << std::endl;
 				(*itPTree)->AddChildren(*ritPTree);
 				tempParticleTree.pop_back();
 				ritPTree=tempParticleTree.rbegin();
@@ -108,7 +110,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent){
 			}
 			else{
 				//Parent not found. Should not happen
-				std::cout << extended() << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << std::endl;
+				std::cout << debug() << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << std::endl;
 				ritPTree++;
 			}
 		}
@@ -157,6 +159,7 @@ int MCSimple::AddParticle(int parent, int type){
 	/// AddParticle(3, 22) //Ask second gamma from previous pi0 (sequence ID=4)
 	/// \EndMemberDescr
 
+	cout << normal() << "Request for MC particle with ID " << type << " and parent " << parent << endl;
 	fStruct.insert(std::pair<std::pair<int,int>, int>(std::pair<int,int>(-parent,type), fStruct.size()+1));
 	return fStruct.size();
 }

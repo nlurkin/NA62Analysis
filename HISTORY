@@ -17,6 +17,8 @@ NA62Analysis Project
           to the specified output file.
         - Improve configuration file support. Add .settingsna62 file to customize
           NA62Analysis behavior.
+        - Test that config file used by NA62AnalysisBuilder are actually text file
+          before trying to use them.
         - Update documentation
 
 2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)

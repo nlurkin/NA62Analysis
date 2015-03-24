@@ -24,7 +24,9 @@ namespace NA62Analysis {
 /// \EndBrief
 ///
 /// \Detailed
-/// Implement some output stream manipulator for different verbosity levels
+/// Implement some output stream manipulator for different verbosity levels.\n
+/// Prints output in the format\n
+/// VERBOSELEVEL - [ModuleName]   Message
 /// \EndDetailed
 
 class Verbose {
@@ -88,6 +90,23 @@ public:
 	bool CanPrint() const;
 
 	//Standard levels stream manipulators (shortcuts for PrintLevel)
+	const Verbose& noverbose() const {
+			/// \MemberDescr
+			/// \return Reference to itself
+			///
+			/// Manipulator for no verbosity level print. Convenience proxy to
+			/// \code
+			/// Printlevel(Verbosity::kNo)
+			/// \endcode
+			/// Use like
+			/// \code
+			/// cout << noverbose() << "This is a message: " << var << endl;
+			/// \endcode
+			/// This one is always printed, whatever the current verbosity level.
+			/// It just ensure that the verbose style stream prefix in printed.
+			/// \EndMemberDescr
+			return PrintLevel(Verbosity::kUser);
+	};
 	const Verbose& user() const {
 		/// \MemberDescr
 		/// \return Reference to itself

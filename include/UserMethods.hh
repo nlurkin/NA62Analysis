@@ -263,7 +263,6 @@ public:
 	bool GetWithRawHeader();
 
 	//###### Other methods
-	bool PrintVerbose(NA62Analysis::Verbosity::VerbosityLevel printAbove) const;
 	DetectorAcceptance *GetDetectorAcceptanceInstance();
 	template <class T>
 	T* GetObject(TString name, TString branchName = ""){

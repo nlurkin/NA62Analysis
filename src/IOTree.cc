@@ -102,11 +102,13 @@ void IOTree::RequestTree(TString name, TDetectorVEvent * const evt, TString bran
 	/// (e.g. Digis)
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Requesting Detector TTree " << name << std::endl;
 	eventIterator it;
 	std::pair<eventIterator, eventIterator> eventRange;
 
 	//Create the tree if not yet requested
 	if(fTree.count(name)==0){
+		cout << debug() << "First request... Creating TTree" << std::endl;
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
 
@@ -116,12 +118,14 @@ void IOTree::RequestTree(TString name, TDetectorVEvent * const evt, TString bran
 		else if(strstr(evt->ClassName(), "Digi")!=NULL) branchName="Digis";
 		else branchName="Hits";
 	}
+	cout << normal() << "Branch name set to " << branchName << endl;
 
 	//Is this branch already requested?
 	//If yes delete evt and return (we already have the branching object instance)
 	eventRange = fEvent.equal_range(name);
 	for(it=eventRange.first; it!=eventRange.second; ++it){
 		if(it->second->fBranchName.CompareTo(branchName)==0){
+			cout << debug() << "Branch already requested... Continue" << std::endl;
 			delete evt;
 			return;
 		}
@@ -140,11 +144,14 @@ bool IOTree::RequestTree(TString name, TString branchName, TString className, vo
 	/// Request a tree in the input file. If already requested before, do nothing.
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Requesting branch " << branchName << " of generic TTree " << name << std::endl;
+	std::cout << normal() << "Object class is expected to be " << className << std::endl;
 	objectIterator it;
 	std::pair<objectIterator, objectIterator> objectRange;
 
 	//Create the tree if not yet requested
 	if(fTree.count(name)==0){
+		cout << debug() << "First request... Creating TTree" << std::endl;
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
 
@@ -153,6 +160,7 @@ bool IOTree::RequestTree(TString name, TString branchName, TString className, vo
 	objectRange = fObject.equal_range(name);
 	for(it=objectRange.first; it!=objectRange.second; ++it){
 		if(it->second->fBranchName.CompareTo(branchName)==0){
+			cout << debug() << "Branch already requested... Continue" << std::endl;
 			return false;
 		}
 	}
@@ -211,29 +219,31 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 
 	eventRange = fEvent.equal_range(name);
 	if(eventRange.first==eventRange.second){ //Range is 0, no such event found
-		std::cerr << "Error: Unable to find event in tree " << name << std::endl;
+		std::cout << normal() << "[Error] Unable to find event in branch " << branchName << " of tree " << name << std::endl;
 		return NULL;
 	}
 	else{
 		//No branchName specified but only a single branch has been requested in this tree. Must be the one...
 		it = eventRange.first;
 		if(branchName.CompareTo("")==0 && (++it==eventRange.first)){
+			std::cout << debug() << "No branch specified, only one found... Using " << eventRange.second->second->fBranchName << std::endl;
 			return eventRange.second->second->fEvent;
 		}
 		it = eventRange.first;;
 		for(it=eventRange.first; it!=eventRange.second; ++it){
 			//If the branch is not specified but we find Reco or Hits, we return it
-			//Or if this is the requested branchm also return it
+			//Or if this is the requested branch also return it
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fBranchName.CompareTo("Reco")==0 ||
 					it->second->fBranchName.CompareTo("Digis")==0 ||
 					it->second->fBranchName.CompareTo("Hits")==0))
 					|| it->second->fBranchName.CompareTo(branchName)==0){
+				std::cout << debug() << "Using branch " << it->second->fBranchName << std::endl;
 				return it->second->fEvent;
 			}
 		}
 	}
-	std::cerr << "Error: Unable to find event in branch " << branchName << " in tree " << name << std::endl;
+	std::cout << normal() << "[Error] Unable to find event in branch " << branchName << " of tree " << name << std::endl;
 	return NULL;
 }
 
@@ -255,7 +265,7 @@ void *IOTree::GetObject(TString name, TString branchName){
 
 	objectRange = fObject.equal_range(name);
 	if(objectRange.first==objectRange.second){ //Range is 0, no such object found
-		std::cerr << "Error: Unable to find object in tree " << name << std::endl;
+		std::cout << normal() << "[Error] Unable to find object in branch " << branchName << " of tree " << name << std::endl;
 		return NULL;
 	}
 	else{
@@ -264,11 +274,12 @@ void *IOTree::GetObject(TString name, TString branchName){
 			// return it
 			if( branchName.CompareTo("")==0 ||
 					it->second->fBranchName.CompareTo(branchName)==0){
+				std::cout << debug() << "Using branch " << it->second->fBranchName << std::endl;
 				return it->second->fObject;
 			}
 		}
 	}
-	std::cerr << "Error: Unable to find object in branch " << branchName << " in tree " << name << std::endl;
+	std::cout << "[Error] Unable to find object in branch " << branchName << " of tree " << name << std::endl;
 	return NULL;
 }
 
@@ -283,6 +294,7 @@ void IOTree::LoadEvent(int iEvent){
 	eventIterator itEvt;
 	objectIterator itObj;
 
+	std::cout << debug() << "Loading event " << iEvent << "... ";
 	std::pair<eventIterator, eventIterator> eventRange;
 	std::pair<objectIterator, objectIterator> objectRange;
 
@@ -303,6 +315,8 @@ void IOTree::LoadEvent(int iEvent){
 				it->second->GetEntry(iEvent);
 		}
 	}
+
+	std::cout << debug() << " Done" << std::endl;
 
 }
 
@@ -353,7 +367,7 @@ TChain* IOTree::GetTree(TString name) {
 		return it->second;
 	}
 	else{
-		std::cerr << "The requested TTree pointer " << name << " cannot be found" << std::endl;
+		std::cout << normal() << "The requested TTree pointer " << name << " cannot be found" << std::endl;
 		return NULL;
 	}
 }
@@ -372,14 +386,17 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 	TObjArray* branchesList;
 	Int_t jMax;
 
+	std::cout << debug() << "Trying to branch " << branchName << " of type "
+			<< branchClass << std::endl;
 	branchesList = tree->GetListOfBranches();
 	if(!branchesList){
 		if(! fAllowNonExisting){
-			std::cerr << "Unable to find TTree " << tree->GetName() << ". Aborting.";
+			std::cout << normal() << "Unable to find TTree " << tree->GetName() << "... Aborting.";
 			raise(SIGABRT);
 		}
 		else{
-			std::cerr << "Warning: unable to find TTree " << tree->GetName() << ". Retrieved corresponding event will always be empty";
+			std::cout << normal() << "[Warning] Unable to find TTree "
+					<< tree->GetName() << ". Retrieved corresponding event will always be empty";
 			return;
 		}
 	}
@@ -389,10 +406,13 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 		{
 			if ( TString(branchClass).CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
-				std::cerr << "Input file corrupted, bad Event class (" << ((TBranch*)branchesList->At(j))->GetClassName() << ") found for " << tree->GetTree()->GetName() << std::endl;
+				std::cout << normal() << "Input file inconsistent. Bad Event class (Found: "
+						<< ((TBranch*)branchesList->At(j))->GetClassName() << ", expected: "
+						<< branchClass << ") for " << tree->GetTree()->GetName() << std::endl;
 				raise(SIGABRT);
 			}
-			std::cout << "Found " << branchName << " (" << tree->GetEntries() << ") of class " << branchClass << std::endl;
+			std::cout << normal() << "Found " << branchName << " (" << tree->GetEntries()
+					<< ") of class " << branchClass << std::endl;
 			tree->SetBranchAddress(branchName, evt);
 			if ( eventNb <= 0 )
 			{
@@ -400,14 +420,14 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 			}
 			else if (eventNb != tree->GetEntries())
 			{
-				std::cout << eventNb << std::endl;
-				std::cerr << "Input file corrupted, bad number of entries (run) : " << tree->GetEntries() << std::endl;
+				std::cout << normal() << "Input file inconsistent. Bad number of entries for "
+						<< branchName << "(" << tree->GetEntries() << ")" << std::endl;
 				raise(SIGABRT);
 			}
 			return;
 		}
 	}
-	std::cerr << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << std::endl;
+	std::cout << normal() << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << std::endl;
 }
 
 int IOTree::FillMCTruth(){
@@ -417,7 +437,6 @@ int IOTree::FillMCTruth(){
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
 	/// \EndMemberDescr
 
-	//TODO find another way to fill fEventNb
 	int eventNb = -1;
 	if(!fWithMC) return eventNb;
 
@@ -433,22 +452,27 @@ int IOTree::FillMCTruth(){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		std::cout << normal() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << debug() << "Searching MC tree..." << std::endl;
 		if ( TString("event").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "event";
 		}
 		else if(TString("mcEvent").CompareTo( branchesList->At(j)->GetName() ) == 0 ){
 			branchName = "mcEvent";
 		}
+
 		if(branchName.CompareTo("") != 0)
 		{
-			std::cout << normal() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << debug() << "Found tree with branch " << branchName << std::endl;
 			if ( TString("Event").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
-				std::cerr  << "Input file corrupted, bad reco class found for " << fMCTruthTree->GetTree()->GetName() << std::endl;
+				std::cout << normal() << "Input file inconsistent. Bad MC class for tree "
+						<< fMCTruthTree->GetTree()->GetName() << "(Found: "
+						<< ((TBranch*)branchesList->At(j))->GetClassName()
+						<< ", Expected: Event)" << std::endl;
 			}
 			else{
-				std::cout << normal() << "AnalysisFW: Found TRecoMCTruthEvent (" << fMCTruthTree->GetEntries() << ")" << std::endl;
+				std::cout << normal() << "Found " << branchName << "(" << fMCTruthTree->GetEntries()
+						<< ")" << std::endl;
 				fMCTruthTree->SetBranchAddress(branchName, &fMCTruthEvent );
 				if ( eventNb < 0 )
 				{
@@ -456,7 +480,8 @@ int IOTree::FillMCTruth(){
 				}
 				else if (eventNb != fMCTruthTree->GetEntries())
 				{
-					std::cerr << "Input file corrupted, bad number of entries : " << fMCTruthTree->GetEntries() << std::endl;
+					std::cout << normal() << "Input file inconsistent. Bad number of entries for "
+							<< branchName << "(" << fMCTruthTree->GetEntries() << ")" << std::endl;
 				}
 			}
 		}
@@ -471,7 +496,6 @@ int IOTree::FillRawHeader(){
 	/// Branch the RawHeader trees.
 	/// \EndMemberDescr
 
-	//TODO find another way to fill fEventNb
 	int eventNb = -1;
 	if(!fWithRawHeader) return eventNb;
 
@@ -487,19 +511,24 @@ int IOTree::FillRawHeader(){
 
 	for (Int_t j=0; j < jMax; j++)
 	{
-		std::cout << normal() << "AnalysisFW: BranchName " <<  branchesList->At(j)->GetName() << std::endl;
+		std::cout << debug() << "Searching RawHeader tree..." << std::endl;
 		if ( TString("RawHeader").CompareTo( branchesList->At(j)->GetName() ) == 0){
 			branchName = "RawHeader";
 		}
 		if(branchName.CompareTo("") != 0)
 		{
-			std::cout << normal() << "AnalysisFW: ClassName " << ((TBranch*)branchesList->At(j))->GetClassName() << std::endl;
+			std::cout << debug() << "Found tree with branch " << branchName << std::endl;
 			if ( TString("RawHeader").CompareTo( ((TBranch*)branchesList->At(j))->GetClassName() ) != 0 )
 			{
-				std::cerr  << "Input file corrupted, bad RawHeader class found for " << fRawHeaderTree->GetTree()->GetName() << std::endl;
+				std::cout << normal() << "Input file inconsistent. Bad RawHeader class for tree "
+						<< fRawHeaderTree->GetTree()->GetName() << "(Found: "
+						<< ((TBranch*)branchesList->At(j))->GetClassName()
+						<< ", Expected: Event)" << std::endl;
+
 			}
 			else{
-				std::cout << normal() << "AnalysisFW: Found Rawheader (" << fRawHeaderTree->GetEntries() << ")" << std::endl;
+				std::cout << normal() << "Found " << branchName << "(" << fRawHeaderTree->GetEntries()
+						<< ")" << std::endl;
 				fRawHeaderTree->SetBranchAddress(branchName, &fRawHeaderEvent );
 				if ( eventNb < 0 )
 				{
@@ -507,7 +536,8 @@ int IOTree::FillRawHeader(){
 				}
 				else if (eventNb != fRawHeaderTree->GetEntries())
 				{
-					std::cerr << "Input file corrupted, bad number of entries : " << fRawHeaderTree->GetEntries() << std::endl;
+					std::cout << normal() << "Input file inconsistent. Bad number of entries for "
+							<< branchName << "(" << fRawHeaderTree->GetEntries() << ")" << std::endl;
 				}
 			}
 		}
@@ -523,6 +553,8 @@ void IOTree::SetIgnoreNonExisting(bool bFlag) {
 	/// Determine if the framework is allowed to run when one or several TTrees
 	/// are missing in the input file.
 	/// \EndMemberDescr
+
+	if(bFlag) std::cout << normal() << "Ignoring non existing TTree" << std::endl;
 	fAllowNonExisting = bFlag;
 }
 
@@ -571,14 +603,14 @@ bool IOTree::checkInputFile(TString fileName){
 	else if(keys->FindObject("Run_0")) fMCTruthTree = new TChain("Run_0");
 	else if(keys->FindObject("mcEvent")) fMCTruthTree = new TChain("mcEvent");
 	else{
-		std::cout << normal() << "AnalysisFW: No MC data found" << std::endl;
+		std::cout << normal() << "No MC data found" << std::endl;
 		fWithMC = false;
 	}
 
 	fWithRawHeader = true;
 	if(keys->FindObject("RawHeader")) fRawHeaderTree = new TChain("RawHeader");
 	else{
-		std::cout << normal() << "AnalysisFW: No Raw Header found" << std::endl;
+		std::cout << normal() << "No Raw Header found" << std::endl;
 		fWithRawHeader = false;
 	}
 
@@ -594,6 +626,7 @@ void IOTree::WriteEvent(){
 	treeIterator it;
 	NA62Analysis::NA62Map<TString,TTree*>::type::iterator itTree;
 
+	cout << extended() << "Writing event in output" << std::endl;
 	if(fExportTrees.size()==0){
 		for(it=fTree.begin(); it!= fTree.end(); it++){
 			fExportTrees.insert(std::pair<TString,TTree*>(it->first, it->second->CloneTree(0)));
@@ -613,6 +646,7 @@ void IOTree::WriteTree() const{
 
 	NA62Analysis::NA62Map<TString,TTree*>::type::const_iterator itTree;
 
+	std::cout << normal() << "Writing output trees" << endl;
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		itTree->second->Write();
 	}

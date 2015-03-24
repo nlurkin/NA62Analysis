@@ -67,20 +67,21 @@ public:
 		else return os;
 	}
 private:
+	TermManip() : code(NONE) {};
 	Code code; ///< Manipulator ANSI code
 };
 
-extern TermManip reset;
-extern TermManip bold;
-extern TermManip underline;
-extern TermManip black;
-extern TermManip red;
-extern TermManip green;
-extern TermManip brown;
-extern TermManip blue;
-extern TermManip magenta;
-extern TermManip cyan;
-extern TermManip white;
+extern const TermManip reset;
+extern const TermManip bold;
+extern const TermManip underline;
+extern const TermManip black;
+extern const TermManip red;
+extern const TermManip green;
+extern const TermManip brown;
+extern const TermManip blue;
+extern const TermManip magenta;
+extern const TermManip cyan;
+extern const TermManip white;
 
 } /* namespace manip */
 } /* namespace NA62Analysis */

@@ -402,21 +402,8 @@ void UserMethods::SetUpdateInterval(int interval){
 	/// Set the update interval for the plots
 	/// \EndMemberDescr
 
-	std::cout << PrintVerbose(Verbosity::kNormal) << "Setting plot update interval to " << interval << std::endl;
+	std::cout << normal() << "Setting plot update interval to " << interval << std::endl;
 	fHisto.SetUpdateInterval(interval);
-}
-
-bool UserMethods::PrintVerbose(Verbosity::VerbosityLevel printAbove) const{
-	/// \MemberDescr
-	/// \param printAbove : Verbosity level threshold
-	/// \return true if verbosity level is high enough to print
-	/// \EndMemberDescr
-
-	if(GetVerbosityLevel() >= printAbove){
-		std::cout << fAnalyzerName << ": ";
-		return true;
-	}
-	return false;
 }
 
 void UserMethods::BookCounter(TString cName){
@@ -651,7 +638,7 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, appendOnNewFile);
 
-	if(!histo) std::cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << std::endl;
+	if(!histo) std::cout << normal() << "Requested input histogram was not found " << directory << "/" << name << std::endl;
 	return histo;
 }
 
@@ -834,7 +821,7 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	}
 	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, false);
 
-	if(!histo) std::cout << fAnalyzerName << " : Requested input histogram was not found " << directory << "/" << name << std::endl;
+	if(!histo) std::cout << normal() << "Requested input histogram was not found " << directory << "/" << name << std::endl;
 	return histo;
 }
 

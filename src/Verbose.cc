@@ -17,7 +17,7 @@ Verbose::Verbose() :
 	fLocalVerbosityActive(false),
 	fLocalVerbosityLevel(Verbosity::kNo),
 	fVerbosityTest(Verbosity::kNo),
-	fModuleName("[ NA62Analysis ]"),
+	fModuleName("[NA62Analysis]"),
 	fCurrentStream(&std::cout)
 {
 	/// \MemberDescr
@@ -29,7 +29,7 @@ Verbose::Verbose(std::string name) :
 	fLocalVerbosityActive(false),
 	fLocalVerbosityLevel(Verbosity::kNo),
 	fVerbosityTest(Verbosity::kNo),
-	fModuleName("[ " + name + " ]"),
+	fModuleName("[" + name + "]"),
 	fCurrentStream(&std::cout)
 {
 	/// \MemberDescr
@@ -149,6 +149,12 @@ Verbosity::VerbosityLevel Verbose::GetVerbosityLevelFromName(TString v) {
 }
 
 void Verbose::SetLogToFile(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName : Path to the log file
+	///
+	/// Request redirection of all log messages to log file
+	/// \EndMemberDescr
+
 	Verbose::fLogToFile = true;
 	fLogFileStream.open(fileName.Data(), std::ofstream::out);
 	std::cout << "Logging to file " << fileName << std::endl;
