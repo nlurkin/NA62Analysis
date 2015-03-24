@@ -76,7 +76,8 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -87,6 +88,8 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -106,7 +109,8 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -117,6 +121,8 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 		returnHisto = (TH2*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -137,7 +143,8 @@ TGraph* IOHisto::GetReferenceTGraph(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -148,6 +155,8 @@ TGraph* IOHisto::GetReferenceTGraph(TString name){
 		returnHisto = (TGraph*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory <<  "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -171,7 +180,8 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
 	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
 	if(!fCurrentFile) {
-		std::cerr << "No input file open to extract histogram." << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+						<< fReferenceFileName << std::endl;
 		return nullptr;
 	}
 
@@ -190,6 +200,8 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 			fInputHisto.insert(std::pair<TString, TH1*>(fullName, returnHisto));
 		}
 	}
+	else std::cout << normal() << "Histogram " << fullName
+				<< " not found in reference file" << std::endl;
 	return returnHisto;
 }
 
@@ -208,6 +220,7 @@ void IOHisto::UpdateInputHistograms(){
 	/// Update the input histograms with the one coming from the current input file.
 	/// \EndMemberDescr
 
+	std::cout << debug() << "Updating input histograms..." << std::endl;
 	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
@@ -216,6 +229,7 @@ void IOHisto::UpdateInputHistograms(){
 	for(it=fInputHistoAdd.begin(); it!=fInputHistoAdd.end(); it++){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
+			std::cout << debug() << "Appending " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;
@@ -230,6 +244,7 @@ void IOHisto::UpdateInputHistograms(){
 	for(it=fInputHisto.begin(); it!=fInputHisto.end(); it++){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
+			std::cout << debug() << "Replacing " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;

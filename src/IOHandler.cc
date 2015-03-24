@@ -139,7 +139,8 @@ std::vector<IOHandler::keyPair> IOHandler::GetListOfKeys(TString dir) {
 	std::vector<IOHandler::keyPair> keys;
 
 	if(!CheckDirExists(dir)){
-		std::cerr << "The requested directory " << dir << " does not exist in input file" << std::endl;
+		std::cout << normal() << "The requested directory " << dir <<
+				" does not exist in input file" << std::endl;
 		return keys;
 	}
 	TList *kList = fCurrentFile->GetDirectory(dir)->GetListOfKeys();
@@ -226,6 +227,7 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Opening file " << index << ":" << currFile->GetName() << std::endl;
 	fCurrentFileNumber = index;
 	fCurrentFile = currFile;
 
@@ -249,11 +251,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	int inputFileNumber = 0;
 
 	if(inFileName.Length()==0){
-		std::cerr << "AnalysisFW: No input file" << std::endl;
+		std::cout << noverbose() << "No input file specified" << std::endl;
 		return false;
 	}
 	if(nFiles == 0){
-		std::cout << normal() << "AnalysisFW: Adding file " << inFileName << std::endl;
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
                         TString svcClass = getenv("STAGE_SVCCLASS");
                         if(svcClass=="") svcClass="na62";
@@ -262,12 +263,12 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		if(inFileName.Contains("/eos/") && !inFileName.Contains("root://eosna62.cern.ch//")){
 			inFileName = "root://eosna62.cern.ch//"+inFileName;
 		}
+		std::cout << normal() << "Adding file " << inFileName << std::endl;
 		fInputfiles.push_back(inFileName);
 	}else{
 		TString inputFileName;
 		std::ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
-			std::cout << normal() << "AnalysisFW: Adding file " << inputFileName << std::endl;
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
                                 TString svcClass = getenv("STAGE_SVCCLASS");
                                 if(svcClass=="") svcClass="na62";
@@ -276,11 +277,12 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
 			}
+			std::cout << normal() << "Adding file " << inputFileName << std::endl;
 			fInputfiles.push_back(inputFileName);
 			++inputFileNumber;
 		}
 		if(inputFileNumber==0){
-			std::cerr << "AnalysisFW: No input file in the list " << inFileName << std::endl;
+			std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
 			return false;
 		}
 	}
@@ -295,6 +297,7 @@ bool IOHandler::OpenOutput(TString outFileName){
 	/// Open the output file
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Opening output file " << outFileName << std::endl;
 	fOutFileName = outFileName;
 	fOutFileName.ReplaceAll(".root", "");
 	fOutFile = new TFile(outFileName, "RECREATE");
