@@ -20,6 +20,8 @@ NA62Analysis Project
         - Test that config file used by NA62AnalysisBuilder are actually text file
           before trying to use them.
         - Update documentation
+        - Build ROOT Dictionnary only for files with corresponding LinkDef files in
+          PhysicsObjects
 
 2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 467
