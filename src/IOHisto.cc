@@ -273,7 +273,7 @@ bool IOHisto::CheckNewFileOpened() {
 	return ret;
 }
 
-void IOHisto::LoadEvent(int iEvent) {
+bool IOHisto::LoadEvent(int iEvent) {
 	/// \MemberDescr
 	/// \param iEvent : Index of the file to load
 	///
@@ -282,9 +282,14 @@ void IOHisto::LoadEvent(int iEvent) {
 	if(iEvent<GetInputFileNumber()){
 		if(fCurrentFile) fCurrentFile->Close();
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
+		if(!fCurrentFile){
+			FileSkipped(fInputfiles[iEvent]);
+			return false;
+		}
 		fCurrentFileNumber = iEvent;
 		fNewFileOpened = true;
 	}
+	return true;
 }
 
 bool IOHisto::OpenInput(TString inFileName, int nFiles) {

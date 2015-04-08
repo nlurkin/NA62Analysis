@@ -229,7 +229,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		}
 
 		// Load event infos
-		fIOHandler->LoadEvent(i);
+		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
 		CheckNewFileOpened();
 
 		PreProcess();

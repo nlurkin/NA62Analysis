@@ -37,7 +37,7 @@ public:
 	bool OpenInput(TString inFileName, int nFiles);
 	void SetReferenceFileName(TString fileName);
 	bool CheckNewFileOpened();
-	void LoadEvent(int iEvent);
+	bool LoadEvent(int iEvent);
 
 	//Histogram
 	TH1* GetInputHistogram(TString directory, TString name, bool append);

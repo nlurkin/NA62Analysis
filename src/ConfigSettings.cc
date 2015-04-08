@@ -37,10 +37,12 @@ void ConfigSettings::ParseFile(TString fileName) {
 		ConfigNamespace ns = GetNamespace("global");
 		ns.SetValue("usecolors", global::fUseColors);
 		ns.SetValue("processoutputnewline", global::fProcessOutputNewLine);
+		ns.SetValue("skippedname", global::fSkippedName);
 	}
 }
 
 bool ConfigSettings::global::fUseColors = true;
 bool ConfigSettings::global::fProcessOutputNewLine = true;
+std::string ConfigSettings::global::fSkippedName = "NA62Analysis";
 } /* namespace Configuration */
 } /* namespace NA62Analysis */

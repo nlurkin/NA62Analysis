@@ -67,11 +67,13 @@ public:
 		/// \EndMemberDescr
 		return fInputfiles.size();
 	};
-	virtual void LoadEvent(int) {
+	virtual bool LoadEvent(int) {
 		/// \MemberDescr
 		/// \param : Event index to load
 		/// Dummy LoadEvent
 		/// \EndMemberDescr
+
+		return true;
 	};
 	std::vector<keyPair> GetListOfKeys(TString dir);
 	std::vector<TString> GetListOfDirs(TString dir);
@@ -81,6 +83,7 @@ public:
 	std::vector<TString> GetListOfHistos(TString dir);
 
 	bool CheckDirExists(TString dir);
+	void FileSkipped(TString fileName);
 
 	//Writing
 	void MkOutputDir(TString name) const;

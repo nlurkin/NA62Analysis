@@ -52,7 +52,7 @@ public:
 	void* GetObject(TString name, TString branchName="");
 	int FillMCTruth();
 	int FillRawHeader();
-	void LoadEvent(int iEvent);
+	bool LoadEvent(int iEvent);
 	Event* GetMCTruthEvent();
 	bool GetWithMC() const;
 	RawHeader* GetRawHeaderEvent();

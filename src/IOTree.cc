@@ -283,7 +283,7 @@ void *IOTree::GetObject(TString name, TString branchName){
 	return NULL;
 }
 
-void IOTree::LoadEvent(int iEvent){
+bool IOTree::LoadEvent(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Index of the event
 	///
@@ -315,7 +315,7 @@ void IOTree::LoadEvent(int iEvent){
 				it->second->GetEntry(iEvent);
 		}
 	}
-
+	return true;
 }
 
 Event* IOTree::GetMCTruthEvent(){

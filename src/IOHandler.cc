@@ -14,6 +14,8 @@
 #include <TObjString.h>
 #include <TKey.h>
 
+#include "ConfigSettings.hh"
+
 namespace NA62Analysis {
 namespace Core {
 
@@ -311,6 +313,16 @@ void IOHandler::PrintInitSummary() const{
 	///
 	/// Print the summary after initialization
 	/// \EndMemberDescr
+}
+
+void IOHandler::FileSkipped(TString fileName) {
+	/// \MemberDescr
+	///
+	/// File has been skipped for whatever reason. Notify it in the .skipped file
+	/// \EndMemberDescr
+	std::ofstream fd(Configuration::ConfigSettings::global::fSkippedName+".skipped", std::ios::app);
+	fd << fileName << std::endl;
+	fd.close();
 }
 
 } /* namespace Core */

@@ -1,3 +1,4 @@
 [Global]
 UseColors = true
 ProcessOutputNewLine = false
+SkippedName = NA62Analysis
