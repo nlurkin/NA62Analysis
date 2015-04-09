@@ -411,7 +411,7 @@ void templateAnalyzer::EndOfRunUser(){
 
 void templateAnalyzer::DrawPlot(){
 	/// \MemberDescr
-	/// This method is called at the end of processing to draw plots.\n
+	/// This method is called at the end of processing to draw plots when the -g option is used.\n
 	/// If you want to draw all the plots, just call\n
 	/// \code
 	/// 	DrawAllPlots();
