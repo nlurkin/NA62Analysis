@@ -280,7 +280,10 @@ bool IOHisto::LoadEvent(int iEvent) {
 	/// Load the file at index iEvent
 	/// \EndMemberDescr
 	if(iEvent<GetInputFileNumber()){
-		if(fCurrentFile) fCurrentFile->Close();
+		if(fCurrentFile){
+			fCurrentFile->Close();
+			delete fCurrentFile;
+		}
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
 		if(!fCurrentFile){
 			FileSkipped(fInputfiles[iEvent]);

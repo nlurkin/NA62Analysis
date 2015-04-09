@@ -228,10 +228,11 @@
 /// under the name <i>.settingsna62</i>. The file currently contains a global section affecting the whole software, with the 
 /// following options:
 /// <ul> 
-///		<li> UseColors : If set to true NA62Analysis can use colors in the standard and error output.
-/// 	<li> ProcessOutputNewLine : NA62Analysis regularly outputs the number of events already read. If set to true this output
+///		<li> UseColors: If set to true NA62Analysis can use colors in the standard and error output.
+/// 	<li> ProcessOutputNewLine: NA62Analysis regularly outputs the number of events already read. If set to true this output
 ///			 is printed on a new line every time. If set to false, a carriage return is used instead of a new line and the line
 ///			 is replaced.
+///		<li> SkippedName: Name for the output file containing the list of skipped input files. The file is named SkippedName.skipped
 /// </ul>
 /// 
 /// \section Troubleshooting Troubleshooting
