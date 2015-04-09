@@ -190,6 +190,7 @@ If you want to run the program with a set of analyzers
        --config path        : Path to a configuration file containing analyzers parameters.
        --reffile path       : Path to a ROOT file containing reference plots.
        --ignore             : Ignore non-existing trees and continue processing.
+       --logtofile path     : Write the log output to the specified file instead of standard output.
 
      Mutually exclusive options groups:
       Group1:
@@ -215,6 +216,18 @@ The following parameters exist by default for all analyzers:
   o AutoUpdate (takes a list of plots names. They will be drawn on screen during processing
   	and refreshed at regular interval)
   o UpdateInterval (default=10, refresh interval for AutoUpdate plots in number of events)
+
+Settings file
+-------------
+
+A settings file is used to customize the behavior of NA62Analysis. The file can be found in your user directory [UserDir]
+under the name .settingsna62. The file currently contains a global section affecting the whole software, with the 
+following options:
+  o UseColors: If set to true NA62Analysis can use colors in the standard and error output.
+  o ProcessOutputNewLine: NA62Analysis regularly outputs the number of events already read. If set to true this output
+    is printed on a new line every time. If set to false, a carriage return is used instead of a new line and the line
+    is replaced.
+  o SkippedName: Name for the output file containing the list of skipped input files. The file is named SkippedName.skipped
 
 
 Troubleshooting

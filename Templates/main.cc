@@ -6,11 +6,11 @@
 #include <TApplication.h>
 
 #include "BaseAnalysis.hh"
+#include "Verbose.hh"
 
 $$ANALYZERSINCLUDE$$
-using namespace std;
 
-BaseAnalysis *ban = 0;
+NA62Analysis::Core::BaseAnalysis *ban = 0;
 TApplication *theApp = 0;
 
 void usage(char* name)
@@ -20,7 +20,7 @@ void usage(char* name)
 	cout << "Allowed options:" << endl;
 	cout << "  -h/--help\t\t: Display this help" << endl;
 	cout << "  -v [level]\t\t: Verbosity level." << endl
-		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kDebug or 0,1,2,3;" << endl
+		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kExtended, kDebug, kTrace or 0,1,2,3,4,5;" << endl
 		 << "\t\t\t  Default=kNo; If level not specified: kNormal" << endl;
 	cout << "  -g\t\t\t: Graphical mode. Starts a ROOT application for display." << endl
 		 << "\t\t\t  Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
@@ -35,6 +35,7 @@ void usage(char* name)
 	cout << "  --config path\t\t: Path to a configuration file containing analyzers parameters." << endl;
 	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
+	cout << "  --logtofile path\t: Write the log output to the specified file instead of standard output." << endl;
 	cout << endl;
 	cout << "Mutually exclusive options groups:" << endl;
 	cout << " Group1:" << endl;
@@ -42,7 +43,8 @@ void usage(char* name)
 	cout << " Group2:" << endl;
 	cout << "  -l/--list path\t: Path to a text file containing a list of paths to input ROOT files." << endl
 		 << "\t\t\t  One file per line." << endl;
-	cout << "  -B/--nfiles int\t: Maximum number of files to process from the list." << endl;
+	cout << "  -B/-b/--nfiles int\t: Maximum number of files to process from the list. (Default: All)" << endl
+		 << "\t\t\t  !Warning. When using -g option, do not use the -b but -B or --nfiles." << endl;
 	cout << endl << endl;
 }
 
@@ -61,6 +63,8 @@ void sighandler(int sig)
 }
 
 int main(int argc, char** argv){
+	using NA62Analysis::Verbosity::VerbosityLevel;
+
 	// Setting signals
 	signal(SIGXCPU, sighandler);
 	signal(SIGTERM, sighandler);
@@ -73,6 +77,7 @@ int main(int argc, char** argv){
 	TString params;
 	TString configFile;
 	TString argTS;
+	TString logFile;
 
 	int NEvt = 0;
 	int evtNb = -1;
@@ -80,14 +85,14 @@ int main(int argc, char** argv){
 	bool graphicMode = false;
 	bool fromList = false;
 	bool ignoreNonExisting = false;
-	AnalysisFW::VerbosityLevel verbosity = AnalysisFW::kNo;
+	VerbosityLevel verbosity = VerbosityLevel::kNo;
 	bool readPlots = false;
 
-	// Browsing arguments
 	int opt;
 	int n_options_read = 0;
 	int flReadPlots = 0;
 	int flIgnoreNonExisting = 0;
+	bool logToFile = false;
 
 	struct option longopts[] = {
 			{ "list",	required_argument,	NULL,	'l'},
@@ -100,10 +105,11 @@ int main(int argc, char** argv){
 			{ "config",	required_argument,	NULL,		'1'},
 			{ "reffile",required_argument,	NULL,		'2'},
 			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
+			{ "logtofile",required_argument,NULL,	'3'},
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v::gl:B:n:o:p:0:1:2:", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -114,15 +120,10 @@ int main(int argc, char** argv){
 			//Verbosity
 			if(optarg){
 				argTS = TString(optarg);
-				if(argTS.IsDec()) verbosity = (AnalysisFW::VerbosityLevel)argTS.Atoi();
-				else{
-					if(argTS.CompareTo("kNo", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNo;
-					if(argTS.CompareTo("kUser", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kUser;
-					if(argTS.CompareTo("kNormal", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kNormal;
-					if(argTS.CompareTo("kDebug", TString::kIgnoreCase)==0) verbosity = AnalysisFW::kDebug;
-				}
+				if(argTS.IsDec()) verbosity = (VerbosityLevel)argTS.Atoi();
+				else verbosity = NA62Analysis::Verbose::GetVerbosityLevelFromName(argTS);
 			}
-			else verbosity = AnalysisFW::kNormal;
+			else verbosity = VerbosityLevel::kNormal;
 			break;
 		case 'g':
 			graphicMode = true;
@@ -130,11 +131,14 @@ int main(int argc, char** argv){
 
 		// Mixed short-long options cases
 		case 'l': /* Input files list, long_option: list */
-			if(!NFiles) NFiles = 1;
+			if(!NFiles) NFiles = -1;
 			inFileName = TString(optarg);
 			fromList = true;
 			break;
 		case 'B': /* Number of files to read, long_option: nfiles */
+			NFiles = TString(optarg).Atoi();
+			break;
+		case 'b': /* Number of files to read, long_option: nfiles */
 			NFiles = TString(optarg).Atoi();
 			break;
 		case 'n': /* Maximum number of events to process, long_option: nevt */
@@ -156,6 +160,10 @@ int main(int argc, char** argv){
 			break;
 		case '2': /* Reference file path, long_option: reffile */
 			refFileName = TString(optarg);
+			break;
+		case '3': /* log file, long_option: logtofile */
+			logFile = TString(optarg);
+			logToFile = true;
 			break;
 
 		case 0: /* getopt_long() set a variable, continue */
@@ -184,11 +192,13 @@ int main(int argc, char** argv){
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
 
-	ban = new BaseAnalysis();
-	ban->SetVerbosity(verbosity);
+	ban = new NA62Analysis::Core::BaseAnalysis();
+	ban->SetGlobalVerbosity(verbosity);
+	std::cout << logToFile << " " << logFile << std::endl;
+	if(logToFile) ban->SetLogToFile(logFile);
 	ban->SetGraphicMode(graphicMode);
-	if(readPlots) ban->SetReadType(IOHandlerType::kHISTO);
-	else ban->SetReadType(IOHandlerType::kTREE);
+	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
+	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 

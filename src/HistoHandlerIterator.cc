@@ -9,6 +9,9 @@
 
 #include <vector>
 
+namespace NA62Analysis {
+namespace Core {
+
 /// \class HistoHandler::Iterator
 ///
 /// \Detailed
@@ -454,3 +457,6 @@ typename std::vector<PointerType*>::iterator HistoHandler::Iterator<PointerType>
 template class HistoHandler::Iterator<TH1>;
 template class HistoHandler::Iterator<TH2>;
 template class HistoHandler::Iterator<TGraph>;
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

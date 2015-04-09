@@ -16,6 +16,8 @@
 
 #include "StringTable.hh"
 
+namespace NA62Analysis {
+
 EventFraction::EventFraction():
 		fName("DefaultName"),
 		fPrecision(0)
@@ -232,3 +234,5 @@ void EventFraction::WriteTable(TString filePrefix) const{
 	PrintToStream(fd);
 	fd.close();
 }
+
+} /* namespace NA62Analysis */

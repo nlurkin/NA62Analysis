@@ -12,6 +12,9 @@
 #include "MCSimple.hh"
 #include "functions.hh"
 
+using namespace NA62Analysis;
+using namespace NA62Constants;
+
 /// \class SkimmingNoStrawMuonsTracks
 /// \Brief
 /// Example Analyzer skimming the input file from events containing muon tracks in RICH.
@@ -21,10 +24,9 @@
 ///
 /// \EndDetailed
 
-SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analyzer(ba)
+SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(Core::BaseAnalysis *ba) : Analyzer(ba, "SkimmingNoStrawMuonsTracks")
 {
 	useMUV = false;
-	fAnalyzerName = "SkimmingNoStrawMuonsTracks";
 
 	RequestTree("Spectrometer", new TRecoSpectrometerEvent);
 	RequestTree("RICH", new TRecoRICHEvent);
@@ -32,7 +34,7 @@ SkimmingNoStrawMuonsTracks::SkimmingNoStrawMuonsTracks(BaseAnalysis *ba) : Analy
 }
 
 void SkimmingNoStrawMuonsTracks::InitOutput(){
-	AddParam("useMUV", "bool", &useMUV, false);
+	AddParam("useMUV", &useMUV, false); //bool
 }
 
 void SkimmingNoStrawMuonsTracks::InitHist(){

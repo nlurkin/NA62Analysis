@@ -16,7 +16,8 @@
 #include <TObjArray.h>
 #include <TObjString.h>
 
-#include "Analyzer.hh"
+namespace NA62Analysis {
+namespace Configuration {
 
 ConfigParser::ConfigParser() {
 	/// \MemberDescr
@@ -25,8 +26,7 @@ ConfigParser::ConfigParser() {
 }
 
 ConfigParser::ConfigParser(const ConfigParser& c):
-	fList(c.fList),
-	fCurrentAnalyzer(c.fCurrentAnalyzer)
+	fNSList(c.fNSList)
 {
 	/// \MemberDescr
 	/// \param c : Reference of the object to copy
@@ -48,25 +48,51 @@ void ConfigParser::ParseFile(TString fileName){
 	/// \EndMemberDescr
 
 	ifstream s;
-	string line;
+	std::string line;
 
 	if(fileName.Length()>0){
 		s.open(fileName);
 		if(s.is_open()){
 			while(s.good()){
 				getline(s, line);
-				AnalyzeLine(line);
+				if(line[0]==';') continue;
+				ParseLine(line);
 			}
 		}
 		else{
-			cerr << "Configuration parser: Unable to open configuration file " << fileName << endl;
+			std::cerr << "Configuration parser: Unable to open configuration file " << fileName << std::endl;
 		}
 
 		s.close();
 	}
 }
 
-void ConfigParser::AnalyzeLine(TString line){
+bool ConfigParser::NamespaceExists(TString ns) const {
+	/// \MemberDescr
+	/// \param ns : Name of the namespace
+	/// \return true if the namespace is found in the config file
+	///
+	/// Does the specified namespace exist in the config
+	/// \EndMemberDescr
+
+	ns.ToLower();
+	return fNSList.count(ns)>0;
+}
+
+const ConfigNamespace& ConfigParser::GetNamespace(TString ns) const {
+	/// \MemberDescr
+	/// \param ns : Name of the namespace
+	/// \return Reference to the namespace if found. A default empty namespace else.
+	///
+	/// \EndMemberDescr
+
+	auto nsRef = fNSList.find(ns);
+
+	if(nsRef != fNSList.end()) return nsRef->second;
+	else return fDefault;
+}
+
+void ConfigParser::ParseLine(TString line){
 	/// \MemberDescr
 	/// \param line : line to be processed
 	///
@@ -74,8 +100,8 @@ void ConfigParser::AnalyzeLine(TString line){
 	/// \EndMemberDescr
 
 	TPRegexp commExp("(.*?)//.*");
-	TPRegexp anExp("\\[\\[(.*)\\]\\]");
-	TPRegexp paramExp("(.*?)[ ]*=[ ]*(.*)");
+	TPRegexp anExp("\\[(.*?)\\]");
+	TPRegexp paramExp("(.*?)\\s*=\\s*(.*)");
 	TPRegexp plotUpdateExp("AutoUpdate = (.*)");
 
 	TObjArray *results;
@@ -93,8 +119,10 @@ void ConfigParser::AnalyzeLine(TString line){
 
 	results = anExp.MatchS(tempString);
 	if(results->GetEntries()==2){
-		//New analyzer section
-		fCurrentAnalyzer = ((TObjString*)results->At(1))->GetString();
+		//New namespace section
+		fCurrentNS = ((TObjString*)results->At(1))->GetString();
+		fCurrentNS.ToLower();
+		fNSList.insert(NSPair(fCurrentNS, ConfigNamespace(fCurrentNS)));
 	}
 	results->Delete();
 	delete results;
@@ -102,10 +130,11 @@ void ConfigParser::AnalyzeLine(TString line){
 	results = paramExp.MatchS(tempString);
 	if(results->GetEntries()==3){
 		paramName = ((TObjString*)results->At(1))->GetString();
+		paramName.ToLower();
 		params = ((TObjString*)results->At(2))->GetString().Tokenize(" ");
 		for(int i=0; i<params->GetEntries(); i++){
 			paramValue = ((TObjString*)params->At(i))->GetString();
-			fList[fCurrentAnalyzer].push_back(t_ParamPair(paramName, paramValue));
+			fNSList[fCurrentNS].AddParam(paramName, paramValue);
 		}
 		params->Delete();
 		delete params;
@@ -116,81 +145,173 @@ void ConfigParser::AnalyzeLine(TString line){
 
 void ConfigParser::Print() const{
 	/// \MemberDescr
-	/// Print all the ParamName,ParamValue pairs
+	/// Print all the Namespaces
 	/// \EndMemberDescr
 
-	map<TString, t_ParamValue>::const_iterator it;
-	t_ParamValue::const_iterator pIt;
-
-	for(it = fList.begin(); it!=fList.end(); it++){
-		cout << "Analyzer " << it->first << endl;
-		for(pIt = it->second.begin(); pIt != it->second.end(); pIt++){
-			cout << pIt->first << " : " << pIt->second << endl;
-		}
+	for(auto &ns : fNSList){
+		ns.second.Print();
 	}
 }
 
-void ConfigParser::ApplyParams(Analyzer * const analyzer) const{
+bool ConfigNamespace::ParamExists(TString paramName) const {
 	/// \MemberDescr
-	/// \param analyzer : pointer to the analyzer
-	///
-	/// Apply all the ParamName,ParamValue pairs to the specified analyzer
+	/// \param paramName : Parameter whose existence is checked
+	/// \return True if the parameter exists in the namespace
 	/// \EndMemberDescr
 
-	t_ParamValue::const_iterator pIt;
-
-	if(fList.count(analyzer->GetAnalyzerName())>0){
-		for(pIt = fList.find(analyzer->GetAnalyzerName())->second.begin(); pIt != fList.find(analyzer->GetAnalyzerName())->second.end(); pIt++){
-			analyzer->ApplyParam(pIt->first, pIt->second);
-		}
-	}
+	paramName.ToLower();
+	return fParamsList.count(paramName)>0;
 }
 
-void ConfigParser::ParseCLI(TString params){
+const std::map<TString, TString>& ConfigNamespace::GetParams() const {
 	/// \MemberDescr
-	/// \param params : Parameter string passed in the command line
-	///
-	/// Parse command line interface parameter line
+	/// \return Map of parameter-value pairs
 	/// \EndMemberDescr
 
-	TObjArray *ans, *p;
-	TObjArray *pars, *values;
-	TString paramsLine;
-
-	TString paramValue, paramName;
-
-	ans = params.Tokenize("&");
-	for(int i=0; i<ans->GetEntries(); i++){
-		p = ((TObjString*)ans->At(i))->GetString().Tokenize(":");
-		if(p->GetEntries()==2){
-			//Got the analyzer
-			fCurrentAnalyzer = ((TObjString*)p->At(0))->GetString();
-			//Parse parameters now
-			paramsLine = ((TObjString*)p->At(1))->GetString();
-			pars = paramsLine.Tokenize(";");
-			for(int j=0; j<pars->GetEntries(); j++){
-				values = ((TObjString*)pars->At(j))->GetString().Tokenize("=");
-				if(values->GetEntries()==2){
-					paramName = ((TObjString*)values->At(0))->GetString();
-					paramValue = ((TObjString*)values->At(1))->GetString();
-					fList[fCurrentAnalyzer].push_back(t_ParamPair(paramName, paramValue));
-				}
-				else{
-					cerr << "Configuration parser: Parameter name or value not specified " << pars->At(j)->GetName() << endl;
-				}
-				values->Delete();
-				delete values;
-			}
-			pars->Delete();
-			delete pars;
-		}
-		else{
-			cerr << "Configuration parser: Parameters list not specified for analyzer " << p->At(i)->GetName() << endl;
-		}
-		p->Delete();
-		delete p;
-	}
-
-	ans->Delete();
-	delete ans;
+	return fParamsList;
 }
+
+TString ConfigNamespace::GetParam(TString name) const {
+	/// \MemberDescr
+	/// \param name : Parameter name
+	/// \return Value of the given parameter (as TString). If the
+	/// parameter does not exist, an empty string
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto paramRef = fParamsList.find(name);
+
+	if(paramRef != fParamsList.end()) return paramRef->second;
+	else return "";
+}
+
+void ConfigNamespace::SetValue(TString name, char& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Data()[0];
+}
+
+void ConfigNamespace::SetValue(TString name, bool& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()){
+		if(param->second.IsDigit()) ref = param->second.Atoi();
+		else if(param->second.CompareTo("true", TString::kIgnoreCase)==0) ref = true;
+		else if(param->second.CompareTo("false", TString::kIgnoreCase)==0) ref = false;
+	}
+}
+
+void ConfigNamespace::SetValue(TString name, int &ref) const{
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atoi();
+}
+
+void ConfigNamespace::SetValue(TString name, long & ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atoll();
+}
+
+void ConfigNamespace::SetValue(TString name, float& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atof();
+}
+
+void ConfigNamespace::SetValue(TString name, double& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Atof();
+}
+
+void ConfigNamespace::SetValue(TString name, std::string& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second.Data();
+}
+
+void ConfigNamespace::SetValue(TString name, TString& ref) const {
+	/// \MemberDescr
+	/// \param name : Name of the parameter
+	/// \param ref : Reference to the variable to fill with the value of the parameter.
+	///
+	/// Fill a variable with the value of the parameter. If the parameter does not exist
+	/// the variable is unchanged.
+	/// \EndMemberDescr
+
+	name.ToLower();
+	auto param = fParamsList.find(name);
+	if(param != fParamsList.end()) ref = param->second;
+}
+
+void ConfigNamespace::Print() const{
+	/// \MemberDescr
+	/// Print all the parameter-value pairs
+	/// \EndMemberDescr
+
+	std::cout << "[" << fName << "]" << std::endl;
+	for(auto &param : fParamsList){
+		std::cout << param.first << " = " << param.second << std::endl;
+	}
+}
+
+
+} /* namespace Configuration */
+} /* namespace NA62Analysis */

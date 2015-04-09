@@ -8,6 +8,8 @@
 #include "StringBalancedTable.hh"
 #include <iostream>
 
+namespace NA62Analysis {
+
 StringBalancedTable::StringBalancedTable(TString t) : StringTable(t){
 	/// \MemberDescr
 	/// \param t : Name of the table
@@ -48,7 +50,7 @@ StringBalancedTable& StringBalancedTable::operator <<(TString v){
 	return *this;
 }
 
-void StringBalancedTable::Print(TString prefix){
+void StringBalancedTable::Print(TString prefix) const{
 	/// \MemberDescr
 	/// \param prefix : prefix to add in front of each line
 	///
@@ -59,7 +61,7 @@ void StringBalancedTable::Print(TString prefix){
 	Print(prefix, std::cout);
 }
 
-void StringBalancedTable::Print(TString prefix, ostream &s){
+void StringBalancedTable::Print(TString prefix, ostream &s) const{
 	/// \MemberDescr
 	/// \param prefix : prefix to add in front of each line
 	/// \param s : stream to which the table is printed
@@ -69,20 +71,22 @@ void StringBalancedTable::Print(TString prefix, ostream &s){
 	/// \MemberDescr
 
 	int size, colsNumber;
-	std::vector<TString>::iterator it;
+	std::vector<TString>::const_iterator it;
 
 	size = fValuesList.size();
 
 	colsNumber = (size/4) + 1;
 	if(colsNumber>4) colsNumber = 4;
 
-	AddColumn(colsNumber);
+	const_cast<StringBalancedTable*>(this)->AddColumn(colsNumber);
 
 	for(it=fValuesList.begin(); it!=fValuesList.end(); it++){
-		StringTable::operator <<(*it);
+		const_cast<StringBalancedTable*>(this)->StringTable::operator <<(*it);
 	}
 
-	if(size % colsNumber != 0) StringTable::operator<<(endr);
+	if(size % colsNumber != 0) const_cast<StringBalancedTable*>(this)->StringTable::operator<<(endr);
 
 	StringTable::Print(prefix, s);
 }
+
+} /* namespace NA62Analysis */

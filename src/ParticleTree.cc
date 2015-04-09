@@ -9,6 +9,8 @@
 #include <iostream>
 #include <iomanip>
 
+namespace NA62Analysis {
+
 ParticleTree::ParticleTree():
 		fpdgID(0),
 		fId(-1),
@@ -238,3 +240,5 @@ bool ParticleTree::GetLevel(std::vector<KinePart*> &array, int level, bool full)
 	}
 	return true;
 }
+
+} /* namespace NA62Analysis */

@@ -10,9 +10,11 @@
 #include "Event.hh"
 
 #include "functions.hh"
-#include "FWEnums.hh"
+#include "Verbose.hh"
 #include "ParticleInterface.hh"
 #include "ParticleTree.hh"
+
+namespace NA62Analysis {
 
 /// \class MCSimple
 /// \Brief 
@@ -27,7 +29,7 @@
 /// search himself through the generated MC particles.
 /// \EndDetailed
 
-class MCSimple
+class MCSimple : public Verbose
 {
 public:
 	/// Possible status for MCSimple instance. Self-explanatory
@@ -38,7 +40,7 @@ public:
 	~MCSimple() {};
 
 	//Filling from TTree
-	void GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose);
+	void GetRealInfos( Event* MCTruthEvent);
 
 	//Defining MCSimple
 	int AddParticle(int parent, int type);
@@ -60,14 +62,15 @@ private:
 	TString GetParticleName(int pdgID) const;
 	int GetPdgID(TString name) const;
 	void ClearParticles();
-	void ReplaceID(multimap<pair<int,int>, int> &s, int seqID, int particleID);
+	void ReplaceID(std::multimap<std::pair<int,int>, int> &s, int seqID, int particleID);
 
-	map<int, vector<KinePart*>* > fParticles; ///< Container for particle vectors
-	multimap<pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect
-	AnalysisFW::VerbosityLevel fVerbosity; ///< Verbosity level
+	std::map<int, std::vector<KinePart*>* > fParticles; ///< Container for particle vectors
+	std::multimap<std::pair<int,int>, int> fStruct; ///< Structure describing the particle we wand to collect
 	const ParticleInterface* const fParticleInterface; ///< Pointer to the particle interface
 
 	ParticleTree *fDecayTree; ///< Sorting of the particles in tree
 };
+
+} /* namespace NA62Analysis */
 
 #endif

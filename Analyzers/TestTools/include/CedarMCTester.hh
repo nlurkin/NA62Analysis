@@ -7,7 +7,6 @@
 #include "MCSimple.hh"
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
-using namespace std;
 
 class TH1I;
 class TH2F;
@@ -16,10 +15,10 @@ class TGraph;
 class TTree;
 
 
-class CedarMCTester : public Analyzer
+class CedarMCTester : public NA62Analysis::Analyzer
 {
 	public:
-		CedarMCTester(BaseAnalysis *ba);
+		CedarMCTester(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple();

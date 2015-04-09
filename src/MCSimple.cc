@@ -8,10 +8,12 @@
 #include "functions.hh"
 #include "ParticleTree.hh"
 
+namespace NA62Analysis {
+
 
 MCSimple::MCSimple():
+	Verbose("MCSimple"),
 	fStatus(kEmpty),
-	fVerbosity(AnalysisFW::kNo),
 	fParticleInterface(ParticleInterface::GetParticleInterface()),
 	fDecayTree(NULL)
 {
@@ -24,7 +26,6 @@ MCSimple::MCSimple(const MCSimple& c):
 		fStatus(c.fStatus),
 		fParticles(c.fParticles),
 		fStruct(c.fStruct),
-		fVerbosity(c.fVerbosity),
 		fParticleInterface(c.fParticleInterface),
 		fDecayTree(c.fDecayTree)
 {
@@ -35,32 +36,29 @@ MCSimple::MCSimple(const MCSimple& c):
 	/// \EndMemberDescr
 }
 
-void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel verbose){
+void MCSimple::GetRealInfos( Event* MCTruthEvent){
 	/// \MemberDescr
 	/// \param MCTruthEvent : Is the event coming from the TTree. Is extracted in BaseAnalysis
-	/// \param verbose : If set to 1, will print the missing particles. If set to 2, will print also the MC particles found in the event.
 	/// \todo Possibility to get random event types and just specify the number of generation we want
 	///
 	/// Extract informations from current Event and store them internally for later easy access
 	/// \EndMemberDescr
 
-	multimap<pair<int,int>,int>::iterator it;
-	vector<KinePart*> tempPart;
-	vector<KinePart*>::iterator itList;
-	multimap<pair<int,int>,int> testStruct(fStruct);
-	vector<ParticleTree*> tempParticleTree;
-	vector<ParticleTree*>::iterator itPTree;
-	vector<ParticleTree*>::reverse_iterator ritPTree;
+	std::multimap<std::pair<int,int>,int>::iterator it;
+	std::vector<KinePart*> tempPart;
+	std::vector<KinePart*>::iterator itList;
+	std::multimap<std::pair<int,int>,int> testStruct(fStruct);
+	std::vector<ParticleTree*> tempParticleTree;
+	std::vector<ParticleTree*>::iterator itPTree;
+	std::vector<ParticleTree*>::reverse_iterator ritPTree;
 	ParticleTree *pTreeNode;
-
-	fVerbosity = verbose;
 
 	ClearParticles();
 	//Loop over particles and keep them if correspond to the asked signatures (Parent,PDGcode)
-	if(verbose>=AnalysisFW::kDebug) cout << MCTruthEvent->GetNKineParts() << " MC particles found" << endl;
+	std::cout << debug() << MCTruthEvent->GetNKineParts() << " MC particles found" << std::endl;
 	for (Int_t i=0; i < MCTruthEvent->GetNKineParts(); i++)	{
 		KinePart* kinePart = (KinePart*)MCTruthEvent->GetKineParts()->At(i);
-		if(verbose>=AnalysisFW::kDebug) cout << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << endl;
+		std::cout << extended() << "Found in MCTruth : (ID: " << kinePart->GetID() << ", ParentID: " << kinePart->GetParentID() << ", PDGCode: " << kinePart->GetPDGcode() << ")" << std::endl;
 
 		//Building particle tree.
 		//Loop over all the existing trees (first is the main tree)
@@ -69,28 +67,28 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 			pTreeNode = (*itPTree)->GetChildren(kinePart->GetParentID());
 			if(pTreeNode!=NULL){
 				//Parent found in one of the existing tree. Add this particle as children.
-				if(verbose>=AnalysisFW::kDebug) cout << "Found parent tree" << endl;
+				std::cout << debug() << "Found parent tree ... Adding particle" << std::endl;
 				pTreeNode->AddChildren(new ParticleTree(kinePart));
 				break;
 			}
 		}
 		if(pTreeNode==NULL){
 			//Parent not found in existing trees. Create a new tree with this particle
-			if(verbose>=AnalysisFW::kDebug) cout << "Creating new tree" << endl;
+			std::cout << debug() << "Parent tree not found ... Creating new tree" << std::endl;
 			tempParticleTree.push_back(new ParticleTree(kinePart));
 		}
 
 		//Test signature
-		if(verbose>=AnalysisFW::kDebug){
-			cout << "Signature : " << kinePart->GetParentID() << "," <<  kinePart->GetPDGcode() << endl;
-			cout << "Available signatures :" << endl;
+		std::cout << debug() << "Signature : " << kinePart->GetParentID() << "," <<  kinePart->GetPDGcode() << std::endl;
+		std::cout << debug() << "Available signatures :" << std::endl;
+		if(TestLevel(Verbosity::kDebug)){
 			for(it = testStruct.begin(); it!=testStruct.end(); it++){
-				cout << it->first.first << "," << it->first.second << "," << it->second << endl;
+				std::cout << debug() << it->first.first << "," << it->first.second << "," << it->second << std::endl;
 			}
 		}
-		if((it = testStruct.find(pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
+		if((it = testStruct.find(std::pair<int,int>(kinePart->GetParentID(), kinePart->GetPDGcode())))!=testStruct.end()){
 			//Signature found. Keep particle and remove from searched signature
-			if(verbose>=AnalysisFW::kDebug) cout << "Signature found" << endl;
+			std::cout << debug() << "Signature found" << std::endl;
 			tempPart.push_back(kinePart);
 			ReplaceID(testStruct, (*it).second, kinePart->GetID());
 			testStruct.erase(it);
@@ -98,11 +96,13 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 	}
 
 	//Merge temporary trees
+	std::cout << debug() << "Merging trees ... " << std::endl;
 	for(ritPTree=tempParticleTree.rbegin(); (ritPTree!=tempParticleTree.rend()) && (tempParticleTree.size()>1);){
 		for(itPTree=tempParticleTree.begin(); itPTree!=tempParticleTree.end(); itPTree++){
 			pTreeNode = (*itPTree)->GetChildren((*ritPTree)->GetParentID());
 			if(pTreeNode!=NULL){
 				//Parent found, add the ritPTree as children of itPTree
+				std::cout << debug() << "Parent tree found ... Merging" << std::endl;
 				(*itPTree)->AddChildren(*ritPTree);
 				tempParticleTree.pop_back();
 				ritPTree=tempParticleTree.rbegin();
@@ -110,7 +110,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 			}
 			else{
 				//Parent not found. Should not happen
-				if(verbose>=AnalysisFW::kNormal) cout << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << endl;
+				std::cout << debug() << "Unable to build decay tree. Particle with ID " << (*ritPTree)->GetParentID() << std::endl;
 				ritPTree++;
 			}
 		}
@@ -126,7 +126,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 	else{
 		fStatus = kMissing;
 		for(it=testStruct.begin(); it!=testStruct.end(); it++){
-			if(verbose>=AnalysisFW::kNormal) cout << "Missing particle " << (*it).first.second << " with parent " << (*it).first.first << endl;
+			std::cout << extended() << "Missing particle " << (*it).first.second << " with parent " << (*it).first.first << std::endl;
 		}
 	}
 
@@ -136,7 +136,7 @@ void MCSimple::GetRealInfos( Event* MCTruthEvent, AnalysisFW::VerbosityLevel ver
 
 		if(kinePart!=NULL){
 			//Kaon
-			if(fParticles.count(kinePart->GetPDGcode())==0) fParticles[kinePart->GetPDGcode()] = new vector<KinePart*>;
+			if(fParticles.count(kinePart->GetPDGcode())==0) fParticles[kinePart->GetPDGcode()] = new std::vector<KinePart*>;
 			fParticles[kinePart->GetPDGcode()]->push_back(kinePart);
 		}
 	}
@@ -159,11 +159,12 @@ int MCSimple::AddParticle(int parent, int type){
 	/// AddParticle(3, 22) //Ask second gamma from previous pi0 (sequence ID=4)
 	/// \EndMemberDescr
 
-	fStruct.insert(pair<pair<int,int>, int>(pair<int,int>(-parent,type), fStruct.size()+1));
+	cout << normal() << "Request for MC particle with ID " << type << " and parent " << parent << endl;
+	fStruct.insert(std::pair<std::pair<int,int>, int>(std::pair<int,int>(-parent,type), fStruct.size()+1));
 	return fStruct.size();
 }
 
-void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particleID){
+void MCSimple::ReplaceID(std::multimap<std::pair<int,int>,int> &s, int seqID, int particleID){
 	/// \MemberDescr
 	/// \param s : structure in which the change is made
 	/// \param seqID : sequence id to be replaced
@@ -172,10 +173,10 @@ void MCSimple::ReplaceID(multimap<pair<int,int>,int> &s, int seqID, int particle
 	/// Replace the sequence ID by the MC ID in the structure
 	/// \EndMemberDescr
 
-	multimap<pair<int,int>,int>::iterator it, it2;
+	std::multimap<std::pair<int,int>,int>::iterator it, it2;
 	for(it=s.begin(); it != s.end() && it->first.first<0;){
 		if((*it).first.first == -seqID){
-			s.insert(pair<pair<int,int>, int>(pair<int,int>(particleID,it->first.second), it->second));
+			s.insert(std::pair<std::pair<int,int>, int>(std::pair<int,int>(particleID,it->first.second), it->second));
 			it2 = it;
 			if(it!=s.begin()){
 				it++;
@@ -198,7 +199,7 @@ TString MCSimple::GetParticleName(int pdgID) const {
 
 	TString name;
 	name = fParticleInterface->GetParticleName(pdgID);
-	if((name.CompareTo("")==0) && (fVerbosity>=AnalysisFW::kNormal)) cout << "Unknown particle PDG ID : " << pdgID << endl;
+	if(name.CompareTo("")==0) std::cout << normal() << "Unknown particle PDG ID : " << pdgID << std::endl;
 	return name;
 }
 
@@ -211,7 +212,7 @@ int MCSimple::GetPdgID(TString name) const{
 	int id;
 
 	id = fParticleInterface->GetParticlePDGid(name);
-	if((id==0) && (fVerbosity>=AnalysisFW::kNormal)) cout << "Unknown particle name : " << name << endl;
+	if(id==0) std::cout << normal() << "Unknown particle name : " << name << std::endl;
 	return id;
 }
 
@@ -220,7 +221,7 @@ void MCSimple::ClearParticles(){
 	/// Clear all the output vectors
 	/// \EndMemberDescr
 
-	map<int, vector<KinePart*>* >::iterator it;
+	std::map<int, std::vector<KinePart*>* >::iterator it;
 
 	for(it=fParticles.begin(); it != fParticles.end(); it++){
 		it->second->clear();
@@ -228,7 +229,7 @@ void MCSimple::ClearParticles(){
 	if(fDecayTree) delete fDecayTree;
 }
 
-vector<KinePart*> MCSimple::operator [](TString name){
+std::vector<KinePart*> MCSimple::operator [](TString name){
 	/// \MemberDescr
 	/// \param name : name of the requested particle
 	/// \return Corresponding particle vector
@@ -240,7 +241,7 @@ vector<KinePart*> MCSimple::operator [](TString name){
 	return *fParticles[pdgID];
 }
 
-vector<KinePart*> MCSimple::operator [](int pdgCode){
+std::vector<KinePart*> MCSimple::operator [](int pdgCode){
 	/// \MemberDescr
 	/// \param pdgCode : PDG id of the requested particle
 	/// \return Corresponding particle vector
@@ -273,7 +274,7 @@ void MCSimple::PrintInit() const{
 	/// Do some printing of the requested structure
 	/// \EndMemberDescr
 
-	map<pair<int,int>, int >::const_reverse_iterator it;
+	std::map<std::pair<int,int>, int >::const_reverse_iterator it;
 
 	ParticleTree root;
 
@@ -285,9 +286,9 @@ void MCSimple::PrintInit() const{
 	}
 
 	if(fStruct.size()>0){
-		cout << "\tRequested MCSimple structure: " << endl << endl;;
+		std::cout << "\tRequested MCSimple structure: " << std::endl << std::endl;
 		root.PrintHorizontal("\t");
-		cout << endl;
+		std::cout << std::endl;
 	}
 }
 
@@ -297,31 +298,33 @@ void MCSimple::PrintDecayTree() const{
 	/// \EndMemberDescr
 
 	if(fDecayTree==NULL) return;
-	cout << endl;
+	std::cout << std::endl;
 	fDecayTree->PrintHorizontal("\t");
-	cout << endl;
+	std::cout << std::endl;
 }
 
-vector<KinePart*> MCSimple::GetFinalState(){
+std::vector<KinePart*> MCSimple::GetFinalState(){
 	/// \MemberDescr
 	/// \return Vector containing a pointer to every KinePart with no daughters (Final State)
 	/// \EndMemberDescr
 
-	vector<KinePart*> v;
+	std::vector<KinePart*> v;
 
 	fDecayTree->GetFinalState(v);
 	return v;
 }
 
-vector<KinePart*> MCSimple::GetDecayLevel(int level, bool full){
+std::vector<KinePart*> MCSimple::GetDecayLevel(int level, bool full){
 	/// \MemberDescr
 	/// \param level : Level to fetch in the decay tree
 	/// \param full : If true, will also return the final particles that did not reach the requested level.
 	/// \return Vector containing a pointer to every KinePart at the requested level in the decay tree.
 	/// \EndMemberDescr
 
-	vector<KinePart*> v;
+	std::vector<KinePart*> v;
 
 	fDecayTree->GetLevel(v, level, full);
 	return v;
 }
+
+} /* namespace NA62Analysis */

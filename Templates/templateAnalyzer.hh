@@ -16,10 +16,10 @@ class TTree;
 //Change everywhere templateAnalyzer by you Analyzer name
 //Add the protected and private members and methods you want to add
 
-class templateAnalyzer : public Analyzer
+class templateAnalyzer : public NA62Analysis::Analyzer
 {
 	public:
-		templateAnalyzer(BaseAnalysis *ba);
+		templateAnalyzer(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple();

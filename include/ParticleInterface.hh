@@ -11,6 +11,8 @@
 #include <TString.h>
 #include <TDatabasePDG.h>
 
+namespace NA62Analysis {
+
 /// \class ParticleInterface
 /// \Brief 
 /// Interface class to Root particle database
@@ -40,5 +42,7 @@ private:
 	TDatabasePDG *fTable; ///< Pointer to TDatabasePDG instance
 	static ParticleInterface *fParticleInterface; ///< static pointer to unique instance of the class
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* G4PARTICLE_H_ */

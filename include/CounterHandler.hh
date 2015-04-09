@@ -13,6 +13,8 @@
 #include "EventFraction.hh"
 #include "containers.hh"
 
+namespace NA62Analysis {
+
 /// \class CounterHandler
 /// \Brief
 /// Class containing and handling Counters and EventFractions
@@ -51,8 +53,10 @@ public:
 	void PrintInitSummary() const;
 
 private:
-	AnalysisFW::NA62Map<TString,EventFraction*>::type fEventFraction; ///< Container for event fraction
-	AnalysisFW::NA62Map<TString,int>::type fCounters; ///< Container for counters
+	NA62Analysis::NA62Map<TString,EventFraction*>::type fEventFraction; ///< Container for event fraction
+	NA62Analysis::NA62Map<TString,int>::type fCounters; ///< Container for counters
 };
+
+} /* namespace NA62Analysis */
 
 #endif /* COUNTERHANDLER_HH_ */

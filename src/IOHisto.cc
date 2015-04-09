@@ -14,7 +14,11 @@
 #include <TH2.h>
 #include <TGraph.h>
 
+namespace NA62Analysis {
+namespace Core {
+
 IOHisto::IOHisto():
+	IOHandler("IOHisto"),
 	fNewFileOpened(false)
 {
 	/// \MemberDescr
@@ -23,7 +27,20 @@ IOHisto::IOHisto():
 	fIOType = IOHandlerType::kHISTO;
 }
 
+IOHisto::IOHisto(std::string name):
+	IOHandler(name),
+	fNewFileOpened(false)
+{
+	/// \MemberDescr
+	/// \param name : Display name
+	///
+	/// Constructor with name
+	/// \EndMemberDescr
+	fIOType = IOHandlerType::kHISTO;
+}
+
 IOHisto::IOHisto(const IOHisto &c):
+	IOHandler(c),
 	fNewFileOpened(false),
 	fInputHistoAdd(c.fInputHistoAdd),
 	fInputHisto(c.fInputHisto),
@@ -59,7 +76,8 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -70,6 +88,8 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -89,7 +109,8 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -100,6 +121,8 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 		returnHisto = (TH2*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -120,7 +143,8 @@ TGraph* IOHisto::GetReferenceTGraph(TString name){
 
 	fd = TFile::Open(fReferenceFileName, "READ");
 	if(!fd){
-		std::cerr << "Error: unable to open reference file " << fReferenceFileName << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
@@ -131,6 +155,8 @@ TGraph* IOHisto::GetReferenceTGraph(TString name){
 		returnHisto = (TGraph*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
+	else std::cout << normal() << "Histogram " << oldDirectory <<  "/" << name
+			<< " not found in reference file" << std::endl;
 	fd->Close();
 	delete fd;
 	return returnHisto;
@@ -150,11 +176,12 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 
 	TString fullName = directory + TString("/") + name;
 
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
-	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
-	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
+	if((it = fInputHisto.find(fullName)) != fInputHisto.end() && !append) return it->second;
+	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end() && append) return it->second;
 	if(!fCurrentFile) {
-		std::cerr << "No input file open to extract histogram." << std::endl;
+		std::cout << normal() << "[Error] Unable to open reference file "
+						<< fReferenceFileName << std::endl;
 		return nullptr;
 	}
 
@@ -173,6 +200,8 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 			fInputHisto.insert(std::pair<TString, TH1*>(fullName, returnHisto));
 		}
 	}
+	else std::cout << normal() << "Histogram " << fullName
+				<< " not found in reference file" << std::endl;
 	return returnHisto;
 }
 
@@ -191,7 +220,8 @@ void IOHisto::UpdateInputHistograms(){
 	/// Update the input histograms with the one coming from the current input file.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62MultiMap<TString,TH1*>::type::iterator it;
+	std::cout << debug() << "Updating input histograms..." << std::endl;
+	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
 	TString histoPath = "-1";
 	TH1* histoPtr = NULL;
 
@@ -199,6 +229,7 @@ void IOHisto::UpdateInputHistograms(){
 	for(it=fInputHistoAdd.begin(); it!=fInputHistoAdd.end(); it++){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
+			std::cout << debug() << "Appending " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;
@@ -213,6 +244,7 @@ void IOHisto::UpdateInputHistograms(){
 	for(it=fInputHisto.begin(); it!=fInputHisto.end(); it++){
 		//If needed, fetch the histogram in file
 		if(histoPath.CompareTo(it->first)!=0){
+			std::cout << debug() << "Replacing " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
 			histoPath = it->first;
@@ -241,31 +273,40 @@ bool IOHisto::CheckNewFileOpened() {
 	return ret;
 }
 
-void IOHisto::LoadEvent(int iEvent) {
+bool IOHisto::LoadEvent(int iEvent) {
 	/// \MemberDescr
 	/// \param iEvent : Index of the file to load
 	///
 	/// Load the file at index iEvent
 	/// \EndMemberDescr
 	if(iEvent<GetInputFileNumber()){
-		if(fCurrentFile) fCurrentFile->Close();
+		if(fCurrentFile){
+			fCurrentFile->Close();
+			delete fCurrentFile;
+		}
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
+		if(!fCurrentFile){
+			FileSkipped(fInputfiles[iEvent]);
+			return false;
+		}
 		fCurrentFileNumber = iEvent;
 		fNewFileOpened = true;
 	}
+	return true;
 }
 
-bool IOHisto::OpenInput(TString inFileName, int nFiles,
-		AnalysisFW::VerbosityLevel verbosity) {
+bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 	/// \MemberDescr
 	/// \param inFileName : Path to the input root file, or file containing a list of input root files
 	/// \param nFiles : Number of files to read
-	/// \param verbosity : Verbosity level
 	/// \return true in case of success. Else false
 	///
 	/// Open input files
 	/// \EndMemberDescr
 
-	if(!IOHandler::OpenInput(inFileName, nFiles, verbosity)) return false;
+	if(!IOHandler::OpenInput(inFileName, nFiles)) return false;
 	return true;
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

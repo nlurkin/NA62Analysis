@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import scripts.SimpleConfigParser as SimpleConfigParser
 import os
 import sys
@@ -6,13 +7,15 @@ import re
 import shutil
 import subprocess
 from scripts import dependencyGraph
+import ConfigParser
+
 try:
 	from argparse import ArgumentParser, RawDescriptionHelpFormatter
 except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 452
+__rev__ = 475
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -185,6 +188,30 @@ def updateHeaderSignature(UserPath):
 					else:
 						f2.write(line)
 	
+
+def updateSettings(UserPath, FwPath):
+	p = ConfigParser.RawConfigParser()
+	p.add_section("Global")
+	p.read("%s/Templates/settingsna62" % FwPath)
+	p.read("%s/.settingsna62" % UserPath)
+
+	with open("%s/.settingsna62" % UserPath, "wb") as configFile:
+		p.write(configFile)
+		
+	with open("%s/.settingsna62" % UserPath, "r") as configFile:
+		lines = configFile.readlines()
+		for i,line in enumerate(lines):
+			if line=="[Global]\n":
+				lines.insert(i+1, "; UseColors : If set to true NA62Analysis can use colors in the standard and error output.\n")
+				lines.insert(i+2, "; ProcessOutputNewLine : NA62Analysis regularly outputs the number of events already read.\n")
+				lines.insert(i+3, ";  If set to true this output is printed on a new line every time.\n") 
+				lines.insert(i+4, ";  If set to false, a carriage return is used instead of a new line and the line is replaced.\n")
+				break
+	
+	with open("%s/.settingsna62" % UserPath, "wb") as configFile:
+		configFile.writelines(lines)
+				
+	
 	
 def checkUpdate():
 	global __rev__
@@ -204,6 +231,8 @@ def checkUpdate():
 			print "\033[94mUpdating user directory from revision %s to revision %s \033[0m\n" % (version,__rev__)
 			if(int(version))<=385:
 				updateHeaderSignature(UserPath)
+			
+			updateSettings(UserPath, FWPath)
 			#Always replace the CMakeLists.txt in case it changed
 			shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % UserPath)
 			shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % UserPath)
@@ -275,7 +304,27 @@ def readAndReplace(iPath, oPath, searchMap, skipComments=True):
 				for old in searchMap:
 					line = line.replace(old, searchMap[old])
 				f2.write(line)
-	
+# Test if a file is binary or text
+def is_binary(filename):
+    """Return true if the given filename is binary.
+    @raise EnvironmentError: if the file does not exist or cannot be accessed.
+    @attention: found @ http://bytes.com/topic/python/answers/21222-determine-file-type-binary-text on 6/08/2010
+    @author: Trent Mick <TrentM@ActiveState.com>
+    @author: Jorge Orpinel <jorge@orpinel.com>"""
+    fin = open(filename, 'rb')
+    try:
+        CHUNKSIZE = 1024
+        while 1:
+            chunk = fin.read(CHUNKSIZE)
+            if '\0' in chunk: # found null byte
+                return True
+            if len(chunk) < CHUNKSIZE:
+                break # done
+    finally:
+        fin.close()
+
+    return False
+  
 #----- Analyzer handling functions -----
 # Check histogram use and booking coherence 
 def check_histo(an, iPath):
@@ -550,6 +599,9 @@ def build(args):
 		return
 	
 	cp = SimpleConfigParser.SimpleConfigParser()
+	if is_binary(filename):
+		print "Error reading the configuration file. It seems to be a binary file."
+		return
 	cp.read(filename)
 
 	noAnalyzer = False
@@ -726,6 +778,7 @@ def prepareUserFolder(args):
 	readAndReplace("%s/Templates/config" % FWPath, "%s/config" % path, {})
 	shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % path)
 	shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % path)
+	updateSettings(path, FWPath)
 	writeUserVersion(path)
 	
 	print "\nYour new user directory has been created. \nTo continue, go in %s, edit your config file, verify and source env.(c)sh, and run \nNA62AnalysisBuilder.py config" % path

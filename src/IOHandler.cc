@@ -14,6 +14,11 @@
 #include <TObjString.h>
 #include <TKey.h>
 
+#include "ConfigSettings.hh"
+
+namespace NA62Analysis {
+namespace Core {
+
 IOHandler::IOHandler():
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
@@ -22,6 +27,20 @@ IOHandler::IOHandler():
 {
 	/// \MemberDescr
 	/// Constructor
+	/// \EndMemberDescr
+}
+
+IOHandler::IOHandler(std::string name):
+	Verbose(name),
+	fIOType(IOHandlerType::kNOIO),
+	fCurrentFileNumber(-1),
+	fOutFile(0),
+	fCurrentFile(NULL)
+{
+	/// \MemberDescr
+	/// \param name : Display name
+	///
+	/// Constructor with name
 	/// \EndMemberDescr
 }
 
@@ -122,7 +141,8 @@ std::vector<IOHandler::keyPair> IOHandler::GetListOfKeys(TString dir) {
 	std::vector<IOHandler::keyPair> keys;
 
 	if(!CheckDirExists(dir)){
-		std::cerr << "The requested directory " << dir << " does not exist in input file" << std::endl;
+		std::cout << normal() << "The requested directory " << dir <<
+				" does not exist in input file" << std::endl;
 		return keys;
 	}
 	TList *kList = fCurrentFile->GetDirectory(dir)->GetListOfKeys();
@@ -209,6 +229,7 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Opening file " << index << ":" << currFile->GetName() << std::endl;
 	fCurrentFileNumber = index;
 	fCurrentFile = currFile;
 
@@ -220,11 +241,10 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	gFile->cd();
 }
 
-bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityLevel verbosity){
+bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	/// \MemberDescr
 	/// \param inFileName : Path to the input file
 	/// \param nFiles : Number of files to open
-	/// \param verbosity : verbosity level
 	/// \return true if success, else false
 	///
 	/// Open and register the input files.
@@ -233,11 +253,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 	int inputFileNumber = 0;
 
 	if(inFileName.Length()==0){
-		std::cerr << "AnalysisFW: No input file" << std::endl;
+		std::cout << noverbose() << "No input file specified" << std::endl;
 		return false;
 	}
 	if(nFiles == 0){
-		if(verbosity >= AnalysisFW::kNormal) std::cout << "AnalysisFW: Adding file " << inFileName << std::endl;
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
                         TString svcClass = getenv("STAGE_SVCCLASS");
                         if(svcClass=="") svcClass="na62";
@@ -246,12 +265,12 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 		if(inFileName.Contains("/eos/") && !inFileName.Contains("root://eosna62.cern.ch//")){
 			inFileName = "root://eosna62.cern.ch//"+inFileName;
 		}
+		std::cout << normal() << "Adding file " << inFileName << std::endl;
 		fInputfiles.push_back(inFileName);
 	}else{
 		TString inputFileName;
 		std::ifstream inputList(inFileName.Data());
-		while(inputFileName.ReadLine(inputList) && inputFileNumber < nFiles){
-			if(verbosity>=AnalysisFW::kNormal) std::cout << "AnalysisFW: Adding file " << inputFileName << std::endl;
+		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
                                 TString svcClass = getenv("STAGE_SVCCLASS");
                                 if(svcClass=="") svcClass="na62";
@@ -260,11 +279,12 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles, AnalysisFW::VerbosityL
 			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
 			}
+			std::cout << normal() << "Adding file " << inputFileName << std::endl;
 			fInputfiles.push_back(inputFileName);
 			++inputFileNumber;
 		}
 		if(inputFileNumber==0){
-			std::cerr << "AnalysisFW: No input file in the list " << inFileName << std::endl;
+			std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
 			return false;
 		}
 	}
@@ -279,6 +299,7 @@ bool IOHandler::OpenOutput(TString outFileName){
 	/// Open the output file
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Opening output file " << outFileName << std::endl;
 	fOutFileName = outFileName;
 	fOutFileName.ReplaceAll(".root", "");
 	fOutFile = new TFile(outFileName, "RECREATE");
@@ -293,3 +314,16 @@ void IOHandler::PrintInitSummary() const{
 	/// Print the summary after initialization
 	/// \EndMemberDescr
 }
+
+void IOHandler::FileSkipped(TString fileName) {
+	/// \MemberDescr
+	///
+	/// File has been skipped for whatever reason. Notify it in the .skipped file
+	/// \EndMemberDescr
+	std::ofstream fd(Configuration::ConfigSettings::global::fSkippedName+".skipped", std::ios::app);
+	fd << fileName << std::endl;
+	fd.close();
+}
+
+} /* namespace Core */
+} /* namespace NA62Analysis */

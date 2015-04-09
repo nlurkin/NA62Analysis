@@ -8,18 +8,51 @@
 #include "Event.hh"
 #include "Persistency.hh"
 using namespace std;
+using namespace NA62Analysis;
 using namespace NA62Constants;
 
 /// \class templateAnalyzer
 /// \Brief 
-/// Describe your Analyzer
+/// Short description of your Analyzer
 /// \EndBrief
 ///
 /// \Detailed
-/// Describe your Analyzer
+/// Detailed description of your Analyzer\n\n
+/// For examples of working Analyzer you can have a look at the examples in the Examples/ directory:\n
+/// LKrPhotonMC \n
+/// Pi0Reconstruction \n
+/// SkimmingNoStrawMuonsTracks \n
+/// Or the framework analyzers that can be found in the Analyzers/ directories: \n
+/// CedarMCTester \n
+/// VertexCDA \n
+/// \n
+/// All the following classes are available for you to use. Check their documentation for more information:\n
+/// NA62Analysis::manip::TermManip \n
+/// NA62Analysis::Analyzer \n
+/// NA62Analysis::CounterHandler \n
+/// NA62Analysis::DetectorAcceptance \n
+/// NA62Analysis::EventFraction \n
+/// NA62Analysis::MCSimple \n
+/// NA62Analysis::NeuralNetwork \n
+/// NA62Analysis::ParticleInterface \n
+/// NA62Analysis::ParticleTree \n
+/// NA62Analysis::StringBalancedTable \n
+/// NA62Analysis::StringTable \n
+/// NA62Analysis::UserMethods \n
+/// NA62Analysis::Verbose \n
+///
+/// You might also be interested in checking the documentation for the following classes. However you should not
+/// in general have to create instances of these. If necessary a pointer to the existing instance is usually
+/// available or provided by specific methods.\n
+/// NA62Analysis::Core::IOHisto \n
+/// NA62Analysis::Core::IOTree \n
+/// NA62Analysis::Core::IOHandler \n
+/// NA62Analysis::Core::HistoHandler \n
+/// NA62Analysis::Core::HistoHandler::Iterator \n
+///
 /// \EndDetailed
 
-templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
+templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templateAnalyzer")
 {
 	/// \MemberDescr
 	/// \param ba : parent BaseAnalysis
@@ -49,8 +82,6 @@ templateAnalyzer::templateAnalyzer(BaseAnalysis *ba) : Analyzer(ba)
 	///		fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 	/// \endcode
 
-	fAnalyzerName = "templateAnalyzer";
-
 /*$$TREEREQUEST$$*/
 
 }
@@ -66,15 +97,15 @@ void templateAnalyzer::InitOutput(){
 	/// The name of the analyzer will be prepended to the outputName (to avoid collisions with other analyzers)\n
 	/// variableName should be the name of a variable declared in the definition of the class\n
 	/// \n
-	/// Call: \n
+	/// Call one of: \n
 	///	\code
-	/// 	AddParam("paramName", "paramType", &variableName, defaultValue);
+	/// 	AddParam("paramName", &variableName, defaultValue);
 	/// \endcode
 	/// for each parameter of the analyzer. These parameters can be set when starting the FW from the command line with the -p option.\n
 	/// paramName is the name of the parameter in the command line\n
-	/// paramType is the type of the parameter (allowed : bool, int, long, float, double, char, string, TString)\n
 	/// variableName is the name of the variable that should be declared in the definition of the class\n
 	/// defaultValue is the default value if not specified in the command line\n
+	/// The allowed types for parameters are the following: bool, int, long, float, double, char, string, TString\n
 	/// \n
 	/// To create a new TTree in the output file, call: \n
 	///	\code
@@ -206,13 +237,6 @@ void templateAnalyzer::StartOfBurstUser(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::EndOfBurstUser(){
-	/// \MemberDescr
-	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the end of the last file\n
-	/// Do here your start/end of burst processing if any
-	/// \EndMemberDescr
-}
-
 void templateAnalyzer::Process(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
@@ -236,8 +260,8 @@ void templateAnalyzer::Process(int iEvent){
 	///	This class also provide two methods to switch between particle name and pdgID if necessary.\n
 	///	Example\n
 	/// \code
-	///		double kaonMass = fParticleInterface->FindParticle(321).Mass();
-	///		double pi0Lifetime = fParticleInterface->FindParticle("pi0").Lifetime();
+	/// 	double kaonMass = fParticleInterface->FindParticle(321).Mass();
+	/// 	double pi0Lifetime = fParticleInterface->FindParticle("pi0").Lifetime();
 	/// \endcode
 	/// You can retrieve the events from the trees with\n
 	/// \code
@@ -259,8 +283,8 @@ void templateAnalyzer::Process(int iEvent){
 	/// \code
 	/// 	fHisto.GetTH1("histoName");// for TH1
 	/// 	fHisto.GetTH2("histoName");// for TH2
-	/// 	fHisto.GetGraph("graphName");// for TGraph and TGraphAsymmErrors
-	///     fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
+	/// 	fHisto.GetTGraph("graphName");// for TGraph and TGraphAsymmErrors
+	/// 	fHisto.GetHisto("histoName");// for TH1 or TH2 (returns a TH1 pointer)
 	/// \endcode
 	/// To fill the histograms you can use\n
 	/// \code
@@ -341,24 +365,27 @@ void templateAnalyzer::PostProcess(){
 
 }
 
+void templateAnalyzer::EndOfBurstUser(){
+	/// \MemberDescr
+	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the end of the last file\n
+	/// Do here your start/end of burst processing if any
+	/// \EndMemberDescr
+}
+
 void templateAnalyzer::EndOfRunUser(){
 	/// \MemberDescr
 	/// This method is called at the end of the processing (corresponding to a end of run in the normal NA62 data taking)\n
-	/// Do here your end of run processing if any
-	/// \EndMemberDescr
-
-}
-
-void templateAnalyzer::ExportPlot(){
-	/// \MemberDescr
-	/// This method is called at the end of processing to save plots.\n
+	/// Do here your end of run processing if any\n
+	/// \n
+	/// You can also use this space to save plots in your output file.\n
 	/// If you want to save them all, just call\n
 	/// \code
 	/// 	SaveAllPlots();
 	/// \endcode
 	/// Or you can just save the ones you want with\n
 	/// \code
-	/// 	histogram->Write()
+	/// 	histogram->Write()\n
+	///		fHisto.Get...("histoname")->Write();
 	/// \endcode
 	/// \n
 	/// To run over a set of histograms you can use Iterators (HistoHandler::IteratorTH1,
@@ -376,14 +403,15 @@ void templateAnalyzer::ExportPlot(){
 	/// with baseName.\n
 	/// For more details and examples on how to use the Iterator after getting it, please refer
 	/// to the HistoHandler::Iterator documentation.\n
-	/// Although this is described here in ExportPlot(), Iterators can be used anywhere after the
+	/// Although this is described here, Iterators can be used anywhere after the
 	/// histograms have been booked.
 	/// \EndMemberDescr
+
 }
 
 void templateAnalyzer::DrawPlot(){
 	/// \MemberDescr
-	/// This method is called at the end of processing to draw plots.\n
+	/// This method is called at the end of processing to draw plots when the -g option is used.\n
 	/// If you want to draw all the plots, just call\n
 	/// \code
 	/// 	DrawAllPlots();

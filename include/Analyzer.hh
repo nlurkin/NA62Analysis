@@ -7,7 +7,13 @@
 #include "UserMethods.hh"
 #include "IOHandler.hh"
 
-typedef pair<TString, void*> param_t;
+//TODO remove these 2 lines
+using namespace NA62Analysis;
+using namespace Core;
+
+namespace NA62Analysis {
+
+typedef std::pair<TString, void*> param_t;
 
 /// \class Analyzer
 /// \Brief 
@@ -23,7 +29,8 @@ public:
 	/// Possible states for the analyzer
 	enum AnalyzerState {kReady, kUninit};
 
-	Analyzer(BaseAnalysis* ba);
+	Analyzer(Core::BaseAnalysis* ba);
+	Analyzer(Core::BaseAnalysis* ba, std::string name);
 	Analyzer(const Analyzer& c);
 	virtual ~Analyzer();
 
@@ -40,7 +47,7 @@ public:
 	virtual void InitOutput() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void Process(int iEvent) = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void PostProcess() = 0; ///< Pure virtual method to be implemented by user analyzer
-	virtual void ExportPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void ExportPlot(){}; ///< Pure virtual method to be implemented by user analyzer - Deprecated
 	virtual void DrawPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void StartOfBurstUser() {
 		/// \MemberDescr Executed at start of burst (new file). No default action to do.
@@ -63,7 +70,6 @@ public:
 	void PrintName() const;
 	TString GetAnalyzerName() const ;
 	void PrintInitSummary() const;
-	void SetVerbosity(AnalysisFW::VerbosityLevel l);
 
 	//Methods for exporting an event
 	void ExportEvent();
@@ -81,7 +87,7 @@ public:
 		/// Add a new branch to an existing output tree.
 		/// \EndMemberDescr
 		if(fOutTree.count(name)==0){
-			cerr << fAnalyzerName << ": Output TTree " << name << " does not exist" << endl;
+			std::cout << normal() << "Output TTree " << name << " does not exist" << std::endl;
 		}
 		else{
 			fOutTree[name]->Branch(branchName, pointer);
@@ -101,19 +107,29 @@ public:
 		/// \param address : Pointer to the variable that will be assigned the parameter value
 		/// \param defaultValue : Default value if the parameter is not specified
 		///
-		/// Add a new branch to an existing output tree.
+		/// Add a new parameter to the analyzer. The parameter is initialized with the defaultValue.
+		/// The value can be overwritten using a runtime configuration file or the -p command line option.
 		/// \EndMemberDescr
 		if(!CheckType(type)){
-			cout << "Error when adding parameter " << name << " : type not supported " << type << endl;
+			std::cout << normal() << "Error when adding parameter " << name << " : type not supported " << type << std::endl;
 			return;
 		}
 		*address = defaultValue;
 		fParams.insert(pair<TString, param_t>(name, param_t(type, address)));
 	}
+	void AddParam(TString name, char    *address, char    defaultValue);
+	void AddParam(TString name, int     *address, int     defaultValue);
+	void AddParam(TString name, long    *address, long    defaultValue);
+	void AddParam(TString name, bool    *address, bool    defaultValue);
+	void AddParam(TString name, float   *address, float   defaultValue);
+	void AddParam(TString name, double  *address, double  defaultValue);
+	void AddParam(TString name, std::string  *address, std::string  defaultValue);
+	void AddParam(TString name, TString *address, TString defaultValue);
+
 	void ApplyParam(TString paramName, TString paramValue);
 
 	double compareToReferencePlot(TString h1, bool KS);
-	void FillMCSimple(Event* mcTruthEvent, AnalysisFW::VerbosityLevel verbosity);
+	void FillMCSimple(Event* mcTruthEvent);
 
 
 protected:
@@ -131,21 +147,22 @@ protected:
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Pointer to DetectorAcceptance instance. Initialize if used.
 
-	map<TString,TTree*> fOutTree; ///< Container for the output TTrees
+	std::map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 
 	//Parameters container
-	map<TString,param_t> fParams; ///< Container for parameters
+	std::map<TString,param_t> fParams; ///< Container for parameters
 
 	AnalyzerState fState; ///< State of the analyzer
 
 	bool fExportEvent; ///< Do we request to export this event?
 
-	map<TString, TClonesArray> fExportCandidates; ///< Array containing candidates to be recorded in the standard output tree
-	map<TString, int> fExportCandidatesNumber; ///< Number of Export candidates
+	std::map<TString, TClonesArray> fExportCandidates; ///< Array containing candidates to be recorded in the standard output tree
+	std::map<TString, int> fExportCandidatesNumber; ///< Number of Export candidates
 
 	ParticleInterface *fParticleInterface; ///< Pointer to the ParticleInterface instance
 
 	MCSimple fMCSimple; ///< MCSimple instance
 };
 
+} /* namespace NA62Analysis */
 #endif

@@ -8,7 +8,6 @@
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
 #include "TRecoLKrCandidate.hh"
-using namespace std;
 
 class TH1I;
 class TH2F;
@@ -18,10 +17,10 @@ class TTree;
 //Change everywhere LKrPhotonMC by you Analyzer name
 //Add the protected and private members and methods you want to add
 
-class LKrPhotonMC : public Analyzer
+class LKrPhotonMC : public NA62Analysis::Analyzer
 {
 	public:
-		LKrPhotonMC(BaseAnalysis *ba);
+		LKrPhotonMC(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple();

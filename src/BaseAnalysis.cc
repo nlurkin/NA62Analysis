@@ -1,15 +1,21 @@
 #include "BaseAnalysis.hh"
 
+#include <sstream>
 #include <TStyle.h>
 #include <TFile.h>
 
-#include "ConfigParser.hh"
+#include "ConfigAnalyzer.hh"
 #include "StringBalancedTable.hh"
+#include "TermManip.hh"
+#include "ConfigSettings.hh"
+
+namespace NA62Analysis {
+namespace Core {
 
 BaseAnalysis::BaseAnalysis():
+	Verbose("BaseAnalysis"),
 	fNEvents(-1),
 	fGraphicMode(false),
-	fVerbosity(AnalysisFW::kNo),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr)
@@ -18,7 +24,10 @@ BaseAnalysis::BaseAnalysis():
 	/// Constructor
 	/// \EndMemberDescr
 
+
+	Configuration::ConfigSettings().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
+	NA62Analysis::manip::enableManip = Configuration::ConfigSettings::global::fUseColors && isatty(fileno(stdout));
 }
 
 BaseAnalysis::~BaseAnalysis(){
@@ -27,17 +36,6 @@ BaseAnalysis::~BaseAnalysis(){
 	/// \EndMemberDescr
 
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
-}
-
-void BaseAnalysis::SetVerbosity(AnalysisFW::VerbosityLevel v){
-	/// \MemberDescr
-	/// \param v : value of the verbosity
-	///
-	/// Change verbosity
-	/// \EndMemberDescr
-
-	if(v >= AnalysisFW::kNormal) cout << "AnalysisFW: Setting verbosity to " << v << endl;
-	fVerbosity = v;
 }
 
 void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool ignoreNonExisting){
@@ -61,7 +59,8 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//##############################
 	TString anName, anParams;
 
-	if(!fIOHandler->OpenInput(inFileName, NFiles, fVerbosity)) return;
+	std::cout << debug() << "Initializing... " << std::endl;
+	if(!fIOHandler->OpenInput(inFileName, NFiles)) return;
 
 	fIOHandler->OpenOutput(outFileName);
 
@@ -71,13 +70,17 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		treeHandler->SetReferenceFileName(refFile);
 		treeHandler->SetIgnoreNonExisting(ignoreNonExisting);
 
-		fNEvents = std::max(treeHandler->FillMCTruth(fVerbosity), treeHandler->FillRawHeader(fVerbosity));
+		fNEvents = std::max(treeHandler->FillMCTruth(), treeHandler->FillRawHeader());
+
+		std::cout << debug() << "Using " << fNEvents << " events" << endl;
 	}
 
 	fIOHandler->LoadEvent(0);
 	fIOHandler->CheckNewFileOpened();
+
+	std::cout << debug() << "Parsing parameters" << std::endl;
 	//Parse parameters from file
-	ConfigParser confParser;
+	Configuration::ConfigAnalyzer confParser;
 	confParser.ParseFile(configFile);
 	//Parse parameters from commandLine
 	confParser.ParseCLI(params);
@@ -109,7 +112,8 @@ void BaseAnalysis::AddAnalyzer(Analyzer* an){
 	/// Add an analyzer to the Analyzer lists
 	/// \EndMemberDescr
 
-	an->SetVerbosity(fVerbosity);
+	std::cout << normal() << "Adding analyzer " << an->GetAnalyzerName() << std::endl;
+	an->SetVerbosity(GetVerbosityLevel());
 	fAnalyzerList.push_back(an);
 }
 
@@ -121,8 +125,10 @@ void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// Register an output
 	/// \EndMemberDescr
 
-	fOutput.insert(pair<TString, const void* const>(name, address));
-	fOutputStates.insert(pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
+	std::cout << normal() << "Registering output " << name << endl;
+	std::cout << debug() << " at address " << address << endl;
+	fOutput.insert(std::pair<TString, const void* const>(name, address));
+	fOutputStates.insert(std::pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
 
 void BaseAnalysis::SetOutputState(TString name, Analyzer::OutputState state){
@@ -144,7 +150,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	/// Return an output variable and the corresponding state
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator ptr;
+	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator ptr;
 
 	if((ptr=fOutput.find(name))!=fOutput.end()){
 		state = fOutputStates.find(name)->second;
@@ -152,7 +158,7 @@ const void *BaseAnalysis::GetOutput(TString name, Analyzer::OutputState &state) 
 	}
 	else{
 		state = Analyzer::kOUninit;
-		cerr << "Output " << name << " not found" << endl;
+		std::cout << normal() << "Output " << name << " not found" << std::endl;
 		return 0;
 	}
 }
@@ -162,8 +168,8 @@ void BaseAnalysis::PreProcess(){
 	/// Pre-processing method. Reset the states of the output
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,Analyzer::OutputState>::type::iterator itState;
-	AnalysisFW::NA62Map<TString,void*>::type::iterator itOut;
+	NA62Analysis::NA62Map<TString,Analyzer::OutputState>::type::iterator itState;
+	NA62Analysis::NA62Map<TString,void*>::type::iterator itOut;
 
 	for(itState = fOutputStates.begin(); itState!=fOutputStates.end(); itState++){
 		itState->second = Analyzer::kOInvalid;
@@ -183,60 +189,47 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	if(IsTreeType()) ProcessWithTree(beginEvent, maxEvent);
-	else if(IsHistoType()) ProcessWithHisto(beginEvent, maxEvent);
-}
-
-void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
-	/// \MemberDescr
-	/// \param beginEvent : index of the first event to be processed
-	/// \param maxEvent : maximum number of events to be processed
-	///
-	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
-	/// \EndMemberDescr
-
 	int i_offset;
 	clock_t timing;
 	bool exportEvent = false;
 
 	if(!fInitialized) return;
 
-	IOTree *treeIO = static_cast<IOTree*>(fIOHandler);
-
 	timing = clock();
+
+	std::string displayType;
+	if(IsTreeType()) displayType = "Event";
+	else if (IsHistoType()) displayType = "File";
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " events, beginning with event " << beginEvent << endl;
+	std::cout << normal() << "Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << std::endl;
 
 	i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: i_offset : " << i_offset << endl;
+	std::cout << extended() << "i_offset : " << i_offset << std::endl;
 
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 		fAnalyzerList[j]->StartOfRun();
-		fAnalyzerList[j]->StartOfBurst();
+		if(IsTreeType()) fAnalyzerList[j]->StartOfBurst();
 	}
 
 	//##############################
 	//Begin event loop
 	//##############################
+	int defaultPrecision = std::cout.precision();
 	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
+
 	for (int i=beginEvent; i < processEvents; i++)
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
-			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, processEvents, ((double)i/(double)processEvents)*100); fflush(stdout);
-			}
-			else{
-				printf("*** Processing Event %i/%i => %.2f%%\n", i, processEvents, ((double)i/(double)processEvents)*100);
-			}
+			printCurrentEvent(i, processEvents, defaultPrecision, displayType, timing);
 		}
 
 		// Load event infos
-		treeIO->LoadEvent(i);
+		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
 		CheckNewFileOpened();
 
 		PreProcess();
@@ -245,7 +238,7 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(treeIO->GetWithMC()) fAnalyzerList[j]->FillMCSimple( treeIO->GetMCTruthEvent(), fVerbosity);
+			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
 			fAnalyzerList[j]->Process(i);
 			fAnalyzerList[j]->UpdatePlots(i);
@@ -255,19 +248,14 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			//if(exportEvent) fAnalyzerList[j]->FillTrees();
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
-		if(exportEvent) treeIO->WriteEvent();
+		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
 	}
 
-	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED "*** Processing Event %i/%i => 100.00%%\n" SHELL_COLOR_NONE, processEvents, processEvents);
-	}
-	else{
-		printf("*** Processing Event %i/%i => 100.00%%\n", processEvents, processEvents);
-	}
+	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
+	std::cout << std::endl;
 
 	//Ask the analyzer to export and draw the plots
 	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
@@ -279,108 +267,13 @@ void BaseAnalysis::ProcessWithTree(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
-	treeIO->WriteTree();
-	fCounterHandler.WriteEventFraction(treeIO->GetOutputFileName());
+	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
+	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
 	timing = clock()-timing;
-	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
-	cout << endl << "Analysis complete" << endl << "###################################" << endl;
-}
-
-void BaseAnalysis::ProcessWithHisto(int beginEvent, int maxEvent){
-	/// \MemberDescr
-	/// \param beginEvent : index of the first event to be processed
-	/// \param maxEvent : maximum number of events to be processed
-	///
-	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
-	/// \EndMemberDescr
-
-	int i_offset;
-	clock_t timing;
-
-	if(!fInitialized) return;
-
-	IOHisto *HistoIO = static_cast<IOHisto*>(fIOHandler);
-
-	timing = clock();
-
-	//Print event processing summary
-	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: Treating " << maxEvent << " files, beginning with file " << beginEvent << endl;
-
-	i_offset = maxEvent/100.;
-	if(i_offset==0) i_offset=1;
-	if(fVerbosity>=AnalysisFW::kSomeLevel) cout << "AnalysisFW: i_offset : " << i_offset << endl;
-
-	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-		fAnalyzerList[j]->StartOfRun();
-	}
-
-	//##############################
-	//Begin event loop
-	//##############################
-	for (int i=beginEvent; i < beginEvent+maxEvent; i++)
-	{
-		//Print current event
-		if ( i % i_offset == 0 ){
-			if(fGraphicMode){
-				printf(SHELL_COLOR_LRED "*** Processing File %i/%i => %.2f%%\r" SHELL_COLOR_NONE, i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100); fflush(stdout);
-			}
-			else{
-				printf("*** Processing File %i/%i => %.2f%%\n", i, beginEvent+maxEvent, ((double)i/(double)(beginEvent+maxEvent))*100);
-			}
-		}
-
-
-		// Load event infos
-
-		HistoIO->LoadEvent(i);
-		CheckNewFileOpened();
-
-		PreProcess();
-		//Process event in Analyzer
-		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			//Get reality
-			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-
-			fAnalyzerList[j]->Process(i);
-			fAnalyzerList[j]->UpdatePlots(i);
-			gFile->cd();
-		}
-
-		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			//if(exportEvent) fAnalyzerList[j]->FillTrees();
-			fAnalyzerList[j]->PostProcess();
-			gFile->cd();
-		}
-	}
-
-	if(fGraphicMode){
-		printf(SHELL_COLOR_LRED "*** Processing File %i/%i => 100.00%%\n" SHELL_COLOR_NONE, beginEvent+maxEvent, beginEvent+maxEvent);
-	}
-	else{
-		printf("*** Processing File %i/%i => 100.00%%\n", beginEvent+maxEvent, beginEvent+maxEvent);
-	}
-
-	//Ask the analyzer to export and draw the plots
-	for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-		fAnalyzerList[j]->EndOfBurst();
-		fAnalyzerList[j]->EndOfRun();
-		fAnalyzerList[j]->ExportPlot();
-		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
-		fAnalyzerList[j]->WriteTrees();
-		gFile->cd();
-	}
-	fCounterHandler.WriteEventFraction(HistoIO->GetOutputFileName());
-
-	//Complete the analysis
-	timing = clock()-timing;
-	cout << endl << "###################################" << endl << "Processing time : " << ((float)timing/CLOCKS_PER_SEC) << " seconds";
-	cout << endl << "Analysis complete" << endl << "###################################" << endl;
+	std::cout << std::endl << "###################################" << std::endl << "Processing time : " << ((float)timing/(float)CLOCKS_PER_SEC) << " seconds";
+	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
 }
 
 DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){
@@ -410,8 +303,8 @@ void BaseAnalysis::PrintInitSummary() const{
 	/// Print summary after initialization.
 	/// \EndMemberDescr
 
-	vector<Analyzer*>::const_iterator itAn;
-	AnalysisFW::NA62Map<TString,const void* const>::type::const_iterator itOutput;
+	std::vector<Analyzer*>::const_iterator itAn;
+	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator itOutput;
 
 	StringBalancedTable anTable("List of loaded Analyzers");
 	StringBalancedTable outputTable("List of Outputs");
@@ -425,14 +318,14 @@ void BaseAnalysis::PrintInitSummary() const{
 	}
 
 
-	cout << "================================================================================" << endl;
-	cout << endl << "\t *** Global settings for AnalysisFW ***" << endl << endl;
+	std::cout << "================================================================================" << std::endl;
+	std::cout << std::endl << "\t *** Global settings for AnalysisFW ***" << std::endl << std::endl;
 
 	anTable.Print("\t");
 	fCounterHandler.PrintInitSummary();
 	outputTable.Print("\t");
 	fIOHandler->PrintInitSummary();
-	cout << "================================================================================" << endl;
+	std::cout << "================================================================================" << std::endl;
 }
 
 void BaseAnalysis::CheckNewFileOpened(){
@@ -516,6 +409,47 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 	/// Create the correct instance of IOHandler
 	/// \EndMemberDescr
 
+	std::cout << normal() << "Creating IOHandler of type "
+			<< (type==IOHandlerType::kHISTO ? "kHisto" : "kTree") << std::endl;
 	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
 	else fIOHandler = new IOTree();
 }
+
+void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, clock_t startTime) {
+	/// \MemberDescr
+	/// \param iEvent: currently processed object
+	/// \param totalEvents: total number of objects
+	/// \param defaultPrecision: default floating point number precision in cout
+	/// \param displayType: Type of object (event, file)
+	/// \param startTime: start time of the processing
+	///
+	/// Print the currently processed object. Formatting done according to settings.
+	/// Also print the percentage of completion and the estimated remaining time.
+	/// \EndMemberDescr
+
+	clock_t currTime = clock();
+	std::stringstream ss;
+
+	//Print current event
+	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::red << manip::bold;
+
+	float eta = 0;
+	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
+	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents-1;
+	std::cout << std::setw(35) << std::left << ss.str() << " => ";
+	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
+	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
+	else std::cout << std::setw(10) << "ETA: " << eta << "s";
+
+	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::reset;
+	if(Configuration::ConfigSettings::global::fProcessOutputNewLine) std::cout << std::endl;
+	else std::cout << std::setw(10) << "\r" << std::flush;
+
+	//Reset to default
+	std::cout.precision(defaultPrecision);
+	std::cout.unsetf(std::ios_base::floatfield);
+}
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
+

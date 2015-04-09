@@ -15,17 +15,15 @@
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
 
-using namespace std;
-
 class TH1I;
 class TH2F;
 class TGraph;
 class TTree;
 
-class Pi0Reconstruction : public Analyzer
+class Pi0Reconstruction : public NA62Analysis::Analyzer
 {
 	public:
-		Pi0Reconstruction(BaseAnalysis *ba);
+		Pi0Reconstruction(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void InitOutput();
 		void DefineMCSimple();

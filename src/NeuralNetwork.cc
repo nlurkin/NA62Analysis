@@ -7,13 +7,17 @@
 #include <TMLPAnalyzer.h>
 #include <TCanvas.h>
 
-NeuralNetwork::NeuralNetwork() {
+namespace NA62Analysis {
+
+
+NeuralNetwork::NeuralNetwork() :
+	Verbose("NeuralNetwork")
+{
 	/// \MemberDescr
 	/// Experimental feature. Not completely developed.
 	/// Constructor
 	/// \EndMemberDescr
 
-	fVerbosity = AnalysisFW::kNo;
 	fMlp = 0;
 	fTrainingTree = new TTree("fTrainingTree", "Tree for NN training");
 	fTrainingTree->Branch("NNOutputResult", &fNNOutputResult, "NNOutputResult/I");
@@ -114,7 +118,7 @@ void NeuralNetwork::Train(int epoch){
 
 	Create();
 
-	if(fVerbosity>=AnalysisFW::kNormal) std::cout << "Training NN with " << fNumberSignal << " signal and " << fNumberBckg << " background samples" << std::endl;
+	std::cout << normal() << "Training NN with " << fNumberSignal << " signal and " << fNumberBckg << " background samples" << std::endl;
 	fMlp->Train(epoch, "text,graph,update=10");
 
 	TCanvas *c1 = new TCanvas("c1", "Network Analysis");
@@ -169,3 +173,5 @@ void NeuralNetwork::Load(TString name){
 
 	fMlp->LoadWeights(name);
 }
+
+} /* namespace NA62Analysis */

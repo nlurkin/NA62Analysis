@@ -15,17 +15,15 @@
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
 
-using namespace std;
-
 class TH1I;
 class TH2F;
 class TGraph;
 class TTree;
 
-class VertexCDA : public Analyzer
+class VertexCDA : public NA62Analysis::Analyzer
 {
 	public:
-		VertexCDA(BaseAnalysis *ba);
+		VertexCDA(NA62Analysis::Core::BaseAnalysis *ba);
 		void InitHist();
 		void DefineMCSimple();
 		void InitOutput();
@@ -33,7 +31,6 @@ class VertexCDA : public Analyzer
 		void PostProcess();
 		void ExportPlot();
 		void DrawPlot();
-		void PrintClass();
 	private:
 		void Publish();
 		TVector3 GetIntersection(TVector3 pos1, TVector3 p1, TVector3 pos2, TVector3 p2);

@@ -16,6 +16,9 @@
 #include "StringTable.hh"
 #include "functions.hh"
 
+namespace NA62Analysis {
+namespace Core {
+
 HistoHandler::HistoHandler():
 			fUpdateRate(10)
 {
@@ -48,10 +51,10 @@ HistoHandler::~HistoHandler() {
 	/// Destructor. Delete all the histograms and canvases.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator it1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator it2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator it3;
-	vector<TCanvas*>::iterator it4;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator it1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator it2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator it3;
+	std::vector<TCanvas*>::iterator it4;
 
 	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
 		delete it1->second;
@@ -79,9 +82,9 @@ void HistoHandler::BookHisto(TString name, TH1* const histo, TString analyzerNam
 	/// \EndMemberDescr
 
 	fHistoOrder.push_back(name);
-	fHisto.insert(pair<TString,TH1*>(name, histo));
+	fHisto.insert(std::pair<TString,TH1*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
 void HistoHandler::BookHisto(TString name, TH2* histo, TString analyzerName, bool refresh, TString directory){
@@ -96,9 +99,9 @@ void HistoHandler::BookHisto(TString name, TH2* histo, TString analyzerName, boo
 	/// \EndMemberDescr
 
 	fHistoOrder.push_back(name);
-	fHisto2.insert(pair<TString,TH2*>(name, histo));
+	fHisto2.insert(std::pair<TString,TH2*>(name, histo));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
 void HistoHandler::BookHisto(TString name, TGraph* histo, TString analyzerName, bool refresh, TString directory){
@@ -113,11 +116,11 @@ void HistoHandler::BookHisto(TString name, TGraph* histo, TString analyzerName, 
 	/// \EndMemberDescr
 
 	fHistoOrder.push_back(name);
-	fGraph.insert(pair<TString,TGraph*>(name, histo));
+	fGraph.insert(std::pair<TString,TGraph*>(name, histo));
 	fGraph[name]->SetNameTitle(name, name);
 	//fPoint.insert(pair<TString,int>(name,0));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
 
 void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TString analyzerName, bool refresh, TString directory){
@@ -132,7 +135,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TStr
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	string name, title;
+	TString name, title;
 	name = histo->GetName();
 	title = histo->GetTitle();
 	TH1* h;
@@ -140,17 +143,17 @@ void HistoHandler::BookHistoArray(TString baseName, TH1* histo, int number, TStr
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
 	fHistoOrder.push_back(baseName+"0");
-	fHisto.insert(pair<TString,TH1*>(baseName + "0", histo));
+	fHisto.insert(std::pair<TString,TH1*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TH1*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
 		fHistoOrder.push_back(baseName + (Long_t)i);
-		fHisto.insert(pair<TString,TH1*>(baseName + (Long_t)i, h));
+		fHisto.insert(std::pair<TString,TH1*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
@@ -166,7 +169,7 @@ void HistoHandler::BookHistoArray(TString baseName, TH2* histo, int number, TStr
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	string name, title;
+	TString name, title;
 	name = histo->GetName();
 	title = histo->GetTitle();
 	TH2* h;
@@ -174,17 +177,17 @@ void HistoHandler::BookHistoArray(TString baseName, TH2* histo, int number, TStr
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
 	fHistoOrder.push_back(baseName + "0");
-	fHisto2.insert(pair<TString,TH2*>(baseName + "0", histo));
+	fHisto2.insert(std::pair<TString,TH2*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TH2*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
 		fHistoOrder.push_back(baseName + (Long_t)i);
-		fHisto2.insert(pair<TString,TH2*>(baseName + (Long_t)i, h));
+		fHisto2.insert(std::pair<TString,TH2*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
@@ -200,7 +203,7 @@ void HistoHandler::BookHistoArray(TString baseName, TGraph* histo, int number, T
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	string name, title;
+	TString name, title;
 	name = histo->GetName();
 	title = histo->GetTitle();
 	TGraph* h;
@@ -208,17 +211,17 @@ void HistoHandler::BookHistoArray(TString baseName, TGraph* histo, int number, T
 	histo->SetName(TString(name + "0").Data());
 	histo->SetTitle(TString(title + "0").Data());
 	fHistoOrder.push_back(baseName+ "0");
-	fGraph.insert(pair<TString,TGraph*>(baseName + "0", histo));
+	fGraph.insert(std::pair<TString,TGraph*>(baseName + "0", histo));
 	if(refresh) SetPlotAutoUpdate(baseName + "0", analyzerName);
-	if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
+	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + "0", directory.Strip(TString::kBoth, '/')));
 	for(int i=1; i<number; i++){
 		h = (TGraph*)histo->Clone();
 		h->SetName(TString(name + (Long_t)i).Data());
 		h->SetTitle(TString(title + (Long_t)i).Data());
 		fHistoOrder.push_back(baseName + (Long_t)i);
-		fGraph.insert(pair<TString,TGraph*>(baseName + (Long_t)i, h));
+		fGraph.insert(std::pair<TString,TGraph*>(baseName + (Long_t)i, h));
 		if(refresh) SetPlotAutoUpdate(baseName + (Long_t)i, analyzerName);
-		if(directory.Length()>0) fPlotsDirectory.insert(pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
+		if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(baseName + (Long_t)i, directory.Strip(TString::kBoth, '/')));
 	}
 }
 
@@ -231,12 +234,12 @@ void HistoHandler::FillHisto(TString name, TString x, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,w);
-	else if(fHisto2.count(name)>0) cerr << name << " is a TH2. Cannot call with (TString,double)." << endl;
-	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else if(fHisto2.count(name)>0) std::cerr << name << " is a TH2. Cannot call with (TString,double)." << std::endl;
+	else if(fGraph.count(name)>0) std::cerr << name << " is a TGraph. Cannot call with (TString,double)." << std::endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 void HistoHandler::FillHisto(TString name, TString x, double y, double w){
@@ -249,12 +252,12 @@ void HistoHandler::FillHisto(TString name, TString x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
-	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,double,double)." << endl;
-	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,double,double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else if(fHisto.count(name)>0) std::cerr << name << " is a TH1. Cannot call with (TString,double,double)." << std::endl;
+	else if(fGraph.count(name)>0) std::cerr << name << " is a TGraph. Cannot call with (TString,double,double)." << std::endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
@@ -267,12 +270,12 @@ void HistoHandler::FillHisto(TString name, TString x, TString y, double w){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
-	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << endl;
-	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (TString,TString,double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else if(fHisto.count(name)>0) std::cerr << name << " is a TH1. Cannot call with (TString,TString,double)." << std::endl;
+	else if(fGraph.count(name)>0) std::cerr << name << " is a TGraph. Cannot call with (TString,TString,double)." << std::endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 void HistoHandler::FillHisto(TString name, double x){
@@ -283,12 +286,12 @@ void HistoHandler::FillHisto(TString name, double x){
 	/// Fill a previously booked histogram with a weight of 1
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,1);
-	else if(fHisto2.count(name)>0) cerr << name << " is a TH2. Cannot call with (double)." << endl;
-	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else if(fHisto2.count(name)>0) std::cerr << name << " is a TH2. Cannot call with (double)." << std::endl;
+	else if(fGraph.count(name)>0) std::cerr << name << " is a TGraph. Cannot call with (double)." << std::endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 void HistoHandler::FillHisto(TString name, double x, double y, double w){
@@ -301,12 +304,12 @@ void HistoHandler::FillHisto(TString name, double x, double y, double w){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,w);
-	else if(fHisto.count(name)>0) cerr << name << " is a TH1. Cannot call with (double,double,double)." << endl;
-	else if(fGraph.count(name)>0) cerr << name << " is a TGraph. Cannot call with (double,double,double)." << endl;
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else if(fHisto.count(name)>0) std::cerr << name << " is a TH1. Cannot call with (double,double,double)." << std::endl;
+	else if(fGraph.count(name)>0) std::cerr << name << " is a TGraph. Cannot call with (double,double,double)." << std::endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 void HistoHandler::FillHisto(TString name, double x, double y){
@@ -318,9 +321,9 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 	/// Fill a previously booked histogram
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()) ptr1->second->Fill(x,y);
 	else if((ptr2=fHisto2.find(name))!=fHisto2.end()) ptr2->second->Fill(x,y,1);
@@ -328,7 +331,7 @@ void HistoHandler::FillHisto(TString name, double x, double y){
 		fPoint[name]++;
 		ptr3->second->SetPoint(fPoint[name], x, y);
 	}
-	else cerr << "Histogram " << name << " doesn't exist." << endl;
+	else std::cerr << "Histogram " << name << " doesn't exist." << std::endl;
 }
 
 //########################################
@@ -418,9 +421,9 @@ void HistoHandler::PrintInitSummary() const{
 	/// Print a list of booked histograms.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::const_iterator it1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::const_iterator it2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::const_iterator itGraph;
+	NA62Analysis::NA62Map<TString,TH1*>::type::const_iterator it1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::const_iterator it2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::const_iterator itGraph;
 
 	StringTable histoTable("List of booked histograms");
 
@@ -453,7 +456,7 @@ void HistoHandler::PrintInitSummary() const{
 	histoTable.Print("\t");
 }
 
-void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> &branches){
+void HistoHandler::ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches){
 	/// \MemberDescr
 	/// \param trees : pointer to the list of TTrees
 	/// \param branches : point to the list of branches
@@ -461,10 +464,10 @@ void HistoHandler::ExportAllPlot(map<TString,TTree*> &trees, map<TString,void*> 
 	/// Export all booked histograms into the output file histograms trees
 	/// \EndMemberDescr
 
-	vector<TString>::iterator itOrder;
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	std::vector<TString>::iterator itOrder;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -489,10 +492,10 @@ void HistoHandler::DrawAllPlots(TString analyzerName){
 	/// Draw all booked histograms on the screen
 	/// \EndMemberDescr
 
-	vector<TString>::iterator itOrder;
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	std::vector<TString>::iterator itOrder;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -517,7 +520,7 @@ void HistoHandler::UpdatePlots(int evtNbr){
 	/// Update all plots with refresh
 	/// \EndMemberDescr
 
-	vector<TCanvas*>::iterator it;
+	std::vector<TCanvas*>::iterator it;
 
 	if((evtNbr % fUpdateRate) == 0){
 		for(it = fCanvas.begin(); it!=fCanvas.end(); it++){
@@ -535,12 +538,12 @@ void HistoHandler::SaveAllPlots(TString analyzerName){
 	/// \EndMemberDescr
 
 	TString name;
-	AnalysisFW::NA62Map<TString,TString>::type::iterator itDirectory;
-	vector<TString>::iterator itOrder;
+	NA62Analysis::NA62Map<TString,TString>::type::iterator itDirectory;
+	std::vector<TString>::iterator itOrder;
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
@@ -605,9 +608,9 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	TCanvas *c;
 	TString canvasName = TString("c_" + analyzerName + "_") + name;
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		c = new TCanvas(canvasName, canvasName);
@@ -625,7 +628,7 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 		ptr3->second->Draw();
 	}
 	else{
-		cerr << "Plot " << name << " does not exist. Unable to set AutoUpdate." << endl;
+		std::cerr << "Plot " << name << " does not exist. Unable to set AutoUpdate." << std::endl;
 		return;
 	}
 
@@ -686,13 +689,13 @@ TH1* HistoHandler::GetTH1(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		return ptr1->second;
 	}
 	else{
-		cerr << "1D Plot " << name << " does not exist." << endl;
+		std::cerr << "1D Plot " << name << " does not exist." << std::endl;
 		return NULL;
 	}
 }
@@ -706,13 +709,13 @@ TH2* HistoHandler::GetTH2(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 
 	if((ptr2=fHisto2.find(name))!=fHisto2.end()){
 		return ptr2->second;
 	}
 	else{
-		cerr << "2D Plot " << name << " does not exist." << endl;
+		std::cerr << "2D Plot " << name << " does not exist." << std::endl;
 		return NULL;
 	}
 }
@@ -726,13 +729,13 @@ TGraph* HistoHandler::GetTGraph(TString name) {
 	///	message and return NULL.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	if((ptr3=fGraph.find(name))!=fGraph.end()){
 		return ptr3->second;
 	}
 	else{
-		cerr << "Graph " << name << " does not exist." << endl;
+		std::cerr << "Graph " << name << " does not exist." << std::endl;
 		return NULL;
 	}
 }
@@ -745,8 +748,8 @@ TH1* HistoHandler::GetHisto(TString name) {
 	///	If the histogram does not exist, print an error message and return NULL.
 	/// \EndMemberDescr
 
-	AnalysisFW::NA62Map<TString,TH1*>::type::iterator ptr1;
-	AnalysisFW::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
 		return ptr1->second;
@@ -755,7 +758,7 @@ TH1* HistoHandler::GetHisto(TString name) {
 		return ptr2->second;
 	}
 	else{
-		cerr << "Histogram " << name << " does not exist." << endl;
+		std::cerr << "Histogram " << name << " does not exist." << std::endl;
 		return NULL;
 	}
 }
@@ -780,10 +783,10 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1() {
 	/// Create a TH1Iterator over all the TH1 stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TH1*> list;
-	AnalysisFW::NA62Map<TString,TH1*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTH1>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TH1*> list;
+	NA62Analysis::NA62Map<TString,TH1*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTH1>::type::iterator itList;
 
 	if((itList=fTH1IteratorsList.find(""))!=fTH1IteratorsList.end())
 		return itList->second;
@@ -792,7 +795,7 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1() {
 		if((itEl=fHisto.find(*it))!=fHisto.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTH1IteratorsList.insert(pair<TString,IteratorTH1>("", IteratorTH1(list))).first;
+	itList = fTH1IteratorsList.insert(std::pair<TString,IteratorTH1>("", IteratorTH1(list))).first;
 	return itList->second;
 }
 
@@ -804,10 +807,10 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1(TString baseName) {
 	/// Create a TH1Iterator over all the TH1 whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TH1*> list;
-	AnalysisFW::NA62Map<TString,TH1*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTH1>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TH1*> list;
+	NA62Analysis::NA62Map<TString,TH1*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTH1>::type::iterator itList;
 
 	if((itList=fTH1IteratorsList.find(baseName))!=fTH1IteratorsList.end())
 		return itList->second;
@@ -817,7 +820,7 @@ HistoHandler::IteratorTH1 HistoHandler::GetIteratorTH1(TString baseName) {
 		if((itEl=fHisto.find(*it))!=fHisto.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTH1IteratorsList.insert(pair<TString,IteratorTH1>(baseName, IteratorTH1(list))).first;
+	itList = fTH1IteratorsList.insert(std::pair<TString,IteratorTH1>(baseName, IteratorTH1(list))).first;
 	return itList->second;
 }
 
@@ -828,10 +831,10 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2() {
 	/// Create a TH2Iterator over all the TH2 stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TH2*> list;
-	AnalysisFW::NA62Map<TString,TH2*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTH2>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TH2*> list;
+	NA62Analysis::NA62Map<TString,TH2*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTH2>::type::iterator itList;
 
 	if((itList=fTH2IteratorsList.find(""))!=fTH2IteratorsList.end())
 		return itList->second;
@@ -840,7 +843,7 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2() {
 		if((itEl=fHisto2.find(*it))!=fHisto2.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTH2IteratorsList.insert(pair<TString,IteratorTH2>("", IteratorTH2(list))).first;
+	itList = fTH2IteratorsList.insert(std::pair<TString,IteratorTH2>("", IteratorTH2(list))).first;
 	return itList->second;
 }
 
@@ -852,10 +855,10 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2(TString baseName) {
 	/// Create a TH2Iterator over all the TH2 whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TH2*> list;
-	AnalysisFW::NA62Map<TString,TH2*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTH2>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TH2*> list;
+	NA62Analysis::NA62Map<TString,TH2*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTH2>::type::iterator itList;
 
 	if((itList=fTH2IteratorsList.find(baseName))!=fTH2IteratorsList.end())
 		return itList->second;
@@ -865,7 +868,7 @@ HistoHandler::IteratorTH2 HistoHandler::GetIteratorTH2(TString baseName) {
 		if((itEl=fHisto2.find(*it))!=fHisto2.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTH2IteratorsList.insert(pair<TString,IteratorTH2>(baseName, IteratorTH2(list))).first;
+	itList = fTH2IteratorsList.insert(std::pair<TString,IteratorTH2>(baseName, IteratorTH2(list))).first;
 	return itList->second;
 }
 
@@ -876,10 +879,10 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph() {
 	/// Create a TGraphIterator over all the TGraph stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TGraph*> list;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTGraph>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TGraph*> list;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTGraph>::type::iterator itList;
 
 	if((itList=fTGraphIteratorsList.find(""))!=fTGraphIteratorsList.end())
 		return itList->second;
@@ -888,7 +891,7 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph() {
 		if((itEl=fGraph.find(*it))!=fGraph.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTGraphIteratorsList.insert(pair<TString,IteratorTGraph>("", IteratorTGraph(list))).first;
+	itList = fTGraphIteratorsList.insert(std::pair<TString,IteratorTGraph>("", IteratorTGraph(list))).first;
 	return itList->second;
 }
 
@@ -900,10 +903,10 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 	/// Create a TGraphIterator over all the TGraph whose name is starting with baseName and stored in this instance of HistoHandler.
 	/// \EndMemberDescr
 
-	vector<TString>::const_iterator it;
-	vector<TGraph*> list;
-	AnalysisFW::NA62Map<TString,TGraph*>::type::const_iterator itEl;
-	AnalysisFW::NA62Map<TString,IteratorTGraph>::type::iterator itList;
+	std::vector<TString>::const_iterator it;
+	std::vector<TGraph*> list;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::const_iterator itEl;
+	NA62Analysis::NA62Map<TString,IteratorTGraph>::type::iterator itList;
 
 	if((itList=fTGraphIteratorsList.find(baseName))!=fTGraphIteratorsList.end())
 		return itList->second;
@@ -913,6 +916,10 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 		if((itEl=fGraph.find(*it))!=fGraph.end()) list.push_back(itEl->second);
 	}
 
-	itList = fTGraphIteratorsList.insert(pair<TString,IteratorTGraph>(baseName, IteratorTGraph(list))).first;
+	itList = fTGraphIteratorsList.insert(std::pair<TString,IteratorTGraph>(baseName, IteratorTGraph(list))).first;
 	return itList->second;
 }
+
+} /* namespace Core */
+} /* namespace NA62Analysis */
+
