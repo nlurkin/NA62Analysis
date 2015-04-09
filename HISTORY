@@ -20,8 +20,10 @@ NA62Analysis Project
         - Test that config file used by NA62AnalysisBuilder are actually text file
           before trying to use them.
         - Update documentation
-        - Build ROOT Dictionnary only for files with corresponding LinkDef files in
+        - Build ROOT Dictionary only for files with corresponding LinkDef files in
           PhysicsObjects
+        - Fix crash when file is empty or non existing with --histo option
+        - Allow using same input histogram both in replace and append mode 
 
 2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 467
@@ -31,8 +33,8 @@ NA62Analysis Project
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 456
         - Fix bug when using input histograms in StartOfBurst or EndOfBurst
-		- Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
-		- Correct --start option description 
+        - Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
+        - Correct --start option description 
 
 2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 452
