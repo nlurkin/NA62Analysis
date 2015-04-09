@@ -177,8 +177,8 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	TString fullName = directory + TString("/") + name;
 
 	NA62Analysis::NA62MultiMap<TString,TH1*>::type::iterator it;
-	if((it = fInputHisto.find(fullName)) != fInputHisto.end()) return it->second;
-	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end()) return it->second;
+	if((it = fInputHisto.find(fullName)) != fInputHisto.end() && !append) return it->second;
+	else if((it = fInputHistoAdd.find(fullName)) != fInputHistoAdd.end() && append) return it->second;
 	if(!fCurrentFile) {
 		std::cout << normal() << "[Error] Unable to open reference file "
 						<< fReferenceFileName << std::endl;
