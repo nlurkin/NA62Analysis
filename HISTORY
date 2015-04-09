@@ -2,8 +2,8 @@
 NA62Analysis Project
 ################################################################
 
-2015-03-xx  Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev 472
+2015-04-09  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 475
         - Fix various warnings
         - Set the default to "Read All" when reading a list of files. Add -b
           as additional alias for -B/--nfiles (Do not work with the -g option because
@@ -16,14 +16,15 @@ NA62Analysis Project
           The --logtofile option redirect all messages using these manipulators
           to the specified output file.
         - Improve configuration file support. Add .settingsna62 file to customize
-          NA62Analysis behavior.
+          NA62Analysis behavior. (Use of colors, carriage return)
         - Test that config file used by NA62AnalysisBuilder are actually text file
           before trying to use them.
         - Update documentation
         - Build ROOT Dictionary only for files with corresponding LinkDef files in
           PhysicsObjects
         - Fix crash when file is empty or non existing with --histo option
-        - Allow using same input histogram both in replace and append mode 
+        - Allow using same input histogram both in replace and append mode
+        - Deprecate ExportPlots() method. EndOfRunUser() provides same functionality. 
 
 2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 467

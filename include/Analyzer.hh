@@ -87,7 +87,7 @@ public:
 		/// Add a new branch to an existing output tree.
 		/// \EndMemberDescr
 		if(fOutTree.count(name)==0){
-			std::cerr << fAnalyzerName << ": Output TTree " << name << " does not exist" << std::endl;
+			std::cout << normal() << "Output TTree " << name << " does not exist" << std::endl;
 		}
 		else{
 			fOutTree[name]->Branch(branchName, pointer);
@@ -111,7 +111,7 @@ public:
 		/// The value can be overwritten using a runtime configuration file or the -p command line option.
 		/// \EndMemberDescr
 		if(!CheckType(type)){
-			std::cout << "Error when adding parameter " << name << " : type not supported " << type << std::endl;
+			std::cout << normal() << "Error when adding parameter " << name << " : type not supported " << type << std::endl;
 			return;
 		}
 		*address = defaultValue;
