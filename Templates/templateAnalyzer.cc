@@ -237,13 +237,6 @@ void templateAnalyzer::StartOfBurstUser(){
 	/// \EndMemberDescr
 }
 
-void templateAnalyzer::EndOfBurstUser(){
-	/// \MemberDescr
-	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the end of the last file\n
-	/// Do here your start/end of burst processing if any
-	/// \EndMemberDescr
-}
-
 void templateAnalyzer::Process(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Event number
@@ -372,24 +365,27 @@ void templateAnalyzer::PostProcess(){
 
 }
 
+void templateAnalyzer::EndOfBurstUser(){
+	/// \MemberDescr
+	/// This method is called when a new file is opened in the ROOT TChain (corresponding to a start/end of burst in the normal NA62 data taking) + at the end of the last file\n
+	/// Do here your start/end of burst processing if any
+	/// \EndMemberDescr
+}
+
 void templateAnalyzer::EndOfRunUser(){
 	/// \MemberDescr
 	/// This method is called at the end of the processing (corresponding to a end of run in the normal NA62 data taking)\n
-	/// Do here your end of run processing if any
-	/// \EndMemberDescr
-
-}
-
-void templateAnalyzer::ExportPlot(){
-	/// \MemberDescr
-	/// This method is called at the end of processing to save plots.\n
+	/// Do here your end of run processing if any\n
+	/// \n
+	/// You can also use this space to save plots in your output file.\n
 	/// If you want to save them all, just call\n
 	/// \code
 	/// 	SaveAllPlots();
 	/// \endcode
 	/// Or you can just save the ones you want with\n
 	/// \code
-	/// 	histogram->Write()
+	/// 	histogram->Write()\n
+	///		fHisto.Get...("histoname")->Write();
 	/// \endcode
 	/// \n
 	/// To run over a set of histograms you can use Iterators (HistoHandler::IteratorTH1,
@@ -407,9 +403,10 @@ void templateAnalyzer::ExportPlot(){
 	/// with baseName.\n
 	/// For more details and examples on how to use the Iterator after getting it, please refer
 	/// to the HistoHandler::Iterator documentation.\n
-	/// Although this is described here in ExportPlot(), Iterators can be used anywhere after the
+	/// Although this is described here, Iterators can be used anywhere after the
 	/// histograms have been booked.
 	/// \EndMemberDescr
+
 }
 
 void templateAnalyzer::DrawPlot(){

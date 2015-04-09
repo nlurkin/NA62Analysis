@@ -47,7 +47,7 @@ public:
 	virtual void InitOutput() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void Process(int iEvent) = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void PostProcess() = 0; ///< Pure virtual method to be implemented by user analyzer
-	virtual void ExportPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
+	virtual void ExportPlot(){}; ///< Pure virtual method to be implemented by user analyzer - Deprecated
 	virtual void DrawPlot() = 0; ///< Pure virtual method to be implemented by user analyzer
 	virtual void StartOfBurstUser() {
 		/// \MemberDescr Executed at start of burst (new file). No default action to do.
