@@ -29,10 +29,7 @@ class templateAnalyzer : public NA62Analysis::Analyzer
 		void StartOfRunUser();
 		void EndOfRunUser();
 		void PostProcess();
-		void ExportPlot();
 		void DrawPlot();
-	private:
-		void Publish(); ///< Deprecated
 	protected:
 		//Add the variables that should be registered as output
 
