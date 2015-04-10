@@ -2,8 +2,12 @@
 NA62Analysis Project
 ################################################################
 
+2015-04-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 477
+        - Remove ExportPlot() from templateAnalyzer.hh
+
 2015-04-09  Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev 475
+                rev 476
         - Fix various warnings
         - Set the default to "Read All" when reading a list of files. Add -b
           as additional alias for -B/--nfiles (Do not work with the -g option because
