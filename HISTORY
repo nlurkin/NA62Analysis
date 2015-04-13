@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2014-04-10 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+	   rev 478
+	   - Added the T0 computation tools
+
 2015-04-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 477
         - Remove ExportPlot() from templateAnalyzer.hh

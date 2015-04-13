@@ -441,9 +441,9 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 
 	float eta = 0;
 	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
-	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents-1;
+	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents;
 	std::cout << std::setw(35) << std::left << ss.str() << " => ";
-	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)(totalEvents-1))*100 << "%";
+	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)totalEvents)*100 << "%";
 	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
 	else std::cout << std::setw(10) << "ETA: " << eta << "s";
 
