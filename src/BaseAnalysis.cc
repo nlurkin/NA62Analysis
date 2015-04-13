@@ -75,7 +75,15 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		std::cout << debug() << "Using " << fNEvents << " events" << endl;
 	}
 
-	fIOHandler->LoadEvent(0);
+	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
+	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
+
+	int testEvent=0;
+	while(!fIOHandler->LoadEvent(testEvent) && testEvent < fNEvents) testEvent++;
+	if(testEvent==fNEvents){
+		std::cout << "Unable to load any event/file. Aborting processing" << std::endl;
+		raise(SIGABRT);
+	}
 	fIOHandler->CheckNewFileOpened();
 
 	std::cout << debug() << "Parsing parameters" << std::endl;
@@ -99,8 +107,6 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
-	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
 
 	fInitialized = true;
 }

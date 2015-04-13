@@ -8,7 +8,6 @@
 #include "IOHandler.hh"
 
 #include <iostream>
-#include <fstream>
 
 #include <TFile.h>
 #include <TObjString.h>
@@ -63,6 +62,9 @@ IOHandler::~IOHandler(){
 	/// Destructor
 	/// \EndMemberDescr
 
+	if(fSkippedFD.is_open()){
+		fSkippedFD.close();
+	}
 	if(fOutFile) {
 		std::cout << "############# Writing output file #############" << std::endl;
 		fOutFile->Purge();
@@ -320,9 +322,10 @@ void IOHandler::FileSkipped(TString fileName) {
 	///
 	/// File has been skipped for whatever reason. Notify it in the .skipped file
 	/// \EndMemberDescr
-	std::ofstream fd(Configuration::ConfigSettings::global::fSkippedName+".skipped", std::ios::app);
-	fd << fileName << std::endl;
-	fd.close();
+	if(!fSkippedFD) fSkippedFD.open((Configuration::ConfigSettings::global::fSkippedName+".skipped").data(), std::ios::trunc);
+	if(!fSkippedFD.is_open()) std::cout << normal() << "Unable to open skipped file "
+			<< Configuration::ConfigSettings::global::fSkippedName << ".skipped" << std::endl;
+	else fSkippedFD << fileName << std::endl;
 }
 
 } /* namespace Core */

@@ -8,6 +8,8 @@
 #ifndef IOHANDLER_HH_
 #define IOHANDLER_HH_
 
+#include <fstream>
+
 #include <TString.h>
 #include <TFile.h>
 #include "Verbose.hh"
@@ -111,6 +113,8 @@ protected:
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 
 	std::vector<TString> fInputfiles; ///< Vector of input file path
+
+	std::ofstream fSkippedFD; ///< Skipped files output stream
 };
 
 } /* namespace Core */
