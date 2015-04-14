@@ -18,7 +18,9 @@ BaseAnalysis::BaseAnalysis():
 	fGraphicMode(false),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
-	fIOHandler(nullptr)
+	fIOHandler(nullptr),
+	fInitTime(0),
+	fBeginTime(clock())
 {
 	/// \MemberDescr
 	/// Constructor
@@ -109,6 +111,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	PrintInitSummary();
 
 	fInitialized = true;
+	fInitTime = (float)(clock()-fBeginTime)/CLOCKS_PER_SEC;
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -196,7 +199,13 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// \EndMemberDescr
 
 	int i_offset;
+
 	clock_t timing;
+	clock_t processTiming;
+	clock_t ioTiming;
+	float processTime = 0.;
+	float ioTime = 0.;
+
 	bool exportEvent = false;
 
 	if(!fInitialized) return;
@@ -234,10 +243,14 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			printCurrentEvent(i, processEvents, defaultPrecision, displayType, timing);
 		}
 
+		ioTiming = clock();
 		// Load event infos
 		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
 		CheckNewFileOpened();
+		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 
+
+		processTiming = clock();
 		PreProcess();
 		//Process event in Analyzer
 		exportEvent = false;
@@ -257,7 +270,11 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
+		processTime += (float)(clock()-processTiming)/CLOCKS_PER_SEC;
+
+		ioTiming = clock();
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
+		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 	}
 
 	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
@@ -268,17 +285,29 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 		fAnalyzerList[j]->EndOfBurst();
 		fAnalyzerList[j]->EndOfRun();
+
+		ioTiming = clock();
 		fAnalyzerList[j]->ExportPlot();
 		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
+		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 	}
+	ioTiming = clock();
 	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
+	ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 
 	//Complete the analysis
-	timing = clock()-timing;
-	std::cout << std::endl << "###################################" << std::endl << "Processing time : " << ((float)timing/(float)CLOCKS_PER_SEC) << " seconds";
+	float totalTime = (float)(clock()-fBeginTime)/CLOCKS_PER_SEC;
+	float processTime = (float)(clock()-timing)/CLOCKS_PER_SEC;
+	std::cout << setprecision(2);
+	std::cout << std::endl << "###################################" << std::endl;
+	std::cout << "Total time: " << std::setw(13) << std::fixed << totalTime << " seconds" << std::endl;
+	std::cout << "Init time: " << std::setw(14) << std::fixed << fInitTime << " seconds" << std::endl;
+	std::cout << "Process loop time: " << std::setw(6) << std::fixed << processTime << " seconds" << std::endl;
+	std::cout << " - Processing time: " << std::setw(5) << processTime << " seconds" << std::endl;
+	std::cout << " - IO time: " << std::setw(13) << ioTime << " seconds" << std::endl;
 	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
 }
 
@@ -439,13 +468,24 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	//Print current event
 	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::red << manip::bold;
 
+	float elapsed = (float)(currTime-startTime)/CLOCKS_PER_SEC;
 	float eta = 0;
-	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
+	if(iEvent>0) eta = (elapsed)*((totalEvents-iEvent)/(double)iEvent);
+	float totalTime = iEvent>0 ? elapsed+eta : elapsed;
+
+	//Processing what current/total =>
 	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents;
 	std::cout << std::setw(35) << std::left << ss.str() << " => ";
+	// percentage%
 	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)totalEvents)*100 << "%";
+	// ETA: 123s
 	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
 	else std::cout << std::setw(10) << "ETA: " << eta << "s";
+
+	// Elapsed: 123s
+	std::cout << std::setw(14) << "Elapsed: " << elapsed << "s";
+	// Total: 123s
+	std::cout << std::setw(12) << "Total: " << totalTime << "s";
 
 	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::reset;
 	if(Configuration::ConfigSettings::global::fProcessOutputNewLine) std::cout << std::endl;

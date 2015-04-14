@@ -95,6 +95,9 @@ protected:
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
+
+	float fInitTime; ///< Time in seconds taken by initialisation step (from constructor to end of Init())
+	clock_t fBeginTime; ///< Timestamp of the instantiation
 };
 
 } /* namespace Core */
