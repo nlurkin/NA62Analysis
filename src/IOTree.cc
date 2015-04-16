@@ -286,6 +286,7 @@ void *IOTree::GetObject(TString name, TString branchName){
 bool IOTree::LoadEvent(int iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Index of the event
+	/// \return true
 	///
 	/// Load the event from the TTrees
 	/// \EndMemberDescr
@@ -298,8 +299,10 @@ bool IOTree::LoadEvent(int iEvent){
 	std::pair<eventIterator, eventIterator> eventRange;
 	std::pair<objectIterator, objectIterator> objectRange;
 
+	fIOTimeCount.Start();
 	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
 	if(fWithRawHeader) fRawHeaderTree->GetEntry(iEvent);
+	fIOTimeCount.Stop();
 
 	//Loop over all our trees
 	for(it=fTree.begin(); it!=fTree.end(); it++){
@@ -307,12 +310,16 @@ bool IOTree::LoadEvent(int iEvent){
 		eventRange = fEvent.equal_range(it->first);
 		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
 			if(it->second->GetBranch(itEvt->second->fBranchName))
+				fIOTimeCount.Start();
 				it->second->GetEntry(iEvent);
+				fIOTimeCount.Stop();
 		}
 		objectRange = fObject.equal_range(it->first);
 		for(itObj=objectRange.first; itObj!=objectRange.second; ++itObj){
 			if(it->second->GetBranch(itObj->second->fBranchName))
+				fIOTimeCount.Start();
 				it->second->GetEntry(iEvent);
+				fIOTimeCount.Stop();
 		}
 	}
 	return true;
@@ -386,7 +393,10 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 
 	std::cout << debug() << "Trying to branch " << branchName << " of type "
 			<< branchClass << std::endl;
+
+	fIOTimeCount.Start();
 	branchesList = tree->GetListOfBranches();
+	fIOTimeCount.Stop();
 	if(!branchesList){
 		if(! fAllowNonExisting){
 			std::cout << normal() << "Unable to find TTree " << tree->GetName() << "... Aborting.";
@@ -438,14 +448,18 @@ int IOTree::FillMCTruth(){
 	int eventNb = -1;
 	if(!fWithMC) return eventNb;
 
+	fIOTimeCount.Start();
 	eventNb = fMCTruthTree->GetEntries();
+	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithMC = false;
 		return -1;
 	}
 
+	fIOTimeCount.Start();
 	TObjArray* branchesList = fMCTruthTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();
+	fIOTimeCount.Stop();
 	TString branchName = "";
 
 	for (Int_t j=0; j < jMax; j++)
@@ -497,14 +511,18 @@ int IOTree::FillRawHeader(){
 	int eventNb = -1;
 	if(!fWithRawHeader) return eventNb;
 
+	fIOTimeCount.Start();
 	eventNb = fRawHeaderTree->GetEntries();
+	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithRawHeader = false;
 		return -1;
 	}
 
+	fIOTimeCount.Start();
 	TObjArray* branchesList = fRawHeaderTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();
+	fIOTimeCount.Stop();
 	TString branchName = "";
 
 	for (Int_t j=0; j < jMax; j++)
@@ -574,9 +592,11 @@ bool IOTree::OpenInput(TString inFileName, int nFiles){
 	for(auto fileName : fInputfiles){
 		if(!inputChecked && checkInputFile(fileName))
 			inputChecked = true;
+		fIOTimeCount.Start();
 		if(fWithMC) fMCTruthTree->AddFile(fileName);
 		if(fWithRawHeader) fRawHeaderTree->AddFile(fileName);
 		for(it=fTree.begin(); it!=fTree.end(); it++) it->second->AddFile(fileName);
+		fIOTimeCount.Stop();
 	}
 	return inputChecked;
 }
@@ -589,12 +609,16 @@ bool IOTree::checkInputFile(TString fileName){
 	/// Open the input file to check if MC are present and if yes, what's the name of the TTree
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	TFile *fd = TFile::Open(fileName.Data(), "R");
+	fIOTimeCount.Stop();
 
 	if(!fd)
 		return kFALSE;
 
+	fIOTimeCount.Start();
 	TList* keys = fd->GetListOfKeys();
+	fIOTimeCount.Stop();
 
 	fWithMC = true;
 	if(keys->FindObject("Generated")) fMCTruthTree = new TChain("Generated");
@@ -646,7 +670,9 @@ void IOTree::WriteTree() const{
 
 	std::cout << normal() << "Writing output trees" << endl;
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
+		fIOTimeCount.Start();
 		itTree->second->Write();
+		fIOTimeCount.Stop();
 	}
 }
 

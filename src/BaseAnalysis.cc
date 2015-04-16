@@ -19,8 +19,7 @@ BaseAnalysis::BaseAnalysis():
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
-	fInitTime(0),
-	fBeginTime(clock())
+	fInitTime(clock())
 {
 	/// \MemberDescr
 	/// Constructor
@@ -111,7 +110,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	PrintInitSummary();
 
 	fInitialized = true;
-	fInitTime = (float)(clock()-fBeginTime)/CLOCKS_PER_SEC;
+	fInitTime.Stop();
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -198,19 +197,14 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	int i_offset;
-
-	clock_t timing;
-	clock_t processTiming;
-	clock_t ioTiming;
-	float processTime = 0.;
-	float ioTime = 0.;
-
-	bool exportEvent = false;
-
 	if(!fInitialized) return;
 
-	timing = clock();
+	TimeCounter processLoopTime;
+	TimeCounter processTime;
+	int i_offset;
+	bool exportEvent = false;
+
+	processLoopTime.Start();
 
 	std::string displayType;
 	if(IsTreeType()) displayType = "Event";
@@ -240,17 +234,15 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
-			printCurrentEvent(i, processEvents, defaultPrecision, displayType, timing);
+			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
 		}
 
-		ioTiming = clock();
 		// Load event infos
 		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
 		CheckNewFileOpened();
-		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 
 
-		processTiming = clock();
+		processTime.Start();
 		PreProcess();
 		//Process event in Analyzer
 		exportEvent = false;
@@ -270,14 +262,12 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
-		processTime += (float)(clock()-processTiming)/CLOCKS_PER_SEC;
+		processTime.Stop();
 
-		ioTiming = clock();
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
-		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 	}
 
-	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
+	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
 	std::cout << std::endl;
 
 	//Ask the analyzer to export and draw the plots
@@ -286,28 +276,23 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->EndOfBurst();
 		fAnalyzerList[j]->EndOfRun();
 
-		ioTiming = clock();
 		fAnalyzerList[j]->ExportPlot();
 		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
-		ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 	}
-	ioTiming = clock();
 	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
-	ioTime += (float)(clock()-ioTiming)/CLOCKS_PER_SEC;
 
 	//Complete the analysis
-	float totalTime = (float)(clock()-fBeginTime)/CLOCKS_PER_SEC;
-	float processTime = (float)(clock()-timing)/CLOCKS_PER_SEC;
+	float totalTime = (float)(clock()-fInitTime.GetStartTime())/CLOCKS_PER_SEC;
 	std::cout << setprecision(2);
 	std::cout << std::endl << "###################################" << std::endl;
-	std::cout << "Total time: " << std::setw(13) << std::fixed << totalTime << " seconds" << std::endl;
-	std::cout << "Init time: " << std::setw(14) << std::fixed << fInitTime << " seconds" << std::endl;
-	std::cout << "Process loop time: " << std::setw(6) << std::fixed << processTime << " seconds" << std::endl;
-	std::cout << " - Processing time: " << std::setw(5) << processTime << " seconds" << std::endl;
-	std::cout << " - IO time: " << std::setw(13) << ioTime << " seconds" << std::endl;
+	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
+	std::cout << " - Init time: " << std::setw(15) << std::fixed << fInitTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << " - Process loop time: " << std::setw(7) << std::fixed << processLoopTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << "   - Processing time: " << std::setw(7) << processTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << "IO time: " << std::setw(20) << fIOHandler->GetIoTimeCount().GetTotalTime() << " seconds" << std::endl;
 	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
 }
 

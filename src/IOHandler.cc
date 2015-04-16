@@ -66,10 +66,12 @@ IOHandler::~IOHandler(){
 		fSkippedFD.close();
 	}
 	if(fOutFile) {
+		fIOTimeCount.Start();
 		std::cout << "############# Writing output file #############" << std::endl;
 		fOutFile->Purge();
 		fOutFile->Close();
 		std::cout << "#############        DONE         #############" << std::endl;
+		fIOTimeCount.Stop();
 	}
 }
 
@@ -82,7 +84,10 @@ bool IOHandler::CheckDirExists(TString dir) {
 	/// \EndMemberDescr
 	if(!fCurrentFile) return false;
 
-	return fCurrentFile->GetDirectory(dir)!=0;
+	fIOTimeCount.Start();
+	bool retVal = fCurrentFile->GetDirectory(dir);
+	fIOTimeCount.Stop();
+	return retVal!=0;
 }
 
 bool IOHandler::CheckNewFileOpened() {
@@ -107,7 +112,9 @@ std::vector<TString> IOHandler::GetListOfDirs(TString dir) {
 	/// \return A list of directories in the searched directory in the input ROOT file.
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	fIOTimeCount.Stop();
 	std::vector<TString> dirs;
 
 	for(auto k : keys){
@@ -122,7 +129,9 @@ std::vector<TString> IOHandler::GetListOfHistos(TString dir) {
 	/// \return A list of histograms in the searched directory in the input ROOT file.
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	fIOTimeCount.Stop();
 	std::vector<TString> histo;
 
 	for(auto k : keys){
@@ -147,7 +156,9 @@ std::vector<IOHandler::keyPair> IOHandler::GetListOfKeys(TString dir) {
 				" does not exist in input file" << std::endl;
 		return keys;
 	}
+	fIOTimeCount.Start();
 	TList *kList = fCurrentFile->GetDirectory(dir)->GetListOfKeys();
+	fIOTimeCount.Stop();
 	TKey *k;
 
 	for(int i=0; i<kList->GetEntries(); i++){
@@ -164,7 +175,9 @@ std::vector<TString> IOHandler::GetListOfTGraph(TString dir) {
 	/// \return A list of TGraph in the searched directory in the input ROOT file.
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	fIOTimeCount.Stop();
 	std::vector<TString> histo;
 
 	for(auto k : keys){
@@ -179,7 +192,9 @@ std::vector<TString> IOHandler::GetListOfTH1(TString dir) {
 	/// \return A list of TH1 in the searched directory in the input ROOT file.
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	fIOTimeCount.Stop();
 	std::vector<TString> histo;
 
 	for(auto k : keys){
@@ -195,7 +210,9 @@ std::vector<TString> IOHandler::GetListOfTH2(TString dir) {
 	/// \return A list of TH2 in the searched directory in the input ROOT file.
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	std::vector<IOHandler::keyPair> keys = GetListOfKeys(dir);
+	fIOTimeCount.Stop();
 	std::vector<TString> histo;
 
 	for(auto k : keys){
@@ -219,7 +236,9 @@ void IOHandler::MkOutputDir(TString name) const{
 	/// Create a new directory in the output file
 	/// \EndMemberDescr
 
+	fIOTimeCount.Start();
 	if(!fOutFile->FindKey(name)) fOutFile->mkdir(name);
+	fIOTimeCount.Stop();
 }
 
 void IOHandler::NewFileOpened(int index, TFile* currFile){
@@ -235,12 +254,14 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	fCurrentFileNumber = index;
 	fCurrentFile = currFile;
 
+	fIOTimeCount.Start();
 	//Print fileName in the output file for future reference
 	MkOutputDir("InputFiles");
 	gFile->cd("InputFiles");
 	TObjString fileName(fCurrentFile->GetName());
 	fileName.Write();
 	gFile->cd();
+	fIOTimeCount.Stop();
 }
 
 bool IOHandler::OpenInput(TString inFileName, int nFiles){
@@ -271,8 +292,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		fInputfiles.push_back(inFileName);
 	}else{
 		TString inputFileName;
+		fIOTimeCount.Start();
 		std::ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
+			fIOTimeCount.Stop();
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
                                 TString svcClass = getenv("STAGE_SVCCLASS");
                                 if(svcClass=="") svcClass="na62";
@@ -284,7 +307,9 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 			std::cout << normal() << "Adding file " << inputFileName << std::endl;
 			fInputfiles.push_back(inputFileName);
 			++inputFileNumber;
+			fIOTimeCount.Start();
 		}
+		fIOTimeCount.Stop();
 		if(inputFileNumber==0){
 			std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
 			return false;
@@ -304,7 +329,9 @@ bool IOHandler::OpenOutput(TString outFileName){
 	std::cout << normal() << "Opening output file " << outFileName << std::endl;
 	fOutFileName = outFileName;
 	fOutFileName.ReplaceAll(".root", "");
+	fIOTimeCount.Start();
 	fOutFile = new TFile(outFileName, "RECREATE");
+	fIOTimeCount.Stop();
 
 	if(!fOutFile) return false;
 	return true;
@@ -319,13 +346,16 @@ void IOHandler::PrintInitSummary() const{
 
 void IOHandler::FileSkipped(TString fileName) {
 	/// \MemberDescr
+	/// \param fileName: Name of the skipped file
 	///
 	/// File has been skipped for whatever reason. Notify it in the .skipped file
 	/// \EndMemberDescr
+	fIOTimeCount.Start();
 	if(!fSkippedFD) fSkippedFD.open((Configuration::ConfigSettings::global::fSkippedName+".skipped").data(), std::ios::trunc);
 	if(!fSkippedFD.is_open()) std::cout << normal() << "Unable to open skipped file "
 			<< Configuration::ConfigSettings::global::fSkippedName << ".skipped" << std::endl;
 	else fSkippedFD << fileName << std::endl;
+	fIOTimeCount.Stop();
 }
 
 } /* namespace Core */
