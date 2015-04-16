@@ -77,6 +77,7 @@ void ConfigAnalyzer::ParseCLI(TString params){
 				values = ((TObjString*)pars->At(j))->GetString().Tokenize("=");
 				if(values->GetEntries()==2){
 					paramName = ((TObjString*)values->At(0))->GetString();
+					paramName.ToLower();
 					paramValue = ((TObjString*)values->At(1))->GetString();
 					fNSList[currentNS].AddParam(paramName, paramValue);
 				}
