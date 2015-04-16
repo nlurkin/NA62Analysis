@@ -68,6 +68,7 @@ void ConfigAnalyzer::ParseCLI(TString params){
 		if(p->GetEntries()==2){
 			//Got the analyzer
 			currentNS = ((TObjString*)p->At(0))->GetString();
+			currentNS.ToLower();
 			fNSList.insert(NSPair(currentNS, ConfigNamespace(currentNS)));
 			//Parse parameters now
 			paramsLine = ((TObjString*)p->At(1))->GetString();
