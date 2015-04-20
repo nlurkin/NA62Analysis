@@ -18,7 +18,8 @@ BaseAnalysis::BaseAnalysis():
 	fGraphicMode(false),
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
-	fIOHandler(nullptr)
+	fIOHandler(nullptr),
+	fInitTime(clock())
 {
 	/// \MemberDescr
 	/// Constructor
@@ -75,7 +76,15 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		std::cout << debug() << "Using " << fNEvents << " events" << endl;
 	}
 
-	fIOHandler->LoadEvent(0);
+	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
+	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
+
+	int testEvent=0;
+	while(!fIOHandler->LoadEvent(testEvent) && testEvent < fNEvents) testEvent++;
+	if(testEvent==fNEvents){
+		std::cout << "Unable to load any event/file. Aborting processing" << std::endl;
+		raise(SIGABRT);
+	}
 	fIOHandler->CheckNewFileOpened();
 
 	std::cout << debug() << "Parsing parameters" << std::endl;
@@ -99,10 +108,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	}
 
 	PrintInitSummary();
-	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
-	else if (IsHistoType()) fNEvents = fIOHandler->GetInputFileNumber();
 
 	fInitialized = true;
+	fInitTime.Stop();
 }
 
 void BaseAnalysis::AddAnalyzer(Analyzer* an){
@@ -189,13 +197,14 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	int i_offset;
-	clock_t timing;
-	bool exportEvent = false;
-
 	if(!fInitialized) return;
 
-	timing = clock();
+	TimeCounter processLoopTime;
+	TimeCounter processTime;
+	int i_offset;
+	bool exportEvent = false;
+
+	processLoopTime.Start();
 
 	std::string displayType;
 	if(IsTreeType()) displayType = "Event";
@@ -225,13 +234,15 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
-			printCurrentEvent(i, processEvents, defaultPrecision, displayType, timing);
+			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
 		}
 
 		// Load event infos
 		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
 		CheckNewFileOpened();
 
+
+		processTime.Start();
 		PreProcess();
 		//Process event in Analyzer
 		exportEvent = false;
@@ -251,10 +262,12 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			fAnalyzerList[j]->PostProcess();
 			gFile->cd();
 		}
+		processTime.Stop();
+
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
 	}
 
-	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, timing);
+	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
 	std::cout << std::endl;
 
 	//Ask the analyzer to export and draw the plots
@@ -262,6 +275,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 		fAnalyzerList[j]->EndOfBurst();
 		fAnalyzerList[j]->EndOfRun();
+
 		fAnalyzerList[j]->ExportPlot();
 		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
 		fAnalyzerList[j]->WriteTrees();
@@ -271,8 +285,14 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
-	timing = clock()-timing;
-	std::cout << std::endl << "###################################" << std::endl << "Processing time : " << ((float)timing/(float)CLOCKS_PER_SEC) << " seconds";
+	float totalTime = (float)(clock()-fInitTime.GetStartTime())/CLOCKS_PER_SEC;
+	std::cout << setprecision(2);
+	std::cout << std::endl << "###################################" << std::endl;
+	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
+	std::cout << " - Init time: " << std::setw(15) << std::fixed << fInitTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << " - Process loop time: " << std::setw(7) << std::fixed << processLoopTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << "   - Processing time: " << std::setw(7) << processTime.GetTotalTime() << " seconds" << std::endl;
+	std::cout << "IO time: " << std::setw(20) << fIOHandler->GetIoTimeCount().GetTotalTime() << " seconds" << std::endl;
 	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
 }
 
@@ -433,13 +453,24 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	//Print current event
 	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::red << manip::bold;
 
+	float elapsed = (float)(currTime-startTime)/CLOCKS_PER_SEC;
 	float eta = 0;
-	if(iEvent>0) eta = (currTime-startTime)*((totalEvents-iEvent)/(double)iEvent)/CLOCKS_PER_SEC;
+	if(iEvent>0) eta = (elapsed)*((totalEvents-iEvent)/(double)iEvent);
+	float totalTime = iEvent>0 ? elapsed+eta : elapsed;
+
+	//Processing what current/total =>
 	ss << "*** Processing " << displayType << " " << iEvent << "/" << totalEvents;
 	std::cout << std::setw(35) << std::left << ss.str() << " => ";
+	// percentage%
 	std::cout << std::setprecision(2) << std::fixed << std::setw(6) << std::right << ((double)iEvent/(double)totalEvents)*100 << "%";
+	// ETA: 123s
 	if(iEvent==0) std::cout << std::setw(10) << "ETA: " << "----s";
 	else std::cout << std::setw(10) << "ETA: " << eta << "s";
+
+	// Elapsed: 123s
+	std::cout << std::setw(14) << "Elapsed: " << elapsed << "s";
+	// Total: 123s
+	std::cout << std::setw(12) << "Total: " << totalTime << "s";
 
 	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::reset;
 	if(Configuration::ConfigSettings::global::fProcessOutputNewLine) std::cout << std::endl;

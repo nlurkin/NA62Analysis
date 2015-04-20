@@ -8,9 +8,12 @@
 #ifndef IOHANDLER_HH_
 #define IOHANDLER_HH_
 
+#include <fstream>
+
 #include <TString.h>
 #include <TFile.h>
 #include "Verbose.hh"
+#include "TimeCounter.h"
 
 namespace NA62Analysis {
 namespace Core {
@@ -70,6 +73,8 @@ public:
 	virtual bool LoadEvent(int) {
 		/// \MemberDescr
 		/// \param : Event index to load
+		/// \return true
+		///
 		/// Dummy LoadEvent
 		/// \EndMemberDescr
 
@@ -96,6 +101,13 @@ public:
 		/// \return Type of IO handler
 		/// \EndMemberDescr
 		return fIOType;
+	}
+
+	const TimeCounter& GetIoTimeCount() const {
+		/// \MemberDescr
+		/// \return Reference to the internal IOTimeCount
+		/// \EndMemberDescr
+		return fIOTimeCount;
 	};
 
 protected:
@@ -111,6 +123,10 @@ protected:
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 
 	std::vector<TString> fInputfiles; ///< Vector of input file path
+
+	std::ofstream fSkippedFD; ///< Skipped files output stream
+
+	mutable TimeCounter fIOTimeCount; ///< Counter for the time spent in IO
 };
 
 } /* namespace Core */

@@ -70,27 +70,35 @@ TH1* IOHisto::GetReferenceTH1(TString name){
 	TFile *fd;
 	TH1* tempHisto, *returnHisto=NULL;
 
+	fIOTimeCount.Start();
 	TString oldDirectory = gDirectory->GetName();
+	fIOTimeCount.Stop();
 
 	if(fReferenceFileName.IsNull()) return NULL;
 
+	fIOTimeCount.Start();
 	fd = TFile::Open(fReferenceFileName, "READ");
+	fIOTimeCount.Stop();
 	if(!fd){
 		std::cout << normal() << "[Error] Unable to open reference file "
 				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
+	fIOTimeCount.Start();
 	tempHisto = (TH1*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
+	fIOTimeCount.Stop();
 	if(tempHisto){
 		returnHisto = (TH1*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
 	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
 			<< " not found in reference file" << std::endl;
+	fIOTimeCount.Start();
 	fd->Close();
+	fIOTimeCount.Stop();
 	delete fd;
 	return returnHisto;
 }
@@ -103,27 +111,36 @@ TH2* IOHisto::GetReferenceTH2(TString name){
 	TFile *fd;
 	TH2* tempHisto, *returnHisto=NULL;
 
+	fIOTimeCount.Start();
 	TString oldDirectory = gDirectory->GetName();
+	fIOTimeCount.Stop();
 
 	if(fReferenceFileName.IsNull()) return NULL;
 
+	fIOTimeCount.Start();
 	fd = TFile::Open(fReferenceFileName, "READ");
+	fIOTimeCount.Stop();
 	if(!fd){
 		std::cout << normal() << "[Error] Unable to open reference file "
 				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
+	fIOTimeCount.Start();
 	tempHisto = (TH2*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
+	fIOTimeCount.Stop();
+
 	if(tempHisto){
 		returnHisto = (TH2*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
 	else std::cout << normal() << "Histogram " << oldDirectory << "/" << name
 			<< " not found in reference file" << std::endl;
+	fIOTimeCount.Start();
 	fd->Close();
+	fIOTimeCount.Stop();
 	delete fd;
 	return returnHisto;
 }
@@ -137,27 +154,36 @@ TGraph* IOHisto::GetReferenceTGraph(TString name){
 	TFile *fd;
 	TGraph* tempHisto, *returnHisto=NULL;
 
+	fIOTimeCount.Start();
 	TString oldDirectory = gDirectory->GetName();
+	fIOTimeCount.Stop();
 
 	if(fReferenceFileName.IsNull()) return NULL;
 
+	fIOTimeCount.Start();
 	fd = TFile::Open(fReferenceFileName, "READ");
+	fIOTimeCount.Stop();
 	if(!fd){
 		std::cout << normal() << "[Error] Unable to open reference file "
 				<< fReferenceFileName << std::endl;
 		return NULL;
 	}
 
+	fIOTimeCount.Start();
 	tempHisto = (TGraph*)fd->Get(oldDirectory + "/" + name);
 
 	fOutFile->cd(oldDirectory);
+	fIOTimeCount.Stop();
+
 	if(tempHisto){
 		returnHisto = (TGraph*)tempHisto->Clone(name + "_ref");
 		delete tempHisto;
 	}
 	else std::cout << normal() << "Histogram " << oldDirectory <<  "/" << name
 			<< " not found in reference file" << std::endl;
+	fIOTimeCount.Start();
 	fd->Close();
+	fIOTimeCount.Stop();
 	delete fd;
 	return returnHisto;
 }
@@ -188,7 +214,9 @@ TH1* IOHisto::GetInputHistogram(TString directory, TString name, bool append){
 	TH1* tempHisto, *returnHisto=nullptr;
 
 
+	fIOTimeCount.Start();
 	tempHisto = (TH1*)fCurrentFile->Get(fullName);
+	fIOTimeCount.Stop();
 
 	if(tempHisto){
 		returnHisto = (TH1*)tempHisto->Clone(fullName);
@@ -231,7 +259,9 @@ void IOHisto::UpdateInputHistograms(){
 		if(histoPath.CompareTo(it->first)!=0){
 			std::cout << debug() << "Appending " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
+			fIOTimeCount.Start();
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
+			fIOTimeCount.Stop();
 			histoPath = it->first;
 		}
 		it->second->Add(histoPtr, 1.0);
@@ -246,7 +276,9 @@ void IOHisto::UpdateInputHistograms(){
 		if(histoPath.CompareTo(it->first)!=0){
 			std::cout << debug() << "Replacing " << it->first << std::endl;
 			if(histoPtr) delete histoPtr;
+			fIOTimeCount.Start();
 			histoPtr = (TH1*)fCurrentFile->Get(it->first);
+			fIOTimeCount.Stop();
 			histoPath = it->first;
 		}
 		it->second->Reset();
@@ -265,8 +297,10 @@ bool IOHisto::CheckNewFileOpened() {
 
 	bool ret = fNewFileOpened;
 	if(fNewFileOpened){
+		fIOTimeCount.Start();
 		gFile = fOutFile;
 		gFile->cd();
+		fIOTimeCount.Stop();
 		NewFileOpened(fCurrentFileNumber, fCurrentFile);
 	}
 	fNewFileOpened = false;
@@ -276,15 +310,20 @@ bool IOHisto::CheckNewFileOpened() {
 bool IOHisto::LoadEvent(int iEvent) {
 	/// \MemberDescr
 	/// \param iEvent : Index of the file to load
+	/// \return true if the file was loaded successfully, else false
 	///
 	/// Load the file at index iEvent
 	/// \EndMemberDescr
 	if(iEvent<GetInputFileNumber()){
 		if(fCurrentFile){
+			fIOTimeCount.Start();
 			fCurrentFile->Close();
+			fIOTimeCount.Stop();
 			delete fCurrentFile;
 		}
+		fIOTimeCount.Start();
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
+		fIOTimeCount.Stop();
 		if(!fCurrentFile){
 			FileSkipped(fInputfiles[iEvent]);
 			return false;
@@ -304,8 +343,10 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 	/// Open input files
 	/// \EndMemberDescr
 
-	if(!IOHandler::OpenInput(inFileName, nFiles)) return false;
-	return true;
+	fIOTimeCount.Start();
+	bool ret = IOHandler::OpenInput(inFileName, nFiles);
+	fIOTimeCount.Stop();
+	return ret;
 }
 
 } /* namespace Core */

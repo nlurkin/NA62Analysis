@@ -2,9 +2,18 @@
 NA62Analysis Project
 ################################################################
 
-2014-04-19 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-	   rev 478
-	   - Added the T0 computation tools
+2015-04-20  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 490
+        - Add timing info: total time, initialisation time, event processing time
+          and I/O time.
+        - Add timing info during processing: Elapsed time, total estimated time, 
+          estimated remaining time
+        - Fix crash when empty file is provided with --histo option
+        - Fix bug with command line analyzer parameters
+
+2015-04-12 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev 478
+        - Added the T0 computation tools
 
 2015-04-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 477

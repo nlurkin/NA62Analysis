@@ -194,7 +194,6 @@ int main(int argc, char** argv){
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetGlobalVerbosity(verbosity);
-	std::cout << logToFile << " " << logFile << std::endl;
 	if(logToFile) ban->SetLogToFile(logFile);
 	ban->SetGraphicMode(graphicMode);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);

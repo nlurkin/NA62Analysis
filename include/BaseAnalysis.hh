@@ -7,6 +7,7 @@
 #include "IOTree.hh"
 #include "containers.hh"
 #include "Verbose.hh"
+#include "TimeCounter.h"
 
 namespace NA62Analysis {
 namespace Core {
@@ -95,6 +96,8 @@ protected:
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
+
+	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
 };
 
 } /* namespace Core */
