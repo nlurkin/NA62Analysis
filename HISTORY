@@ -2,8 +2,8 @@
 NA62Analysis Project
 ################################################################
 
-2015-04-xx  Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev xxx
+2015-04-20  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 490
         - Add timing info: total time, initialisation time, event processing time
           and I/O time.
         - Add timing info during processing: Elapsed time, total estimated time, 
