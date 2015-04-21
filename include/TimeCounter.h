@@ -59,7 +59,7 @@ public:
 		/// \MemberDescr
 		/// \return Total accumulated time up to now if still running, else total accumulated time up to last Stop()
 		/// \EndMemberDescr
-		if(fIsRunning>0) return fTotalTime + (getTime()-fStartTime);
+		if(fIsRunning>0) return fTotalTime + (GetTime()-fStartTime);
 		else return fTotalTime;
 	}
 
@@ -72,10 +72,10 @@ public:
 
 	void Print() const;
 
+	static struct timeval GetTime();
 private:
 	bool IncrementStart();
 	bool DecrementStart();
-	struct timeval getTime() const;
 
 	int fIsRunning; ///< Indicate how many Start() were requested without Stop() (#Start() - #Stop())
 	struct timeval fStartTime; ///< Timestamp when the counter started running

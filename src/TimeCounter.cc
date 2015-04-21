@@ -52,7 +52,7 @@ void TimeCounter::Stop() {
 	/// \MemberDescr
 	/// Stop the counter if this Stop() correspond to the first Start()
 	/// \EndMemberDescr
-	if(DecrementStart()) fTotalTime += getTime() - fStartTime;
+	if(DecrementStart()) fTotalTime += GetTime() - fStartTime;
 }
 
 void TimeCounter::Reset() {
@@ -92,7 +92,7 @@ void TimeCounter::Print() const {
 	std::cout << "IsRunning is: " << fIsRunning << std::endl;
 }
 
-struct timeval TimeCounter::getTime() const {
+struct timeval TimeCounter::GetTime() {
 	struct timeval s;
 	gettimeofday(&s, NULL);
 	return s;

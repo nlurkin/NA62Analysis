@@ -285,7 +285,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
-	float totalTime = fInitTime.GetTotalTime();
+	using NA62Analysis::operator -;
+	float totalTime = fInitTime.GetTime() - fInitTime.GetStartTime();
 	std::cout << setprecision(2);
 	std::cout << std::endl << "###################################" << std::endl;
 	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
