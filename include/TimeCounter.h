@@ -8,11 +8,11 @@
 #ifndef TIMECOUNTER_H_
 #define TIMECOUNTER_H_
 
-#include <time.h>
+#include <sys/time.h>
 
 namespace NA62Analysis {
 
-float operator-(struct timespec t1, struct timespec t2);
+float operator-(struct timeval t1, struct timeval t2);
 
 /// \class TimeCounter
 /// \Brief
@@ -63,7 +63,7 @@ public:
 		else return fTotalTime;
 	}
 
-	struct timespec GetStartTime() const {
+	struct timeval GetStartTime() const {
 		/// \MemberDescr
 		/// \return Timestamp when the counter started running
 		/// \EndMemberDescr
@@ -75,10 +75,10 @@ public:
 private:
 	bool IncrementStart();
 	bool DecrementStart();
-	struct timespec getTime() const;
+	struct timeval getTime() const;
 
 	int fIsRunning; ///< Indicate how many Start() were requested without Stop() (#Start() - #Stop())
-	struct timespec fStartTime; ///< Timestamp when the counter started running
+	struct timeval fStartTime; ///< Timestamp when the counter started running
 	float fTotalTime; ///< Total accumulated time between all Start() and Stop()
 };
 } /* namespace NA62Analysis */

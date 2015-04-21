@@ -29,7 +29,7 @@ TimeCounter::TimeCounter(bool startNow) :
 	///
 	/// Start constructor. Immediately starts the counter with the start timestamp s.
 	/// \EndMemberDescr
-	clock_gettime(CLOCK_MONOTONIC, &fStartTime);
+	gettimeofday(&fStartTime, NULL);
 }
 
 
@@ -44,7 +44,7 @@ void TimeCounter::Start() {
 	/// Start the counter if not already started
 	/// \EndMemberDescr
 	if(IncrementStart()){
-		clock_gettime(CLOCK_MONOTONIC, &fStartTime);
+		gettimeofday(&fStartTime, NULL);
 	}
 }
 
@@ -87,18 +87,18 @@ void TimeCounter::Print() const {
 	/// \MemberDescr
 	/// Print of the internal values of the counter
 	/// \EndMemberDescr
-	std::cout << "Started at: " << fStartTime.tv_sec + fStartTime.tv_nsec/1000000000. << std::endl;
+	std::cout << "Started at: " << fStartTime.tv_sec + fStartTime.tv_usec/1000000. << std::endl;
 	std::cout << "Total time is: " << fTotalTime << std::endl;
 	std::cout << "IsRunning is: " << fIsRunning << std::endl;
 }
 
-struct timespec TimeCounter::getTime() const {
-	struct timespec s;
-	clock_gettime(CLOCK_MONOTONIC, &s);
+struct timeval TimeCounter::getTime() const {
+	struct timeval s;
+	gettimeofday(&s, NULL);
 	return s;
 }
 
-inline float operator-(struct timespec t1, struct timespec t2){
-	return (float)(t1.tv_sec-t2.tv_sec) + (t1.tv_nsec-t2.tv_nsec)/1000000000.;
+inline float operator-(struct timeval t1, struct timeval t2){
+	return (float)(t1.tv_sec-t2.tv_sec) + (t1.tv_usec-t2.tv_usec)/1000000.;
 }
 } /* namespace NA62Analysis */
