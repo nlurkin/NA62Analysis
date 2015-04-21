@@ -121,8 +121,11 @@ void VertexCDA::Process(int){
 
 	FillHisto("StrawMultiplicity", SpectrometerEvent->GetNCandidates());
 	if(SpectrometerEvent->GetNCandidates()==1){
-		PipPosition = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetPosition();
-		PipMomentum = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetMomentum().Vect();
+		PipPosition = ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetPositionBeforeMagnet();
+		PipMomentum.SetXYZ(((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetSlopeXBeforeMagnet(),
+								 ((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetSlopeYBeforeMagnet(),
+								 1);
+		PipMomentum.SetMag(((TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(0))->GetMomentum());
 		IncrementCounter("Good_Straw_Mult");
 	}
 	else badEvent = true;
