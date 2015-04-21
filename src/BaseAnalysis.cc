@@ -448,7 +448,6 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	/// Also print the percentage of completion and the estimated remaining time.
 	/// \EndMemberDescr
 
-	//clock_t currTime = clock();
 	std::stringstream ss;
 
 	//Print current event
