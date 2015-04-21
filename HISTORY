@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-04-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 495
+        - Adapt VertexCDA to the new Spectrometer persistency 
+
 2015-04-21  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 492
         - Fix timing info. The clock used was taking into account only the time
