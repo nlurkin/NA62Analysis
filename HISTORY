@@ -2,6 +2,11 @@
 NA62Analysis Project
 ################################################################
 
+2015-04-21  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 492
+        - Fix timing info. The clock used was taking into account only the time
+		    associated with the process. Use real time instead.
+
 2015-04-20  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 491
         - Add timing info: total time, initialisation time, event processing time
