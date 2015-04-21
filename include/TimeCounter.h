@@ -12,6 +12,8 @@
 
 namespace NA62Analysis {
 
+float operator-(struct timespec t1, struct timespec t2);
+
 /// \class TimeCounter
 /// \Brief
 /// Time counter (stop watch)
@@ -37,7 +39,7 @@ namespace NA62Analysis {
 class TimeCounter {
 public:
 	TimeCounter();
-	TimeCounter(clock_t s);
+	TimeCounter(bool startNow);
 	virtual ~TimeCounter();
 
 	void Start();
@@ -57,11 +59,11 @@ public:
 		/// \MemberDescr
 		/// \return Total accumulated time up to now if still running, else total accumulated time up to last Stop()
 		/// \EndMemberDescr
-		if(fIsRunning>0) return fTotalTime + (float)(clock()-fStartTime)/CLOCKS_PER_SEC;
+		if(fIsRunning>0) return fTotalTime + (getTime()-fStartTime);
 		else return fTotalTime;
 	}
 
-	clock_t GetStartTime() const {
+	struct timespec GetStartTime() const {
 		/// \MemberDescr
 		/// \return Timestamp when the counter started running
 		/// \EndMemberDescr
@@ -73,12 +75,12 @@ public:
 private:
 	bool IncrementStart();
 	bool DecrementStart();
+	struct timespec getTime() const;
 
 	int fIsRunning; ///< Indicate how many Start() were requested without Stop() (#Start() - #Stop())
-	clock_t fStartTime; ///< Timestamp when the counter started running
+	struct timespec fStartTime; ///< Timestamp when the counter started running
 	float fTotalTime; ///< Total accumulated time between all Start() and Stop()
 };
-
 } /* namespace NA62Analysis */
 
 #endif /* TIMECOUNTER_H_ */

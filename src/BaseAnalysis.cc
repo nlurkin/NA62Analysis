@@ -19,7 +19,7 @@ BaseAnalysis::BaseAnalysis():
 	fInitialized(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
-	fInitTime(clock())
+	fInitTime(true)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -234,7 +234,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
-			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
+			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime);
 		}
 
 		// Load event infos
@@ -267,7 +267,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
 	}
 
-	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, processLoopTime.GetStartTime());
+	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, processLoopTime);
 	std::cout << std::endl;
 
 	//Ask the analyzer to export and draw the plots
@@ -285,7 +285,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
-	float totalTime = (float)(clock()-fInitTime.GetStartTime())/CLOCKS_PER_SEC;
+	float totalTime = fInitTime.GetTotalTime();
 	std::cout << setprecision(2);
 	std::cout << std::endl << "###################################" << std::endl;
 	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
@@ -435,7 +435,7 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 	else fIOHandler = new IOTree();
 }
 
-void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, clock_t startTime) {
+void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime) {
 	/// \MemberDescr
 	/// \param iEvent: currently processed object
 	/// \param totalEvents: total number of objects
@@ -447,13 +447,13 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	/// Also print the percentage of completion and the estimated remaining time.
 	/// \EndMemberDescr
 
-	clock_t currTime = clock();
+	//clock_t currTime = clock();
 	std::stringstream ss;
 
 	//Print current event
 	if(Configuration::ConfigSettings::global::fUseColors) std::cout << manip::red << manip::bold;
 
-	float elapsed = (float)(currTime-startTime)/CLOCKS_PER_SEC;
+	float elapsed = startTime.GetTotalTime();
 	float eta = 0;
 	if(iEvent>0) eta = (elapsed)*((totalEvents-iEvent)/(double)iEvent);
 	float totalTime = iEvent>0 ? elapsed+eta : elapsed;
