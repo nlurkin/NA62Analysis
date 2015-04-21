@@ -20,9 +20,8 @@ TimeCounter::TimeCounter() :
 	/// \EndMemberDescr
 }
 
-TimeCounter::TimeCounter(clock_t s) :
+TimeCounter::TimeCounter(bool startNow) :
 	fIsRunning(1),
-	fStartTime(s),
 	fTotalTime(0)
 {
 	/// \MemberDescr
@@ -30,6 +29,7 @@ TimeCounter::TimeCounter(clock_t s) :
 	///
 	/// Start constructor. Immediately starts the counter with the start timestamp s.
 	/// \EndMemberDescr
+	gettimeofday(&fStartTime, NULL);
 }
 
 
@@ -43,14 +43,16 @@ void TimeCounter::Start() {
 	/// \MemberDescr
 	/// Start the counter if not already started
 	/// \EndMemberDescr
-	if(IncrementStart()) fStartTime = clock();
+	if(IncrementStart()){
+		gettimeofday(&fStartTime, NULL);
+	}
 }
 
 void TimeCounter::Stop() {
 	/// \MemberDescr
 	/// Stop the counter if this Stop() correspond to the first Start()
 	/// \EndMemberDescr
-	if(DecrementStart()) fTotalTime += (float)(clock()-fStartTime)/CLOCKS_PER_SEC;
+	if(DecrementStart()) fTotalTime += GetTime() - fStartTime;
 }
 
 void TimeCounter::Reset() {
@@ -85,10 +87,18 @@ void TimeCounter::Print() const {
 	/// \MemberDescr
 	/// Print of the internal values of the counter
 	/// \EndMemberDescr
-	std::cout << "Started at: " << fStartTime << std::endl;
+	std::cout << "Started at: " << fStartTime.tv_sec + fStartTime.tv_usec/1000000. << std::endl;
 	std::cout << "Total time is: " << fTotalTime << std::endl;
 	std::cout << "IsRunning is: " << fIsRunning << std::endl;
 }
 
-} /* namespace NA62Analysis */
+struct timeval TimeCounter::GetTime() {
+	struct timeval s;
+	gettimeofday(&s, NULL);
+	return s;
+}
 
+inline float operator-(struct timeval t1, struct timeval t2){
+	return (float)(t1.tv_sec-t2.tv_sec) + (t1.tv_usec-t2.tv_usec)/1000000.;
+}
+} /* namespace NA62Analysis */

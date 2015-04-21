@@ -8,9 +8,11 @@
 #ifndef TIMECOUNTER_H_
 #define TIMECOUNTER_H_
 
-#include <time.h>
+#include <sys/time.h>
 
 namespace NA62Analysis {
+
+float operator-(struct timeval t1, struct timeval t2);
 
 /// \class TimeCounter
 /// \Brief
@@ -37,7 +39,7 @@ namespace NA62Analysis {
 class TimeCounter {
 public:
 	TimeCounter();
-	TimeCounter(clock_t s);
+	TimeCounter(bool startNow);
 	virtual ~TimeCounter();
 
 	void Start();
@@ -57,11 +59,11 @@ public:
 		/// \MemberDescr
 		/// \return Total accumulated time up to now if still running, else total accumulated time up to last Stop()
 		/// \EndMemberDescr
-		if(fIsRunning>0) return fTotalTime + (float)(clock()-fStartTime)/CLOCKS_PER_SEC;
+		if(fIsRunning>0) return fTotalTime + (GetTime()-fStartTime);
 		else return fTotalTime;
 	}
 
-	clock_t GetStartTime() const {
+	struct timeval GetStartTime() const {
 		/// \MemberDescr
 		/// \return Timestamp when the counter started running
 		/// \EndMemberDescr
@@ -70,15 +72,15 @@ public:
 
 	void Print() const;
 
+	static struct timeval GetTime();
 private:
 	bool IncrementStart();
 	bool DecrementStart();
 
 	int fIsRunning; ///< Indicate how many Start() were requested without Stop() (#Start() - #Stop())
-	clock_t fStartTime; ///< Timestamp when the counter started running
+	struct timeval fStartTime; ///< Timestamp when the counter started running
 	float fTotalTime; ///< Total accumulated time between all Start() and Stop()
 };
-
 } /* namespace NA62Analysis */
 
 #endif /* TIMECOUNTER_H_ */

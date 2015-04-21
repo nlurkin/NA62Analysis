@@ -79,7 +79,7 @@ private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
-	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, clock_t startTime);
+	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
 protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
