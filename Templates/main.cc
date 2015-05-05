@@ -20,8 +20,8 @@ void usage(char* name)
 	cout << "Allowed options:" << endl;
 	cout << "  -h/--help\t\t: Display this help" << endl;
 	cout << "  -v [level]\t\t: Verbosity level." << endl
-		 << "\t\t\t  Possible values: kNo, kUser, kNormal, kExtended, kDebug, kTrace or 0,1,2,3,4,5;" << endl
-		 << "\t\t\t  Default=kNo; If level not specified: kNormal" << endl;
+		 << "\t\t\t  Possible values: kNo, kStandard, kUser, kNormal, kExtended, kDebug, kTrace or 0,1,2,3,4,5,6;" << endl
+		 << "\t\t\t  Default=kStandard; If level not specified: kNormal" << endl;
 	cout << "  -g\t\t\t: Graphical mode. Starts a ROOT application for display." << endl
 		 << "\t\t\t  Do not automatically exit at the end of the processing, Ctrl-C to exit." << endl;
 	cout << "  -n/--nevt int\t\t: Maximum number of events to process." << endl;
@@ -85,7 +85,7 @@ int main(int argc, char** argv){
 	bool graphicMode = false;
 	bool fromList = false;
 	bool ignoreNonExisting = false;
-	VerbosityLevel verbosity = VerbosityLevel::kNo;
+	VerbosityLevel verbosity = VerbosityLevel::kStandard;
 	bool readPlots = false;
 
 	int opt;

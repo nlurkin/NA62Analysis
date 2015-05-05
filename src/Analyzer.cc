@@ -256,6 +256,7 @@ void Analyzer::PrintInitSummary() const{
 	/// Print a summary of the Analyzer after initialization. List of booked histograms, list of parameters, ...
 	/// \EndMemberDescr
 
+	if(!TestLevel(Verbosity::kStandard)) return;
 	std::map<TString, param_t>::const_iterator it;
 
 	StringTable paramTable("List of parameters");
