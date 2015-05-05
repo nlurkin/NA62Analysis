@@ -2,7 +2,6 @@
 #include <iostream>
 #include <TChain.h>
 #include "CedarMCTester.hh"
-#include "MCSimple.hh"
 #include "functions.hh"
 #include "Event.hh"
 #include "Persistency.hh"
@@ -17,18 +16,20 @@
 using namespace NA62Analysis;
 using namespace NA62Constants;
 
-
 /// \class CedarMCTester
-/// \Brief 
-/// Describe your Analyzer
+/// \Brief
+/// A test tool to check the output of the Cedar component of NA62MC
 /// \EndBrief
 ///
 /// \Detailed
-/// Describe your Analyzer
+/// A test tool to check the output of the Cedar component of NA62MC.
+/// It builds the histograms of signal rates, as well as
+/// photon distributions at various planes in the detector.
+/// It can be run on the standard output of NA62MC or on special output produced by
+/// compiling NA62MC with MDEFINES=CEDARRAYTRACING 
 /// \EndDetailed
 
-CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba, "CedarMCTester")
-{
+CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba, "CedarMCTester") {
     RequestTree("Cedar",new TCedarEvent);
 
     fDivider = "";
@@ -38,11 +39,10 @@ CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba, "CedarMCTest
     fAngularSeparation = 2 * pi  / 8; //radians
     fKaonRate = 45e6; //Hz
 
-    fZCedarOriginLab   =   69278; //mm
-    fZDiaphragmCentre  =    1251; //mm
-
-    fZLightGuideCentre     = 701; //mm
-    fLightGuideInnerRadius = 285; //mm
+    fZCedarOriginLab       = 69278; //mm
+    fZDiaphragmCentre      =  1251; //mm
+    fZLightGuideCentre     =   701; //mm
+    fLightGuideInnerRadius =   285; //mm
 
     fZQuartzWindowStart       = 851; //mm
     fZQuartzWindowLength      =  10; //mm
@@ -54,10 +54,7 @@ CedarMCTester::CedarMCTester(Core::BaseAnalysis *ba) : Analyzer(ba, "CedarMCTest
     fSphericalMirrorCapRadialOffset   = 106;  //mm
 }
 
-void CedarMCTester::InitOutput(){
-}
-
-void CedarMCTester::InitHist(){
+void CedarMCTester::InitHist() {
     bool refresh = false;
 
     BookCounter("NKaons");
@@ -276,18 +273,6 @@ void CedarMCTester::InitHist(){
             8 , refresh, "Photoelectrons/RayTracing" );
 }
 
-void CedarMCTester::DefineMCSimple(){
-}
-
-void CedarMCTester::StartOfRunUser(){
-}
-
-void CedarMCTester::StartOfBurstUser(){
-}
-
-void CedarMCTester::EndOfBurstUser(){
-}
-
 void CedarMCTester::Process(int iEvent){
     IncrementCounter( "NKaons");
 
@@ -469,14 +454,7 @@ void CedarMCTester::Process(int iEvent){
                 lightguide_photoelectrons.end(), 0 ) );
 }
 
-void CedarMCTester::PostProcess(){
-
-}
-
-void CedarMCTester::EndOfRunUser(){
-}
-
-void CedarMCTester::ExportPlot(){
+void CedarMCTester::EndOfRunUser() {
     int nKaons = static_cast<double>( GetCounterValue("NKaons") );
 
     //Normalize rate plots
@@ -561,10 +539,6 @@ void CedarMCTester::ExportPlot(){
 
     gFile->cd( GetAnalyzerName() + "/Photoelectrons/RayTracing" );
     hclgpe.Write("LightGuideCanvas");
-
-}
-
-void CedarMCTester::DrawPlot(){
 }
 
 namespace CedarTools
@@ -675,5 +649,4 @@ namespace CedarTools
         return 0.01 * (qes[i] + ( wl - wls[i] )
                 / ( wls[i+1] - wls[i] ) * ( qes[i+1] - qes[i] ) );
     }
-
 }

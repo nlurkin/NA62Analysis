@@ -5,17 +5,17 @@
 //
 // ------------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
 #ifndef CHANTIT0_H
 #define CHANTIT0_H 1
 
-class CHANTIT0Computation : public T0Computation {
+class CHANTIT0 : public T0Evaluation {
 
 public:
 
-  CHANTIT0Computation(NA62Analysis::Core::BaseAnalysis *ba);
-  ~CHANTIT0Computation() {};
+  CHANTIT0(NA62Analysis::Core::BaseAnalysis *ba);
+  ~CHANTIT0() {};
 };
 
 #endif

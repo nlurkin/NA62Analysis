@@ -5,8 +5,8 @@
 //
 // ---------------------------------------------------------------
 
-#ifndef T0COMPUTATION_HH
-#define T0COMPUTATION_HH
+#ifndef T0EVALUATION_HH
+#define T0EVALUATION_HH
 
 #include <stdlib.h>
 #include <vector>
@@ -16,13 +16,15 @@
 #include <TCanvas.h>
 
 #include "TH1D.h"
+#include "TProfile.h"
 #include "TF1.h"
 #include "TText.h"
+#include "TLine.h"
 
-class T0Computation : public NA62Analysis::Analyzer {
+class T0Evaluation : public NA62Analysis::Analyzer {
 
 public:
-  T0Computation(NA62Analysis::Core::BaseAnalysis *ba);
+  T0Evaluation(NA62Analysis::Core::BaseAnalysis *ba, std::string DetectorName);
 
   // standard methods
   void InitOutput() {}
@@ -40,26 +42,30 @@ public:
   void ParseConfFile();
   void EvaluateT0s(TH2D*);
   void EvaluateChannelT0(int);
+  void EvaluateGlobalOffset();
+  void GenerateT0TextFile();
   void GeneratePDFReport();
-  void GenerateOutput();
 
 private:
   void Publish();
 
-  int    fBurstCounter, fNChannels, fNChannelsActive, ActiveChannelMap[5000];
-  double fBinWidth;
-  bool   fIsActive[5000];
-  TH2D   *fH2, *fH2_Partial, *fH2_Integrated;
-  TH1D   *fHTime[5000], *fHT0VsBurst[5000];
-  TF1    *fFChannelFit[5000], *fFChannelStability[5000];
-  int    fChannelID[5000];
-  double fT0[5000], fDeltaT0[5000];
-  bool   fUseChannelMap;
+  int      fEvaluateGlobalT0, fEvaluateT0s;
+  int      fBurstCounter, fNChannels, fNChannelsActive, ActiveChannelMap[20000];
+  double   fBinWidth, fGlobalT0;
+  bool     fIsActive[20000];
+  TH2D     *fH2, *fH2_Partial, *fH2_Integrated;
+  TH1D     *fHRawTime, *fHTime[20000], *fHT0VsBurst[20000];
+  TF1      *fFChannelFit[20000], *fFChannelStability[20000];
+  int      fChannelID[20000];
+  double   fT0[20000], fDeltaT0[20000];
+  bool     fUseChannelMap;
 
 protected:
 
+  TString fDetectorName;       ///< Name of the detector
   TString fDirName;            ///< Name of directory in the input file
-  TString fTH2Name;            ///< Name of the input 2D histogram
+  TString fTH2Name;            ///< Name of the input histogram for T0 evaluation
+  TString fRawTimeHistoName;   ///< Name of the input histogram for global offset evaluation
   TString fConfFileName;       ///< Configuration file name (optional, of one wants channel map in the printout)
   TString fOutTextFileName;    ///< Name of the output file with the computed T0 constants
   TString fOutPDFFileName;     ///< Name of the output PDF report file (optional, if report is required)

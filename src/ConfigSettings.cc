@@ -38,11 +38,13 @@ void ConfigSettings::ParseFile(TString fileName) {
 		ns.SetValue("usecolors", global::fUseColors);
 		ns.SetValue("processoutputnewline", global::fProcessOutputNewLine);
 		ns.SetValue("skippedname", global::fSkippedName);
+		ns.SetValue("svcclass", global::fSvcClass);
 	}
 }
 
 bool ConfigSettings::global::fUseColors = true;
 bool ConfigSettings::global::fProcessOutputNewLine = true;
 std::string ConfigSettings::global::fSkippedName = "NA62Analysis";
+std::string ConfigSettings::global::fSvcClass = "na62";
 } /* namespace Configuration */
 } /* namespace NA62Analysis */

@@ -5,68 +5,78 @@
 //
 // ---------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
 using namespace std;
 using namespace NA62Analysis;
 using namespace NA62Constants;
 
-/// \class T0Computation
+/// \class T0Evaluation
 /// \Brief
 /// A generic tool for computation of the T0 constants.
 /// \EndBrief
 ///
 /// \Detailed
-/// A generic tool for computation of the T0 constants for any subdetector.
-/// The input is a 2-dimensional histogram of time vs readout channel number.
-/// Gaussian fits are performed to each slice of the histogram to estimate the T0s.
-/// The output is a text file with the T0 estimates and a PDF report with plots.
-/// Daughter classes for each subdetector implemenation are in Analyzers/CalibrationTools.
+/// A generic tool for computation of the T0 constants and the global T0 for any subdetector.
+/// The input for T0 computations is a 2-dimensional histogram of
+/// (Uncorrected RecoHit time wrt reference time) vs (readout channel number).
+/// The only correction to be made to the RecoHit time is the subtraction of the global T0.
+/// The recommended histogram name is "RecoHitTimeWrtReferenceVsReadoutChannelNoT0".
+/// The recommended time bin width is 0.2ns.
+/// Gaussian fits are performed to each slice of the histogram to evaluate the T0s.
+/// The output is a (potentially NA62Reco-readable) text with the T0 constants and a PDF report with plots.
+/// The input for the global T0 computation is a histogram filled with the "raw"
+/// RecoHit leading times (not corrected for anything).
+/// The recommended histogram name is "LeadingTimeRaw".
+/// The recommended number of bins is 5000, the recommended range is (-5000, 5000)ns.
+/// Daughter classes for each subdetector are in Analyzers/CalibrationTools.
 /// \EndDetailed
 
-T0Computation::T0Computation(Core::BaseAnalysis *ba) : Analyzer(ba) {
-  fUseChannelMap = 1;
-  fBurstCounter = 0;
-  fNChannels = fNChannelsActive = 0;
+T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : Analyzer(ba) {
 
   // Defaults for the user-defined parameters
-  fAnalyzerName       = "";
-  fDirName            = "";
-  fTH2Name            = "";
-  fConfFileName       = "";
-  fOutTextFileName    = "";
-  fOutPDFFileName     = "";
+  fDetectorName       = DetectorName;
+  fAnalyzerName       = fDetectorName + "_T0";
+  fDirName            = fDetectorName + "Monitor";
+  fConfFileName       = "./" + fDetectorName + ".conf";
+  fOutTextFileName    = "./" + fDetectorName + "-T0.dat";
+  fOutPDFFileName     = "./" + fDetectorName + "-T0.pdf";
+  fTH2Name            = "RecoHitTimeWrtReferenceVsReadoutChannelNoT0";
+  fRawTimeHistoName   = "LeadingTimeRaw";
+
   fFittingRange       = 0.9;  // fitting range = [-0.9ns:+0.9ns], i.e. 9 bins of 0.2ns width
-  fNFilesToAccumulate = 1;    // time unit for the T0 stability plots
+  fNFilesToAccumulate = 10;   // for the T0 stability plots
   fHistoTimeLimit     = 20.0;
+
+  // Initialization of the analyzer
+  fEvaluateGlobalT0 = fEvaluateT0s = fUseChannelMap = 1;
+  fBurstCounter  = 0;
+  fNChannels = fNChannelsActive = 0;
 }
 
-void T0Computation::InitHist() {
+void T0Evaluation::InitHist() {
 
-  // Checks on the input parameters
-  if (!fAnalyzerName.Length()) {
-    cout << "Fatal error: an unnamed T0Computation daughter analyser found" << endl;
-    exit(1);
+  fHRawTime      = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
+  fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
+  fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated
+
+  if (!fHRawTime) {
+    fEvaluateGlobalT0 = 0;
+    cout << "Warning in "<<fAnalyzerName<<": histogram for global T0 evaluation (" <<
+      fDirName << "/" << fRawTimeHistoName << ") not found" << endl;
   }
-  if (!fDirName.Length()) {
-    cout << "Fatal error in "<<fAnalyzerName<<": directory in input file not defined" << endl;
-    exit(1);
-  }
-  if (!fTH2Name.Length()) {
-    cout << "Fatal error in "<<fAnalyzerName<<": histogram name in input file not defined" << endl;
-    exit(1);
-  }
-  if (!fOutTextFileName.Length()) {
-    cout << "Fatal error in "<<fAnalyzerName<<": output text file name not defined" << endl;
-    exit(1);
+  if (!fH2) {
+    fEvaluateT0s = 0;
+    cout << "Warning in "<<fAnalyzerName<<": histogram for T0 evaluation (" << 
+      fDirName << "/" << fTH2Name << ") not found" << endl;
   }
 
-  fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false);
-  fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);
-  fH2_Partial    = new TH2D(*fH2); // for T0 stability vs time
-  fH2_Partial->Reset();
-  fNChannels = fH2->GetNbinsX();
-  fBinWidth  = fH2->GetYaxis()->GetBinWidth(1);
+  if (fEvaluateT0s) {
+    fH2_Partial = new TH2D(*fH2); // for T0 stability vs time
+    fH2_Partial->Reset();
+    fNChannels = fH2->GetNbinsX();
+    fBinWidth  = fH2->GetYaxis()->GetBinWidth(1);
+  }
 
   for (int i=0; i<fNChannels; i++) {
     fChannelID[i] = -99;
@@ -89,20 +99,24 @@ void T0Computation::InitHist() {
   }
 
   // Book monitoring histograms to be saved into the output
-  BookHisto (new TH1D("T0Summary",
-		      "T0Summary;RO channel ID;T0 and T0 resolution",
-		      fNChannels, -0.5, fNChannels-0.5));
-  BookHisto (new TH1D("T0",
-		      "T0;RO channel ID;T0 and its error",
-		      fNChannels, -0.5, fNChannels-0.5));
-  BookHisto (new TH1D("T0Resolution",
-		      "T0Resolution;RO channel ID;T0 resolution and its error",
-		      fNChannels, -0.5, fNChannels-0.5));
+  if (fEvaluateT0s) {
+    BookHisto (new TH1D("T0",
+			"T0;RO channel ID;T0 and its error",
+			fNChannels, -0.5, fNChannels-0.5));
+    BookHisto (new TH1D("T0Resolution",
+			"T0Resolution;RO channel ID;T0 resolution and its error",
+			fNChannels, -0.5, fNChannels-0.5));
+  }
 }
 
-void T0Computation::ParseConfFile() {
+///////////////////////////////////////////////////
+// Read the channle map from the configuration file
+
+void T0Evaluation::ParseConfFile() {
   ifstream confFile(fConfFileName);
-  if (confFile == NULL) {
+  if (!fConfFileName.Length() || !confFile) {
+    cout << "Warning in "<<fAnalyzerName<<": config file " << 
+      fConfFileName << " not found, channel map not available" << endl;
     fUseChannelMap = 0;
     return;
   }
@@ -121,11 +135,13 @@ void T0Computation::ParseConfFile() {
   confFile.close();
 }
 
-void T0Computation::EndOfBurstUser() {
+////////////////////////////////////
+// Build the T0 time stability plots
 
+void T0Evaluation::EndOfBurstUser() {
+  if (!fEvaluateT0s) return;
   fH2_Partial->Add(fH2);
   fBurstCounter++;
-
   if (!(fBurstCounter%fNFilesToAccumulate)) {
     EvaluateT0s(fH2_Partial);
     for (int ich=0; ich<fNChannels; ich++) {
@@ -138,9 +154,9 @@ void T0Computation::EndOfBurstUser() {
   }
 }
 
-void T0Computation::EndOfRunUser() {
+void T0Evaluation::EndOfRunUser() {
 
-  // Check T0 stability vs burst
+  // Time stability of the T0s
   for (int ich=0; ich<fNChannels; ich++) {
     if (fIsActive[ich]) {
       fFChannelStability[ich] = new TF1("pol0", "pol0", -0.5, fBurstCounter-0.5);
@@ -150,11 +166,16 @@ void T0Computation::EndOfRunUser() {
     }
   }
 
-  EvaluateT0s(fH2_Integrated);
-  GenerateOutput();
-  if (fOutPDFFileName.Length()) GeneratePDFReport();
+  // Evaluate the T0s and global offset with the full data sample
+  if (fEvaluateGlobalT0) EvaluateGlobalOffset();
+  if (fEvaluateT0s) EvaluateT0s(fH2_Integrated);
 
-  // Save plots to output
+  // Generate and save the output
+  if (fEvaluateT0s) {
+    GenerateT0TextFile();
+    GeneratePDFReport();
+  }
+
   SaveAllPlots();
   for (int ich=0; ich<fNChannels; ich++) {
     if (fIsActive[ich]) {
@@ -164,7 +185,7 @@ void T0Computation::EndOfRunUser() {
   }
 }
 
-void T0Computation::EvaluateT0s(TH2D *h2) {
+void T0Evaluation::EvaluateT0s(TH2D *h2) {
   for (int ich=0; ich<fNChannels; ich++) {
     if (fIsActive[ich]) {
       TString Name = Form("Channel RO %04d ID %04d", ich, fChannelID[ich]);
@@ -176,7 +197,7 @@ void T0Computation::EvaluateT0s(TH2D *h2) {
   }
 }
 
-void T0Computation::EvaluateChannelT0 (int ich) {
+void T0Evaluation::EvaluateChannelT0 (int ich) {
 
   // Check if there are enough entries for the fit to converge
   if (fHTime[ich]->Integral()==0) return;
@@ -220,22 +241,39 @@ void T0Computation::EvaluateChannelT0 (int ich) {
   fT0[ich]      = T0;
   fDeltaT0[ich] = DeltaT0;
 
-  fHisto.GetHisto("T0Summary")->   SetBinContent(ich+1, T0);
-  fHisto.GetHisto("T0Summary")->   SetBinError  (ich+1, Resol);
   fHisto.GetHisto("T0")->          SetBinContent(ich+1, T0);
   fHisto.GetHisto("T0")->          SetBinError  (ich+1, DeltaT0);
   fHisto.GetHisto("T0Resolution")->SetBinContent(ich+1, Resol);
   fHisto.GetHisto("T0Resolution")->SetBinError  (ich+1, DeltaResol);
 }
 
-//////////////////////////
-// Build a PDF report file
+/////////////////////////////////////////////////////////////////////
+// Global T0 evaluation: discard bins with low content (accidentals),
+// then find the mean value of the remaining bins
 
-void T0Computation::GeneratePDFReport() {
+void T0Evaluation::EvaluateGlobalOffset() {
+  TH1D *fHRawTime1 = new TH1D(*fHRawTime);
+  double maxcontent = fHRawTime1->GetBinContent(fHRawTime1->GetMaximumBin());
+  for (int i=1; i<=fHRawTime1->GetNbinsX(); i++) {
+    if (fHRawTime1->GetBinContent(i)<0.5*maxcontent) fHRawTime1->SetBinContent(i,0);
+  }
+  fGlobalT0 = round(fHRawTime1->GetMean());
+  cout << fDetectorName << " global T0 = " << fGlobalT0 << " ns " << endl;
+  delete fHRawTime1;
+}
+
+/////////////////////
+// Build a PDF report
+
+void T0Evaluation::GeneratePDFReport() {
+
+  cout <<"Generating report: "<< fOutPDFFileName << endl;
+
+  gErrorIgnoreLevel = 5000; // suppress messages generated for each page printed
 
   TCanvas *FrontCanvas = new TCanvas("FrontCanvas");
-  FrontCanvas->Divide(1,2);
-  for (int i=1; i<=2; i++) {
+  FrontCanvas->Divide(1,3);
+  for (int i=1; i<=3; i++) {
     FrontCanvas->GetPad(i)->SetLeftMargin(0.05);
     FrontCanvas->GetPad(i)->SetRightMargin(0.01);
     FrontCanvas->GetPad(i)->SetTopMargin(0.01);
@@ -281,10 +319,34 @@ void T0Computation::GeneratePDFReport() {
   fHisto.GetHisto("T0Resolution")->GetYaxis()->SetTitle("Peak width and its error [ns]");
   fHisto.GetHisto("T0Resolution")->Draw();
 
+  FrontCanvas->cd(3);
+  if (fEvaluateGlobalT0) {
+    double maxcontent = fHRawTime->GetBinContent(fHRawTime->GetMaximumBin());
+
+    int maxbin = fHRawTime->GetNbinsX();
+    while (fHRawTime->GetBinContent(maxbin)<0.01*maxcontent &&
+	   maxbin>1) maxbin--;
+    int minbin = 1;
+    while (fHRawTime->GetBinContent(minbin)<0.01*maxcontent &&
+	   minbin<fHRawTime->GetNbinsX()) minbin++;
+
+    fHRawTime->SetStats(0);
+    fHRawTime->SetTitle(Form("Digi Raw Time: global T0 = %d ns", (int)fGlobalT0));
+    fHRawTime->GetXaxis()->SetRangeUser
+      (fHRawTime->GetBinLowEdge(minbin), fHRawTime->GetBinLowEdge(maxbin+1));
+    fHRawTime->SetLineColor(kBlue);
+    fHRawTime->SetLineWidth(1);
+    fHRawTime->Draw();
+    TLine *l = new TLine();
+    l->SetLineColor(kGreen+2);
+    l->SetLineWidth(1);
+    l->DrawLine(fGlobalT0, 0, fGlobalT0, fHRawTime->GetMaximum());
+  }
+
   FrontCanvas->Print(Form(fOutPDFFileName + "("), "pdf");
 
-  //////////////////////////
-  // Time distribution plots
+  ///////////////////////////////////////////
+  // Time distribution plots (multiple pages)
 
   int Npages = fNChannelsActive/16;
   if (fNChannelsActive%16) Npages++;
@@ -321,8 +383,8 @@ void T0Computation::GeneratePDFReport() {
     Canvas->Print(fOutPDFFileName, "pdf");
   }
 
-  ///////////////////////
-  // Time stability plots
+  ////////////////////////////////////////
+  // Time stability plots (multiple pages)
 
   for (int ipage=0; ipage<Npages; ipage++) {
     for (int i=0; i<16; i++) {
@@ -359,15 +421,16 @@ void T0Computation::GeneratePDFReport() {
   Canvas->Print(Form(fOutPDFFileName + "]"), "pdf"); // close file
   delete FrontCanvas;
   delete Canvas;
+  gErrorIgnoreLevel = -1; // restore the default
 }
 
 ////////////////////////////////
 // Build an output file with T0s
 
-void T0Computation::GenerateOutput() {
+void T0Evaluation::GenerateT0TextFile() {
   time_t now = time(0);
   ofstream outfile (fOutTextFileName);
-  outfile << "# "<<fAnalyzerName<<" T0 constants. Format: RO channel; geometric ID; T0 offset (ns)."<<endl;
+  outfile << "# "<<fDetectorName<<" T0 constants. Format: RO channel; geometric ID; T0 offset (ns)."<<endl;
   outfile << "# These T0 offsets should be subtracted from the raw times."<<endl;
   outfile << "# Special values: -99.999 for masked channels, +99.999 for failed T0 fits."<<endl;
   outfile << "# An offset T0 is ignored by the reconstruction in case |T0|>99ns."<<endl;

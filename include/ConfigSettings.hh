@@ -53,6 +53,7 @@ public:
 		static bool fUseColors; ///< Can use colors in the output
 		static bool fProcessOutputNewLine; ///< Use \\n or \\r when printing the  "Processing ..." line
 		static std::string fSkippedName; ///< Name of the .skipped file
+		static std::string fSvcClass; ///< Name of the svcClass
 	};
 };
 

@@ -281,9 +281,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	}
 	if(nFiles == 0){
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
-                        TString svcClass = getenv("STAGE_SVCCLASS");
-                        if(svcClass=="") svcClass="na62";
-			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+svcClass;
+			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 		}
 		if(inFileName.Contains("/eos/") && !inFileName.Contains("root://eosna62.cern.ch//")){
 			inFileName = "root://eosna62.cern.ch//"+inFileName;
@@ -297,9 +295,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
 			fIOTimeCount.Stop();
 			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
-                                TString svcClass = getenv("STAGE_SVCCLASS");
-                                if(svcClass=="") svcClass="na62";
-			        inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+svcClass;
+			        inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 			}
 			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;

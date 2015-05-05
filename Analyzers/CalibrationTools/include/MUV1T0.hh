@@ -5,17 +5,17 @@
 //
 // ------------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
-#ifndef MUV2T0_H
-#define MUV2T0_H 1
+#ifndef MUV1T0_H
+#define MUV1T0_H 1
 
-class MUV2T0Computation : public T0Computation {
+class MUV1T0 : public T0Evaluation {
 
 public:
 
-  MUV2T0Computation(NA62Analysis::Core::BaseAnalysis *ba);
-  ~MUV2T0Computation() {};
+  MUV1T0(NA62Analysis::Core::BaseAnalysis *ba);
+  ~MUV1T0() {};
 };
 
 #endif

@@ -5,17 +5,17 @@
 //
 // ------------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
-#ifndef RICHT0_H
-#define RICHT0_H 1
+#ifndef MUV3T0_H
+#define MUV3T0_H 1
 
-class RICHT0Computation : public T0Computation {
+class MUV3T0 : public T0Evaluation {
 
 public:
 
-  RICHT0Computation(NA62Analysis::Core::BaseAnalysis *ba);
-  ~RICHT0Computation() {};
+  MUV3T0(NA62Analysis::Core::BaseAnalysis *ba);
+  ~MUV3T0() {};
 };
 
 #endif

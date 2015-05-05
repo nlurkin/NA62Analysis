@@ -2,3 +2,4 @@
 UseColors = false
 ProcessOutputNewLine = false
 SkippedName = NA62Analysis
+svcClass = na62

@@ -5,17 +5,17 @@
 //
 // ------------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
-#ifndef HACT0_H
-#define HACT0_H 1
+#ifndef CEDART0_H
+#define CEDART0_H 1
 
-class HACT0Computation : public T0Computation {
+class CedarT0 : public T0Evaluation {
 
 public:
 
-  HACT0Computation(NA62Analysis::Core::BaseAnalysis *ba);
-  ~HACT0Computation() {};
+  CedarT0(NA62Analysis::Core::BaseAnalysis *ba);
+  ~CedarT0() {};
 };
 
 #endif

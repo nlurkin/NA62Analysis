@@ -5,17 +5,17 @@
 //
 // ------------------------------------------------------------------
 
-#include "T0Computation.hh"
+#include "T0Evaluation.hh"
 
-#ifndef IRCT0_H
-#define IRCT0_H 1
+#ifndef CHODT0_H
+#define CHODT0_H 1
 
-class IRCT0Computation : public T0Computation {
+class CHODT0 : public T0Evaluation {
 
 public:
 
-  IRCT0Computation(NA62Analysis::Core::BaseAnalysis *ba);
-  ~IRCT0Computation() {};
+  CHODT0(NA62Analysis::Core::BaseAnalysis *ba);
+  ~CHODT0() {};
 };
 
 #endif

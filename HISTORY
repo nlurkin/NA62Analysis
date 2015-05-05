@@ -2,6 +2,19 @@
 NA62Analysis Project
 ################################################################
 
+2015-04-30 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+	   rev 510,511
+	   - MUV3MCTester introduced
+	   - Optimization of the T0 evaluation tool
+
+2015-04-29  Karim Massri (karim.massri@cern.ch)
+                rev 508
+        - svcClass added in settingsna62
+
+2015-04-29 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+	   rev 505
+	   - Updated T0 evaluation tools
+
 2015-04-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 495
         - Adapt VertexCDA to the new Spectrometer persistency 

@@ -14,52 +14,45 @@ class TH3D;
 class TGraph;
 class TTree;
 
+class CedarMCTester : public NA62Analysis::Analyzer {
+public:
+  CedarMCTester(NA62Analysis::Core::BaseAnalysis *ba);
+  void InitHist();
+  void InitOutput() {}
+  void DefineMCSimple() {}
+  void Process(int i);
+  void StartOfBurstUser() {}
+  void EndOfBurstUser() {}
+  void StartOfRunUser() {}
+  void EndOfRunUser();
+  void PostProcess() {}
+  void DrawPlot() {}
 
-class CedarMCTester : public NA62Analysis::Analyzer
-{
-	public:
-		CedarMCTester(NA62Analysis::Core::BaseAnalysis *ba);
-		void InitHist();
-		void InitOutput();
-		void DefineMCSimple();
-		void Process(int i);
-		void StartOfBurstUser();
-		void EndOfBurstUser();
-		void StartOfRunUser();
-		void EndOfRunUser();
-		void PostProcess();
-		void ExportPlot();
-		void DrawPlot();
-	private:
-		void Publish();
+private:
+  void Publish();
 
-        double pi;
-        double hc;
-        double fKaonRate;
-        std::string fDivider;
+  double pi;
+  double hc;
+  double fKaonRate;
+  std::string fDivider;
 
-        double fZCedarOriginLab;
-        double fZDiaphragmCentre;
+  double fZCedarOriginLab;
+  double fZDiaphragmCentre;
+  double fZLightGuideCentre;
+  double fLightGuideInnerRadius;
+  double fZQuartzWindowStart;
+  double fZQuartzWindowLength;
+  double fQuartzWindowRadialOffset;
+  double fZSphericalMirrorCapCentreNominal;
+  double fSphericalMirrorDiameter;
+  double fSphericalMirrorCentralAngle;
+  double fSphericalMirrorCapRadialOffset;
+  double fAngularSeparation;
 
-        double fZLightGuideCentre;
-        double fLightGuideInnerRadius;
+  TH3D * fhAllPositions;
+  TH3D * fhKTAGPositions;
 
-        double fZQuartzWindowStart;
-        double fZQuartzWindowLength;
-        double fQuartzWindowRadialOffset;
-
-        double fZSphericalMirrorCapCentreNominal;
-        double fSphericalMirrorDiameter;
-        double fSphericalMirrorCentralAngle;
-        double fSphericalMirrorCapRadialOffset;
-
-        double fAngularSeparation;
-
-        TH3D * fhAllPositions;
-        TH3D * fhKTAGPositions;
-
-	protected:
-
+protected:
 
 };
 
