@@ -734,7 +734,7 @@ def prepareUserFolder(args):
 	[path] = args.UserDirectory
 	path = path.rstrip("/")
 	path = os.path.abspath(path)
-	FWPath = getVar("ANALYSISFW_PATH", ".")
+	FWPath = getVar("ANALYSISFW_PATH", os.getcwd())
 	NA62MCSOURCE = getCheckVar("NA62MCSOURCE")
 	
 	if not os.path.exists(path):
@@ -773,8 +773,8 @@ def prepareUserFolder(args):
 	if not os.path.exists("%s/NA62.root" % path):
 		shutil.copyfile("%s/NA62.root" % FWPath, "%s/NA62.root" % path)
 	
-	readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
-	readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":os.getcwd(), "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+	readAndReplace("%s/Templates/env.sh" % FWPath, "%s/scripts/env.sh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
+	readAndReplace("%s/Templates/env.csh" % FWPath, "%s/scripts/env.csh" % path, {"$$ANALYSISFW$$":FWPath, "$$USERDIR$$":path, "$$NA62MCSOURCE$$":NA62MCSOURCE})
 	readAndReplace("%s/Templates/config" % FWPath, "%s/config" % path, {})
 	shutil.copyfile("%s/Templates/CMakeLists.txt" % FWPath, "%s/CMakeLists.txt" % path)
 	shutil.copyfile("%s/Templates/CMakeLists_PO.txt" % FWPath, "%s/PhysicsObjects/CMakeLists.txt" % path)

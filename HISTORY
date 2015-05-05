@@ -2,105 +2,114 @@
 NA62Analysis Project
 ################################################################
 
-2015-04-30 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-	   rev 510,511
-	   - MUV3MCTester introduced
-	   - Optimization of the T0 evaluation tool
+2015-05-05      Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev.519
+                - Fixed bug introduced with rev 518
 
-2015-04-29  Karim Massri (karim.massri@cern.ch)
+2015-05-05      Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev.518
+                - Fixed small bug: NA62AnalysisBuilder.py not looking at ANALYSISFW_PATH
+                  for generating env.[c]sh
+
+2015-04-30      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev 510,511
+                - MUV3MCTester introduced
+                - Optimization of the T0 evaluation tool
+
+2015-04-29      Karim Massri (karim.massri@cern.ch)
                 rev 508
-        - svcClass added in settingsna62
+                - svcClass added in settingsna62
 
-2015-04-29 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-	   rev 505
-	   - Updated T0 evaluation tools
+2015-04-29      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev 505
+                - Updated T0 evaluation tools
 
-2015-04-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-04-22      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 495
-        - Adapt VertexCDA to the new Spectrometer persistency 
+                - Adapt VertexCDA to the new Spectrometer persistency 
 
-2015-04-21  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-04-21      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 492
-        - Fix timing info. The clock used was taking into account only the time
-		    associated with the process. Use real time instead.
+                - Fix timing info. The clock used was taking into account only the time
+                    associated with the process. Use real time instead.
 
-2015-04-20  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-04-20      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 491
-        - Add timing info: total time, initialisation time, event processing time
-          and I/O time.
-        - Add timing info during processing: Elapsed time, total estimated time, 
-          estimated remaining time
-        - Fix crash when empty file is provided with --histo option
-        - Fix bug with command line analyzer parameters
+                - Add timing info: total time, initialisation time, event processing time
+                  and I/O time.
+                - Add timing info during processing: Elapsed time, total estimated time, 
+                  estimated remaining time
+                - Fix crash when empty file is provided with --histo option
+                - Fix bug with command line analyzer parameters
 
-2015-04-12 Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+2015-04-12      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev 478
-        - Added the T0 computation tools
+                - Added the T0 computation tools
 
-2015-04-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-04-10      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 477
-        - Remove ExportPlot() from templateAnalyzer.hh
+                - Remove ExportPlot() from templateAnalyzer.hh
 
-2015-04-09  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-04-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 476
-        - Fix various warnings
-        - Set the default to "Read All" when reading a list of files. Add -b
-          as additional alias for -B/--nfiles (Do not work with the -g option because
-          of ROOT interference)
-        - Add elements to manipulate output stream colors
-        - Improve verbosity control. Redefined verbosity levels:
-          kNo=0, kUser=1, kNormal=2, kExtended=3, kDebug=4, kTrace=5
-          They can easily be used with their corresponding stream manipulators. Ex:
-          cout << normal() << "This is a normal message printed only if -v is at least kNormal (2)" << endl;
-          The --logtofile option redirect all messages using these manipulators
-          to the specified output file.
-        - Improve configuration file support. Add .settingsna62 file to customize
-          NA62Analysis behavior. (Use of colors, carriage return)
-        - Test that config file used by NA62AnalysisBuilder are actually text file
-          before trying to use them.
-        - Update documentation
-        - Build ROOT Dictionary only for files with corresponding LinkDef files in
-          PhysicsObjects
-        - Fix crash when file is empty or non existing with --histo option
-        - Allow using same input histogram both in replace and append mode
-        - Deprecate ExportPlots() method. EndOfRunUser() provides same functionality. 
+                - Fix various warnings
+                - Set the default to "Read All" when reading a list of files. Add -b
+                  as additional alias for -B/--nfiles (Do not work with the -g option because
+                  of ROOT interference)
+                - Add elements to manipulate output stream colors
+                - Improve verbosity control. Redefined verbosity levels:
+                  kNo=0, kUser=1, kNormal=2, kExtended=3, kDebug=4, kTrace=5
+                  They can easily be used with their corresponding stream manipulators. Ex:
+                  cout << normal() << "This is a normal message printed only if -v is at least kNormal (2)" << endl;
+                  The --logtofile option redirect all messages using these manipulators
+                  to the specified output file.
+                - Improve configuration file support. Add .settingsna62 file to customize
+                  NA62Analysis behavior. (Use of colors, carriage return)
+                - Test that config file used by NA62AnalysisBuilder are actually text file
+                  before trying to use them.
+                - Update documentation
+                - Build ROOT Dictionary only for files with corresponding LinkDef files in
+                  PhysicsObjects
+                - Fix crash when file is empty or non existing with --histo option
+                - Allow using same input histogram both in replace and append mode
+                - Deprecate ExportPlots() method. EndOfRunUser() provides same functionality. 
 
-2015-03-17  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-03-17      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 467
-        - Fix typo in doc
-        - Implement GetListOf... for input files (Keys, Dirs, Histo, TH1, TH2, TGraph)
+                - Fix typo in doc
+                - Implement GetListOf... for input files (Keys, Dirs, Histo, TH1, TH2, TGraph)
 
-2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-03-11      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 456
-        - Fix bug when using input histograms in StartOfBurst or EndOfBurst
-        - Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
-        - Correct --start option description 
+                - Fix bug when using input histograms in StartOfBurst or EndOfBurst
+                - Add GetHisto method in HistoHandler (can be used instead of GetTH1 and GetTH2)
+                - Correct --start option description 
 
-2015-03-11  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-03-11      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 452
-        - Fix bug with --start option
-        - Rewrite usage and options handling. Now allows long-style option.  
-        - Fix PhysicsObjects dictionary is not generated. Use one LinkDef file for each
-          PhysicsObjects. The name must be LinkDef_POName.h
-        - Implement Histogram reading without input TTree. Analyzers using only histograms
-          can use this option to bypass the need to have an input TTree and to read it all.
-          The option is --histo. See http://sergiant.web.cern.ch/sergiant/NA62FW/html/analysis.html
-          for more details.
-        - Update documentation
+                - Fix bug with --start option
+                - Rewrite usage and options handling. Now allows long-style option.  
+                - Fix PhysicsObjects dictionary is not generated. Use one LinkDef file for each
+                  PhysicsObjects. The name must be LinkDef_POName.h
+                - Implement Histogram reading without input TTree. Analyzers using only histograms
+                  can use this option to bypass the need to have an input TTree and to read it all.
+                  The option is --histo. See http://sergiant.web.cern.ch/sergiant/NA62FW/html/analysis.html
+                  for more details.
+                - Update documentation
 
-2015-03-02  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-03-02      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 441
-        - Fix PhysicsObjects are not getting the extra include dirs from the config 
-          file (Bug NA62RKD-34).
-        - If mcEvent exists and is empty, consider the file as not containing MC
-        - If RawHeader exists and is empty, consider the file as not containing RawHeader 
-        - Remove obsolete Makefile
-        - Fix: NA62AnalysisBuilder.py - updateHeaderSignature() - Don't handle subdirectories
-          in include(Bug NA62RKD-36)
-        - Fix: Order of linking reconstruction libraries is wrong (Bug NA62RKD-37)
-        - Fix CMAKE always picking the default gcc/g++ version instead of the user defined one
-        - Add c++11 support for newer compiler (-std=c++11 flag instead of -std=c++0x) 
-        - Fix: RequestTree does not work with "Hits" (Bug NA62RKD-52)
+                - Fix PhysicsObjects are not getting the extra include dirs from the config 
+                  file (Bug NA62RKD-34).
+                - If mcEvent exists and is empty, consider the file as not containing MC
+                - If RawHeader exists and is empty, consider the file as not containing RawHeader 
+                - Remove obsolete Makefile
+                - Fix: NA62AnalysisBuilder.py - updateHeaderSignature() - Don't handle subdirectories
+                  in include(Bug NA62RKD-36)
+                - Fix: Order of linking reconstruction libraries is wrong (Bug NA62RKD-37)
+                - Fix CMAKE always picking the default gcc/g++ version instead of the user defined one
+                - Add c++11 support for newer compiler (-std=c++11 flag instead of -std=c++0x) 
+                - Fix: RequestTree does not work with "Hits" (Bug NA62RKD-52)
           
 2015-02-21      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev.434
@@ -110,119 +119,119 @@ NA62Analysis Project
                 rev.419
                 - Small bug fixed in xroot protocol handling (IOHandler.cc)
 
-2015-01-13 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-01-13      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 403
-		- Add possibility to get RawHeader from reconstructed data files. !Warning, Process method
-		  signature has changed with no backward compatibility. Please update your analyzers headers
-		  and source files. The signature is now:
-		      void Process(int iEvent)
-		  Use GetMCEvent() and GetRawHeader() to access the MCTruthEvent or the RawHeader structures.
-		- Analyzer MCSimple instance moved from BaseAnalysis to Analyzer. !Warning, DefineMCSimple
-		  method signature has changed with no backward compatibility. Please update your analyzers
-		  headers and source file. The signature is now:
-		      void DefineMCSimple()
-		  fMCSimple is now always accessible as it belongs to the class.
-		- Allow Digis to be read from input TTree as with Hits and Recos
-		- Automatically link with NA62Reconstruction. User still has to specify include path in the
-		  config file. The link is done only if the NA62RECOSOURCE environment variable is defined.
-		
+                - Add possibility to get RawHeader from reconstructed data files. !Warning, Process method
+                  signature has changed with no backward compatibility. Please update your analyzers headers
+                  and source files. The signature is now:
+                      void Process(int iEvent)
+                  Use GetMCEvent() and GetRawHeader() to access the MCTruthEvent or the RawHeader structures.
+                - Analyzer MCSimple instance moved from BaseAnalysis to Analyzer. !Warning, DefineMCSimple
+                  method signature has changed with no backward compatibility. Please update your analyzers
+                  headers and source file. The signature is now:
+                      void DefineMCSimple()
+                  fMCSimple is now always accessible as it belongs to the class.
+                - Allow Digis to be read from input TTree as with Hits and Recos
+                - Automatically link with NA62Reconstruction. User still has to specify include path in the
+                  config file. The link is done only if the NA62RECOSOURCE environment variable is defined.
+                
 2014-11-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 385
                 - Fix NA62Analysis crashes when mcEvent contains no KinePart (Bug NA62RKD-31)
                 - Fix NA62Analysis not compiling anymore on lxplus (Bug NA62RKD-33)
-		- Fix PhysicsObjects libraries not being built
+                - Fix PhysicsObjects libraries not being built
 
-2014-10-07 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-10-07      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 360
-		- Fix -a option (Bug NA62RKD-26)
-		- Fix NA62AnalysisBuilder.py rename command (Bug NA62RKD-24)
-		- Fix bug when reading multiple files in input (Bug NA62RKD-27)
-		- Fix user PhysicsObjects headers not being included
+                - Fix -a option (Bug NA62RKD-26)
+                - Fix NA62AnalysisBuilder.py rename command (Bug NA62RKD-24)
+                - Fix bug when reading multiple files in input (Bug NA62RKD-27)
+                - Fix user PhysicsObjects headers not being included
 
-2014-06-05 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-06-05      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 348
-		- Add python version test. NA62AnalysisBuilder.py works only with python2 > 2.5.
-		- Add empty files cmakeTrick.hh(.cc) in ToolsLib to force CMAKE to build the empty library
-		  (to be removed when the library is not empty anymore).
+                - Add python version test. NA62AnalysisBuilder.py works only with python2 > 2.5.
+                - Add empty files cmakeTrick.hh(.cc) in ToolsLib to force CMAKE to build the empty library
+                  (to be removed when the library is not empty anymore).
 
-2014-06-01 	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-06-01      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 345
-		- Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
-		  and use the system argparse module if available (Bug NA62RKD-22) 
-		- Add an option to the framework (-a) to allow it to run even if one or several 
-		  TTree is not found
-		- The framework now fully supports input TTrees with any number of branches 
-		  (To use this new feature see the documentation of RequestTree, GetEvent and GetObject)
-		- Use static libraries instead of shared libraries (for NA62MC Persistency, NA62Analysis
-		  libraries and user analyzers)
-		- Include ToolsLib in the build (Bug NA62RKD-23)
+                - Fix bug in NA62AnalysisBuilder.py preventing the build when no flag option was used
+                  and use the system argparse module if available (Bug NA62RKD-22) 
+                - Add an option to the framework (-a) to allow it to run even if one or several 
+                  TTree is not found
+                - The framework now fully supports input TTrees with any number of branches 
+                  (To use this new feature see the documentation of RequestTree, GetEvent and GetObject)
+                - Use static libraries instead of shared libraries (for NA62MC Persistency, NA62Analysis
+                  libraries and user analyzers)
+                - Include ToolsLib in the build (Bug NA62RKD-23)
 
-2014-05-09	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-05-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 343
-		- Moved several scripts to the scripts folder
-		- Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
-		  A flag to generate debugging information (-g flag of compiler)
-		  A flag to enable all the warning flags
-		  A flag to disable c++11 support (automatically enabled if gcc version supports the feature)
-		  An option for compiling with several processors
-		  Type NA62AnalysisBuilder.py build -h for more info 
-		- Additions and improvements to documentation (http://sergiant.web.cern.ch/sergiant/NA62FW/html/)
-		- Add TwoLinesCDA and CedarMCTester in the list of validated components 
-		  (http://sergiant.web.cern.ch/sergiant/NA62FW/html/componentStatus.html)
-		- Several performances improvements in the internal parts of the framework
-		- Implement HistoHandler::Iterator<T> to run over a set of booked histograms 
-		  (can be accessed with GetIteratorTH1|TH2|TGraph; see HistoHandler::Iterator class documentation
-		  at http://sergiant.web.cern.ch/sergiant/NA62FW/html/annotated.html for example on how to use it)
-		- Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
-		- Add GetNEvents method to get the total number of events and GetTree to get a
-		  pointer to a TTree.
-		- Fix bug in FindROOT when generating dictionary for TObjects in PhysicsObjects and 
-		  TRecoLKrCandidateMC in Examples. The corresponding libraries are now compiled.  
+                - Moved several scripts to the scripts folder
+                - Add flags to NA62AnalysisBuilder.py for build and prepare commands: 
+                  A flag to generate debugging information (-g flag of compiler)
+                  A flag to enable all the warning flags
+                  A flag to disable c++11 support (automatically enabled if gcc version supports the feature)
+                  An option for compiling with several processors
+                  Type NA62AnalysisBuilder.py build -h for more info 
+                - Additions and improvements to documentation (http://sergiant.web.cern.ch/sergiant/NA62FW/html/)
+                - Add TwoLinesCDA and CedarMCTester in the list of validated components 
+                  (http://sergiant.web.cern.ch/sergiant/NA62FW/html/componentStatus.html)
+                - Several performances improvements in the internal parts of the framework
+                - Implement HistoHandler::Iterator<T> to run over a set of booked histograms 
+                  (can be accessed with GetIteratorTH1|TH2|TGraph; see HistoHandler::Iterator class documentation
+                  at http://sergiant.web.cern.ch/sergiant/NA62FW/html/annotated.html for example on how to use it)
+                - Rename GetTree -> BranchTree and FindAndGetTree -> FindAndBranchTree in IOHandler
+                - Add GetNEvents method to get the total number of events and GetTree to get a
+                  pointer to a TTree.
+                - Fix bug in FindROOT when generating dictionary for TObjects in PhysicsObjects and 
+                  TRecoLKrCandidateMC in Examples. The corresponding libraries are now compiled.  
 
-		
-2014-04-17  Francis Newson (francis.oliver.newson@cern.ch) 
+                
+2014-04-17      Francis Newson (francis.oliver.newson@cern.ch) 
                 rev 342
                 - Add CedarMCTester to check for consistency after changes
                   to Cedar component of NA62MC
 
-2014-04-24	Nicolas Lurkin (nicolas.lurkin@cern.ch)
-				rev 341
-		- Fix missing extra include dirs, libs dirs and libs in user CMakeLists.txt
-		- Use only minimal list of gcc warning flags. To activate the extended list,
-		  build NA62Analysis or UserDir manually by issuing 
-		  "cmake -H. -Bbuild -DFULL_WARNING=1" 
-		  in their respective root directory (only once, NA62AnalysisBulder.py can
-		  be used as usual afterwards)
+2014-04-24      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev 341
+                - Fix missing extra include dirs, libs dirs and libs in user CMakeLists.txt
+                - Use only minimal list of gcc warning flags. To activate the extended list,
+                  build NA62Analysis or UserDir manually by issuing 
+                  "cmake -H. -Bbuild -DFULL_WARNING=1" 
+                  in their respective root directory (only once, NA62AnalysisBulder.py can
+                  be used as usual afterwards)
 
-2014-04-19	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-		rev. 338
-		- added the TwoLinesCDA class into PhysicsLib
+2014-04-19      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev. 338
+                - added the TwoLinesCDA class into PhysicsLib
 
-2014-04-17	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2014-04-17      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev 337
-		- Fix small typo in CMakeLists.txt of Examples and CMakeLists.txt of Templates
-		- Correct NA62AnalysisBuilder.py to ignore .svn folders
-		- Get rid of few warnings when compiling
-		- Start reviewing functions.cc (remove old junk)
+                - Fix small typo in CMakeLists.txt of Examples and CMakeLists.txt of Templates
+                - Correct NA62AnalysisBuilder.py to ignore .svn folders
+                - Get rid of few warnings when compiling
+                - Start reviewing functions.cc (remove old junk)
 
-2014-04-16	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+2014-04-16      Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev 336
-		- Update documentation
-		- Create page referencing the components of NA62Analysis relevant to user with
-		  a description and their current validation status.
-		  See http://sergiant.web.cern.ch/sergiant/NA62FW/html/pages.html 
-		- Do not try to mkdir in the output file if the directory already exists
-		- Reorganize Analyzers directory into categories: TestTools, PhysicsTools, Physics
-		- Add PhysicsLib and ToolsLib directories for any tool not being an analyzer
-		- Use CMake internally to build the framework
+                - Update documentation
+                - Create page referencing the components of NA62Analysis relevant to user with
+                  a description and their current validation status.
+                  See http://sergiant.web.cern.ch/sergiant/NA62FW/html/pages.html 
+                - Do not try to mkdir in the output file if the directory already exists
+                - Reorganize Analyzers directory into categories: TestTools, PhysicsTools, Physics
+                - Add PhysicsLib and ToolsLib directories for any tool not being an analyzer
+                - Use CMake internally to build the framework
 
-2014-04-14	Nicolas Lurkin (nicolas.lurkin@cern.ch) 
-				rev 332
-		- NA62AnalysisBuilder.py: Do not remove comments when renaming Analyzer. Bug NARKD-15.
-		- Histogram weights are doubles.
-		- Booking order of histograms is preserved in the output root file
-		- Histograms booked by arrays don't have _ between name and index
-		- Alias FillHisto2 for FillHisto (for user willing to use it as a reminder for the type of histogram)
+2014-04-14      Nicolas Lurkin (nicolas.lurkin@cern.ch) 
+                                rev 332
+                - NA62AnalysisBuilder.py: Do not remove comments when renaming Analyzer. Bug NARKD-15.
+                - Histogram weights are doubles.
+                - Booking order of histograms is preserved in the output root file
+                - Histograms booked by arrays don't have _ between name and index
+                - Alias FillHisto2 for FillHisto (for user willing to use it as a reminder for the type of histogram)
 
 2014-02-17  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 319
@@ -230,13 +239,13 @@ NA62Analysis Project
                   Derivation from TObject with automatic generation of ROOT dictionary for an easy integration in TTree branch.
                   Available both in FW and User directory (for custom user objects or inheritance from FW objects).
                   Makefiles and NA62AnalysisBuilder.py modified in consequence.
-		- Removed outdated template comments in examples
-		- Replicating input event in output and filling custom and standard output trees decoupled. Use ExportEvent() for the first and FillTrees() for the latter.
-		- All the file names actually used as input are written in the InputFiles directory of the output file.
-		- Moved the enum DetectorID into the NA62Constants namespace (collisions when linking with NA62Reconstruction)
-		- StartOfBurst is also called for the first file (end of burst is called for the first time when changing to the second file)
-		- Fix for the changes in castor and eos paths
-		- Fix bug in MCSimple::ReplaceID leading to some elements of testStruct being skipped. Bug NARKD-7
+                - Removed outdated template comments in examples
+                - Replicating input event in output and filling custom and standard output trees decoupled. Use ExportEvent() for the first and FillTrees() for the latter.
+                - All the file names actually used as input are written in the InputFiles directory of the output file.
+                - Moved the enum DetectorID into the NA62Constants namespace (collisions when linking with NA62Reconstruction)
+                - StartOfBurst is also called for the first file (end of burst is called for the first time when changing to the second file)
+                - Fix for the changes in castor and eos paths
+                - Fix bug in MCSimple::ReplaceID leading to some elements of testStruct being skipped. Bug NARKD-7
 
 2014-02-03  Nicolas Lurkin (nicolas.lurkin@cern.ch) 
                 rev. 305
@@ -282,34 +291,33 @@ NA62Analysis Project
                 - ParticleInterface: added PrintTable method
                 - ParticleTree: added some methods to help the implementation of the new MCSimple functionalities
                 - Example LKrPhotonMC: Some fixes
+                - Example Pi0Reconstruction: Use the new automatic step optimisation for DetectorAcceptance
 
-Example Pi0Reconstruction: Use the new automatic step optimisation for DetectorAcceptance
-
-2013-10-04	Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2013-10-04      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev. 288
-		- New sections added in the documentation (online + README)
-		- Code documentation modified to match NA62 doxygen syntax 
+                - New sections added in the documentation (online + README)
+                - Code documentation modified to match NA62 doxygen syntax 
 
-2013-09-19	Antonino Sergi (Antonino.Sergi@cern.ch)
+2013-09-19      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 287
-		- Some improvement in the input file management 
+                - Some improvement in the input file management 
                 - Modified command line options to match NA62Reconstruction
                 - Executable usage prompted if no command line option is given
                 - Another detail added to the documentation
 
-2013-09-19	Antonino Sergi (Antonino.Sergi@cern.ch)
+2013-09-19      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 286
-		- Fixed csh environment scripts and improved documentation
+                - Fixed csh environment scripts and improved documentation
 
-2013-09-18	Antonino Sergi (Antonino.Sergi@cern.ch)
+2013-09-18      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 285
-		- Fixed environment scripts
+                - Fixed environment scripts
 
-2013-09-11	Antonino Sergi (Antonino.Sergi@cern.ch)
+2013-09-11      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev. 284
-		- First public version of the analysis framework developed by Nicolas Lurkin,
+                - First public version of the analysis framework developed by Nicolas Lurkin,
                   with some examples and a test module
-		- This first version is intended to give the possibility
-		  to developers to test the framework and to begin to implement 
+                - This first version is intended to give the possibility
+                  to developers to test the framework and to begin to implement 
                   analysis modules that, after being validated, will become part 
                   of the framework.
