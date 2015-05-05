@@ -93,7 +93,7 @@ const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 
 	if(Verbose::fLogToFile) level.SetStream(Verbose::fLogFileStream);
 	else level.SetStream(s);
-	if(level.CanPrint()){
+	if(level.CanPrint() && level.GetTestLevel()!=Verbosity::kStandard){
 		level.GetStream() << std::left << std::setw(6) << Verbose::GetVerbosityLevelName(level.GetTestLevel())
 		  << " - " << std::setw(15) << level.GetModuleName() << " ";
 	}

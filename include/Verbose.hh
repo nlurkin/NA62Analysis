@@ -105,7 +105,23 @@ public:
 			/// This one is always printed, whatever the current verbosity level.
 			/// It just ensure that the verbose style stream prefix in printed.
 			/// \EndMemberDescr
-			return PrintLevel(Verbosity::kUser);
+			return PrintLevel(Verbosity::kNo);
+	};
+	const Verbose& standard() const {
+			/// \MemberDescr
+			/// \return Reference to itself
+			///
+			/// Manipulator for standard verbosity level print. Convenience proxy to
+			/// \code
+			/// Printlevel(Verbosity::kStandard)
+			/// \endcode
+			/// Use like
+			/// \code
+			/// cout << standard() << "This is a standard: " << var << endl;
+			/// \endcode
+			/// This level does NOT automatically print the usual prefixes.
+			/// \EndMemberDescr
+			return PrintLevel(Verbosity::kStandard);
 	};
 	const Verbose& user() const {
 		/// \MemberDescr
