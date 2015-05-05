@@ -7,6 +7,7 @@
 ///			<li>\ref physics
 ///			<li>\ref physicsTools
 ///			<li>\ref testTools
+///			<li>\ref calibrationTools
 ///		</ul>
 ///		<li>\ref addLib
 ///		<ul>
@@ -76,6 +77,54 @@
 ///	<tr><td>CedarMCTester</td><td>A Test Tool to check the output of the Cedar component of NA62MC, showing photon distributions at various planes in the detector.
 ///	It can be run on the standard output of NA62MC or on special output produced by compiling NA62MC with MDEFINES=CEDARRAYTRACING 
 ///	</td><td>Validated</td><td>342</td></tr>
+///	<tr><td>MUV3MCTester</td><td>A Test Tool to check the output of the MUV3 component of NA62MC 
+///	</td><td>Validated</td><td>510</td></tr>
+///	</table>
+/// 
+/// \subsection calibrationTools Calibration Tools
+///	This folder contains the analyzers that compute the detector calibrations and related.
+/// <table>
+///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
+///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<tr><td>CedarT0</td><td>Analyzer for Cedar T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Validated</td><td>578</td></tr>
+///	<tr><td>CHANTIT0</td><td>Analyzer for CHANTI T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>CHODT0</td><td>Analyzer for CHOD T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>HACT0</td><td>Analyzer for HAC T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>IRCT0</td><td>Analyzer for IRC T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>LAVT0</td><td>Analyzer for LAV T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>MUV0T0</td><td>Analyzer for MUV0 T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>MUV1T0</td><td>Analyzer for MUV1 T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>MUV2T0</td><td>Analyzer for MUV2 T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>MUV3T0</td><td>Analyzer for MUV3 T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>578</td></tr>
+///	<tr><td>MUV3TilesT0</td><td>Analyzer for MUV3Tiles T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>578</td></tr>
+///	<tr><td>RICHT0</td><td>Analyzer for RICH T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
+///	<tr><td>SACT0</td><td>Analyzer for SAC T0 computation. Actual implementation of T0 computation
+/// is done with the standard TO code in T0Evaluation. This analyzer inherits it and defines the parameters. 
+///	</td><td>Not Validated</td><td>N/A</td></tr>
 ///	</table>
 ///	
 ///	\section addLib Additional libraries

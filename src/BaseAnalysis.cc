@@ -324,6 +324,8 @@ void BaseAnalysis::PrintInitSummary() const{
 	/// Print summary after initialization.
 	/// \EndMemberDescr
 
+	if(!TestLevel(Verbosity::kStandard)) return;
+
 	std::vector<Analyzer*>::const_iterator itAn;
 	NA62Analysis::NA62Map<TString,const void* const>::type::const_iterator itOutput;
 
@@ -448,6 +450,7 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	/// Also print the percentage of completion and the estimated remaining time.
 	/// \EndMemberDescr
 
+	if(!TestLevel(Verbosity::kStandard)) return;
 	std::stringstream ss;
 
 	//Print current event
