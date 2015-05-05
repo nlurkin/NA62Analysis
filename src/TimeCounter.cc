@@ -25,11 +25,12 @@ TimeCounter::TimeCounter(bool startNow) :
 	fTotalTime(0)
 {
 	/// \MemberDescr
-	/// \param s: Start timestamp
+	/// \param startNow : if true, start the counter immediately
 	///
-	/// Start constructor. Immediately starts the counter with the start timestamp s.
+	/// Start constructor.
 	/// \EndMemberDescr
-	gettimeofday(&fStartTime, NULL);
+
+	if(startNow) gettimeofday(&fStartTime, NULL);
 }
 
 
