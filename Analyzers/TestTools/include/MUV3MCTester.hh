@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <vector>
 #include "Analyzer.hh"
-#include "MCSimple.hh"
 #include "DetectorAcceptance.hh"
 #include <TCanvas.h>
 

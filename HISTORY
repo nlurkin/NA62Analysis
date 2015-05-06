@@ -2,11 +2,16 @@
 NA62Analysis Project
 ################################################################
 
+2015-05-05	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.523
+		- Improvements to MUV3MCTester and T0Evaluation
+		- Introduced the missing class SpectrometerT0
+
 2015-05-05      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.520
-					 - Document MUV3MCTester and T0 tool
-					 - Add kStandard verbose level and make it default. Setting verbosity
-					 to kNo (0) will suppress any output from NA62Analysis.
+		- Document MUV3MCTester and T0 tool
+		- Add kStandard verbose level and make it default. Setting verbosity
+		to kNo (0) will suppress any output from NA62Analysis.
 
 2015-05-05      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev.519
