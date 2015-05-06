@@ -806,6 +806,20 @@ bool UserMethods::GetWithRawHeader(){
 	return false;
 }
 
+bool UserMethods::GetIsTree() {
+  /// \MemberDescr
+  /// \return True if the IO Handler is able to read TTrees
+  /// \EndMemberDescr
+  return fParent->IsTreeType();
+}
+
+bool UserMethods::GetIsHisto() {
+  /// \MemberDescr
+  /// \return True if the IO Handler is only able to read histograms (--histo flag)
+  /// \EndMemberDescr
+  return fParent->IsHistoType();
+}
+
 TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file where this histogram will be searched

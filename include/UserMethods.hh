@@ -261,6 +261,8 @@ public:
 	RawHeader* GetRawHeader();
 	bool GetWithMC();
 	bool GetWithRawHeader();
+	bool GetIsTree();
+	bool GetIsHisto();
 
 	//###### Other methods
 	DetectorAcceptance *GetDetectorAcceptanceInstance();

@@ -56,6 +56,11 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
 
 void T0Evaluation::InitHist() {
 
+  if (!GetIsHisto() || GetIsTree()) {
+    cout << "ERROR: T0Evaluation-based analyzers must be run in the --histo mode" << endl;
+    exit(0);
+  }
+
   fHRawTime      = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
   fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
   fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated
