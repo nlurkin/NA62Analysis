@@ -68,4 +68,10 @@ namespace NA62Analysis {
 
 #endif
 
+struct NA62CaseIgnorecomp {
+    bool operator() (const TString& lhs, const TString& rhs) const {
+        return lhs.CompareTo(rhs, TString::ECaseCompare::kIgnoreCase) < 0;
+    }
+};
+
 #endif
