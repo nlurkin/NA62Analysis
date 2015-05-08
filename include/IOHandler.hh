@@ -129,6 +129,10 @@ protected:
 	mutable TimeCounter fIOTimeCount; ///< Counter for the time spent in IO
 };
 
+bool TestIsTextFile(TString fileName);
+bool TestASCIIChar(unsigned char c);
+bool TestMultiByteChar(unsigned char c);
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
 #endif /* IOHANDLER_HH_ */

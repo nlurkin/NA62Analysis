@@ -291,6 +291,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	}else{
 		TString inputFileName;
 		fIOTimeCount.Start();
+		if(!TestIsTextFile(inFileName)){
+			std::cout << noverbose() << "Input list file " << inFileName << " cannot be read as a text file." << std::endl;
+			return false;
+		}
 		std::ifstream inputList(inFileName.Data());
 		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
 			fIOTimeCount.Stop();
@@ -354,5 +358,36 @@ void IOHandler::FileSkipped(TString fileName) {
 	fIOTimeCount.Stop();
 }
 
+bool TestIsTextFile(TString fileName){
+	unsigned char buffer[1000];
+	std::ifstream fd(fileName.Data(), std::ifstream::binary);
+
+	fd.read((char*)buffer, 1000);
+	int nread = fd.gcount();
+	fd.close();
+	for(int i=0; i<1000 && i<nread; i++){
+		//Is it pure ASCII
+		if(!TestASCIIChar(buffer[i])){
+			//No, test 8-bit or variable length encoding
+			if(!TestMultiByteChar(buffer[i])) return false; //Still some other special text encoding possible but we don't care at this point (UTF-16, UTF-32, ...)
+		}
+	}
+
+	// Every single byte in the first 1K chunk of the file is compatible with either pure ascii or
+	// 8-bit or variable lenght encoding. It is therefore considered as a text file.
+	return true;
+}
+
+bool TestASCIIChar(unsigned char c) {
+	if((c>9 && c<13) || (c>32 && c<126)) return true;
+	return false;
+}
+
+bool TestMultiByteChar(unsigned char c) {
+	if(c>128 && c<255) return true;
+	return false;
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
+
