@@ -94,6 +94,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	//Parse parameters from commandLine
 	confParser.ParseCLI(params);
 
+	std::cout << debug() << "Parsed parameters: " << std::endl;
+	if(TestLevel(Verbosity::kDebug)) confParser.Print();
+
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 		fIOHandler->MkOutputDir(fAnalyzerList[i]->GetAnalyzerName());
 		gFile->cd(fAnalyzerList[i]->GetAnalyzerName());

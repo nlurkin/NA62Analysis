@@ -12,6 +12,8 @@
 
 #include <TString.h>
 
+#include "containers.hh"
+
 namespace NA62Analysis {
 namespace Configuration {
 
@@ -52,7 +54,7 @@ public:
 
 		fParamsList.insert(ParamPair(name, value));
 	}
-	const std::map<TString, TString>& GetParams() const;
+	const std::map<TString, TString, NA62CaseIgnorecomp>& GetParams() const;
 	TString GetParam(TString name) const;
 
 	void SetValue(TString name, char &ref) const;
@@ -67,7 +69,7 @@ public:
 	void Print() const;
 private:
 	TString fName; ///< Name of the namespace
-	std::map<TString, TString> fParamsList; ///< Container for the parameter-value pairs
+	std::map<TString, TString, NA62CaseIgnorecomp> fParamsList; ///< Container for the parameter-value pairs
 };
 
 typedef std::pair<TString, ConfigNamespace> NSPair;
@@ -110,7 +112,7 @@ public:
 protected:
 	void ParseLine(TString line);
 
-	std::map<TString, ConfigNamespace> fNSList;	///< Map of namespaces
+	std::map<TString, ConfigNamespace, NA62CaseIgnorecomp> fNSList;	///< Map of namespaces
 	ConfigNamespace fDefault; ///< Default namespace
 	TString fCurrentNS; ///< Transient. Currently processed namespace
 };

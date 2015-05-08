@@ -6,6 +6,7 @@
 #include "NA62Constants.hh"
 #include "UserMethods.hh"
 #include "IOHandler.hh"
+#include "containers.hh"
 
 //TODO remove these 2 lines
 using namespace NA62Analysis;
@@ -154,7 +155,7 @@ protected:
 	std::map<TString,TTree*> fOutTree; ///< Container for the output TTrees
 
 	//Parameters container
-	std::map<TString,param_t> fParams; ///< Container for parameters
+	std::map<TString,param_t, NA62CaseIgnorecomp> fParams; ///< Container for parameters
 
 	AnalyzerState fState; ///< State of the analyzer
 

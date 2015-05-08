@@ -2,6 +2,12 @@
 NA62Analysis Project
 ################################################################
 
+2015-05-08      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.524
+                - Analyzer parameters are now case insensitive
+                - Before reading list of files (-l option) verify that the file
+                is a text file.
+
 2015-05-05	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.523
 		- Improvements to MUV3MCTester and T0Evaluation

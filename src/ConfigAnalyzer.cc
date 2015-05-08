@@ -40,7 +40,6 @@ void ConfigAnalyzer::ApplyParams(Analyzer * const analyzer) const{
 	/// Apply all the ParamName,ParamValue pairs to the specified analyzer
 	/// \EndMemberDescr
 	TString name = analyzer->GetAnalyzerName();
-	name.ToLower();
 	if(NamespaceExists(name)){
 		for(auto param : GetNamespace(name).GetParams()){
 			analyzer->ApplyParam(param.first, param.second);
@@ -68,7 +67,6 @@ void ConfigAnalyzer::ParseCLI(TString params){
 		if(p->GetEntries()==2){
 			//Got the analyzer
 			currentNS = ((TObjString*)p->At(0))->GetString();
-			currentNS.ToLower();
 			fNSList.insert(NSPair(currentNS, ConfigNamespace(currentNS)));
 			//Parse parameters now
 			paramsLine = ((TObjString*)p->At(1))->GetString();
@@ -77,7 +75,6 @@ void ConfigAnalyzer::ParseCLI(TString params){
 				values = ((TObjString*)pars->At(j))->GetString().Tokenize("=");
 				if(values->GetEntries()==2){
 					paramName = ((TObjString*)values->At(0))->GetString();
-					paramName.ToLower();
 					paramValue = ((TObjString*)values->At(1))->GetString();
 					fNSList[currentNS].AddParam(paramName, paramValue);
 				}

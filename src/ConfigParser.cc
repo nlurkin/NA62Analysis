@@ -75,7 +75,6 @@ bool ConfigParser::NamespaceExists(TString ns) const {
 	/// Does the specified namespace exist in the config
 	/// \EndMemberDescr
 
-	ns.ToLower();
 	return fNSList.count(ns)>0;
 }
 
@@ -121,7 +120,6 @@ void ConfigParser::ParseLine(TString line){
 	if(results->GetEntries()==2){
 		//New namespace section
 		fCurrentNS = ((TObjString*)results->At(1))->GetString();
-		fCurrentNS.ToLower();
 		fNSList.insert(NSPair(fCurrentNS, ConfigNamespace(fCurrentNS)));
 	}
 	results->Delete();
@@ -130,7 +128,6 @@ void ConfigParser::ParseLine(TString line){
 	results = paramExp.MatchS(tempString);
 	if(results->GetEntries()==3){
 		paramName = ((TObjString*)results->At(1))->GetString();
-		paramName.ToLower();
 		params = ((TObjString*)results->At(2))->GetString().Tokenize(" ");
 		for(int i=0; i<params->GetEntries(); i++){
 			paramValue = ((TObjString*)params->At(i))->GetString();
@@ -159,11 +156,10 @@ bool ConfigNamespace::ParamExists(TString paramName) const {
 	/// \return True if the parameter exists in the namespace
 	/// \EndMemberDescr
 
-	paramName.ToLower();
 	return fParamsList.count(paramName)>0;
 }
 
-const std::map<TString, TString>& ConfigNamespace::GetParams() const {
+const std::map<TString, TString, NA62CaseIgnorecomp>& ConfigNamespace::GetParams() const {
 	/// \MemberDescr
 	/// \return Map of parameter-value pairs
 	/// \EndMemberDescr
@@ -178,7 +174,6 @@ TString ConfigNamespace::GetParam(TString name) const {
 	/// parameter does not exist, an empty string
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto paramRef = fParamsList.find(name);
 
 	if(paramRef != fParamsList.end()) return paramRef->second;
@@ -194,7 +189,6 @@ void ConfigNamespace::SetValue(TString name, char& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Data()[0];
 }
@@ -208,7 +202,6 @@ void ConfigNamespace::SetValue(TString name, bool& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()){
 		if(param->second.IsDigit()) ref = param->second.Atoi();
@@ -226,7 +219,6 @@ void ConfigNamespace::SetValue(TString name, int &ref) const{
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atoi();
 }
@@ -240,7 +232,6 @@ void ConfigNamespace::SetValue(TString name, long & ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atoll();
 }
@@ -254,7 +245,6 @@ void ConfigNamespace::SetValue(TString name, float& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atof();
 }
@@ -268,7 +258,6 @@ void ConfigNamespace::SetValue(TString name, double& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Atof();
 }
@@ -282,7 +271,6 @@ void ConfigNamespace::SetValue(TString name, std::string& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second.Data();
 }
@@ -296,7 +284,6 @@ void ConfigNamespace::SetValue(TString name, TString& ref) const {
 	/// the variable is unchanged.
 	/// \EndMemberDescr
 
-	name.ToLower();
 	auto param = fParamsList.find(name);
 	if(param != fParamsList.end()) ref = param->second;
 }
