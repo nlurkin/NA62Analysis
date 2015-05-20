@@ -16,6 +16,16 @@ public:
 
   MUV3T0(NA62Analysis::Core::BaseAnalysis *ba);
   ~MUV3T0() {};
+
+  void RequestUserHistograms();
+  void GenerateUserPDFReport();
+
+private:
+
+  TH1D *fHTileT1T2[152];
+  TH1D *fHChannelProfile, *fHTileOR, *fHTileAND;
+  Bool_t fTileT1T2Found;
+
 };
 
 #endif
