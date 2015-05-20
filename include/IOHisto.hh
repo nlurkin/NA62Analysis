@@ -47,6 +47,8 @@ public:
 	void UpdateInputHistograms();
 
 private:
+	bool checkBadFile();
+
 	bool fNewFileOpened; ///< Indicates if a new file has been opened
 
 	NA62Analysis::NA62MultiMap<TString,TH1*>::type fInputHistoAdd; ///< Container for input histograms for which we append the values of the new files

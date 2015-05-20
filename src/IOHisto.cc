@@ -324,7 +324,7 @@ bool IOHisto::LoadEvent(int iEvent) {
 		fIOTimeCount.Start();
 		fCurrentFile = TFile::Open(fInputfiles[iEvent], "READ");
 		fIOTimeCount.Stop();
-		if(!fCurrentFile){
+		if(!fCurrentFile || checkBadFile()){
 			FileSkipped(fInputfiles[iEvent]);
 			return false;
 		}
@@ -347,6 +347,23 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 	bool ret = IOHandler::OpenInput(inFileName, nFiles);
 	fIOTimeCount.Stop();
 	return ret;
+}
+
+bool IOHisto::checkBadFile() {
+	std::vector<keyPair> dirs = GetListOfKeys("/");
+	std::vector<keyPair> items;
+
+	for(auto k : dirs){
+		if(k.className.CompareTo("TDirectoryFile")!=0) return false; //We have an object different than a directory
+		else{
+			items = GetListOfKeys(k.name);
+			for(auto sub : items){
+				if(k.className.CompareTo("TDirectoryFile")!=0) return false; //We have an object different than a directory
+			}
+		}
+	}
+	std::cout << standard() << "The file " << fCurrentFile->GetName() << " seems to be empty: skipping." << std::endl;
+	return true;
 }
 
 } /* namespace Core */
