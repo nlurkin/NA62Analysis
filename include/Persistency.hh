@@ -40,4 +40,5 @@
 #include "TLKrEvent.hh"
 #include "TSpectrometerEvent.hh"
 
+#include "RawHeader.hh"
 #endif /* PERSISTENCY_HH_ */
