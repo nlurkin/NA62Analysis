@@ -2,6 +2,11 @@
 NA62Analysis Project
 ################################################################
 
+2015-05-15	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.531
+		- T0Evaluation tools: subdetectors can customize the PDF reports,
+		  time spectrum shape check, flexible time stability granularity
+
 2015-05-08      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.524
                 - Analyzer parameters are now case insensitive
