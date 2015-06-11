@@ -2,6 +2,14 @@
 NA62Analysis Project
 ################################################################
 
+2015-06-08	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.546
+		- Fixes in StrawAddress and StrawPlace (issue NARKD-96)
+
+2015-06-08      Dmitry Madigozhin (madigo@mail.cern.ch)
+                rev.545
+                - T0Evaluation tools: Spectrometer T0 evaluation is provided.
+
 2015-05-15	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.531
 		- T0Evaluation tools: subdetectors can customize the PDF reports,

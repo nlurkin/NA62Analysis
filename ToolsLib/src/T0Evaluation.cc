@@ -65,19 +65,24 @@ void T0Evaluation::InitHist() {
     exit(0);
   }
 
-  fHRawTime      = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
-  fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
-  fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated
-
-  if (!fHRawTime) {
-    fEvaluateGlobalT0 = 0;
-    cout << "Warning in "<<fAnalyzerName<<": histogram for global T0 evaluation (" <<
-      fDirName << "/" << fRawTimeHistoName << ") not found" << endl;
+  if(fEvaluateGlobalT0){
+    fHRawTime      = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
+    if (!fHRawTime) {
+      fEvaluateGlobalT0 = 0;
+      cout << "Warning in "<<fAnalyzerName<<": histogram for global T0 evaluation (" <<
+	fDirName << "/" << fRawTimeHistoName << ") not found" << endl;
+    }
   }
-  if (!fH2) {
-    fEvaluateT0s = 0;
-    cout << "Warning in "<<fAnalyzerName<<": histogram for T0 evaluation (" << 
-      fDirName << "/" << fTH2Name << ") not found" << endl;
+
+  if(fEvaluateT0s){
+    fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
+    fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated
+    
+    if (!fH2) {
+      fEvaluateT0s = 0;
+      cout << "Warning in "<<fAnalyzerName<<": histogram for T0 evaluation (" << 
+	fDirName << "/" << fTH2Name << ") not found" << endl;
+    }
   }
 
   RequestUserHistograms();
@@ -93,12 +98,12 @@ void T0Evaluation::InitHist() {
     fBurstCounter[i]    = 0;
     fTimeBinsCounter[i] = 0;
     fChannelID[i]       = -99;
-    fT0[i]              = -99.999;
+    fT0[i]              = -999.999;
     fWarning[i]         = false;
   }
 
   // Find and read the channel map
-  ParseConfFile();
+  if(fUseChannelMap)ParseConfFile();
 
   // Check which the RO channels are active
   fNChannelsActive = 0;
@@ -164,9 +169,9 @@ void T0Evaluation::EndOfBurstUser() {
 
     if (fBurstCounter[ich] < fNFilesToAccumulate) continue;
     double Integral = fH2_Partial->Integral(ich+1, ich+1, 1, fH2_Partial->GetYaxis()->GetNbins());
-    if (Integral<100) continue;
+    if (Integral<fMinIntegral) continue;
     EvaluateT0s(fH2_Partial, ich, false);
-    if (fabs(fT0[ich])>99) continue;
+    if (fabs(fT0[ich])>999.0) continue;
 
     // A successful T0 fit is obtained: fill time dependence, clean histogram
     fHT0VsTime[ich]->SetBinContent(fTimeBinsCounter[ich]+1, fT0[ich]);
@@ -234,7 +239,7 @@ void T0Evaluation::EvaluateChannelT0 (int ich, bool IssueWarning) {
 
   // Check if there are enough entries for the fit to converge
   if (fHTime[ich]->Integral()==0) return;
-  fT0[ich] = +99.999;
+  fT0[ich] = +999.999;
   if (fHTime[ich]->Integral()<fMinIntegral) return;
 
   // Fitting interval: around the bin with max content
@@ -458,7 +463,7 @@ void T0Evaluation::GeneratePDFReport() {
       else if (Integral<fMinIntegral) {
 	fText->DrawText(0, 0.55*c0, "FEW ENTRIES");
       }
-      else if (fT0[ich]>99) {
+      else if (fT0[ich]>999.0) {
 	fText->DrawText(0, 0.55*c0, "FIT FAILED");
       }
     }
@@ -526,8 +531,8 @@ void T0Evaluation::GenerateT0TextFile() {
   ofstream outfile (fOutTextFileName);
   outfile << "# "<<fDetectorName<<" T0 constants. Format: RO channel; geometric ID; T0 offset (ns)."<<endl;
   outfile << "# These T0 offsets should be subtracted from the raw times."<<endl;
-  outfile << "# Special values: -99.999 for masked channels, +99.999 for failed T0 fits."<<endl;
-  outfile << "# An offset T0 is ignored by the reconstruction in case |T0|>99ns."<<endl;
+  outfile << "# Special values: -999.999 for masked channels, +999.999 for failed T0 fits."<<endl;
+  outfile << "# An offset T0 is ignored by the reconstruction in case |T0|>999ns."<<endl;
   outfile << "#\n# Generated on "<<asctime(localtime(&now));
   outfile << "#"<<endl;
   for (int i=0; i<fNChannels; i++) {
