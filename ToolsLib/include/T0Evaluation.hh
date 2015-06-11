@@ -43,7 +43,7 @@ public:
   // custom methods
   void ParseConfFile();
   void EvaluateT0s(TH2D*, int, bool);
-  void EvaluateChannelT0(int, bool);
+  virtual void EvaluateChannelT0(int, bool);
   void EvaluateGlobalOffset();
   void GenerateT0TextFile();
   void GeneratePDFReport();
