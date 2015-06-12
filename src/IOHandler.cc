@@ -351,7 +351,7 @@ void IOHandler::FileSkipped(TString fileName) {
 	/// File has been skipped for whatever reason. Notify it in the .skipped file
 	/// \EndMemberDescr
 	fIOTimeCount.Start();
-	if(!fSkippedFD) fSkippedFD.open((Configuration::ConfigSettings::global::fSkippedName+".skipped").data(), std::ios::trunc);
+	if(!fSkippedFD.is_open()) fSkippedFD.open((Configuration::ConfigSettings::global::fSkippedName+".skipped").data(), std::ios::out);
 	if(!fSkippedFD.is_open()) std::cout << normal() << "Unable to open skipped file "
 			<< Configuration::ConfigSettings::global::fSkippedName << ".skipped" << std::endl;
 	else fSkippedFD << fileName << std::endl;
