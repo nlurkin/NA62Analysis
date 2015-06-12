@@ -2,6 +2,16 @@
 NA62Analysis Project
 ################################################################
 
+2015-06-12      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.547
+					 - Move StrawPlace and StrawAddress in ToolsLib (were not
+					 linked if placed in Analyzer directory)
+					 - Add RawHeader header file in the list of imported headers
+					 - Fix unable to write NA62Analysis.skipped file 
+					 - Skip obviously empty input files (non-empty file is supposed
+					 to contain at least a key that is different from a 
+					 TDirectoryFile)
+
 2015-06-08	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.546
 		- Fixes in StrawAddress and StrawPlace (issue NARKD-96)
