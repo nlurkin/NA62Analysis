@@ -1,5 +1,6 @@
 #include "BaseAnalysis.hh"
 
+#include <iomanip>
 #include <sstream>
 #include <TStyle.h>
 #include <TFile.h>
@@ -17,6 +18,7 @@ BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
 	fGraphicMode(false),
 	fInitialized(false),
+	fContinuousReading(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
 	fInitTime(true)
@@ -73,7 +75,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 		fNEvents = std::max(treeHandler->FillMCTruth(), treeHandler->FillRawHeader());
 
-		std::cout << debug() << "Using " << fNEvents << " events" << endl;
+		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
 	}
 
 	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
@@ -136,8 +138,8 @@ void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// Register an output
 	/// \EndMemberDescr
 
-	std::cout << normal() << "Registering output " << name << endl;
-	std::cout << debug() << " at address " << address << endl;
+	std::cout << normal() << "Registering output " << name << std::endl;
+	std::cout << debug() << " at address " << address << std::endl;
 	fOutput.insert(std::pair<TString, const void* const>(name, address));
 	fOutputStates.insert(std::pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
@@ -290,7 +292,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	//Complete the analysis
 	using NA62Analysis::operator -;
 	float totalTime = fInitTime.GetTime() - fInitTime.GetStartTime();
-	std::cout << setprecision(2);
+	std::cout << std::setprecision(2);
 	std::cout << std::endl << "###################################" << std::endl;
 	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
 	std::cout << " - Init time: " << std::setw(15) << std::fixed << fInitTime.GetTotalTime() << " seconds" << std::endl;
@@ -485,6 +487,19 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	//Reset to default
 	std::cout.precision(defaultPrecision);
 	std::cout.unsetf(std::ios_base::floatfield);
+}
+
+void BaseAnalysis::SetContinuousReading(bool flagContinuousReading) {
+	fContinuousReading = flagContinuousReading;
+	fIOHandler->SetContinuousReading(flagContinuousReading);
+}
+
+void BaseAnalysis::StartContinuous(TString inFileList) {
+	while(1){
+		fIOHandler->OpenInput(inFileList, -1);
+		fIOHandler->SetOutputFileAsCurrent();
+		Process(0, -1);
+	}
 }
 
 } /* namespace Core */

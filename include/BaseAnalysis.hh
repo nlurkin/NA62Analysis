@@ -30,6 +30,7 @@ public:
 	~BaseAnalysis();
 
 	void AddAnalyzer(Analyzer * const an);
+	void StartContinuous(TString inFileList);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 
@@ -74,6 +75,7 @@ public:
 		fGraphicMode = bVal;
 	};
 	void SetReadType(IOHandlerType type);
+	void SetContinuousReading(bool flagContinuousReading);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
@@ -84,6 +86,7 @@ protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
+	bool fContinuousReading; ///< Continuous reading enabled?
 
 	std::vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 

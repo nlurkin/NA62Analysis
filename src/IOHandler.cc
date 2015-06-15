@@ -8,10 +8,12 @@
 #include "IOHandler.hh"
 
 #include <iostream>
+#include <signal.h>
 
 #include <TFile.h>
 #include <TObjString.h>
 #include <TKey.h>
+#include <TSystem.h>
 
 #include "ConfigSettings.hh"
 
@@ -19,6 +21,7 @@ namespace NA62Analysis {
 namespace Core {
 
 IOHandler::IOHandler():
+	fContinuousReading(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -31,6 +34,7 @@ IOHandler::IOHandler():
 
 IOHandler::IOHandler(std::string name):
 	Verbose(name),
+	fContinuousReading(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -44,6 +48,7 @@ IOHandler::IOHandler(std::string name):
 }
 
 IOHandler::IOHandler(const IOHandler& c):
+	fContinuousReading(false),
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
@@ -280,6 +285,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		return false;
 	}
 	if(nFiles == 0){
+		if(fContinuousReading){
+			std::cout << standard() << "Error: Continuous reading enabled but no list file provided... Aborting" << std::endl;
+			raise(SIGABRT);
+		}
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
 			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 		}
@@ -295,25 +304,38 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 			std::cout << noverbose() << "Input list file " << inFileName << " cannot be read as a text file." << std::endl;
 			return false;
 		}
-		std::ifstream inputList(inFileName.Data());
-		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
+		std::ifstream inputList;
+		int counter = 0;
+		char roll[4] = {'|','/','-','\\'};
+		do{
+			if(inputList.is_open()) inputList.close();
+			inputList.open(inFileName.Data());
+		    if(fContinuousReading){
+		      std::cout << standard() << "Waiting for a valid List File to be ready " << roll[counter%4] << "\r" << std::flush;
+		      counter++;
+		      gSystem->Sleep(500);
+		    }
+			while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
+				fIOTimeCount.Stop();
+				if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
+						inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
+				}
+				if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
+					inputFileName = "root://eosna62.cern.ch//"+inputFileName;
+				}
+				std::cout << normal() << "Adding file " << inputFileName << std::endl;
+				fInputfiles.push_back(inputFileName);
+				++inputFileNumber;
+				fIOTimeCount.Start();
+			}
 			fIOTimeCount.Stop();
-			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
-			        inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
+			if(!fContinuousReading && inputFileNumber==0){
+				std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
+				return false;
 			}
-			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
-				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
-			}
-			std::cout << normal() << "Adding file " << inputFileName << std::endl;
-			fInputfiles.push_back(inputFileName);
-			++inputFileNumber;
-			fIOTimeCount.Start();
-		}
-		fIOTimeCount.Stop();
-		if(inputFileNumber==0){
-			std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
-			return false;
-		}
+		} while(fContinuousReading && (inputFileNumber==0 || !inputList.is_open()));
+		inputList.close();
+		if(fContinuousReading) unlink(inFileName.Data());
 	}
 	return true;
 }
