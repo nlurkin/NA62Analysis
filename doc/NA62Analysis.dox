@@ -176,11 +176,11 @@
 /// (with -p). The format of the configuration file is the following:<br> 
 /// 
 /// \code
-/// [[analyzer-Name]]
+/// [analyzer-Name]
 /// Parameter1 = value1
 /// Parameter2 = value2
 /// 
-/// [[analyzer-Name2]]
+/// [analyzer-Name2]
 /// ...
 /// ...
 /// ...
