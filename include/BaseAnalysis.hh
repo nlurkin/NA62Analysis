@@ -9,6 +9,8 @@
 #include "Verbose.hh"
 #include "TimeCounter.h"
 
+#include <TSemaphore.h>
+
 namespace NA62Analysis {
 namespace Core {
 
@@ -76,12 +78,17 @@ public:
 	};
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
-
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
+	static void ContinuousLoop(void* args);
+
+	struct ThreadArgs_t{
+		BaseAnalysis* ban;
+		TString inFileList;
+	};
 protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
@@ -101,6 +108,7 @@ protected:
 	IOHandler* fIOHandler; ///< Handler for all IO objects
 
 	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
+	TThread *fRunThread;
 };
 
 } /* namespace Core */

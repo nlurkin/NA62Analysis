@@ -4,6 +4,7 @@
 #include <sstream>
 #include <TStyle.h>
 #include <TFile.h>
+#include <TThread.h>
 
 #include "ConfigAnalyzer.hh"
 #include "StringBalancedTable.hh"
@@ -21,7 +22,8 @@ BaseAnalysis::BaseAnalysis():
 	fContinuousReading(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
-	fInitTime(true)
+	fInitTime(true),
+	fRunThread(nullptr)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -39,6 +41,9 @@ BaseAnalysis::~BaseAnalysis(){
 	/// \EndMemberDescr
 
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
+	if(fRunThread){
+		fRunThread->Delete();
+	}
 }
 
 void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool ignoreNonExisting){
@@ -495,10 +500,21 @@ void BaseAnalysis::SetContinuousReading(bool flagContinuousReading) {
 }
 
 void BaseAnalysis::StartContinuous(TString inFileList) {
+	ThreadArgs_t *args = new ThreadArgs_t();
+	args->ban = this;
+	args->inFileList = inFileList;
+	fRunThread = new TThread("t0", (void(*) (void*))&ContinuousLoop, (void*) args);
+	fRunThread->Run();
+}
+
+void BaseAnalysis::ContinuousLoop(void* args) {
+	BaseAnalysis* ban = ((ThreadArgs_t*)args)->ban;
+	TString inFileList = ((ThreadArgs_t*)args)->inFileList;
 	while(1){
-		fIOHandler->OpenInput(inFileList, -1);
-		fIOHandler->SetOutputFileAsCurrent();
-		Process(0, -1);
+		ban->GetIOHandler()->OpenInput(inFileList, -1);
+		ban->GetIOHandler()->SetOutputFileAsCurrent();
+		ban->Process(0, -1);
+		TThread::CancelPoint();
 	}
 }
 
