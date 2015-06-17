@@ -383,7 +383,7 @@ def checkDependence(depsGraph, name, prefix):
 				else:
 					continue
 			#skip comment lines
-			if line.find("//")>=0:
+			if line.strip().startswith("//"):
 				continue
 			
 			# Regex matching analyzer call introducing dependency
