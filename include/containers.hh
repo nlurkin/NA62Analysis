@@ -8,6 +8,7 @@
 #ifndef CONTAINERS_HH_
 #define CONTAINERS_HH_
 #include <iostream>
+#include <TString.h>
 
 /// \file containers.hh
 /// \Brief
