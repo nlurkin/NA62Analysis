@@ -25,6 +25,8 @@ namespace Core {
 /// the user when requested, communication between different parts of the framework, writing the output files.
 /// \EndDetailed
 
+class OMMainWindow;
+
 class BaseAnalysis : public Verbose
 {
 public:
@@ -78,12 +80,14 @@ public:
 	};
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
+
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
 	static void ContinuousLoop(void* args);
+	void CreateOMWindow();
 
 	struct ThreadArgs_t{
 		BaseAnalysis* ban;
@@ -94,6 +98,7 @@ protected:
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
 	bool fContinuousReading; ///< Continuous reading enabled?
+	bool fSignalStop; ///< Stop signal for the Thread
 
 	std::vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
@@ -108,7 +113,10 @@ protected:
 	IOHandler* fIOHandler; ///< Handler for all IO objects
 
 	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
-	TThread *fRunThread;
+
+	TMutex fGraphicalMutex; ///< Mutex to prevent TApplication and BaseAnalysis to perform graphical operation at the same time
+	TThread *fRunThread; ///< Thread for Process during Online Monitor
+	OMMainWindow *fOMMainWindow; ///< Online monitor GUI
 };
 
 } /* namespace Core */

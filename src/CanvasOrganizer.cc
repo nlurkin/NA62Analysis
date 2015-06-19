@@ -30,11 +30,12 @@ CanvasOrganizer::~CanvasOrganizer() {
 	if(fCanvas) delete fCanvas;
 }
 
-void CanvasOrganizer::Draw() {
-	if(fCanvas) delete fCanvas;
-	fCanvas = new TCanvas(fName, fName);
+void CanvasOrganizer::Draw() const {
+	if(!fCanvas) fCanvas = new TCanvas(fName, fName);
+	fCanvas->Clear();
 	fCanvas->Draw();
-	fCanvas->Divide(fHistos.size(), 1);
+	size_t s = computeSize(fHistos.size());
+	fCanvas->Divide(s.width, s.height);
 	int i=0;
 	for(auto it : fHistos){
 		i++;
@@ -46,9 +47,8 @@ void CanvasOrganizer::Draw() {
 	fChanged = false;
 }
 
-void CanvasOrganizer::Update(int currentEvent) {
+void CanvasOrganizer::Update(int currentEvent) const {
 	if(fCanvas) {
-		std::cout << fCanvas << std::endl;
 		if(currentEvent % fUpdateFrequency==0){
 			if(fChanged) Draw();
 			fCanvas->Update();
@@ -63,7 +63,7 @@ void CanvasOrganizer::AddHisto(TH1* histoPtr) {
 	t.tag = TTH1;
 	fHistos.push_back(t);
 	fChanged=true;
-};
+}
 
 void CanvasOrganizer::AddHisto(TH2* histoPtr) {
 	plot_t t;
@@ -71,7 +71,7 @@ void CanvasOrganizer::AddHisto(TH2* histoPtr) {
 	t.tag = TTH2;
 	fHistos.push_back(t);
 	fChanged=true;
-};
+}
 
 void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
 	plot_t t;
@@ -80,7 +80,19 @@ void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
 
 	fHistos.push_back(t);
 	fChanged=true;
-};
+}
+
+void CanvasOrganizer::SetCanvas(TCanvas* c) {
+	fCanvas = c;
+	fChanged = true;
+}
+
+CanvasOrganizer::size_t CanvasOrganizer::computeSize(int nElements) const {
+	size_t s;
+	s.width = ceil(sqrt(nElements));
+	s.height = ceil(nElements/(double)s.width);
+	return s;
+}
 
 } /* namespace Core */
 } /* namespace NA62Analysis */

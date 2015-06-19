@@ -152,6 +152,8 @@ public:
 	IteratorTH2 GetIteratorTH2(TString baseName);
 	IteratorTGraph GetIteratorTGraph();
 	IteratorTGraph GetIteratorTGraph(TString baseName);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type GetCanvases() { return fCanvas; }
+	;
 private:
 	void Mkdir(TString name, TString analyzerName) const;
 

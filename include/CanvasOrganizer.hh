@@ -24,21 +24,27 @@ public:
 	CanvasOrganizer(TString name);
 	virtual ~CanvasOrganizer();
 
-	void Draw();
-	void Update(int currentEvent=0);
+	void Draw() const;
+	void Update(int currentEvent=0) const;
 	void AddHisto(TH1* histoPtr);
 	void AddHisto(TH2* histoPtr);
 	void AddHisto(TGraph* histoPtr);
 	void SetSize(int width, int length) { fWidth=width; fLength=length; fChanged=true; };
 	void SetUpdateFrequency(int frequency) { fUpdateFrequency=frequency; };
 
-	TString GetName() { return fName; };
+	TString GetName() const { return fName; };
+	void SetCanvas(TCanvas* c);
 private:
+	struct size_t{
+		int width, height;
+	};
+	size_t computeSize(int nElements) const;
+
 	int fUpdateFrequency;
 	int fWidth, fLength;
-	bool fChanged;
+	mutable bool fChanged;
 	const TString fName;
-	TCanvas *fCanvas;
+	mutable TCanvas *fCanvas;
 
 	union plotType_u{
 		TH1* histo;

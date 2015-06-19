@@ -5,11 +5,13 @@
 #include <TStyle.h>
 #include <TFile.h>
 #include <TThread.h>
+#include <TGClient.h>
 
 #include "ConfigAnalyzer.hh"
 #include "StringBalancedTable.hh"
 #include "TermManip.hh"
 #include "ConfigSettings.hh"
+#include "OMMainWindow.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -20,15 +22,16 @@ BaseAnalysis::BaseAnalysis():
 	fGraphicMode(false),
 	fInitialized(false),
 	fContinuousReading(false),
+	fSignalStop(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
 	fInitTime(true),
-	fRunThread(nullptr)
+	fRunThread(nullptr),
+	fOMMainWindow(nullptr)
 {
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
-
 
 	Configuration::ConfigSettings().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
@@ -40,10 +43,15 @@ BaseAnalysis::~BaseAnalysis(){
 	/// Destructor.
 	/// \EndMemberDescr
 
-	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
 	if(fRunThread){
+		fGraphicalMutex.UnLock();
+		fSignalStop=true;
 		fRunThread->Delete();
+		while(fRunThread->GetState()!=TThread::kCanceledState && fRunThread->GetState()!=TThread::kFinishedState){
+			gSystem->Sleep(300);
+		}
 	}
+	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
 }
 
 void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool ignoreNonExisting){
@@ -262,7 +270,10 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
 			fAnalyzerList[j]->Process(i);
-			fAnalyzerList[j]->UpdatePlots(i);
+			if(fGraphicalMutex.Lock()==0){
+				fAnalyzerList[j]->UpdatePlots(i);
+				fGraphicalMutex.UnLock();
+			}
 			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd();
 		}
@@ -287,7 +298,10 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->EndOfRun();
 
 		fAnalyzerList[j]->ExportPlot();
-		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
+		if(fGraphicalMutex.Lock()==0){
+			if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
+			fGraphicalMutex.UnLock();
+		}
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
@@ -503,19 +517,44 @@ void BaseAnalysis::StartContinuous(TString inFileList) {
 	ThreadArgs_t *args = new ThreadArgs_t();
 	args->ban = this;
 	args->inFileList = inFileList;
+
+	CreateOMWindow();
+
 	fRunThread = new TThread("t0", (void(*) (void*))&ContinuousLoop, (void*) args);
+	fRunThread->SetCancelOn();
+	fRunThread->SetCancelDeferred();
 	fRunThread->Run();
+
+	while(1){
+		if(fGraphicalMutex.Lock()==0){
+			fIOHandler->SetOutputFileAsCurrent();
+			gSystem->ProcessEvents();
+			fGraphicalMutex.UnLock();
+		}
+	}
+}
+
+void BaseAnalysis::CreateOMWindow(){
+	fOMMainWindow = new OMMainWindow(gClient->GetRoot(), gClient->GetDisplayHeight(), gClient->GetDisplayWidth());
+	for(auto it : fAnalyzerList){
+		fOMMainWindow->AddAnalyzerTab(it->GetAnalyzerName());
+		for(auto itCanvas : it->GetCanvases()){
+			itCanvas.second->SetCanvas(fOMMainWindow->AddAnalyzerCanvas(it->GetAnalyzerName(), itCanvas.first));
+		}
+	}
+	fOMMainWindow->Create();
 }
 
 void BaseAnalysis::ContinuousLoop(void* args) {
 	BaseAnalysis* ban = ((ThreadArgs_t*)args)->ban;
 	TString inFileList = ((ThreadArgs_t*)args)->inFileList;
-	while(1){
+	while(!ban->fSignalStop){
 		ban->GetIOHandler()->OpenInput(inFileList, -1);
 		ban->GetIOHandler()->SetOutputFileAsCurrent();
 		ban->Process(0, -1);
 		TThread::CancelPoint();
 	}
+	ban->fSignalStop = false;
 }
 
 } /* namespace Core */
