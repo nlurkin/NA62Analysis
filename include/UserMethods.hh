@@ -32,6 +32,7 @@ namespace NA62Analysis {
 class DetectorAcceptance;
 namespace Core {
 class BaseAnalysis;
+class CanvasOrganizer;
 } /* namespace Core */
 
 
@@ -92,6 +93,7 @@ public:
 	Core::HistoHandler::IteratorTH2 GetIteratorTH2(TString baseName);
 	Core::HistoHandler::IteratorTGraph GetIteratorTGraph();
 	Core::HistoHandler::IteratorTGraph GetIteratorTGraph(TString baseName);
+	NA62Analysis::NA62Map<TString, Core::CanvasOrganizer*>::type GetCanvases();
 
 	//Alias for user to make difference between TH1 and TH2
 	inline void FillHisto2(TString name, TString x, double y, double w) {
@@ -182,6 +184,11 @@ public:
 	void DrawAllPlots();
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
+	int GetUpdateInterval() const;
+	void CreateCanvas(TString name, int width=0, int length=0);
+	bool PlacePlotOnCanvas(TString histoName, TString canvasName);
+	bool SetCanvasAutoUpdate(TString canvasName);
+
 	//Export all histograms into output trees
 	void ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches);
 	//Save all plots into output file

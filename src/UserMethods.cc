@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "BaseAnalysis.hh"
+#include "CanvasOrganizer.hh"
 
 namespace NA62Analysis {
 
@@ -904,6 +905,26 @@ std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
 	/// \EndMemberDescr
 
 	return fParent->GetIOHandler()->GetListOfHistos(directory);
+}
+
+NA62Analysis::NA62Map<TString, Core::CanvasOrganizer*>::type UserMethods::GetCanvases() {
+	return fHisto.GetCanvases();
+}
+
+int UserMethods::GetUpdateInterval() const {
+	return fHisto.GetUpdateInterval();
+}
+
+void UserMethods::CreateCanvas(TString name, int width, int length) {
+	fHisto.CreateCanvas(name, width, length);
+}
+
+bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+	return fHisto.PlacePlotOnCanvas(histoName, canvasName);
+}
+
+bool UserMethods::SetCanvasAutoUpdate(TString canvasName) {
+	return fHisto.SetCanvasAutoUpdate(canvasName);
 }
 
 } /* namespace NA62Analysis */
