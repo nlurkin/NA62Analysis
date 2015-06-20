@@ -131,6 +131,7 @@ public:
 	int GetUpdateInterval() const;
 	void CreateCanvas(TString name, int width=0, int length=0);
 	bool PlacePlotOnCanvas(TString histoName, TString canvasName);
+	bool UpdateCanvas(TString canvasName) const;
 
 	//Save all plots into output file
 	void SaveAllPlots(TString analyzerName);
@@ -152,7 +153,12 @@ public:
 	IteratorTH2 GetIteratorTH2(TString baseName);
 	IteratorTGraph GetIteratorTGraph();
 	IteratorTGraph GetIteratorTGraph(TString baseName);
-	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type GetCanvases() { return fCanvas; }
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type GetCanvases() {
+		/// \MemberDescr
+		/// \return Map containing the list of CanvasOrganizer for this analyzer
+		/// \EndMemberDescr
+		return fCanvas;
+	}
 	;
 private:
 	void Mkdir(TString name, TString analyzerName) const;

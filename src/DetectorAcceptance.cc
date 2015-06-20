@@ -45,6 +45,7 @@ DetectorAcceptance::DetectorAcceptance(TString GeometryFile):
 }
 
 DetectorAcceptance::DetectorAcceptance(const DetectorAcceptance& c):
+		Verbose(c),
 		fGeoManager(TGeoManager::Import(fFile)),
 		fFile(c.fFile),
 		fTrackNumber(c.fTrackNumber),

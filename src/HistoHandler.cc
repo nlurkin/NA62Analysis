@@ -932,6 +932,14 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 
 
 void HistoHandler::CreateCanvas(TString name, int width, int length) {
+	/// \MemberDescr
+	/// \param name: Name of the canvas
+	/// \param width: width of the canvas (default=0=automatic)
+	/// \param height: height of the canvas (default=0=automatic)
+	///
+	/// Create a new named canvas in the analyzer
+	/// \EndMemberDescr
+
 	CanvasOrganizer *c = new CanvasOrganizer(name);
 	if(width!=0 && length!=0) c->SetSize(width, length);
 
@@ -939,6 +947,14 @@ void HistoHandler::CreateCanvas(TString name, int width, int length) {
 }
 
 bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+	/// \MemberDescr
+	/// \param histoName: Name of the plot
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas and histograms were found
+	///
+	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
+	/// \EndMemberDescr
+
 	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
 	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
 	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
@@ -965,6 +981,13 @@ bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName) {
 }
 
 bool HistoHandler::SetCanvasAutoUpdate(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Mark a canvas as AutoUpdate (will be redrawn every fAutoUpdateInterval events)
+	/// \EndMemberDescr
+
 	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
 
 	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
@@ -975,5 +998,23 @@ bool HistoHandler::SetCanvasAutoUpdate(TString canvasName) {
 	return false;
 }
 
+bool HistoHandler::UpdateCanvas(TString canvasName) const {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Force the update of a canvas
+	/// \EndMemberDescr
+
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
+
+	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
+		it->second->Update();
+		return true;
+	}
+	return false;
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
+

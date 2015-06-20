@@ -18,6 +18,14 @@ class TGTab;
 namespace NA62Analysis {
 namespace Core {
 
+/// \class OMAnalyzerWindow
+/// \Brief
+/// Describes a window for an analyzer
+/// \EndBrief
+///
+/// \Detailed
+/// Enables to add Tabs for canvases
+/// \EndDetailed
 class OMAnalyzerWindow {
 public:
 	OMAnalyzerWindow(TGCompositeFrame *parent);
@@ -25,9 +33,9 @@ public:
 
 	TCanvas* AddTab(TString tabName);
 private:
-	TGCompositeFrame *fParentFrame;
-	TGTab *fCanvasTab;
-	NA62Analysis::NA62Map<TString, TGCompositeFrame*>::type fCanvasList;
+	TGCompositeFrame *fParentFrame; ///< Pointer to parent frame
+	TGTab *fCanvasTab; ///< Pointer to the tab element
+	NA62Analysis::NA62Map<TString, TGCompositeFrame*>::type fCanvasList; ///< Container for list of canvases for this analyzer
 };
 
 } /* namespace Core */

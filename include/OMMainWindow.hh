@@ -22,6 +22,14 @@ namespace Core {
 
 class OMAnalyzerWindow;
 
+/// \class OMMainWindow
+/// \Brief
+/// Main window of the Online Monitor GUI
+/// \EndBrief
+///
+/// \Detailed
+/// Enables to create the main window and add Tabs for analyzer and tabs for canvases
+/// \EndDetailed
 class OMMainWindow {
 
 RQ_OBJECT("TestFrame")
@@ -33,9 +41,9 @@ public:
 	void AddAnalyzerTab(TString analyzerName);
 	TCanvas * AddAnalyzerCanvas(TString analyzerName, TString canvasName);
 private:
-    TGMainFrame* fMainFrame;
-    TGTab *fAnalyzerTab;
-    NA62Analysis::NA62Map<TString, OMAnalyzerWindow*>::type fListAnalyzerTab;
+    TGMainFrame* fMainFrame; ///< Pointer to the main frame
+    TGTab *fAnalyzerTab; ///< Pointer to the tab element containing the analyzer tabs
+    NA62Analysis::NA62Map<TString, OMAnalyzerWindow*>::type fListAnalyzerTab; ///< Container for the Analyzer windows
 };
 
 } /* namespace Core */

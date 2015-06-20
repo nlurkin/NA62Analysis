@@ -48,6 +48,7 @@ IOHandler::IOHandler(std::string name):
 }
 
 IOHandler::IOHandler(const IOHandler& c):
+	Verbose(c),
 	fContinuousReading(false),
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
@@ -286,9 +287,11 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 	}
 	if(nFiles == 0){
 		if(fContinuousReading){
+			// Continuous reading needs a list of files, not a single file
 			std::cout << standard() << "Error: Continuous reading enabled but no list file provided... Aborting" << std::endl;
 			raise(SIGABRT);
 		}
+		// Use new address format for castor and eos
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
 			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 		}
@@ -298,8 +301,10 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		std::cout << normal() << "Adding file " << inFileName << std::endl;
 		fInputfiles.push_back(inFileName);
 	}else{
+		//Reading a list of files
 		TString inputFileName;
 		fIOTimeCount.Start();
+		//Check it is indeed a text file and not a binary file
 		if(!TestIsTextFile(inFileName)){
 			std::cout << noverbose() << "Input list file " << inFileName << " cannot be read as a text file." << std::endl;
 			return false;
@@ -308,15 +313,19 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		int counter = 0;
 		char roll[4] = {'|','/','-','\\'};
 		do{
+			//If we already read an input list, close it first and retry (has already been processed)
 			if(inputList.is_open()) inputList.close();
 			inputList.open(inFileName.Data());
-		    if(fContinuousReading){
+
+		    if(fContinuousReading){ // Display waiting wheel
 		      std::cout << standard() << "Waiting for a valid List File to be ready " << roll[counter%4] << "\r" << std::flush;
 		      counter++;
 		      gSystem->Sleep(500);
 		    }
+		    //Try to read the file as long as we can read more in the list and that we didn't reach the limit
 			while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
 				fIOTimeCount.Stop();
+				// Use new address format for castor and eos
 				if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
 						inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 				}
@@ -329,11 +338,17 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 				fIOTimeCount.Start();
 			}
 			fIOTimeCount.Stop();
+
+			//If list file is empty or we did not manage to read at least 1 file, abort.
+			//Unless continuous reading, in such case, we just retry until it works
 			if(!fContinuousReading && inputFileNumber==0){
 				std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
 				return false;
 			}
+		// If continuous reading, loop until we read at least 1 file
 		} while(fContinuousReading && (inputFileNumber==0 || !inputList.is_open()));
+
+		//Close and eventually delete input list
 		inputList.close();
 		if(fContinuousReading) unlink(inFileName.Data());
 	}
@@ -381,6 +396,14 @@ void IOHandler::FileSkipped(TString fileName) {
 }
 
 bool TestIsTextFile(TString fileName){
+	/// \MemberDescr
+	/// \param fileName : Path to the file to test
+	/// \return True is the file has been found to be a text file, else false
+	///
+	/// Test all the characters in the first 1KB chunk of the file. If all of them
+	/// are found to be valid text characters (ASCII or 8-bit variable length encoding),
+	/// the file is considered as being a valid text file.
+	/// \MemberDescr
 	unsigned char buffer[1000];
 	std::ifstream fd(fileName.Data(), std::ifstream::binary);
 
@@ -401,11 +424,19 @@ bool TestIsTextFile(TString fileName){
 }
 
 bool TestASCIIChar(unsigned char c) {
+	/// \MemberDescr
+	/// \param c : char to test
+	/// \return True if the given char is ASCII
+	/// \MemberDescr
 	if((c>9 && c<13) || (c>32 && c<126)) return true;
 	return false;
 }
 
 bool TestMultiByteChar(unsigned char c) {
+	/// \MemberDescr
+	/// \param c : char to test
+	/// \return True if the given char multibyte char
+	/// \MemberDescr
 	if(c>128 && c<255) return true;
 	return false;
 }

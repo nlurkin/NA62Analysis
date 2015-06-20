@@ -19,23 +19,48 @@ namespace Core {
 CanvasOrganizer::CanvasOrganizer(TString name):
 	fUpdateFrequency(1),
 	fWidth(0),
-	fLength(0),
+	fHeight(0),
 	fChanged(true),
 	fName(name),
 	fCanvas(NULL)
 {
+	/// \MemberDescr
+	/// \param name : Name of the CanvasOrganizer
+	///
+	/// Default constructor.
+	/// \EndMemberDescr
 }
 
 CanvasOrganizer::~CanvasOrganizer() {
+	/// \MemberDescr
+	/// Default destructor. Delete the canvas if exists
+	/// \EndMemberDescr
+
 	if(fCanvas) delete fCanvas;
 }
 
 void CanvasOrganizer::Draw() const {
+	/// \MemberDescr
+	/// Draw the canvas. If dimensions are not given (or cannot fit all histograms),
+	/// width and height are computed according to internal algorithm
+	/// (width/height ration must be < 1).
+	/// Histograms are then placed on the canvas and it is drawn.
+	/// \EndMemberDescr
+
+	//If canvas does not exist, create it.
 	if(!fCanvas) fCanvas = new TCanvas(fName, fName);
 	fCanvas->Clear();
 	fCanvas->Draw();
-	size_t s = computeSize(fHistos.size());
-	fCanvas->Divide(s.width, s.height);
+
+	//if canvas cannot accomodate all histo, resize it
+	if(fWidth*fHeight<fHistos.size()) {
+		size_t s = computeSize(fHistos.size());
+		fWidth = s.width;
+		fHeight = s.height;
+	}
+	fCanvas->Divide(fWidth, fHeight);
+
+	//Place all histos on the canvas
 	int i=0;
 	for(auto it : fHistos){
 		i++;
@@ -48,6 +73,13 @@ void CanvasOrganizer::Draw() const {
 }
 
 void CanvasOrganizer::Update(int currentEvent) const {
+	/// \MemberDescr
+	/// \param currentEvent : Currently processed event number
+	///
+	/// Update the canvas if it exist and the current event number
+	/// matches the update frequency
+	/// \EndMemberDescr
+
 	if(fCanvas) {
 		if(currentEvent % fUpdateFrequency==0){
 			if(fChanged) Draw();
@@ -58,6 +90,12 @@ void CanvasOrganizer::Update(int currentEvent) const {
 }
 
 void CanvasOrganizer::AddHisto(TH1* histoPtr) {
+	/// \MemberDescr
+	/// \param histoPtr : Pointer to added histogram
+	///
+	/// Add an histogram in the list of managed histograms
+	/// \EndMemberDescr
+
 	plot_t t;
 	t.ptr.histo = histoPtr;
 	t.tag = TTH1;
@@ -66,6 +104,12 @@ void CanvasOrganizer::AddHisto(TH1* histoPtr) {
 }
 
 void CanvasOrganizer::AddHisto(TH2* histoPtr) {
+	/// \MemberDescr
+	/// \param histoPtr : Pointer to added histogram
+	///
+	/// Add an histogram in the list of managed histograms
+	/// \EndMemberDescr
+
 	plot_t t;
 	t.ptr.histo = histoPtr;
 	t.tag = TTH2;
@@ -74,6 +118,12 @@ void CanvasOrganizer::AddHisto(TH2* histoPtr) {
 }
 
 void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
+	/// \MemberDescr
+	/// \param histoPtr : Pointer to added histogram
+	///
+	/// Add an histogram in the list of managed histograms
+	/// \EndMemberDescr
+
 	plot_t t;
 	t.ptr.graph = histoPtr;
 	t.tag = TTGraph;
@@ -83,11 +133,25 @@ void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
 }
 
 void CanvasOrganizer::SetCanvas(TCanvas* c) {
+	/// \MemberDescr
+	/// \param c : Pointer to a TCanvas
+	///
+	/// Assign a TCanvas to the CanvasOrganizer
+	/// \EndMemberDescr
+
 	fCanvas = c;
 	fChanged = true;
 }
 
 CanvasOrganizer::size_t CanvasOrganizer::computeSize(int nElements) const {
+	/// \MemberDescr
+	/// \param nElements : Number of elements to fit on the canvas
+	/// \return size_t structure with ideal dimensions
+	///
+	/// Computes the ideal size for the canvas to accommodate all elements.
+	/// The requirement is that the ratio width/height should never be larger than 1.
+	/// \EndMemberDescr
+
 	size_t s;
 	s.width = ceil(sqrt(nElements));
 	s.height = ceil(nElements/(double)s.width);

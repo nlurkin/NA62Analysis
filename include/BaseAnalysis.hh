@@ -89,9 +89,13 @@ private:
 	static void ContinuousLoop(void* args);
 	void CreateOMWindow();
 
+	/// \struct ThreadArgs_t
+	/// \Brief
+	/// Arguments to be passed to the thread function.
+	/// \EndBrief
 	struct ThreadArgs_t{
-		BaseAnalysis* ban;
-		TString inFileList;
+		BaseAnalysis* ban; ///< Pointer to the parent BaseAnalysis instance
+		TString inFileList; ///< Path to the input list file
 	};
 protected:
 	int fNEvents; ///< Number of events available in the TChains

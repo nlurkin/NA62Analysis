@@ -94,6 +94,10 @@ void TimeCounter::Print() const {
 }
 
 struct timeval TimeCounter::GetTime() {
+	/// \MemberDescr
+	/// \return timeval struct representing the current time
+	/// \EndMemberDescr
+
 	struct timeval s;
 	gettimeofday(&s, NULL);
 	return s;

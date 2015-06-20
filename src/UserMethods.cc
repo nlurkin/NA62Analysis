@@ -39,6 +39,7 @@ UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name):
 }
 
 UserMethods::UserMethods(const UserMethods &c):
+		Verbose(c),
 		fParent(c.fParent)
 {
 	/// \MemberDescr
@@ -908,23 +909,64 @@ std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
 }
 
 NA62Analysis::NA62Map<TString, Core::CanvasOrganizer*>::type UserMethods::GetCanvases() {
+	/// \MemberDescr
+	/// \return Map containing the list of CanvasOrganizer for this analyzer
+	/// \EndMemberDescr
 	return fHisto.GetCanvases();
 }
 
 int UserMethods::GetUpdateInterval() const {
+	/// \MemberDescr
+	/// \return Update interval
+	/// \EndMemberDescr
 	return fHisto.GetUpdateInterval();
 }
 
 void UserMethods::CreateCanvas(TString name, int width, int length) {
+	/// \MemberDescr
+	/// \param name: Name of the canvas
+	/// \param width: width of the canvas (default=0=automatic)
+	/// \param height: height of the canvas (default=0=automatic)
+	///
+	/// Create a new named canvas in the analyzer
+	/// \EndMemberDescr
+
 	fHisto.CreateCanvas(name, width, length);
 }
 
 bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+	/// \MemberDescr
+	/// \param histoName: Name of the plot
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas and histograms were found
+	///
+	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
+	/// \EndMemberDescr
+
 	return fHisto.PlacePlotOnCanvas(histoName, canvasName);
 }
 
 bool UserMethods::SetCanvasAutoUpdate(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Mark a canvas as AutoUpdate (will be redrawn every fAutoUpdateInterval events)
+	/// \EndMemberDescr
+
 	return fHisto.SetCanvasAutoUpdate(canvasName);
 }
 
+bool UserMethods::UpdateCanvas(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Force the update of a canvas
+	/// \EndMemberDescr
+
+	return fHisto.UpdateCanvas(canvasName);
+}
+
 } /* namespace NA62Analysis */
+

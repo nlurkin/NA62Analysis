@@ -350,6 +350,13 @@ bool IOHisto::OpenInput(TString inFileName, int nFiles) {
 }
 
 bool IOHisto::checkBadFile() {
+	/// \MemberDescr
+	/// \return True if the file is suspected to be empty, else false.
+	///
+	/// Check if the current file is suspected to be empty. It is suspected to be
+	/// empty if it contains only TDirectoryFile entries.
+	/// \EndMemberDescr
+
 	std::vector<keyPair> dirs = GetListOfKeys("/");
 	std::vector<keyPair> items;
 

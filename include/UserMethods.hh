@@ -188,6 +188,7 @@ public:
 	void CreateCanvas(TString name, int width=0, int length=0);
 	bool PlacePlotOnCanvas(TString histoName, TString canvasName);
 	bool SetCanvasAutoUpdate(TString canvasName);
+	bool UpdateCanvas(TString canvasName);
 
 	//Export all histograms into output trees
 	void ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches);

@@ -509,23 +509,43 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 }
 
 void BaseAnalysis::SetContinuousReading(bool flagContinuousReading) {
+	/// \MemberDescr
+	/// \param flagContinuousReading: enable/disable flag
+	///
+	/// Enable/Disable the continuousReading mode in both BaseAnalysis and the IOHandler
+	/// \EndMemberDescr
+
 	fContinuousReading = flagContinuousReading;
 	fIOHandler->SetContinuousReading(flagContinuousReading);
 }
 
 void BaseAnalysis::StartContinuous(TString inFileList) {
+	/// \MemberDescr
+	/// \param inFileList: Path to a text file containing a list of input root files
+	///
+	/// Start the continuous reading loop:
+	/// - Setup the GUI
+	/// - Start the Processing loop in its own thread to decouple the GUI from the processing
+	/// \EndMemberDescr
+
+	//Prepare TThread arguments (needs reference to this and input file list
 	ThreadArgs_t *args = new ThreadArgs_t();
 	args->ban = this;
 	args->inFileList = inFileList;
 
+	//Create GUI
 	CreateOMWindow();
 
+	//Start the thread
 	fRunThread = new TThread("t0", (void(*) (void*))&ContinuousLoop, (void*) args);
+	//Allow cancelation of thread only at specific points
 	fRunThread->SetCancelOn();
 	fRunThread->SetCancelDeferred();
 	fRunThread->Run();
 
 	while(1){
+		//Graphical loop. Only process GUI events when the Process loop is not touching graphical objects.
+		//Else crashes occurs
 		if(fGraphicalMutex.Lock()==0){
 			fIOHandler->SetOutputFileAsCurrent();
 			gSystem->ProcessEvents();
@@ -535,6 +555,14 @@ void BaseAnalysis::StartContinuous(TString inFileList) {
 }
 
 void BaseAnalysis::CreateOMWindow(){
+	/// \MemberDescr
+	/// Create GUI.
+	/// - Create main window
+	/// - Create one tab for each Analyzer
+	/// - Within the analyzer tab, create one tab for each CanvasOrganizer
+	///   and pass the created canvas to the Organizer
+	/// \EndMemberDescr
+
 	fOMMainWindow = new OMMainWindow(gClient->GetRoot(), gClient->GetDisplayHeight(), gClient->GetDisplayWidth());
 	for(auto it : fAnalyzerList){
 		fOMMainWindow->AddAnalyzerTab(it->GetAnalyzerName());
@@ -546,6 +574,15 @@ void BaseAnalysis::CreateOMWindow(){
 }
 
 void BaseAnalysis::ContinuousLoop(void* args) {
+	/// \MemberDescr
+	/// \param args: arguments passed to the TThread. Expected a pointer to ThreadArgs_t struct.
+	///
+	/// Process loop:
+	/// - Wait for valid input files list
+	/// - Process the root files
+	/// - Start again until main thread signal end of processing through fSignalStop
+	/// \EndMemberDescr
+
 	BaseAnalysis* ban = ((ThreadArgs_t*)args)->ban;
 	TString inFileList = ((ThreadArgs_t*)args)->inFileList;
 	while(!ban->fSignalStop){
