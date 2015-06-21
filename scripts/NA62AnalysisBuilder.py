@@ -593,7 +593,7 @@ def build(args):
 	[filename] = args.configFileName
 	FWPath = getCheckVar("ANALYSISFW_PATH")
 	UserPath = getCheckVar("ANALYSISFW_USERDIR")
-	userStrictOrder = args.strict
+	userStrictOrder = args.strict_order
 	
 	if not os.path.exists(filename):
 		print "The config file %s does not exist" % filename
@@ -693,6 +693,8 @@ def build(args):
 				ordered.append(node)
 			p = depsGraph.getNextPath()
 	else:
+		print """\033[33;1mWARNING: Using strict analyzer order. Dependencies between analyzers are not automatically resolved...
+Re-run without --strict-order if you want dependencies to be automatically solved.\033[0m"""
 		ordered = analyzers[:]
 	
 	strExtralibs = ""
@@ -824,7 +826,7 @@ def parseArgs():
 	# Setup argument parser
 	common_flags = ArgumentParser(add_help=False)
 	common_flags.add_argument('-j', '--jobs', default=1, type=int, help="Number of processes to use for building (same as make -j)")
-	common_flags.add_argument('--strict', default=False, action="store_true", help="""Use the analyzer in the same order as defined  
+	common_flags.add_argument('--strict-order', default=False, action="store_true", help="""Use the analyzer in the same order as defined  
 								in the configuration file (beware of dependencies between analyzers)""")
 	clean_group = common_flags.add_argument_group(title="Build options", 
 												description=("""The following options require a cleanAll to take effect 
