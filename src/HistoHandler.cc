@@ -1006,7 +1006,7 @@ bool HistoHandler::UpdateCanvas(TString canvasName) const {
 	/// Force the update of a canvas
 	/// \EndMemberDescr
 
-	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
 
 	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
 		it->second->Update();

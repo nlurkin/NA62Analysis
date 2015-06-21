@@ -14,6 +14,7 @@
 #include <TObjString.h>
 #include <TKey.h>
 #include <TSystem.h>
+#include <TThread.h>
 
 #include "ConfigSettings.hh"
 
@@ -22,6 +23,7 @@ namespace Core {
 
 IOHandler::IOHandler():
 	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -35,6 +37,7 @@ IOHandler::IOHandler():
 IOHandler::IOHandler(std::string name):
 	Verbose(name),
 	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -50,6 +53,7 @@ IOHandler::IOHandler(std::string name):
 IOHandler::IOHandler(const IOHandler& c):
 	Verbose(c),
 	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
@@ -315,6 +319,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		do{
 			//If we already read an input list, close it first and retry (has already been processed)
 			if(inputList.is_open()) inputList.close();
+			TThread::CancelPoint();
 			inputList.open(inFileName.Data());
 
 		    if(fContinuousReading){ // Display waiting wheel
@@ -346,7 +351,7 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 				return false;
 			}
 		// If continuous reading, loop until we read at least 1 file
-		} while(fContinuousReading && (inputFileNumber==0 || !inputList.is_open()));
+		} while(!fSignalExit && fContinuousReading && (inputFileNumber==0 || !inputList.is_open()));
 
 		//Close and eventually delete input list
 		inputList.close();

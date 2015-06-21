@@ -124,10 +124,18 @@ public:
 		fOutFile->cd();
 	}
 
+	void SignalExit() const {
+		/// \MemberDescr
+		/// Raise exit signal
+		/// \EndMemberDescr
+
+		fSignalExit = true;
+	}
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
 	bool fContinuousReading; ///< Continuous reading enabled?
+	mutable bool fSignalExit; ///< Signal from main thread to exit
 	IOHandlerType fIOType; ///< Type of IO handler
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain

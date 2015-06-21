@@ -53,12 +53,12 @@ void CanvasOrganizer::Draw() const {
 	fCanvas->Draw();
 
 	//if canvas cannot accomodate all histo, resize it
-	if(fWidth*fHeight<fHistos.size()) {
+	if((unsigned int)(fWidth*fHeight)<fHistos.size()) {
 		size_t s = computeSize(fHistos.size());
-		fWidth = s.width;
-		fHeight = s.height;
+		fCanvas->Divide(s.width, s.height);
+
 	}
-	fCanvas->Divide(fWidth, fHeight);
+	else fCanvas->Divide(fWidth, fHeight);
 
 	//Place all histos on the canvas
 	int i=0;

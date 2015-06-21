@@ -46,6 +46,7 @@ BaseAnalysis::~BaseAnalysis(){
 	if(fRunThread){
 		fGraphicalMutex.UnLock();
 		fSignalStop=true;
+		fIOHandler->SignalExit();
 		fRunThread->Delete();
 		while(fRunThread->GetState()!=TThread::kCanceledState && fRunThread->GetState()!=TThread::kFinishedState){
 			gSystem->Sleep(300);
