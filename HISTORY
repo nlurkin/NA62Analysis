@@ -2,15 +2,28 @@
 NA62Analysis Project
 ################################################################
 
+2015-06-xx      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.xxx
+                - Add OnlineMonitor capabilities (turn on with --continuous flag)
+                - Internal handling of canvases: see documentation of CreateCanvas,
+				  PlacePlotOnCanvas, SetCanvasAutoUpdate, UpdateCanvas. They are used
+				  with the -g and --continuous options.
+				- Documentation updated. See new Creating an Online Monitor page.
+				- Add --strict-order flag to NA62AnalysisBuilder.py. The internal 
+				  dependencies resolver is deactivated and the Analyzers are run in 
+				  the order specified in the config file.
+				- Add revision checking between input ROOT file and linked Persistency
+				  libraries.  
+
 2015-06-12      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.547
-					 - Move StrawPlace and StrawAddress in ToolsLib (were not
-					 linked if placed in Analyzer directory)
-					 - Add RawHeader header file in the list of imported headers
-					 - Fix unable to write NA62Analysis.skipped file 
-					 - Skip obviously empty input files (non-empty file is supposed
-					 to contain at least a key that is different from a 
-					 TDirectoryFile)
+				- Move StrawPlace and StrawAddress in ToolsLib (were not
+				  linked if placed in Analyzer directory)
+				- Add RawHeader header file in the list of imported headers
+				- Fix unable to write NA62Analysis.skipped file 
+				- Skip obviously empty input files (non-empty file is supposed
+				  to contain at least a key that is different from a 
+				  TDirectoryFile)
 
 2015-06-08	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.546
