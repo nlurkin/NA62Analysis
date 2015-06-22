@@ -131,6 +131,8 @@ public:
 
 		fSignalExit = true;
 	}
+
+	int ReadCurrentFileRevision();
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 

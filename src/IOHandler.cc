@@ -15,8 +15,11 @@
 #include <TKey.h>
 #include <TSystem.h>
 #include <TThread.h>
+#include <TRegexp.h>
 
+#include "SvnRevision.hh"
 #include "ConfigSettings.hh"
+#include "TermManip.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -272,6 +275,20 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	fileName.Write();
 	gFile->cd();
 	fIOTimeCount.Stop();
+
+	int fileRevision = ReadCurrentFileRevision(); //Read revision from file
+	TString persistencyRevisionString = GetCurrentSvnRevision();	  //Read revision from persistency
+	if(persistencyRevisionString.Length()>0 && fileRevision!=-1){
+		//Revision could be found in both the file and the persistency.
+		//Can compare!
+		int persistencyRev = TString(persistencyRevisionString(TRegexp("[0-9]+"))).Atoi();
+		if(persistencyRev!=persistencyRevisionString){
+			std::cout << manip::brown << manip::bold << normal() << "WARNING: File revision (" << fileRevision <<
+					") and Persistency revision (" << persistencyRev << ") are different." << std::endl;
+			std::cout << normal() << "This might lead to inconsistencies." << std::endl;
+			std::cout << manip::reset;
+		}
+	}
 }
 
 bool IOHandler::OpenInput(TString inFileName, int nFiles){
@@ -400,6 +417,21 @@ void IOHandler::FileSkipped(TString fileName) {
 	fIOTimeCount.Stop();
 }
 
+int IOHandler::ReadCurrentFileRevision() {
+	/// \MemberDescr
+	/// \return Revision number embedded in the input ROOT file or -1 if not found
+	/// \MemberDescr
+	TList *keys = fCurrentFile->GetListOfKeys();
+	int revValue = -1;
+	//for(TList::Iterator_t k = keys->begin(); k!= keys->end(); k++){
+	for(auto k : *keys){
+		if(TString(k->GetName()).BeginsWith("Revision:")){
+			revValue = TString(TString(k->GetName())(TRegexp("[0-9]+"))).Atoi();
+		}
+	}
+	return revValue;
+}
+
 bool TestIsTextFile(TString fileName){
 	/// \MemberDescr
 	/// \param fileName : Path to the file to test
@@ -438,14 +470,9 @@ bool TestASCIIChar(unsigned char c) {
 }
 
 bool TestMultiByteChar(unsigned char c) {
-	/// \MemberDescr
-	/// \param c : char to test
-	/// \return True if the given char multibyte char
-	/// \MemberDescr
 	if(c>128 && c<255) return true;
 	return false;
 }
 
 } /* namespace Core */
 } /* namespace NA62Analysis */
-
