@@ -423,10 +423,10 @@ int IOHandler::ReadCurrentFileRevision() {
 	/// \MemberDescr
 	TList *keys = fCurrentFile->GetListOfKeys();
 	int revValue = -1;
-	//for(TList::Iterator_t k = keys->begin(); k!= keys->end(); k++){
-	for(TIter k = keys->begin(); k!= keys->end(); k.Next()){
-		if(TString((*k)->GetName()).BeginsWith("Revision:")){
-			revValue = TString(TString((*k)->GetName())(TRegexp("[0-9]+"))).Atoi();
+	for(int kIndex = 0; kIndex<keys->GetEntries(); kIndex++){
+		TKey *k = static_cast<TKey*>(keys->At(kIndex));
+		if(TString(k->GetName()).BeginsWith("Revision:")){
+			revValue = TString(TString(k->GetName())(TRegexp("[0-9]+"))).Atoi();
 		}
 	}
 	return revValue;
