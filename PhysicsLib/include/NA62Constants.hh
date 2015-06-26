@@ -19,6 +19,9 @@ namespace NA62Constants {
   static const double MMU  = 105.6583715; 
 
   enum DetectorID {GTK, Straw, IRC, LAV, LKr, SAC, Missed};
+
+  static const double cGTK3StartPos = 101800.; //mm
+  static const double cLKrStartPos  = 240413.; //mm
 }
 
 #endif /* CONSTANTSREPOSITORY_HH_ */
