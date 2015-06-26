@@ -12,6 +12,7 @@
 #include <TH2.h>
 #include <TGraph.h>
 #include <TList.h>
+#include <cmath>
 
 namespace NA62Analysis {
 namespace Core {
