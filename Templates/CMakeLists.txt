@@ -16,10 +16,6 @@ link_directories(${NA62RECO_LIB_DIRS})
 # Get analyzers definition from builder
 include(analyzers.cmake)
 
-# Include POs
-add_subdirectory(PhysicsObjects)
-include_directories(PhysicsObjects/include)
-
 # Extras
 include_directories(${EXTRA_INCLUDE_DIRS})
 link_directories(${EXTRA_LIBS_DIRS})
@@ -43,7 +39,6 @@ ENDFOREACH(lib)
 
 # Specify NA62MC/NA62Reconstruction/NA62Analysis/ROOT libraries
 target_link_libraries(${TARGET_EXEC} AnalysisFW${LIBTYPEPOSTFIX})
-target_link_libraries(${TARGET_EXEC} PhysicsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ToolsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ${NA62RECO_LIBS})
 target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
