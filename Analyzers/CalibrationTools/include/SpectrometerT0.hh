@@ -2,6 +2,7 @@
 // History:
 //
 // Created by Evgueni Goudzovski (eg@hep.ph.bham.ac.uk) 2015-04-30
+// Developed by Dmitry Madigozhin (madigo@mail.cern.ch) 2015-05-31
 //
 // ------------------------------------------------------------------
 
@@ -12,17 +13,13 @@
 
 class SpectrometerT0 : public T0Evaluation {
 
-private:
-
-  Double_t fLevelFactor;      // Constant factor defining the level when distribution become "visible" 
-  Double_t fMinContentMaxBin; // Minimum content of maximum bin as a pre-requirement to try the fit
-
 public:
 
   SpectrometerT0(NA62Analysis::Core::BaseAnalysis *ba);
   ~SpectrometerT0() {};
 
-  void EvaluateChannelT0 (int ich, bool IssueWarning);
+  void BuildConfFile();
+  bool FitChannel(int, double, double, double, double);
 };
 
 #endif

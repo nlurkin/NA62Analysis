@@ -17,6 +17,4 @@ add_library(AnalysisFW${LIBTYPEPOSTFIX} ${LIBTYPE} ${MAINO})
 
 add_subdirectory(Examples)
 add_subdirectory(Analyzers)
-add_subdirectory(PhysicsObjects)
-add_subdirectory(PhysicsLib)
 add_subdirectory(ToolsLib)

@@ -2,15 +2,31 @@
 NA62Analysis Project
 ################################################################
 
+2015-06-26	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.566
+		- MUV3DataQualityMonitor introduced
+		- ToolsLib merged with PhysicsLib
+
+2015-06-23	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.561
+		- Further improvements of MUV3T0 class
+
+2015-06-18      Chris Parkinson (chris.parkinson@cern.ch)
+		rev.554
+		- Update of MUV3T0 class
+
+2015-06-15	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.553
+		- Integration of the SpectrometerT0 class
+
 2015-06-12      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.547
-					 - Move StrawPlace and StrawAddress in ToolsLib (were not
-					 linked if placed in Analyzer directory)
-					 - Add RawHeader header file in the list of imported headers
-					 - Fix unable to write NA62Analysis.skipped file 
-					 - Skip obviously empty input files (non-empty file is supposed
-					 to contain at least a key that is different from a 
-					 TDirectoryFile)
+		- Move StrawPlace and StrawAddress in ToolsLib (were not
+		linked if placed in Analyzer directory)
+		- Add RawHeader header file in the list of imported headers
+		- Fix unable to write NA62Analysis.skipped file 
+		- Skip obviously empty input files (non-empty file is supposed
+		to contain at least a key that is different from a TDirectoryFile)
 
 2015-06-08	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.546
