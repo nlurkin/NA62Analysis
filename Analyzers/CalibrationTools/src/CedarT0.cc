@@ -9,5 +9,6 @@ CedarT0::CedarT0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "Cedar") {
   fHistoTimeLimit      = 10.0; // time half-span of plotted histograms [ns]
   fSignalPeakWidth     = 1.0;  // exclusion region half-width when looking for anomalous shape [ns]
   fIssueWarnings       = true; // check if the spectrum shape is OK?
-  fPlotTimeDependences = true; // check the time stability of the T0 constants?
+  fPlotChannelTimes    = true; // plot times in each channel?
+  fPlotTimeDependences = true; // check and plot the time stability of the T0 constants?
 }

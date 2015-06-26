@@ -46,12 +46,14 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fRawTimeHistoName    = "LeadingTimeRaw";
 
   fMinIntegral         = 100;   // minimal number of entries (excluding underflows, overflows) for fit attempt
+  fMinContentMaxBin    = 10.0;  // minimal content of most populated bin for fit attempt
   fFittingRange        = 0.9;   // fitting range = [-0.9ns:+0.9ns], i.e. 9 bins of 0.2ns width
   fNFilesToAccumulate  = 20;    // for the T0 stability plots
   fHistoTimeLimit      = 30.0;  // time half-span of plotted histograms [ns]
   fSignalPeakWidth     = 1.0;   // exclusion region half-width for the spectrum shape check
   fIssueWarnings       = false; // check if the spectrum shape is OK?
-  fPlotTimeDependences = true;  // check the time stability of the T0 constants?
+  fPlotChannelTimes    = true;  // plot times in each channel?
+  fPlotTimeDependences = true;  // check and plot the time stability of the T0 constants?
 
   // Initialization of the analyzer
   fEvaluateGlobalT0 = fEvaluateT0s = fUseChannelMap = true;
@@ -65,8 +67,8 @@ void T0Evaluation::InitHist() {
     exit(0);
   }
 
-  if(fEvaluateGlobalT0){
-    fHRawTime      = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
+  if (fEvaluateGlobalT0) {
+    fHRawTime = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
     if (!fHRawTime) {
       fEvaluateGlobalT0 = 0;
       cout << "Warning in "<<fAnalyzerName<<": histogram for global T0 evaluation (" <<
@@ -74,10 +76,9 @@ void T0Evaluation::InitHist() {
     }
   }
 
-  if(fEvaluateT0s){
+  if (fEvaluateT0s) {
     fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
-    fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated
-    
+    fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated    
     if (!fH2) {
       fEvaluateT0s = 0;
       cout << "Warning in "<<fAnalyzerName<<": histogram for T0 evaluation (" << 
@@ -103,7 +104,7 @@ void T0Evaluation::InitHist() {
   }
 
   // Find and read the channel map
-  if(fUseChannelMap)ParseConfFile();
+  if (fUseChannelMap) ParseConfFile();
 
   // Check which the RO channels are active
   fNChannelsActive = 0;
@@ -131,7 +132,7 @@ void T0Evaluation::InitHist() {
 }
 
 ///////////////////////////////////////////////////
-// Read the channle map from the configuration file
+// Read the channel map from the configuration file
 
 void T0Evaluation::ParseConfFile() {
   ifstream confFile(fConfFileName);
@@ -235,6 +236,9 @@ void T0Evaluation::EvaluateT0s(TH2D *h2, int ChannelID, bool IssueWarnings) {
   }
 }
 
+///////////////////////////
+// Evaluate T0 in a channel
+
 void T0Evaluation::EvaluateChannelT0 (int ich, bool IssueWarning) {
 
   // Check if there are enough entries for the fit to converge
@@ -245,45 +249,17 @@ void T0Evaluation::EvaluateChannelT0 (int ich, bool IssueWarning) {
   // Fitting interval: around the bin with max content
   Int_t maxbin  = fHTime[ich]->GetMaximumBin();
   Double_t c0   = fHTime[ich]->GetBinCenter(maxbin);
-  Double_t maxc = fHTime[ich]->GetBinContent(maxbin);
   Double_t cmin = c0 - fFittingRange;
   Double_t cmax = c0 + fFittingRange;
-  fFChannelFit[ich] = new TF1("gaus", "gaus", cmin, cmax);
-  fFChannelFit[ich]->SetParameter(0, maxc);
-  fFChannelFit[ich]->SetParameter(1, c0);
-  fFChannelFit[ich]->SetParameter(2, 1.0);
-  fHTime[ich]->Fit(fFChannelFit[ich], "0Q", "", cmin, cmax);
-  double T0         = fFChannelFit[ich]->GetParameter(1);
-  double Resol      = fFChannelFit[ich]->GetParameter(2);
-  double DeltaT0    = fFChannelFit[ich]->GetParError(1);
-  double DeltaResol = fFChannelFit[ich]->GetParError(2);
+  Double_t maxc = fHTime[ich]->GetBinContent(maxbin);
+  if (maxc < fMinContentMaxBin) return;
 
-  // If the first fit fails, second attempt with more degrees of freedom
-  if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) {
+  if (!FitChannel(ich, c0, cmin, cmax, maxc)) return;
 
-    delete fFChannelFit[ich];
-    fFChannelFit[ich] = new TF1("GausPol", "gaus(0)+pol0(3)", cmin, cmax);
-    fFChannelFit[ich]->SetParameter(0, fHTime[ich]->GetBinContent(maxbin));
-    fFChannelFit[ich]->SetParameter(1, c0);
-    fFChannelFit[ich]->SetParameter(2, 1.0);
-    fFChannelFit[ich]->SetParameter(3, 0.0);
-    fHTime[ich]->Fit(fFChannelFit[ich], "0Q", "", cmin, cmax);
-    T0         = fFChannelFit[ich]->GetParameter(1);
-    Resol      = fFChannelFit[ich]->GetParameter(2);
-    DeltaT0    = fFChannelFit[ich]->GetParError(1);
-    DeltaResol = fFChannelFit[ich]->GetParError(2);
-
-    // Check if the second fit is successful
-    if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) return;
-  }
-
-  fT0[ich]      = T0;
-  fDeltaT0[ich] = DeltaT0;
-
-  fHisto.GetHisto("T0")->          SetBinContent(ich+1, T0);
-  fHisto.GetHisto("T0")->          SetBinError  (ich+1, DeltaT0);
-  fHisto.GetHisto("T0Resolution")->SetBinContent(ich+1, Resol);
-  fHisto.GetHisto("T0Resolution")->SetBinError  (ich+1, DeltaResol);
+  fHisto.GetHisto("T0")->          SetBinContent(ich+1, fT0[ich]);
+  fHisto.GetHisto("T0")->          SetBinError  (ich+1, fDeltaT0[ich]);
+  fHisto.GetHisto("T0Resolution")->SetBinContent(ich+1, fResol[ich]);
+  fHisto.GetHisto("T0Resolution")->SetBinError  (ich+1, fDeltaResol[ich]);
 
   /////////////////////////////////////////////////
   // Issue a warning in case there is a second peak
@@ -311,6 +287,42 @@ void T0Evaluation::EvaluateChannelT0 (int ich, bool IssueWarning) {
       fSecondPeakPos[ich] = fHTime[ich]->GetBinCenter(highestbin); 
     }
   }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// The fitting routine in a channel: can be overloaded in daughter classes
+
+bool T0Evaluation::FitChannel(int ich, double c0, double cmin, double cmax, double maxc) {
+
+  fFChannelFit[ich] = new TF1("gaus", "gaus", cmin, cmax);
+  fFChannelFit[ich]->SetParameters(maxc, c0, 1.0);
+  fHTime[ich]->Fit(fFChannelFit[ich], "R0Q");
+  double T0         = fFChannelFit[ich]->GetParameter(1);
+  double Resol      = fFChannelFit[ich]->GetParameter(2);
+  double DeltaT0    = fFChannelFit[ich]->GetParError(1);
+  double DeltaResol = fFChannelFit[ich]->GetParError(2);
+
+  // If the first fit fails, make a second attempt with more degrees of freedom
+  if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) {
+
+    delete fFChannelFit[ich];
+    fFChannelFit[ich] = new TF1("GausPol", "gaus(0)+pol0(3)", cmin, cmax);
+    fFChannelFit[ich]->SetParameters(maxc, c0, 1.0, 0.0);
+    fHTime[ich]->Fit(fFChannelFit[ich], "R0Q");
+    T0         = fFChannelFit[ich]->GetParameter(1);
+    Resol      = fFChannelFit[ich]->GetParameter(2);
+    DeltaT0    = fFChannelFit[ich]->GetParError(1);
+    DeltaResol = fFChannelFit[ich]->GetParError(2);
+
+    // Check if the second fit is successful
+    if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) return false;
+  }
+
+  fT0[ich]         = T0;
+  fDeltaT0[ich]    = DeltaT0;
+  fResol[ich]      = Resol;
+  fDeltaResol[ich] = DeltaResol;
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -381,6 +393,8 @@ void T0Evaluation::GeneratePDFReport() {
   fHisto.GetHisto("T0")->GetYaxis()->SetTitleOffset(0.5);
   fHisto.GetHisto("T0")->GetXaxis()->SetTitle("Readout channel ID");
   fHisto.GetHisto("T0")->GetYaxis()->SetTitle("T0 and its error [ns]");
+  fHisto.GetHisto("T0")->SetLineColor(kBlue);
+  fHisto.GetHisto("T0")->SetMarkerColor(kBlue);
   fHisto.GetHisto("T0")->Draw();
 
   fFrontCanvas->cd(2);
@@ -392,6 +406,8 @@ void T0Evaluation::GeneratePDFReport() {
   fHisto.GetHisto("T0Resolution")->GetYaxis()->SetTitleOffset(0.5);
   fHisto.GetHisto("T0Resolution")->GetXaxis()->SetTitle("Readout channel ID");
   fHisto.GetHisto("T0Resolution")->GetYaxis()->SetTitle("Peak width and its error [ns]");
+  fHisto.GetHisto("T0Resolution")->SetLineColor(kBlue);
+  fHisto.GetHisto("T0Resolution")->SetMarkerColor(kBlue);
   fHisto.GetHisto("T0Resolution")->Draw();
 
   fFrontCanvas->cd(3);
@@ -410,6 +426,7 @@ void T0Evaluation::GeneratePDFReport() {
     fHRawTime->GetXaxis()->SetRangeUser
       (fHRawTime->GetBinLowEdge(minbin), fHRawTime->GetBinLowEdge(maxbin+1));
     fHRawTime->SetLineColor(kBlue);
+    fHRawTime->SetMarkerColor(kBlue);
     fHRawTime->SetLineWidth(1);
     fHRawTime->Draw();
     l->SetLineColor(kGreen+2);
@@ -425,49 +442,55 @@ void T0Evaluation::GeneratePDFReport() {
   int Npages = fNChannelsActive/16;
   if (fNChannelsActive%16) Npages++;
 
-  gStyle->SetOptStat("e"); // print the number of entries
-  for (int ipage=0; ipage<Npages; ipage++) {
-    for (int i=0; i<16; i++) {
-      fCanvas->GetPad(i+1)->Clear();
-      int ichActive = ipage*16 + i;
-      if (ichActive>=fNChannelsActive) continue;
-      int ich = ActiveChannelMap[ichActive];
-      fCanvas->cd(i+1);
-      Int_t Integral = fHTime[ich]->Integral(); // the integral is later changed by SetRangeUser()
-      Int_t maxbin   = fHTime[ich]->GetMaximumBin();
-      Double_t c0    = fHTime[ich]->GetBinContent(maxbin);
-      if (c0<1) c0 = 1;
-      fHTime[ich]->SetMaximum(1.1*c0);
-      fHTime[ich]->GetXaxis()->SetRangeUser(-fHistoTimeLimit, +fHistoTimeLimit);
-      fHTime[ich]->GetXaxis()->SetLabelSize(0.07);
-      fHTime[ich]->GetYaxis()->SetLabelSize(0.055);
-      fHTime[ich]->GetXaxis()->SetTitle("");
-      fHTime[ich]->SetLineWidth(1);
-      fHTime[ich]->Draw();
+  if (fPlotChannelTimes) {
 
-      if (fFChannelFit[ich]) {
-	fFChannelFit[ich]->SetLineWidth(1);
-	fFChannelFit[ich]->Draw("same");
-      }
+    gStyle->SetOptStat("e"); // print the number of entries
+    for (int ipage=0; ipage<Npages; ipage++) {
+      for (int i=0; i<16; i++) {
+	fCanvas->GetPad(i+1)->Clear();
+	int ichActive = ipage*16 + i;
+	if (ichActive>=fNChannelsActive) continue;
+	int ich = ActiveChannelMap[ichActive];
+	fCanvas->cd(i+1);
+	Int_t Integral = fHTime[ich]->Integral(); // the integral is later changed by SetRangeUser()
+	Int_t maxbin   = fHTime[ich]->GetMaximumBin();
+	Double_t c0    = fHTime[ich]->GetBinContent(maxbin);
+	if (c0<1) c0 = 1;
+	fHTime[ich]->SetMaximum(1.1*c0);
+	fHTime[ich]->GetXaxis()->SetRangeUser(-fHistoTimeLimit, +fHistoTimeLimit);
+	fHTime[ich]->GetXaxis()->SetLabelSize(0.07);
+	fHTime[ich]->GetYaxis()->SetLabelSize(0.055);
+	fHTime[ich]->GetXaxis()->SetTitle("");
+	fHTime[ich]->SetLineWidth(1);
+	fHTime[ich]->Draw();
+	
+	if (fFChannelFit[ich]) {
+	  fFChannelFit[ich]->SetLineWidth(1);
+	  fFChannelFit[ich]->Draw("same");
+	}
 
-      // Draw line at the position of the second highest peak
-      if (fWarning[ich]) {
-	l->SetLineColor(kGreen+2);
-	l->SetLineWidth(1);
-	l->DrawLine(fSecondPeakPos[ich], 0., fSecondPeakPos[ich], fHTime[ich]->GetMaximum());
-	fText->DrawText(0, 0.55*c0, "WARNING");
+	// Draw line at the position of the second highest peak
+	if (fWarning[ich]) {
+	  l->SetLineColor(kGreen+2);
+	  l->SetLineWidth(1);
+	  l->DrawLine(fSecondPeakPos[ich], 0., fSecondPeakPos[ich], fHTime[ich]->GetMaximum());
+	  fText->DrawText(0, 0.55*c0, "WARNING");
+	}
+	else if (Integral==0) {
+	  fText->DrawText(0, 0.55*c0, "EMPTY");
+	}
+	else if (Integral<fMinIntegral) {
+	  fText->DrawText(0, 0.55*c0, "FEW ENTRIES");
+	}
+	else if (fT0[ich]>999.0) {
+	  fText->DrawText(0, 0.55*c0, "FIT FAILED");
+	}
       }
-      else if (Integral==0) {
-	fText->DrawText(0, 0.55*c0, "EMPTY");
-      }
-      else if (Integral<fMinIntegral) {
-	fText->DrawText(0, 0.55*c0, "FEW ENTRIES");
-      }
-      else if (fT0[ich]>999.0) {
-	fText->DrawText(0, 0.55*c0, "FIT FAILED");
-      }
+      fCanvas->Print(fOutPDFFileName, "pdf");
     }
-    fCanvas->Print(fOutPDFFileName, "pdf");
+  }
+  else {
+    cout << fAnalyzerName<< ": channel time plots not requested" << endl;
   }
 
   ////////////////////////////////////////

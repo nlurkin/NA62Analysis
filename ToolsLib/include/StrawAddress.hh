@@ -40,16 +40,16 @@ using namespace std;
 /// \EndDetailed
 
 class StrawAddress {
-public:
-  
-  int isrb;          // SRB index (0-31)  == ichamber*8 + iview*2 + SecondSrb
-  int icover;        // cover index inside SRB (0-15), sometimes it was called "SRB channel"
-  int ichannel;      // straw channel index inside SRB cover (0-15)
 
-  int cell;          // cell index (0-14) along the cells arrow direction
-  int letter;        // letter index of the straw in the cell (0-7) along the cells arrow direction
-  
-  StrawAddress( int ichamber, int  iview, int ihalf,int ilayer,  int istraw);
+public:  
+  int isrb;     ///< SRB index (0-31)  == ichamber*8 + iview*2 + SecondSrb
+  int icover;   ///< cover index inside SRB (0-15), sometimes it was called "SRB channel"
+  int ichannel; ///< straw channel index inside SRB cover (0-15)
+  int cell;     ///< cell index (0-14) along the cells arrow direction
+  int letter;   ///< letter index of the straw in the cell (0-7) along the cells arrow direction
+
+  StrawAddress (int ichamber, int  iview, int ihalf,int ilayer,  int istraw);
+  ~StrawAddress() {}
 };
 
 #endif

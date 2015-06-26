@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <vector>
 #include "Analyzer.hh"
-#include "MCSimple.hh"
-#include "DetectorAcceptance.hh"
 #include <TCanvas.h>
 #include <TStyle.h>
 
@@ -28,7 +26,7 @@ class T0Evaluation : public NA62Analysis::Analyzer {
 public:
   T0Evaluation(NA62Analysis::Core::BaseAnalysis *ba, std::string DetectorName);
 
-  // standard methods
+  // Standard methods
   void InitOutput() { AddParam("generateoutputpdf", &fGenerateOutputPDF, 1); }
   void DefineMCSimple() {}
   void InitHist();
@@ -40,14 +38,14 @@ public:
   void PostProcess() {}
   void DrawPlot() {}
 
-  // custom methods
+  // T0Evaluation-specific methods
   void ParseConfFile();
   void EvaluateT0s(TH2D*, int, bool);
-  virtual void EvaluateChannelT0(int, bool);
+  void EvaluateChannelT0(int, bool);
+  virtual bool FitChannel(int, double, double, double, double);
   void EvaluateGlobalOffset();
   void GenerateT0TextFile();
   void GeneratePDFReport();
-
   virtual void RequestUserHistograms() {}
   virtual void GenerateUserPDFReport() {}
 
@@ -64,11 +62,11 @@ protected:
   TH2D    *fH2, *fH2_Partial, *fH2_Integrated;
   TH1D    *fHRawTime, *fHTime[20000], *fHT0VsTime[20000];
   TF1     *fFChannelFit[20000], *fFChannelStability[20000];
-  int     fChannelID[20000]; ///< Geometric channels ID versus RO channel ID
-  double  fT0[20000], fDeltaT0[20000];
+  int     fChannelID[20000]; ///< Geometric channel ID versus RO channel ID
+  double  fT0[20000], fDeltaT0[20000], fResol[20000], fDeltaResol[20000];
   double  fSecondPeakPos[20000];
   bool    fWarning[20000];
-  bool    fUseChannelMap, fPlotTimeDependences, fIssueWarnings;
+  bool    fUseChannelMap, fPlotChannelTimes, fPlotTimeDependences, fIssueWarnings;
   int     fGenerateOutputPDF;
 
   TString fDetectorName;       ///< Name of the detector
@@ -80,9 +78,9 @@ protected:
   TString fOutPDFFileName;     ///< Name of the output PDF report file (optional, if report is required)
   int     fNFilesToAccumulate; ///< Unit of time for stability checks
   double  fMinIntegral;        ///< Minimal number of entries (excl. underflows, overflows) to attempt fit
+  double  fMinContentMaxBin;   ///< Minimal content of most populated bin to attempt fit
   double  fFittingRange;       ///< Half-width of the fitting T0 range
   double  fHistoTimeLimit;     ///< Half-size of the X axis span for the PDF report [ns]
-
   double  fPeakBkgThreshold;   ///< Second highest peak/Bkg threshold
   double  fSignalPeakWidth;    ///< Exclusion region half-width when looking for anomalous shape
 

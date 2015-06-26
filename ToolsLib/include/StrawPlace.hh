@@ -48,20 +48,20 @@ using namespace std;
 ///\n
 /// \EndDetailed
 
-class StrawPlace{
- public:
+class StrawPlace {
 
-  int ichamber; // Chamber number in the spectrometer along the beam
-  int iview;    // view index in the chamber along the beam (0-3) = (U,V,X,Y)
-  int ihalf;    // half of the view (0-1) along the beam
-  int ilayer;   // layer in the half (0-1) along the beam
-  int istraw;   // straw index in the layer  (0-122), starting from the end of last (14-th) cell 
-  int cell;     // cell index (0-14) along the cells arrow direction
-  int letter;   // letter index of the straw in the cell (0-7) along the cells arrow direction
+public:
+  int ichamber; ///< chamber number in the spectrometer along the beam
+  int iview;    ///< view index in the chamber along the beam (0-3) = (U,V,X,Y)
+  int ihalf;    ///< half of the view (0-1) along the beam
+  int ilayer;   ///< layer in the half (0-1) along the beam
+  int istraw;   ///< straw index in the layer  (0-122), starting from the end of last (14-th) cell 
+  int cell;     ///< cell index (0-14) along the cells arrow direction
+  int letter;   ///< letter index of the straw in the cell (0-7) along the cells arrow direction
+  bool NoStraw; ///< straw is absent or inactive;
 
-  bool NoStraw; // straw is absent or inactive;
-
-  StrawPlace(int isrb, int icover, int ichannel);
+  StrawPlace(int isrb, int icover, int ichannel);  
+  ~StrawPlace() {}
 };
 
 #endif
