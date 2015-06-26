@@ -23,9 +23,7 @@ public:
 private:
 
   TH1D *fHTileT1T2[152];
-  TH1D *fHChannelProfile, *fHTileOR, *fHTileAND;
-  Bool_t fTileT1T2Found;
-
+  Bool_t fAllTileT1T2Found;
 };
 
 #endif

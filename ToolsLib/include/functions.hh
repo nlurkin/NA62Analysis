@@ -38,11 +38,11 @@
 
 TVector3 propagate(TVector3 pos, TVector3 p, double z);
 
-TString printVector2( TVector2 v );
+TString printVector2(TVector2 v);
 
-TString printVector3( TVector3 v );
+TString printVector3(TVector3 v);
 
-TString printVector4( TLorentzVector v );
+TString printVector4(TLorentzVector v);
 
 bool IsInDetector(double propagation_pos, double prod_pos, double min_pos, double des_pos, double x_front, double y_front, double x_back, double y_back, double crnrX[], double crnrY[], int crnr_nb, double center_radius);
 

@@ -10,7 +10,7 @@
 
 namespace NA62Constants {
 
-  // Particle masses [MeV] according to PDG 2013
+  // Particle masses [MeV] according to PDG 2014
 
   static const double MKCH = 493.677;
   static const double MPI  = 139.57018;

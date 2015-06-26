@@ -96,7 +96,6 @@ include_directories(${NA62MCSOURCE}/Persistency/include)
 
 #FW include directories
 include_directories(${NA62ANALYSIS}/include)
-include_directories(${NA62ANALYSIS}/PhysicsLib/include)
 include_directories(${NA62ANALYSIS}/ToolsLib/include)
 include_directories(${NA62ANALYSIS}/Examples/include)
 
