@@ -66,9 +66,21 @@ void CanvasOrganizer::Draw() const {
 	for(auto it : fHistos){
 		i++;
 		fCanvas->cd(i);
-		if(it.tag == TTH1) it.ptr.histo->Draw();
+		if(it.tag == TTH1){
+			it.ptr.histo->Draw();
+			if(it.ref.histo!=nullptr){
+				it.ref.histo->SetLineColor(2);
+				it.ref.histo->SetLineStyle(2);
+				it.ref.histo->Draw("SAME");
+			}
+		}
 		else if(it.tag == TTH2) it.ptr.histo->Draw("colz");
-		else if(it.tag == TTGraph) it.ptr.graph->Draw("A*");
+		else if(it.tag == TTGraph){
+			it.ptr.graph->Draw("A*");
+			if(it.ref.graph!=nullptr){
+				it.ref.graph->Draw("SAMEA*");
+			}
+		}
 	}
 	fChanged = false;
 }
@@ -84,6 +96,7 @@ void CanvasOrganizer::Update(int currentEvent) const {
 	if(fCanvas) {
 		if(currentEvent % fUpdateFrequency==0){
 			if(fChanged) Draw();
+			UpdateRef();
 			fCanvas->Update();
 			fCanvas->Draw();
 		}
@@ -100,6 +113,7 @@ void CanvasOrganizer::AddHisto(TH1* histoPtr) {
 	plot_t t;
 	t.ptr.histo = histoPtr;
 	t.tag = TTH1;
+	t.ref.histo = nullptr;
 	fHistos.push_back(t);
 	fChanged=true;
 }
@@ -114,6 +128,7 @@ void CanvasOrganizer::AddHisto(TH2* histoPtr) {
 	plot_t t;
 	t.ptr.histo = histoPtr;
 	t.tag = TTH2;
+	t.ref.histo = nullptr;
 	fHistos.push_back(t);
 	fChanged=true;
 }
@@ -128,7 +143,7 @@ void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
 	plot_t t;
 	t.ptr.graph = histoPtr;
 	t.tag = TTGraph;
-
+	t.ref.graph = nullptr;
 	fHistos.push_back(t);
 	fChanged=true;
 }
@@ -157,6 +172,28 @@ CanvasOrganizer::size_t CanvasOrganizer::computeSize(int nElements) const {
 	s.width = ceil(sqrt(nElements));
 	s.height = ceil(nElements/(double)s.width);
 	return s;
+}
+
+void CanvasOrganizer::SetReference(TH1* refPtr, TH1* histoPtr) {
+	for(auto &it : fHistos){
+		if(it.ptr.histo==histoPtr) it.ref.histo=refPtr;
+	}
+}
+
+void CanvasOrganizer::SetReference(TGraph* refPtr, TGraph* histoPtr) {
+	for(auto &it : fHistos){
+		if(it.ptr.graph==histoPtr) it.ref.graph=refPtr;
+	}
+}
+
+void CanvasOrganizer::UpdateRef() const {
+	for(auto it : fHistos){
+		if(it.ref.histo!=nullptr){
+			if(it.tag==TTH1){
+				it.ref.histo->Scale(it.ptr.histo->Integral()/it.ref.histo->Integral(), "");
+			}
+		}
+	}
 }
 
 } /* namespace Core */

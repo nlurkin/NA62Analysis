@@ -968,5 +968,12 @@ bool UserMethods::UpdateCanvas(TString canvasName) {
 	return fHisto.UpdateCanvas(canvasName);
 }
 
-} /* namespace NA62Analysis */
+void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
+	fHisto.SetCanvasReference(canvasName, histo, refPtr);
+}
 
+void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
+	fHisto.SetCanvasReference(canvasName, histo, refPtr);
+}
+
+} /* namespace NA62Analysis */

@@ -1015,6 +1015,23 @@ bool HistoHandler::UpdateCanvas(TString canvasName) const {
 	return false;
 }
 
+void HistoHandler::SetCanvasReference(TString canvas, TString histo, TH1* refPtr) {
+	TH1* h = GetTH1(histo);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
+
+	if(h && ((it=fCanvas.find(canvas))!=fCanvas.end())){
+		it->second->SetReference(refPtr, h);
+	}
+}
+
+void HistoHandler::SetCanvasReference(TString canvas, TString histo, TGraph* refPtr) {
+	TGraph* h = GetTGraph(histo);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
+
+	if(h && ((it=fCanvas.find(canvas))!=fCanvas.end())){
+		it->second->SetReference(refPtr, h);
+	}
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
-

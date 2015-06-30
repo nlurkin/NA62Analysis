@@ -36,9 +36,15 @@ public:
 
 	void Draw() const;
 	void Update(int currentEvent=0) const;
+	void UpdateRef() const;
+
 	void AddHisto(TH1* histoPtr);
 	void AddHisto(TH2* histoPtr);
 	void AddHisto(TGraph* histoPtr);
+
+	void SetReference(TH1* refPtr, TH1* histoPtr);
+	void SetReference(TGraph* refPtr, TGraph* histoPtr);
+
 	void SetSize(int width, int height) {
 		/// \MemberDescr
 		/// \param width : Width to be set
@@ -102,7 +108,8 @@ private:
 	/// \EndBrief
 	struct plot_t{
 		plotType_u ptr; ///< Pointer to the plot
-		plotType_e tag; ///< Indidcated type of plot
+		plotType_e tag; ///< Indicated type of plot
+		plotType_u ref; ///< Pointer to reference plot
 	};
 
 	std::vector<plot_t> fHistos; ///< Container for plots

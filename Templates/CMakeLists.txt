@@ -16,6 +16,10 @@ link_directories(${NA62RECO_LIB_DIRS})
 # Get analyzers definition from builder
 include(analyzers.cmake)
 
+# Include POs
+add_subdirectory(PhysicsObjects)
+include_directories(PhysicsObjects/include)
+
 # Extras
 include_directories(${EXTRA_INCLUDE_DIRS})
 link_directories(${EXTRA_LIBS_DIRS})
