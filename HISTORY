@@ -4,8 +4,8 @@ NA62Analysis Project
 
 2015-06-30      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.569
-                - Add OnlineMonitor capabilities (turn on with --continuous flag)
-                - Internal handling of canvases: see documentation of CreateCanvas,
+            - Add OnlineMonitor capabilities (turn on with --continuous flag)
+            - Internal handling of canvases: see documentation of CreateCanvas,
 				  PlacePlotOnCanvas, SetCanvasAutoUpdate, UpdateCanvas, 
 				  SetCanvasReference. They are used with the -g and --continuous
 				  options.
@@ -14,7 +14,8 @@ NA62Analysis Project
 				  dependencies resolver is deactivated and the Analyzers are run in 
 				  the order specified in the config file.
 				- Add revision checking between input ROOT file and linked Persistency
-				  libraries.  
+				  libraries.
+				- Fix bug NA62RKD-103
 
 2015-06-26	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.566-568
