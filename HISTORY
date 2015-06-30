@@ -3,7 +3,7 @@ NA62Analysis Project
 ################################################################
 
 2015-06-30      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev.569
+                rev.573
             - Add OnlineMonitor capabilities (turn on with --continuous flag)
             - Internal handling of canvases: see documentation of CreateCanvas,
 				  PlacePlotOnCanvas, SetCanvasAutoUpdate, UpdateCanvas, 
