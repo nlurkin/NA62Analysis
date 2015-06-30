@@ -1,0 +1,45 @@
+/// \page createOM Creating an Online Monitor
+/// In NA62Analysis an online monitor is not different at all from a normal 
+/// Analyzer. The online monitor simply creates an new tab for every loaded 
+/// analyzer. Within the analyzer tab, a tab is created for every Canvas 
+/// created through the CanvasOrganizer class.
+/// 
+/// Therefore to add plots on the online monitor one only needs to create 
+/// instances of CanvasOrganizer. The methods available to create and manipulate
+/// them are:
+/// <ul>
+/// <li> NA62Analysis::UserMethods::CreateCanvas</li>
+/// <li> NA62Analysis::UserMethods::PlacePlotOnCanvas</li>
+/// <li> NA62Analysis::UserMethods::SetCanvasAutoUpdate</li>
+/// <li> NA62Analysis::UserMethods::UpdateCanvas</li>
+/// <li> NA62Analysis::UserMethods::SetCanvasReference</li>
+/// <li> NA62Analysis::UserMethods::SetCanvasReference</li>
+/// </ul>   
+/// 
+/// Example:
+/// \code
+/// void test::InitHist(){
+///     //Create Histograms
+///     BookHisto(new TH1D("testHisto", "xxx", 10, 0, 10));
+///     BookHisto(new TH1D("testHisto2", "xxx", 10, 0, 10));
+///     BookHisto("xxxGraph", new TGraph());
+///     //Create canvas
+///     CreateCanvas("myCanvas");
+///     CreateCanvas("myCanvas2");
+///     //Specify update interval (every 1000 events)
+///     SetUpdateInterval(1000);
+///     //Specify that canvas should update automatically with the period specified previously
+///     //If not specified the canvas is updated at every end of run (input file list emtpied)
+///     fHisto.SetCanvasAutoUpdate("myCanvas");
+///     
+///     //Place plots testHisto and graph xxxGraph on the canvas.
+///     //testHisto2 is left away
+///     PlacePlotOnCanvas("testHisto", "myCanvas");
+///     PlacePlotOnCanvas("xxxGraph", "myCanvas");
+///
+///     //Get reference histogram from reference file and overlay it
+///     //over testHisto
+///     TH1D* refH = (TH1D*)GetReferenceTH1("testHisto");
+///     SetCanvasReference("myCanvas", "testHisto2", refH);
+/// }
+/// \endcode 

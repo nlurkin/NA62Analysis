@@ -969,10 +969,26 @@ bool UserMethods::UpdateCanvas(TString canvasName) {
 }
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
 	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
 	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 

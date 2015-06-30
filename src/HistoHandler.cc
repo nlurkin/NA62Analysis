@@ -1016,6 +1016,14 @@ bool HistoHandler::UpdateCanvas(TString canvasName) const {
 }
 
 void HistoHandler::SetCanvasReference(TString canvas, TString histo, TH1* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
 	TH1* h = GetTH1(histo);
 	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
 
@@ -1025,6 +1033,14 @@ void HistoHandler::SetCanvasReference(TString canvas, TString histo, TH1* refPtr
 }
 
 void HistoHandler::SetCanvasReference(TString canvas, TString histo, TGraph* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
 	TGraph* h = GetTGraph(histo);
 	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
 

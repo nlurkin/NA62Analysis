@@ -175,18 +175,36 @@ CanvasOrganizer::size_t CanvasOrganizer::computeSize(int nElements) const {
 }
 
 void CanvasOrganizer::SetReference(TH1* refPtr, TH1* histoPtr) {
+	/// \MemberDescr
+	/// \param refPtr Pointer to a reference histogram
+	/// \param histoPtr Pointer to the histogram on which the reference should be overlaid
+	///
+	/// Link a reference histogram to an histogram already added to the canvas.
+	/// \EndMemberDescr
+
 	for(auto &it : fHistos){
 		if(it.ptr.histo==histoPtr) it.ref.histo=refPtr;
 	}
 }
 
 void CanvasOrganizer::SetReference(TGraph* refPtr, TGraph* histoPtr) {
+	/// \MemberDescr
+	/// \param refPtr Pointer to a reference histogram
+	/// \param histoPtr Pointer to the histogram on which the reference should be overlaid
+	///
+	/// Link a reference histogram to an histogram already added to the canvas.
+	/// \EndMemberDescr
+
 	for(auto &it : fHistos){
 		if(it.ptr.graph==histoPtr) it.ref.graph=refPtr;
 	}
 }
 
 void CanvasOrganizer::UpdateRef() const {
+	/// \MemberDescr
+	/// Update reference histograms: scale them to the same integral as the linked histogram.
+	/// \EndMemberDescr
+
 	for(auto it : fHistos){
 		if(it.ref.histo!=nullptr){
 			if(it.tag==TTH1){

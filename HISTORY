@@ -6,8 +6,9 @@ NA62Analysis Project
                 rev.xxx
                 - Add OnlineMonitor capabilities (turn on with --continuous flag)
                 - Internal handling of canvases: see documentation of CreateCanvas,
-				  PlacePlotOnCanvas, SetCanvasAutoUpdate, UpdateCanvas. They are used
-				  with the -g and --continuous options.
+				  PlacePlotOnCanvas, SetCanvasAutoUpdate, UpdateCanvas, 
+				  SetCanvasReference. They are used with the -g and --continuous
+				  options.
 				- Documentation updated. See new Creating an Online Monitor page.
 				- Add --strict-order flag to NA62AnalysisBuilder.py. The internal 
 				  dependencies resolver is deactivated and the Analyzers are run in 
