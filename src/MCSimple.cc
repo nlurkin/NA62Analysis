@@ -23,6 +23,7 @@ MCSimple::MCSimple():
 }
 
 MCSimple::MCSimple(const MCSimple& c):
+		Verbose(c),
 		fStatus(c.fStatus),
 		fParticles(c.fParticles),
 		fStruct(c.fStruct),

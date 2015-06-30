@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "BaseAnalysis.hh"
+#include "CanvasOrganizer.hh"
 
 namespace NA62Analysis {
 
@@ -38,6 +39,7 @@ UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name):
 }
 
 UserMethods::UserMethods(const UserMethods &c):
+		Verbose(c),
 		fParent(c.fParent)
 {
 	/// \MemberDescr
@@ -904,6 +906,90 @@ std::vector<TString> UserMethods::GetListOfHistos(TString directory) {
 	/// \EndMemberDescr
 
 	return fParent->GetIOHandler()->GetListOfHistos(directory);
+}
+
+NA62Analysis::NA62Map<TString, Core::CanvasOrganizer*>::type UserMethods::GetCanvases() {
+	/// \MemberDescr
+	/// \return Map containing the list of CanvasOrganizer for this analyzer
+	/// \EndMemberDescr
+	return fHisto.GetCanvases();
+}
+
+int UserMethods::GetUpdateInterval() const {
+	/// \MemberDescr
+	/// \return Update interval
+	/// \EndMemberDescr
+	return fHisto.GetUpdateInterval();
+}
+
+void UserMethods::CreateCanvas(TString name, int width, int length) {
+	/// \MemberDescr
+	/// \param name: Name of the canvas
+	/// \param width: width of the canvas (default=0=automatic)
+	/// \param height: height of the canvas (default=0=automatic)
+	///
+	/// Create a new named canvas in the analyzer
+	/// \EndMemberDescr
+
+	fHisto.CreateCanvas(name, width, length);
+}
+
+bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+	/// \MemberDescr
+	/// \param histoName: Name of the plot
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas and histograms were found
+	///
+	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
+	/// \EndMemberDescr
+
+	return fHisto.PlacePlotOnCanvas(histoName, canvasName);
+}
+
+bool UserMethods::SetCanvasAutoUpdate(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Mark a canvas as AutoUpdate (will be redrawn every fAutoUpdateInterval events)
+	/// \EndMemberDescr
+
+	return fHisto.SetCanvasAutoUpdate(canvasName);
+}
+
+bool UserMethods::UpdateCanvas(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Force the update of a canvas
+	/// \EndMemberDescr
+
+	return fHisto.UpdateCanvas(canvasName);
+}
+
+void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
+	fHisto.SetCanvasReference(canvasName, histo, refPtr);
+}
+
+void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
+	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 
 } /* namespace NA62Analysis */

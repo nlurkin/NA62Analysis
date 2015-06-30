@@ -15,7 +15,7 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 568
+__rev__ = 569
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -383,7 +383,7 @@ def checkDependence(depsGraph, name, prefix):
 				else:
 					continue
 			#skip comment lines
-			if line.find("//")>=0:
+			if line.strip().startswith("//"):
 				continue
 			
 			# Regex matching analyzer call introducing dependency
@@ -593,6 +593,7 @@ def build(args):
 	[filename] = args.configFileName
 	FWPath = getCheckVar("ANALYSISFW_PATH")
 	UserPath = getCheckVar("ANALYSISFW_USERDIR")
+	userStrictOrder = args.strict_order
 	
 	if not os.path.exists(filename):
 		print "The config file %s does not exist" % filename
@@ -683,13 +684,18 @@ def build(args):
 	if missing == True:
 		return
 	
-	p = depsGraph.getNextPath()
-	while len(p)>0:
-		if p[0]==-1:
-			exit(0)
-		for node in p:
-			ordered.append(node)
+	if not userStrictOrder:
 		p = depsGraph.getNextPath()
+		while len(p)>0:
+			if p[0]==-1:
+				exit(0)
+			for node in p:
+				ordered.append(node)
+			p = depsGraph.getNextPath()
+	else:
+		print """\033[33;1mWARNING: Using strict analyzer order. Dependencies between analyzers are not automatically resolved...
+Re-run without --strict-order if you want dependencies to be automatically solved.\033[0m"""
+		ordered = analyzers[:]
 	
 	strExtralibs = ""
 	strExtralibs_CMake = ""
@@ -819,7 +825,9 @@ def parseArgs():
 	
 	# Setup argument parser
 	common_flags = ArgumentParser(add_help=False)
-	common_flags.add_argument('-j', '--jobs', default=1, type=int, help="Number of processors to use for building (same as make -j)")
+	common_flags.add_argument('-j', '--jobs', default=1, type=int, help="Number of processes to use for building (same as make -j)")
+	common_flags.add_argument('--strict-order', default=False, action="store_true", help="""Use the analyzer in the same order as defined  
+								in the configuration file (beware of dependencies between analyzers)""")
 	clean_group = common_flags.add_argument_group(title="Build options", 
 												description=("""The following options require a cleanAll to take effect 
 															if the framework was already compiled without the option"""))

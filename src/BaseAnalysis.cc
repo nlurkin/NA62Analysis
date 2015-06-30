@@ -1,13 +1,17 @@
 #include "BaseAnalysis.hh"
 
+#include <iomanip>
 #include <sstream>
 #include <TStyle.h>
 #include <TFile.h>
+#include <TThread.h>
+#include <TGClient.h>
 
 #include "ConfigAnalyzer.hh"
 #include "StringBalancedTable.hh"
 #include "TermManip.hh"
 #include "ConfigSettings.hh"
+#include "OMMainWindow.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -17,14 +21,17 @@ BaseAnalysis::BaseAnalysis():
 	fNEvents(-1),
 	fGraphicMode(false),
 	fInitialized(false),
+	fContinuousReading(false),
+	fSignalStop(false),
 	fDetectorAcceptanceInstance(nullptr),
 	fIOHandler(nullptr),
-	fInitTime(true)
+	fInitTime(true),
+	fRunThread(nullptr),
+	fOMMainWindow(nullptr)
 {
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
-
 
 	Configuration::ConfigSettings().ParseFile(TString(std::getenv("ANALYSISFW_USERDIR")) + TString("/.settingsna62"));
 	gStyle->SetOptFit(1);
@@ -36,6 +43,15 @@ BaseAnalysis::~BaseAnalysis(){
 	/// Destructor.
 	/// \EndMemberDescr
 
+	if(fRunThread){
+		fGraphicalMutex.UnLock();
+		fSignalStop=true;
+		fIOHandler->SignalExit();
+		fRunThread->Delete();
+		while(fRunThread->GetState()!=TThread::kCanceledState && fRunThread->GetState()!=TThread::kFinishedState){
+			gSystem->Sleep(300);
+		}
+	}
 	if(fDetectorAcceptanceInstance) delete fDetectorAcceptanceInstance;
 }
 
@@ -73,7 +89,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 		fNEvents = std::max(treeHandler->FillMCTruth(), treeHandler->FillRawHeader());
 
-		std::cout << debug() << "Using " << fNEvents << " events" << endl;
+		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
 	}
 
 	if(IsTreeType()) fNEvents = GetIOTree()->BranchTrees(fNEvents);
@@ -136,8 +152,8 @@ void BaseAnalysis::RegisterOutput(TString name, const void * const address){
 	/// Register an output
 	/// \EndMemberDescr
 
-	std::cout << normal() << "Registering output " << name << endl;
-	std::cout << debug() << " at address " << address << endl;
+	std::cout << normal() << "Registering output " << name << std::endl;
+	std::cout << debug() << " at address " << address << std::endl;
 	fOutput.insert(std::pair<TString, const void* const>(name, address));
 	fOutputStates.insert(std::pair<TString, Analyzer::OutputState>(name, Analyzer::kOUninit));
 }
@@ -255,7 +271,10 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
 			fAnalyzerList[j]->Process(i);
-			fAnalyzerList[j]->UpdatePlots(i);
+			if(fGraphicalMutex.Lock()==0){
+				fAnalyzerList[j]->UpdatePlots(i);
+				fGraphicalMutex.UnLock();
+			}
 			exportEvent = exportEvent || fAnalyzerList[j]->GetExportEvent();
 			gFile->cd();
 		}
@@ -280,7 +299,10 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		fAnalyzerList[j]->EndOfRun();
 
 		fAnalyzerList[j]->ExportPlot();
-		if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
+		if(fGraphicalMutex.Lock()==0){
+			if(fGraphicMode) fAnalyzerList[j]->DrawPlot();
+			fGraphicalMutex.UnLock();
+		}
 		fAnalyzerList[j]->WriteTrees();
 		gFile->cd();
 	}
@@ -290,7 +312,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	//Complete the analysis
 	using NA62Analysis::operator -;
 	float totalTime = fInitTime.GetTime() - fInitTime.GetStartTime();
-	std::cout << setprecision(2);
+	std::cout << std::setprecision(2);
 	std::cout << std::endl << "###################################" << std::endl;
 	std::cout << "Total time: " << std::setw(17) << std::fixed << totalTime << " seconds" << std::endl;
 	std::cout << " - Init time: " << std::setw(15) << std::fixed << fInitTime.GetTotalTime() << " seconds" << std::endl;
@@ -485,6 +507,92 @@ void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPre
 	//Reset to default
 	std::cout.precision(defaultPrecision);
 	std::cout.unsetf(std::ios_base::floatfield);
+}
+
+void BaseAnalysis::SetContinuousReading(bool flagContinuousReading) {
+	/// \MemberDescr
+	/// \param flagContinuousReading: enable/disable flag
+	///
+	/// Enable/Disable the continuousReading mode in both BaseAnalysis and the IOHandler
+	/// \EndMemberDescr
+
+	fContinuousReading = flagContinuousReading;
+	fIOHandler->SetContinuousReading(flagContinuousReading);
+}
+
+void BaseAnalysis::StartContinuous(TString inFileList) {
+	/// \MemberDescr
+	/// \param inFileList: Path to a text file containing a list of input root files
+	///
+	/// Start the continuous reading loop:
+	/// - Setup the GUI
+	/// - Start the Processing loop in its own thread to decouple the GUI from the processing
+	/// \EndMemberDescr
+
+	//Prepare TThread arguments (needs reference to this and input file list
+	ThreadArgs_t *args = new ThreadArgs_t();
+	args->ban = this;
+	args->inFileList = inFileList;
+
+	//Create GUI
+	CreateOMWindow();
+
+	//Start the thread
+	fRunThread = new TThread("t0", (void(*) (void*))&ContinuousLoop, (void*) args);
+	//Allow cancelation of thread only at specific points
+	fRunThread->SetCancelOn();
+	fRunThread->SetCancelDeferred();
+	fRunThread->Run();
+
+	while(1){
+		//Graphical loop. Only process GUI events when the Process loop is not touching graphical objects.
+		//Else crashes occurs
+		if(fGraphicalMutex.Lock()==0){
+			fIOHandler->SetOutputFileAsCurrent();
+			gSystem->ProcessEvents();
+			fGraphicalMutex.UnLock();
+		}
+	}
+}
+
+void BaseAnalysis::CreateOMWindow(){
+	/// \MemberDescr
+	/// Create GUI.
+	/// - Create main window
+	/// - Create one tab for each Analyzer
+	/// - Within the analyzer tab, create one tab for each CanvasOrganizer
+	///   and pass the created canvas to the Organizer
+	/// \EndMemberDescr
+
+	fOMMainWindow = new OMMainWindow(gClient->GetRoot(), gClient->GetDisplayHeight(), gClient->GetDisplayWidth());
+	for(auto it : fAnalyzerList){
+		fOMMainWindow->AddAnalyzerTab(it->GetAnalyzerName());
+		for(auto itCanvas : it->GetCanvases()){
+			itCanvas.second->SetCanvas(fOMMainWindow->AddAnalyzerCanvas(it->GetAnalyzerName(), itCanvas.first));
+		}
+	}
+	fOMMainWindow->Create();
+}
+
+void BaseAnalysis::ContinuousLoop(void* args) {
+	/// \MemberDescr
+	/// \param args: arguments passed to the TThread. Expected a pointer to ThreadArgs_t struct.
+	///
+	/// Process loop:
+	/// - Wait for valid input files list
+	/// - Process the root files
+	/// - Start again until main thread signal end of processing through fSignalStop
+	/// \EndMemberDescr
+
+	BaseAnalysis* ban = ((ThreadArgs_t*)args)->ban;
+	TString inFileList = ((ThreadArgs_t*)args)->inFileList;
+	while(!ban->fSignalStop){
+		ban->GetIOHandler()->OpenInput(inFileList, -1);
+		ban->GetIOHandler()->SetOutputFileAsCurrent();
+		ban->Process(0, -1);
+		TThread::CancelPoint();
+	}
+	ban->fSignalStop = false;
 }
 
 } /* namespace Core */

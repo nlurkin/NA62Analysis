@@ -226,7 +226,7 @@ const Verbose& operator<<(const Verbose &level, T x) {
 	/// \EndMemberDescr
 	if(level.CanPrint()) level.GetStream() << x;
 	return level;
-};
+}
 const Verbose& operator<<(const Verbose &level, std::ostream& (*f)(std::ostream&));
 const Verbose& operator <<(std::ostream& s, const Verbose &level);
 

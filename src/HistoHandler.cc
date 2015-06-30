@@ -54,7 +54,7 @@ HistoHandler::~HistoHandler() {
 	NA62Analysis::NA62Map<TString,TH1*>::type::iterator it1;
 	NA62Analysis::NA62Map<TString,TH2*>::type::iterator it2;
 	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator it3;
-	std::vector<TCanvas*>::iterator it4;
+	NA62Analysis::NA62Map<TString,CanvasOrganizer*>::type::iterator it4;
 
 	for(it1=fHisto.begin(); it1!=fHisto.end(); it1++){
 		delete it1->second;
@@ -66,7 +66,7 @@ HistoHandler::~HistoHandler() {
 		delete it3->second;
 	}
 	for(it4=fCanvas.begin(); it4!=fCanvas.end(); it4++){
-		delete (*it4);
+		delete it4->second;
 	}
 }
 
@@ -118,7 +118,7 @@ void HistoHandler::BookHisto(TString name, TGraph* histo, TString analyzerName, 
 	fHistoOrder.push_back(name);
 	fGraph.insert(std::pair<TString,TGraph*>(name, histo));
 	fGraph[name]->SetNameTitle(name, name);
-	//fPoint.insert(pair<TString,int>(name,0));
+	fPoint.insert(std::make_pair(name,0));
 	if(refresh) SetPlotAutoUpdate(name, analyzerName);
 	if(directory.Length()>0) fPlotsDirectory.insert(std::pair<TString, TString>(name, directory.Strip(TString::kBoth, '/')));
 }
@@ -496,20 +496,31 @@ void HistoHandler::DrawAllPlots(TString analyzerName){
 	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
 	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
 	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
+	NA62Analysis::NA62Map<TString,CanvasOrganizer*>::type::iterator ptr4;
+	CanvasOrganizer *c;
 
 	for(itOrder=fHistoOrder.begin(); itOrder!=fHistoOrder.end(); itOrder++){
 		if((ptr1=fHisto.find(*itOrder))!=fHisto.end()){
-			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			ptr1->second->Draw();
+			c = new CanvasOrganizer(TString("c_" + analyzerName + "_") + *itOrder);
+			c->AddHisto(ptr1->second);
+			c->Draw();
+			fCanvas.insert(std::make_pair(c->GetName(), c));
 		}
 		else if((ptr2=fHisto2.find(*itOrder))!=fHisto2.end()){
-			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			ptr2->second->Draw("COLZ");
+			c = new CanvasOrganizer(TString("c_" + analyzerName + "_") + *itOrder);
+			c->AddHisto(ptr2->second);
+			c->Draw();
+			fCanvas.insert(std::make_pair(c->GetName(), c));
 		}
 		else if((ptr3=fGraph.find(*itOrder))!=fGraph.end()){
-			new TCanvas(TString("c_" + analyzerName + "_") + *itOrder);
-			ptr3->second->Draw("A*");
+			c = new CanvasOrganizer(TString("c_" + analyzerName + "_") + *itOrder);
+			c->AddHisto(ptr3->second);
+			c->Draw();
+			fCanvas.insert(std::make_pair(c->GetName(), c));
 		}
+	}
+	for(ptr4=fCanvas.begin(); ptr4!=fCanvas.end(); ptr4++){
+		ptr4->second->Draw();
 	}
 }
 
@@ -520,12 +531,11 @@ void HistoHandler::UpdatePlots(int evtNbr){
 	/// Update all plots with refresh
 	/// \EndMemberDescr
 
-	std::vector<TCanvas*>::iterator it;
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
 
 	if((evtNbr % fUpdateRate) == 0){
 		for(it = fCanvas.begin(); it!=fCanvas.end(); it++){
-			(*it)->Update();
-			(*it)->Draw();
+			it->second->Update();
 		}
 	}
 }
@@ -605,7 +615,7 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	/// Define the plot as AutoUpdate. Create the corresponding Canvas and Draw the plot
 	/// \EndMemberDescr
 
-	TCanvas *c;
+	CanvasOrganizer *c;
 	TString canvasName = TString("c_" + analyzerName + "_") + name;
 
 	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
@@ -613,26 +623,26 @@ void HistoHandler::SetPlotAutoUpdate(TString name, TString analyzerName){
 	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
 
 	if((ptr1=fHisto.find(name))!=fHisto.end()){
-		c = new TCanvas(canvasName, canvasName);
+		c = new CanvasOrganizer(canvasName);
+		c->AddHisto(ptr1->second);
 		c->Draw();
-		ptr1->second->Draw();
 	}
 	else if((ptr2=fHisto2.find(name))!=fHisto2.end()){
-		c = new TCanvas(canvasName, canvasName);
+		c = new CanvasOrganizer(canvasName);
+		c->AddHisto(ptr2->second);
 		c->Draw();
-		ptr2->second->Draw();
 	}
 	else if((ptr3=fGraph.find(name))!=fGraph.end()){
-		c = new TCanvas(canvasName, canvasName);
+		c = new CanvasOrganizer(canvasName);
+		c->AddHisto(ptr3->second);
 		c->Draw();
-		ptr3->second->Draw();
 	}
 	else{
 		std::cerr << "Plot " << name << " does not exist. Unable to set AutoUpdate." << std::endl;
 		return;
 	}
 
-	fCanvas.push_back(c);
+	fCanvas.insert(std::make_pair(c->GetName(), c));
 	fAutoUpdateList.insert(name);
 }
 
@@ -920,6 +930,124 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 	return itList->second;
 }
 
+
+void HistoHandler::CreateCanvas(TString name, int width, int length) {
+	/// \MemberDescr
+	/// \param name: Name of the canvas
+	/// \param width: width of the canvas (default=0=automatic)
+	/// \param height: height of the canvas (default=0=automatic)
+	///
+	/// Create a new named canvas in the analyzer
+	/// \EndMemberDescr
+
+	CanvasOrganizer *c = new CanvasOrganizer(name);
+	if(width!=0 && length!=0) c->SetSize(width, length);
+
+	fCanvas.insert(std::make_pair(c->GetName(), c));
+}
+
+bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+	/// \MemberDescr
+	/// \param histoName: Name of the plot
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas and histograms were found
+	///
+	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
+	/// \EndMemberDescr
+
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
+	NA62Analysis::NA62Map<TString,TH1*>::type::iterator ptr1;
+	NA62Analysis::NA62Map<TString,TH2*>::type::iterator ptr2;
+	NA62Analysis::NA62Map<TString,TGraph*>::type::iterator ptr3;
+
+	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
+
+		if((ptr1=fHisto.find(histoName))!=fHisto.end()){
+			it->second->AddHisto(ptr1->second);
+		}
+		else if((ptr2=fHisto2.find(histoName))!=fHisto2.end()){
+			it->second->AddHisto(ptr2->second);
+		}
+		else if((ptr3=fGraph.find(histoName))!=fGraph.end()){
+			it->second->AddHisto(ptr3->second);
+		}
+		else{
+			std::cerr << "Histogram " << histoName << " does not exist." << std::endl;
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool HistoHandler::SetCanvasAutoUpdate(TString canvasName) {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Mark a canvas as AutoUpdate (will be redrawn every fAutoUpdateInterval events)
+	/// \EndMemberDescr
+
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::iterator it;
+
+	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
+		it->second->SetUpdateFrequency(fUpdateRate);
+		it->second->Draw();
+		return true;
+	}
+	return false;
+}
+
+bool HistoHandler::UpdateCanvas(TString canvasName) const {
+	/// \MemberDescr
+	/// \param canvasName: Name of the canvas
+	/// \return True if canvas was found
+	///
+	/// Force the update of a canvas
+	/// \EndMemberDescr
+
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
+
+	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
+		it->second->Update();
+		return true;
+	}
+	return false;
+}
+
+void HistoHandler::SetCanvasReference(TString canvas, TString histo, TH1* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
+	TH1* h = GetTH1(histo);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
+
+	if(h && ((it=fCanvas.find(canvas))!=fCanvas.end())){
+		it->second->SetReference(refPtr, h);
+	}
+}
+
+void HistoHandler::SetCanvasReference(TString canvas, TString histo, TGraph* refPtr) {
+	/// \MemberDescr
+	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param histo Name of the histogram to which the reference will be added
+	/// \param refPtr Pointer to the reference histogram to link to histo.
+	///
+	/// Add a reference histogram to the specified histogram in the specified canvas
+	/// \EndMemberDescr
+
+	TGraph* h = GetTGraph(histo);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type::const_iterator it;
+
+	if(h && ((it=fCanvas.find(canvas))!=fCanvas.end())){
+		it->second->SetReference(refPtr, h);
+	}
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
-

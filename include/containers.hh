@@ -8,6 +8,7 @@
 #ifndef CONTAINERS_HH_
 #define CONTAINERS_HH_
 #include <iostream>
+#include <TString.h>
 
 /// \file containers.hh
 /// \Brief
@@ -68,8 +69,19 @@ namespace NA62Analysis {
 
 #endif
 
+/// \struct NA62CaseIgnorecomp
+/// \Brief
+/// Structure for case insensitive string comparison in stl containers
+/// \EndBrief
 struct NA62CaseIgnorecomp {
     bool operator() (const TString& lhs, const TString& rhs) const {
+    	/// \MemberDescr
+    	/// \param lhs : Left-hand-side of the comparison operator
+    	/// \param rhs : Right-hand-side of the comparison operator
+    	/// \return True of lhs is smaller than rhs.
+    	///
+    	/// Case insensitive smaller than compare of TString.
+    	/// \EndMemberDescr
         return lhs.CompareTo(rhs, TString::ECaseCompare::kIgnoreCase) < 0;
     }
 };

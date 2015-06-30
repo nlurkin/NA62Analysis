@@ -12,6 +12,7 @@ $$ANALYZERSINCLUDE$$
 
 NA62Analysis::Core::BaseAnalysis *ban = 0;
 TApplication *theApp = 0;
+using namespace std;
 
 void usage(char* name)
 {
@@ -45,6 +46,7 @@ void usage(char* name)
 		 << "\t\t\t  One file per line." << endl;
 	cout << "  -B/-b/--nfiles int\t: Maximum number of files to process from the list. (Default: All)" << endl
 		 << "\t\t\t  !Warning. When using -g option, do not use the -b but -B or --nfiles." << endl;
+	cout << "  --continous \t\t: Use continuous reading (automatically enables -g" << endl;
 	cout << endl << endl;
 }
 
@@ -87,12 +89,14 @@ int main(int argc, char** argv){
 	bool ignoreNonExisting = false;
 	VerbosityLevel verbosity = VerbosityLevel::kStandard;
 	bool readPlots = false;
+	bool continuousReading = false;
 
 	int opt;
 	int n_options_read = 0;
 	int flReadPlots = 0;
 	int flIgnoreNonExisting = 0;
 	bool logToFile = false;
+	int flContinuousReading = 0;
 
 	struct option longopts[] = {
 			{ "list",	required_argument,	NULL,	'l'},
@@ -106,10 +110,11 @@ int main(int argc, char** argv){
 			{ "reffile",required_argument,	NULL,		'2'},
 			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
 			{ "logtofile",required_argument,NULL,	'3'},
+			{ "continuous",no_argument,		&flContinuousReading,	1},
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:3:", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -188,6 +193,8 @@ int main(int argc, char** argv){
 
 	ignoreNonExisting = flIgnoreNonExisting;
 	readPlots = flReadPlots;
+	continuousReading = flContinuousReading;
+	if(continuousReading) graphicMode = true;
 
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
@@ -198,11 +205,13 @@ int main(int argc, char** argv){
 	ban->SetGraphicMode(graphicMode);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
+	if(continuousReading) ban->SetContinuousReading(flContinuousReading);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
-	ban->Process(NEvt, evtNb);
+	if(continuousReading) ban->StartContinuous(inFileName);
+	else ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
 

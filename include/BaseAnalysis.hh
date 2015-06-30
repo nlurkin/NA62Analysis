@@ -9,6 +9,8 @@
 #include "Verbose.hh"
 #include "TimeCounter.h"
 
+#include <TSemaphore.h>
+
 namespace NA62Analysis {
 namespace Core {
 
@@ -23,6 +25,8 @@ namespace Core {
 /// the user when requested, communication between different parts of the framework, writing the output files.
 /// \EndDetailed
 
+class OMMainWindow;
+
 class BaseAnalysis : public Verbose
 {
 public:
@@ -30,6 +34,7 @@ public:
 	~BaseAnalysis();
 
 	void AddAnalyzer(Analyzer * const an);
+	void StartContinuous(TString inFileList);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
 	void Process(int beginEvent, int maxEvent);
 
@@ -74,16 +79,30 @@ public:
 		fGraphicMode = bVal;
 	};
 	void SetReadType(IOHandlerType type);
+	void SetContinuousReading(bool flagContinuousReading);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
 	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
+	static void ContinuousLoop(void* args);
+	void CreateOMWindow();
+
+	/// \struct ThreadArgs_t
+	/// \Brief
+	/// Arguments to be passed to the thread function.
+	/// \EndBrief
+	struct ThreadArgs_t{
+		BaseAnalysis* ban; ///< Pointer to the parent BaseAnalysis instance
+		TString inFileList; ///< Path to the input list file
+	};
 protected:
 	int fNEvents; ///< Number of events available in the TChains
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
+	bool fContinuousReading; ///< Continuous reading enabled?
+	bool fSignalStop; ///< Stop signal for the Thread
 
 	std::vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
@@ -98,6 +117,10 @@ protected:
 	IOHandler* fIOHandler; ///< Handler for all IO objects
 
 	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
+
+	TMutex fGraphicalMutex; ///< Mutex to prevent TApplication and BaseAnalysis to perform graphical operation at the same time
+	TThread *fRunThread; ///< Thread for Process during Online Monitor
+	OMMainWindow *fOMMainWindow; ///< Online monitor GUI
 };
 
 } /* namespace Core */

@@ -18,6 +18,7 @@
 #include <TCanvas.h>
 
 #include "containers.hh"
+#include "CanvasOrganizer.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -128,12 +129,18 @@ public:
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
 	int GetUpdateInterval() const;
+	void CreateCanvas(TString name, int width=0, int length=0);
+	bool PlacePlotOnCanvas(TString histoName, TString canvasName);
+	bool UpdateCanvas(TString canvasName) const;
+	void SetCanvasReference(TString canvas, TString histo, TH1* refPtr);
+	void SetCanvasReference(TString canvas, TString histo, TGraph* refPtr);
 
 	//Save all plots into output file
 	void SaveAllPlots(TString analyzerName);
 
 	void PrintInitSummary() const;
 	void SetPlotAutoUpdate(TString name, TString analyzerName);
+	bool SetCanvasAutoUpdate(TString canvasName);
 
 	double compareToReferencePlot(const TH1* const hRef, const TH1* const h2, bool KS);
 
@@ -148,6 +155,13 @@ public:
 	IteratorTH2 GetIteratorTH2(TString baseName);
 	IteratorTGraph GetIteratorTGraph();
 	IteratorTGraph GetIteratorTGraph(TString baseName);
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type GetCanvases() {
+		/// \MemberDescr
+		/// \return Map containing the list of CanvasOrganizer for this analyzer
+		/// \EndMemberDescr
+		return fCanvas;
+	}
+	;
 private:
 	void Mkdir(TString name, TString analyzerName) const;
 
@@ -156,7 +170,7 @@ private:
 	NA62Analysis::NA62Map<TString,TH2*>::type fHisto2; ///< Container for the TH2
 	NA62Analysis::NA62Map<TString,TGraph*>::type fGraph; ///< Container for the TGraph
 	NA62Analysis::NA62Map<TString,int>::type fPoint; ///< Container for the number of points in each TGraph
-	std::vector<TCanvas*> fCanvas; ///< Container for the TCanvas
+	NA62Analysis::NA62Map<TString, CanvasOrganizer*>::type fCanvas; ///< Container for the TCanvas
 	NA62Analysis::NA62Map<TString,TTree*>::type fOutTree; ///< Container for the output TTrees
 	std::vector<TString> fHistoOrder; ///< Container for the booking order
 	NA62Analysis::NA62Map<TString,IteratorTH1>::type fTH1IteratorsList; ///< Container for TH1 Iterators (keep them in memory rather than building them again for efficiency reasons)

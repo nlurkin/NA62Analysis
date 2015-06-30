@@ -108,11 +108,36 @@ public:
 		/// \return Reference to the internal IOTimeCount
 		/// \EndMemberDescr
 		return fIOTimeCount;
-	};
+	}
 
+	void SetContinuousReading(bool continuousReading) {
+		/// \MemberDescr
+		/// Set continuous reading flag
+		/// \EndMemberDescr
+		fContinuousReading = continuousReading;
+	}
+
+	void SetOutputFileAsCurrent() const {
+		/// \MemberDescr
+		/// Set outputFile as current file (gFile)
+		/// \EndMemberDescr
+		fOutFile->cd();
+	}
+
+	void SignalExit() const {
+		/// \MemberDescr
+		/// Raise exit signal
+		/// \EndMemberDescr
+
+		fSignalExit = true;
+	}
+
+	int ReadCurrentFileRevision();
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
+	bool fContinuousReading; ///< Continuous reading enabled?
+	mutable bool fSignalExit; ///< Signal from main thread to exit
 	IOHandlerType fIOType; ///< Type of IO handler
 
 	int fCurrentFileNumber; ///< Index of the current opened file in the TChain

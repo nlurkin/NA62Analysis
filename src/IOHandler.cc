@@ -8,17 +8,25 @@
 #include "IOHandler.hh"
 
 #include <iostream>
+#include <signal.h>
 
 #include <TFile.h>
 #include <TObjString.h>
 #include <TKey.h>
+#include <TSystem.h>
+#include <TThread.h>
+#include <TRegexp.h>
 
+#include "SvnRevision.hh"
 #include "ConfigSettings.hh"
+#include "TermManip.hh"
 
 namespace NA62Analysis {
 namespace Core {
 
 IOHandler::IOHandler():
+	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -31,6 +39,8 @@ IOHandler::IOHandler():
 
 IOHandler::IOHandler(std::string name):
 	Verbose(name),
+	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
@@ -44,6 +54,9 @@ IOHandler::IOHandler(std::string name):
 }
 
 IOHandler::IOHandler(const IOHandler& c):
+	Verbose(c),
+	fContinuousReading(false),
+	fSignalExit(false),
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
@@ -262,6 +275,20 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	fileName.Write();
 	gFile->cd();
 	fIOTimeCount.Stop();
+
+	int fileRevision = ReadCurrentFileRevision(); //Read revision from file
+	TString persistencyRevisionString = GetCurrentSvnRevision();	  //Read revision from persistency
+	if(persistencyRevisionString.Length()>0 && fileRevision!=-1){
+		//Revision could be found in both the file and the persistency.
+		//Can compare!
+		int persistencyRev = TString(persistencyRevisionString(TRegexp("[0-9]+"))).Atoi();
+		if(persistencyRev!=persistencyRevisionString){
+			std::cout << manip::brown << manip::bold << normal() << "WARNING: File revision (" << fileRevision <<
+					") and Persistency revision (" << persistencyRev << ") are different." << std::endl;
+			std::cout << normal() << "This might lead to inconsistencies." << std::endl;
+			std::cout << manip::reset;
+		}
+	}
 }
 
 bool IOHandler::OpenInput(TString inFileName, int nFiles){
@@ -280,6 +307,12 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		return false;
 	}
 	if(nFiles == 0){
+		if(fContinuousReading){
+			// Continuous reading needs a list of files, not a single file
+			std::cout << standard() << "Error: Continuous reading enabled but no list file provided... Aborting" << std::endl;
+			raise(SIGABRT);
+		}
+		// Use new address format for castor and eos
 		if(inFileName.Contains("/castor/") && !inFileName.Contains("root://castorpublic.cern.ch//")){
 			inFileName = "root://castorpublic.cern.ch//"+inFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
 		}
@@ -289,31 +322,57 @@ bool IOHandler::OpenInput(TString inFileName, int nFiles){
 		std::cout << normal() << "Adding file " << inFileName << std::endl;
 		fInputfiles.push_back(inFileName);
 	}else{
+		//Reading a list of files
 		TString inputFileName;
 		fIOTimeCount.Start();
+		//Check it is indeed a text file and not a binary file
 		if(!TestIsTextFile(inFileName)){
 			std::cout << noverbose() << "Input list file " << inFileName << " cannot be read as a text file." << std::endl;
 			return false;
 		}
-		std::ifstream inputList(inFileName.Data());
-		while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
+		std::ifstream inputList;
+		int counter = 0;
+		char roll[4] = {'|','/','-','\\'};
+		do{
+			//If we already read an input list, close it first and retry (has already been processed)
+			if(inputList.is_open()) inputList.close();
+			TThread::CancelPoint();
+			inputList.open(inFileName.Data());
+
+		    if(fContinuousReading){ // Display waiting wheel
+		      std::cout << standard() << "Waiting for a valid List File to be ready " << roll[counter%4] << "\r" << std::flush;
+		      counter++;
+		      gSystem->Sleep(500);
+		    }
+		    //Try to read the file as long as we can read more in the list and that we didn't reach the limit
+			while(inputFileName.ReadLine(inputList) && (nFiles<0 || inputFileNumber < nFiles)){
+				fIOTimeCount.Stop();
+				// Use new address format for castor and eos
+				if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
+						inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
+				}
+				if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
+					inputFileName = "root://eosna62.cern.ch//"+inputFileName;
+				}
+				std::cout << normal() << "Adding file " << inputFileName << std::endl;
+				fInputfiles.push_back(inputFileName);
+				++inputFileNumber;
+				fIOTimeCount.Start();
+			}
 			fIOTimeCount.Stop();
-			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
-			        inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+Configuration::ConfigSettings::global::fSvcClass;
+
+			//If list file is empty or we did not manage to read at least 1 file, abort.
+			//Unless continuous reading, in such case, we just retry until it works
+			if(!fContinuousReading && inputFileNumber==0){
+				std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
+				return false;
 			}
-			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
-				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
-			}
-			std::cout << normal() << "Adding file " << inputFileName << std::endl;
-			fInputfiles.push_back(inputFileName);
-			++inputFileNumber;
-			fIOTimeCount.Start();
-		}
-		fIOTimeCount.Stop();
-		if(inputFileNumber==0){
-			std::cout << noverbose() << "No input file in the list " << inFileName << std::endl;
-			return false;
-		}
+		// If continuous reading, loop until we read at least 1 file
+		} while(!fSignalExit && fContinuousReading && (inputFileNumber==0 || !inputList.is_open()));
+
+		//Close and eventually delete input list
+		inputList.close();
+		if(fContinuousReading) unlink(inFileName.Data());
 	}
 	return true;
 }
@@ -358,7 +417,30 @@ void IOHandler::FileSkipped(TString fileName) {
 	fIOTimeCount.Stop();
 }
 
+int IOHandler::ReadCurrentFileRevision() {
+	/// \MemberDescr
+	/// \return Revision number embedded in the input ROOT file or -1 if not found
+	/// \MemberDescr
+	TList *keys = fCurrentFile->GetListOfKeys();
+	int revValue = -1;
+	for(int kIndex = 0; kIndex<keys->GetEntries(); kIndex++){
+		TKey *k = static_cast<TKey*>(keys->At(kIndex));
+		if(TString(k->GetName()).BeginsWith("Revision:")){
+			revValue = TString(TString(k->GetName())(TRegexp("[0-9]+"))).Atoi();
+		}
+	}
+	return revValue;
+}
+
 bool TestIsTextFile(TString fileName){
+	/// \MemberDescr
+	/// \param fileName : Path to the file to test
+	/// \return True is the file has been found to be a text file, else false
+	///
+	/// Test all the characters in the first 1KB chunk of the file. If all of them
+	/// are found to be valid text characters (ASCII or 8-bit variable length encoding),
+	/// the file is considered as being a valid text file.
+	/// \MemberDescr
 	unsigned char buffer[1000];
 	std::ifstream fd(fileName.Data(), std::ifstream::binary);
 
@@ -379,6 +461,10 @@ bool TestIsTextFile(TString fileName){
 }
 
 bool TestASCIIChar(unsigned char c) {
+	/// \MemberDescr
+	/// \param c : char to test
+	/// \return True if the given char is ASCII
+	/// \MemberDescr
 	if((c>9 && c<13) || (c>32 && c<126)) return true;
 	return false;
 }
@@ -390,4 +476,3 @@ bool TestMultiByteChar(unsigned char c) {
 
 } /* namespace Core */
 } /* namespace NA62Analysis */
-

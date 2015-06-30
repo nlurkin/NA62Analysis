@@ -79,7 +79,7 @@ const Verbose& operator<<(const Verbose &level, std::ostream& (*f)(std::ostream&
 
 	if(level.CanPrint()) level.GetStream() << f;
 	return level;
-};
+}
 
 const Verbose& operator <<(std::ostream& s, const Verbose &level) {
 	/// \MemberDescr
