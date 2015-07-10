@@ -1,5 +1,10 @@
 #include "MUV3T0.hh"
 
+/// \class MUV3T0
+/// \Brief
+/// Evaluation of the T0 constants for MUV3
+/// \EndBrief
+
 MUV3T0::MUV3T0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "MUV3") {
 
   // Optional parameters

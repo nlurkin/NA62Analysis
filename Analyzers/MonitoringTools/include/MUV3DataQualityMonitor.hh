@@ -40,9 +40,13 @@ public:
 
 private:
   TString fOutPDFFileName, fDirName;
-  TH1D *fHChannelProfile, *fHTileOR, *fHTileAND;
+  TH1D *fHChannelProfile, *fHChannelProfileEOB, *fHTileOR, *fHTileAND;
+  TH2D *fHChannelProfileVsBurst, *fHChannelProfileVsBurstEOB;
   TH1D *fHNEventsProcessedPerBurst;
+  TH1D *fHTileAsymmetry, *fHTileAsymmetryEOB;
   std::vector<TH2D*> fHList;
+
+  void GenerateTileAsymmetryVsBurstIDPlots();
 };
 
 #endif

@@ -8,8 +8,6 @@
 #ifndef STRAW_ADDRESS_H
 #define STRAW_ADDRESS_H
 
-using namespace std;
-
 /// \class StrawAddress
 /// \Brief
 /// A convertor from the straw geometric position to the straw readout channel address.
