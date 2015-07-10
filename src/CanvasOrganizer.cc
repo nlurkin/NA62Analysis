@@ -93,6 +93,12 @@ void CanvasOrganizer::Draw() const {
 }
 
 void CanvasOrganizer::drawPlot(plot_t p) const{
+	/// \MemberDescr
+	/// \param p: Plot to draw
+	///
+	/// Properly draws the histogram depending on its type
+	/// \EndMemberDescr
+
 	if(p.tag == TTH1){
 		p.ptr.histo->Draw();
 		if(p.ref.histo!=nullptr){
@@ -246,6 +252,12 @@ void CanvasOrganizer::UpdateRef() const {
 }
 
 int CanvasOrganizer::findAvailableSlot(std::set<int> busy){
+	/// \MemberDescr
+	/// \param busy: Sorted set of numbers
+	///
+	/// Returns the first available number not in busy (starting from 1)
+	/// \EndMemberDescr
+
 	int i=1;
 	for(auto  val : busy){
 		if(val>i) return i;
