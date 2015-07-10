@@ -60,7 +60,7 @@ protected:
   double  fBinWidth, fGlobalT0;
   bool    fIsActive[20000];
   TH2D    *fH2, *fH2_Partial, *fH2_Integrated;
-  TH1D    *fHRawTime, *fHTime[20000], *fHT0VsTime[20000];
+  TH1D    *fHNEventsProcessedPerBurst, *fHRawTime, *fHTime[20000], *fHT0VsTime[20000];
   TF1     *fFChannelFit[20000], *fFChannelStability[20000];
   int     fChannelID[20000]; ///< Geometric channel ID versus RO channel ID
   double  fT0[20000], fDeltaT0[20000], fResol[20000], fDeltaResol[20000];

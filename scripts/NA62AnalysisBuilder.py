@@ -678,7 +678,7 @@ def build(args):
 			checkDependence(depsGraph, an, prefix)
 			for d in depsGraph.getDependencies(an):
 				if not d in analyzers:
-					print "Missing dependance %s for %s" % (d, an)
+					print "Missing dependence %s for %s" % (d, an)
 					missing = True
 	
 	if missing == True:
