@@ -67,6 +67,9 @@ void T0Evaluation::InitHist() {
     exit(0);
   }
 
+  //fHNEventsProcessedPerBurst = (TH1D*)RequestHistogram("/", "NProcessedEventsInFile", true);
+  fHNEventsProcessedPerBurst = (TH1D*)RequestHistogram("MUV3Monitor", "NEventsProcessedPerBurst", true);
+  
   if (fEvaluateGlobalT0) {
     fHRawTime = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
     if (!fHRawTime) {
@@ -352,6 +355,18 @@ void T0Evaluation::GeneratePDFReport() {
 
   cout << fAnalyzerName << ": generating report "<< fOutPDFFileName << endl;
 
+  // The numbers of bursts and events processed
+  Int_t NBurstsProcessed = 0, NEventsProcessed = 0;
+  if (fHNEventsProcessedPerBurst) {
+    for (Int_t i=1; i<=fHNEventsProcessedPerBurst->GetNbinsX(); i++) {
+      Int_t Nevents = fHNEventsProcessedPerBurst->GetBinContent(i);
+      if (Nevents>0) {
+	NBurstsProcessed++;
+	NEventsProcessed += Nevents;
+      }
+    }
+  }
+  
   gStyle->SetOptStat("ei"); // print the number of entries and integral within drawing limits
   gStyle->SetOptFit();
   gErrorIgnoreLevel = 5000; // suppress messages generated for each page printed
@@ -375,10 +390,6 @@ void T0Evaluation::GeneratePDFReport() {
   }
 
   fText = new TText();
-  fText->SetTextAlign(kHAlignCenter+kVAlignCenter);
-  fText->SetTextSize(0.15);
-  fText->SetTextColor(kGreen+2);
-
   TLine *l = new TLine();
 
   ///////////////////////////
@@ -396,6 +407,14 @@ void T0Evaluation::GeneratePDFReport() {
   fHisto.GetHisto("T0")->SetLineColor(kBlue);
   fHisto.GetHisto("T0")->SetMarkerColor(kBlue);
   fHisto.GetHisto("T0")->Draw();
+
+  if (fHNEventsProcessedPerBurst) {
+    fText->SetTextSize(0.07);
+    fText->SetTextColor(kBlack);
+    fText->SetTextAlign(kHAlignLeft+kVAlignTop);
+    fText->DrawText(10, fHisto.GetHisto("T0")->GetMaximum(), Form("Bursts processed: %d", NBurstsProcessed));
+    fText->DrawText(10, 0.85*fHisto.GetHisto("T0")->GetMaximum(), Form("Events processed: %d", NEventsProcessed));
+  }
 
   fFrontCanvas->cd(2);
   fHisto.GetHisto("T0Resolution")->SetStats(0);
@@ -441,6 +460,10 @@ void T0Evaluation::GeneratePDFReport() {
 
   int Npages = fNChannelsActive/16;
   if (fNChannelsActive%16) Npages++;
+
+  fText->SetTextAlign(kHAlignCenter+kVAlignCenter);
+  fText->SetTextSize(0.15);
+  fText->SetTextColor(kGreen+2);
 
   if (fPlotChannelTimes) {
 

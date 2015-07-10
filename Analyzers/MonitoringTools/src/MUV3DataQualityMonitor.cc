@@ -6,7 +6,6 @@
 // ---------------------------------------------------------------
 
 #include "MUV3DataQualityMonitor.hh"
-#include "TEllipse.h"
 
 using namespace std;
 using namespace NA62Analysis;
@@ -14,7 +13,7 @@ using namespace NA62Constants;
 
 /// \class MUV3DataQualityMonitor
 /// \Brief
-/// Builds a PDF report using the standard MUV3 monitoring histograms as input
+/// Build a PDF report using the standard MUV3 monitoring histograms as input
 /// \EndBrief
 
 MUV3DataQualityMonitor::MUV3DataQualityMonitor(Core::BaseAnalysis *ba) : Analyzer(ba) {
@@ -31,9 +30,12 @@ void MUV3DataQualityMonitor::InitHist() {
 
   // Channel profile and number of OR, AND in tiles
   fHNEventsProcessedPerBurst = (TH1D*)RequestHistogram("/", "NProcessedEventsInFile", true);
-  fHChannelProfile = (TH1D*)RequestHistogram(fDirName, "ChannelProfile", true);
-  fHTileOR         = (TH1D*)RequestHistogram(fDirName, "TileOR",         true);
-  fHTileAND        = (TH1D*)RequestHistogram(fDirName, "TileAND",        true);
+  fHChannelProfile    = (TH1D*)RequestHistogram(fDirName, "ChannelProfile",    true);
+  fHChannelProfileEOB = (TH1D*)RequestHistogram(fDirName, "ChannelProfileEOB", true);
+  fHTileOR            = (TH1D*)RequestHistogram(fDirName, "TileOR",            true);
+  fHTileAND           = (TH1D*)RequestHistogram(fDirName, "TileAND",           true);
+  fHChannelProfileVsBurst    = (TH2D*)RequestHistogram(fDirName, "ChannelProfileVsBurst",    true);
+  fHChannelProfileVsBurstEOB = (TH2D*)RequestHistogram(fDirName, "ChannelProfileVsBurstEOB", true);
 
   // 2D count-maps
   fHList.resize(18);
@@ -78,7 +80,46 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
       }
     }
   }
-    
+
+  // Build tile asymmetries
+  TString Name = "TileAsymmetry";
+  fHTileAsymmetry = new TH1D(Name, Name, 152, -0.5, 151.5);
+  fHTileAsymmetry->GetXaxis()->SetTitle("MUV3 tile");
+  fHTileAsymmetry->GetYaxis()->SetTitle("Asymmetry N(hits): (PM1-PM0)/(PM1+PM0)");
+
+  Name = "TileAsymmetryEOB";
+  fHTileAsymmetryEOB = new TH1D(Name, Name, 152, -0.5, 151.5);
+  fHTileAsymmetryEOB->GetXaxis()->SetTitle("MUV3 tile");
+  fHTileAsymmetryEOB->GetYaxis()->SetTitle("Asymmetry N(hits): (PM1-PM0)/(PM1+PM0)");
+
+  for (int i=1; i<=152; i++) {
+    double x    = fHChannelProfile->GetBinContent(i+200);
+    double y    = fHChannelProfile->GetBinContent(i);
+    if (x+y<1) continue;
+    double dx   = sqrt(x);
+    double dy   = sqrt(y);
+    double f    = (x-y)/(x+y);
+    double dfdx = 2.0*y/(x+y)/(x+y);
+    double dfdy = 2.0*x/(x+y)/(x+y);
+    double df   = sqrt((dfdx*dx)*(dfdx*dx)+(dfdy*dy)*(dfdy*dy));
+    fHTileAsymmetry->SetBinContent(i, f);
+    fHTileAsymmetry->SetBinError(i, df);
+  }
+
+  for (int i=1; i<=152; i++) {
+    double x    = fHChannelProfileEOB->GetBinContent(i+200);
+    double y    = fHChannelProfileEOB->GetBinContent(i);
+    if (x+y<1) continue;
+    double dx   = sqrt(x);
+    double dy   = sqrt(y);
+    double f    = (x-y)/(x+y);
+    double dfdx = 2.0*y/(x+y)/(x+y);
+    double dfdy = 2.0*x/(x+y)/(x+y);
+    double df   = sqrt((dfdx*dx)*(dfdx*dx)+(dfdy*dy)*(dfdy*dy));
+    fHTileAsymmetryEOB->SetBinContent(i, f);
+    fHTileAsymmetryEOB->SetBinError(i, df);
+  }
+
   TCanvas *Canvas = new TCanvas("Canvas1");
   Canvas->Divide(1,3);
   gStyle->SetOptStat(0);
@@ -95,7 +136,7 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
   }
   else {
     for (int i=1; i<=3; i++) {
-      Canvas->GetPad(i)->SetLeftMargin(0.05);
+      Canvas->GetPad(i)->SetLeftMargin(0.04);
       Canvas->GetPad(i)->SetRightMargin(0.01);
       Canvas->GetPad(i)->SetTopMargin(0.06);
       Canvas->GetPad(i)->SetBottomMargin(0.10);
@@ -122,11 +163,13 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     }
 
     Canvas->cd(2);
+    Double_t ymax = fHTileOR->GetMaximum();
     fHTileOR->SetTitle("MUV3: OR, AND of signals in tiles");
     fHTileOR->GetXaxis()->SetTitleSize(0.055);
     fHTileOR->GetXaxis()->SetLabelSize(0.055);
     fHTileOR->GetYaxis()->SetTitleSize(0.055);
     fHTileOR->GetYaxis()->SetLabelSize(0.055);
+    fHTileOR->GetYaxis()->SetRangeUser(0, 1.02*ymax);
     fHTileOR->SetStats(0);
     fHTileOR->SetLineWidth(1);
     fHTileOR->SetLineColor(kBlue);
@@ -137,11 +180,11 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     fHTileAND->Draw("hist same");
 
     // Mark the non-existing tiles
-    TBox *b = new TBox();
-    b->SetFillColor(kGreen-7);
-    b->SetLineColor(kGreen-7);
-    b->DrawBox(64.5,0,66.5,fHTileOR->GetMaximum());
-    b->DrawBox(76.5,0,78.5,fHTileOR->GetMaximum());
+    TBox *b0 = new TBox();
+    b0->SetFillColor(kGreen-7);
+    b0->SetLineColor(kGreen-7);
+    b0->DrawBox(64.6, 0.01*fHTileOR->GetMaximum(), 66.4, 1.01*ymax);
+    b0->DrawBox(76.6, 0.01*fHTileOR->GetMaximum(), 78.4, 1.01*ymax);
 
     TLegend* ANDORLegend = new TLegend(0.20,0.75,0.35,0.88);
     ANDORLegend->SetFillColor(kWhite);
@@ -151,42 +194,45 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     ANDORLegend->Draw();
 
     Canvas->cd(3);
-    TH1D *Ratio = new TH1D(*fHTileAND);
-    fHTileAND->Sumw2();
-    fHTileOR->Sumw2();
-    Ratio->Divide(fHTileAND, fHTileOR, 1, 1, "B");
+    fHTileAsymmetry->SetTitle("MUV3: Asymmetries in tiles, A = (N1-N0) / (N1+N0). Red=Readout, Blue=EoB.");
+    fHTileAsymmetry->GetXaxis()->SetTitleSize(0.055);
+    fHTileAsymmetry->GetXaxis()->SetLabelSize(0.055);
+    fHTileAsymmetry->GetYaxis()->SetTitleSize(0.055);
+    fHTileAsymmetry->GetYaxis()->SetLabelSize(0.055);
+    fHTileAsymmetry->SetMinimum(-1.05);
+    fHTileAsymmetry->SetMaximum(+1.05);
+    fHTileAsymmetry->SetLineColor(kRed);
+    fHTileAsymmetry->SetMarkerColor(kRed);
+    fHTileAsymmetry->SetMarkerStyle(21);
+    fHTileAsymmetry->SetMarkerSize(0.32);
+    fHTileAsymmetryEOB->SetLineColor(kBlue);
+    fHTileAsymmetryEOB->SetMarkerColor(kBlue);
+    fHTileAsymmetryEOB->SetMarkerStyle(20);
+    fHTileAsymmetryEOB->SetMarkerSize(0.32);
 
-    Ratio->SetTitle("MUV3: AND/OR ratio in tiles");
-    Ratio->GetXaxis()->SetTitleSize(0.055);
-    Ratio->GetXaxis()->SetLabelSize(0.055);
-    Ratio->GetYaxis()->SetTitleSize(0.055);
-    Ratio->GetYaxis()->SetLabelSize(0.055);
-    Ratio->SetStats(0);
-    Ratio->SetLineWidth(1);
-    Ratio->SetLineColor(kGreen+2);
-    Ratio->SetMarkerColor(kGreen+2);
-    Ratio->SetMinimum(0.0);
-    Ratio->SetMaximum(1.0);
-    Ratio->Draw("e");
- 
+    fHTileAsymmetry->Draw("p");
+    fHTileAsymmetryEOB->Draw("p same");
+
+    // Mark the non-existing tiles
+    b0->DrawBox(64.6, -1.03, 66.4, 1.03);
+    b0->DrawBox(76.6, -1.03, 78.4, 1.03);
+
     Text->SetTextSize(0.05);
-    Text->SetTextColor(kRed);
+    Text->SetTextAngle(90);
+    Text->SetTextColor(kGreen+2);
     Text->SetTextAlign(kHAlignCenter+kVAlignCenter);
-    int Nbad = 0;
-    for (int i=1; i<=Ratio->GetNbinsX(); i++) {
-      int iTile = Ratio->GetBinCenter(i);
-      if (Ratio->GetBinContent(i)<0.05 &&
+    for (int i=1; i<=152; i++) {
+      int iTile = fHTileAsymmetry->GetBinCenter(i);
+      double Asym = fHTileAsymmetry->GetBinContent(i);
+      if (fabs(Asym)>0.6 &&
           iTile!=65 && iTile!=66 && iTile!=77 && iTile!=78) { // these tiles do not exist
-        Nbad++;
-        TEllipse *arc = new TEllipse();
-        arc->SetLineColor(kRed);
-        arc->SetFillStyle(0);
-        arc->DrawEllipse(iTile, Ratio->GetBinContent(i), 1.5, 0.05, 0, 360, 0);
-        Text->DrawText(iTile, 0.1+0.05*(Nbad%2), Form("%d", iTile));
+	double y = (Asym>0) ? 0.5 : -0.5;
+        Text->DrawText(iTile, y, Form("%d", iTile));
       }
     }
     Canvas->Print(Form(fOutPDFFileName + "("), "pdf"); // open file and print
   }
+  Text->SetTextAngle(0);
 
   /////////////////////////     
   // 2D count-maps, textual
@@ -358,6 +404,122 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     }
   }
 
+  // Tile asymmetry vs burst ID plots for each tile
+  GenerateTileAsymmetryVsBurstIDPlots();
+
   Canvas->Print(Form(fOutPDFFileName + "]"), "pdf"); // close file
   gErrorIgnoreLevel = -1; // restore the default
+}
+
+void MUV3DataQualityMonitor::GenerateTileAsymmetryVsBurstIDPlots() {
+
+  if (!fHChannelProfileVsBurstEOB->Integral()) return;
+
+  Int_t FirstBurst = 0;
+  while (!fHChannelProfileVsBurstEOB->Integral(FirstBurst+1, FirstBurst+1)) FirstBurst++;
+  Int_t LastBurst = fHChannelProfileVsBurstEOB->GetNbinsX();
+  while (!fHChannelProfileVsBurstEOB->Integral(LastBurst+1, LastBurst+1)) LastBurst--;
+  
+  Int_t Ntiles = 152;
+  Int_t Npages = Ntiles/16;
+  if (Ntiles%16) Npages++;
+
+  TCanvas* Canvas = new TCanvas("CanvasA");
+  Canvas->Divide(4, 4);
+  for (Int_t i=1; i<=16; i++) {
+    Canvas->GetPad(i)->SetLeftMargin(0.04);
+    Canvas->GetPad(i)->SetRightMargin(0.0);
+    Canvas->GetPad(i)->SetTopMargin(0.0);
+    Canvas->GetPad(i)->SetBottomMargin(0.03);
+  }
+
+  vector<TH1D*> hAsym1(Ntiles), hAsym2(Ntiles);
+
+  for (int ipage=0; ipage<Npages; ipage++) {
+    for (int ipad=0; ipad<16; ipad++) {
+      Canvas->GetPad(ipad+1)->Clear();
+      int itile = ipage*16 + ipad;
+      if (itile>=Ntiles) continue;
+      Canvas->cd(ipad+1);
+
+      // TDC event monitor
+      TString Name = Form("Tile %03d asymmetry vs burst ID", itile);
+      hAsym1[itile] = new TH1D(Name, Name, 5000, -0.5, 4999.5);
+
+      for (int i=FirstBurst; i<=LastBurst; i++) {
+	Double_t x = fHChannelProfileVsBurst->GetBinContent(i+1, itile+201);
+	Double_t y = fHChannelProfileVsBurst->GetBinContent(i+1, itile+1);
+	if (x+y<1) {
+	  hAsym1[itile]->SetBinContent(i+1, 999);
+	  hAsym1[itile]->SetBinError(i+1, 0);
+	  continue;
+	}
+	double dx   = sqrt(x);
+	double dy   = sqrt(y);
+	double f    = (x-y)/(x+y);
+	double dfdx = 2.0*y/(x+y)/(x+y);
+	double dfdy = 2.0*x/(x+y)/(x+y);
+	double df   = sqrt((dfdx*dx)*(dfdx*dx)+(dfdy*dy)*(dfdy*dy));
+	if (df==0) df = 1e-3;
+	hAsym1[itile]->SetBinContent(i+1, f);
+	hAsym1[itile]->SetBinError(i+1, df);
+      }
+
+      hAsym1[itile]->GetXaxis()->SetRangeUser(FirstBurst-0.5, LastBurst+0.5);
+      hAsym1[itile]->GetXaxis()->SetLabelSize(0.05);
+      hAsym1[itile]->GetYaxis()->SetLabelSize(0.05);
+      hAsym1[itile]->SetTitle(Name);
+      hAsym1[itile]->SetMinimum(-1.1);
+      hAsym1[itile]->SetMaximum(1.1);
+      hAsym1[itile]->SetMarkerStyle(21);
+      hAsym1[itile]->SetMarkerColor(kRed);
+      hAsym1[itile]->SetMarkerSize(.15);
+      hAsym1[itile]->SetLineColor(kRed);
+      hAsym1[itile]->Draw();
+
+      // EOB counters
+      Name = Form("Tile %03d asymmetry(EOB) vs burst ID", itile);
+      hAsym2[itile] = new TH1D(Name, Name, 5000, -0.5, 4999.5);
+
+      for (int i=FirstBurst; i<=LastBurst; i++) {
+	Double_t x = fHChannelProfileVsBurstEOB->GetBinContent(i+1, itile+201);
+	Double_t y = fHChannelProfileVsBurstEOB->GetBinContent(i+1, itile+1);
+	if (x+y<1) {
+	  hAsym2[itile]->SetBinContent(i+1, 999);
+	  hAsym2[itile]->SetBinError(i+1, 0);
+	  continue;
+	}
+	double dx   = sqrt(x);
+	double dy   = sqrt(y);
+	double f    = (x-y)/(x+y);
+	double dfdx = 2.0*y/(x+y)/(x+y);
+	double dfdy = 2.0*x/(x+y)/(x+y);
+	double df   = sqrt((dfdx*dx)*(dfdx*dx)+(dfdy*dy)*(dfdy*dy));
+	if (df==0) df = 1e-3;
+	hAsym2[itile]->SetBinContent(i+1, f);
+	hAsym2[itile]->SetBinError(i+1, df);
+      }
+
+      hAsym2[itile]->SetMarkerStyle(20);
+      hAsym2[itile]->SetMarkerColor(kBlue);
+      hAsym2[itile]->SetMarkerSize(.15);
+      hAsym2[itile]->SetLineColor(kBlue);
+      hAsym2[itile]->Draw("same");
+
+      if (!ipad) { // a simple legend
+	TText *Text = new TText();
+	Text->SetTextSize(0.07);
+	Text->SetTextColor(kRed);
+	Text->SetTextAlign(kHAlignLeft+kVAlignBottom);
+	Text->DrawText(FirstBurst+0.03*(LastBurst-FirstBurst), -0.8, "Readout");
+	Text->SetTextColor(kBlue);
+	Text->DrawText(FirstBurst+0.03*(LastBurst-FirstBurst), -1.0, "EOB");
+      }
+    }
+    Canvas->Print(fOutPDFFileName, "pdf");
+  }
+
+  hAsym1.clear();
+  hAsym2.clear();
+  delete Canvas;
 }

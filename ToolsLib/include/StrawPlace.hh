@@ -9,8 +9,6 @@
 #define STRAW_PLACE_H
 #include <iostream>
 
-using namespace std;
-
 /// \class StrawPlace
 /// \Brief
 /// A convertor from the straw readout channel address to the straw geometric position.
