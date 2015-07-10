@@ -14,6 +14,8 @@
 #include <TList.h>
 #include <cmath>
 
+#define PRINTVAR(v) #v << "= " << v << " "
+
 namespace NA62Analysis {
 namespace Core {
 
@@ -53,7 +55,7 @@ void CanvasOrganizer::Draw() const {
 	fCanvas->Clear();
 	fCanvas->Draw();
 
-	//if canvas cannot accomodate all histo, resize it
+	//if canvas cannot accommodate all histo, resize it
 	if((unsigned int)(fWidth*fHeight)<fHistos.size()) {
 		size_t s = computeSize(fHistos.size());
 		fCanvas->Divide(s.width, s.height);
@@ -61,28 +63,51 @@ void CanvasOrganizer::Draw() const {
 	}
 	else fCanvas->Divide(fWidth, fHeight);
 
+	std::vector<plot_t> delayedPlots;
+	std::set<int> busySlots;
 	//Place all histos on the canvas
-	int i=0;
 	for(auto it : fHistos){
-		i++;
-		fCanvas->cd(i);
-		if(it.tag == TTH1){
-			it.ptr.histo->Draw();
-			if(it.ref.histo!=nullptr){
-				it.ref.histo->SetLineColor(2);
-				it.ref.histo->SetLineStyle(2);
-				it.ref.histo->Draw("SAME");
-			}
+		std::cout << PRINTVAR(it.row) << " " << PRINTVAR(it.col) << std::endl;
+		if(it.row!=-1 && it.row<fHeight && it.col!=-1 && it.col<fWidth){
+			int canvasIndex = it.row*fWidth + it.col+1;
+			std::cout << "Printing now with index " << canvasIndex << std::endl;
+			fCanvas->cd(canvasIndex);
+			busySlots.insert(canvasIndex);
+			drawPlot(it);
 		}
-		else if(it.tag == TTH2) it.ptr.histo->Draw("colz");
-		else if(it.tag == TTGraph){
-			it.ptr.graph->Draw("A*");
-			if(it.ref.graph!=nullptr){
-				it.ref.graph->Draw("SAMEA*");
-			}
+		else{
+			std::cout << "Printing later" << std::endl;
+			delayedPlots.push_back(it);
 		}
+
+	}
+
+	int slot;
+	for(auto it : delayedPlots){
+		slot = findAvailableSlot(busySlots);
+		busySlots.insert(slot);
+		fCanvas->cd(slot);
+		drawPlot(it);
 	}
 	fChanged = false;
+}
+
+void CanvasOrganizer::drawPlot(plot_t p) const{
+	if(p.tag == TTH1){
+		p.ptr.histo->Draw();
+		if(p.ref.histo!=nullptr){
+			p.ref.histo->SetLineColor(2);
+			p.ref.histo->SetLineStyle(2);
+			p.ref.histo->Draw("SAME");
+		}
+	}
+	else if(p.tag == TTH2) p.ptr.histo->Draw("colz");
+	else if(p.tag == TTGraph){
+		p.ptr.graph->Draw("A*");
+		if(p.ref.graph!=nullptr){
+			p.ref.graph->Draw("SAMEA*");
+		}
+	}
 }
 
 void CanvasOrganizer::Update(int currentEvent) const {
@@ -103,7 +128,7 @@ void CanvasOrganizer::Update(int currentEvent) const {
 	}
 }
 
-void CanvasOrganizer::AddHisto(TH1* histoPtr) {
+void CanvasOrganizer::AddHisto(TH1* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
 	///
@@ -114,11 +139,13 @@ void CanvasOrganizer::AddHisto(TH1* histoPtr) {
 	t.ptr.histo = histoPtr;
 	t.tag = TTH1;
 	t.ref.histo = nullptr;
+	t.row = row;
+	t.col = col;
 	fHistos.push_back(t);
 	fChanged=true;
 }
 
-void CanvasOrganizer::AddHisto(TH2* histoPtr) {
+void CanvasOrganizer::AddHisto(TH2* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
 	///
@@ -129,11 +156,13 @@ void CanvasOrganizer::AddHisto(TH2* histoPtr) {
 	t.ptr.histo = histoPtr;
 	t.tag = TTH2;
 	t.ref.histo = nullptr;
+	t.row = row;
+	t.col = col;
 	fHistos.push_back(t);
 	fChanged=true;
 }
 
-void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
+void CanvasOrganizer::AddHisto(TGraph* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
 	///
@@ -144,6 +173,8 @@ void CanvasOrganizer::AddHisto(TGraph* histoPtr) {
 	t.ptr.graph = histoPtr;
 	t.tag = TTGraph;
 	t.ref.graph = nullptr;
+	t.row = row;
+	t.col = col;
 	fHistos.push_back(t);
 	fChanged=true;
 }
@@ -212,6 +243,15 @@ void CanvasOrganizer::UpdateRef() const {
 			}
 		}
 	}
+}
+
+int CanvasOrganizer::findAvailableSlot(std::set<int> busy){
+	int i=1;
+	for(auto  val : busy){
+		if(val>i) return i;
+		i++;
+	}
+	return i+1;
 }
 
 } /* namespace Core */
