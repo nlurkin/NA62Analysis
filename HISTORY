@@ -2,6 +2,13 @@
 NA62Analysis Project
 ################################################################
 
+2015-07-xx      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.xxx
+        - Add GetHistoFromArray
+        - Automatically add missing analyzer dependencies
+        - Analyzer can specify grid position where some or all of the
+          plots should be placed on CanvasOrganizer.
+        
 2015-07-10      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev.586
                 - Spectrometer to MUV3 candidate association tools introduced

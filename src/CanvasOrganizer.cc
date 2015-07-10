@@ -14,8 +14,6 @@
 #include <TList.h>
 #include <cmath>
 
-#define PRINTVAR(v) #v << "= " << v << " "
-
 namespace NA62Analysis {
 namespace Core {
 
@@ -67,7 +65,6 @@ void CanvasOrganizer::Draw() const {
 	std::set<int> busySlots;
 	//Place all histos on the canvas
 	for(auto it : fHistos){
-		std::cout << PRINTVAR(it.row) << " " << PRINTVAR(it.col) << std::endl;
 		if(it.row!=-1 && it.row<fHeight && it.col!=-1 && it.col<fWidth){
 			int canvasIndex = it.row*fWidth + it.col+1;
 			std::cout << "Printing now with index " << canvasIndex << std::endl;
