@@ -13,30 +13,55 @@ using namespace std;
 
 /// \class SpecMUV3Muon
 /// \Brief
-/// An object containing the records of MUV3 candidates associated to a Spectrometer track
+/// Container of records of MUV3 candidates associated to a Spectrometer track
 /// \EndBrief
 
 SpecMUV3Muon::SpecMUV3Muon() :
-  fTrackID(-1), fTrackTime(0), fSearchRadius(-1), fTrackX(0), fTrackY(0) {}
+  fTrackID(-1), fTrackTime(0), fTrackMomentum(0), fSearchRadius(-1), fTrackX(0), fTrackY(0) {}
 
 SpecMUV3Muon::SpecMUV3Muon
-(Int_t TrackID, Double_t Time, Double_t Radius, Double_t TrackX, Double_t TrackY) :
-  fTrackID(TrackID), fTrackTime(Time), fSearchRadius(Radius), fTrackX(TrackX), fTrackY(TrackY) {}
+(Int_t TrackID, Double_t Time, Double_t Momentum, Double_t Radius, Double_t TrackX, Double_t TrackY) :
+  fTrackID(TrackID), fTrackTime(Time), fTrackMomentum(Momentum),
+  fSearchRadius(Radius), fTrackX(TrackX), fTrackY(TrackY) {}
 
 SpecMUV3Muon::SpecMUV3Muon
-(Int_t TrackID, Double_t Time, Double_t Radius, TVector2 TrackXY) :
-  fTrackID(TrackID), fTrackTime(Time), fSearchRadius(Radius), fTrackX(TrackXY.X()), fTrackY(TrackXY.Y()) {}
+(Int_t TrackID, Double_t Time, Double_t Momentum, Double_t Radius, TVector2 TrackXY) :
+  fTrackID(TrackID), fTrackTime(Time), fTrackMomentum(Momentum),
+  fSearchRadius(Radius), fTrackX(TrackXY.X()), fTrackY(TrackXY.Y()) {}
 
 SpecMUV3Muon::SpecMUV3Muon
-(Int_t TrackID, Double_t Time, Double_t Radius, Double_t TrackX, Double_t TrackY,
+(Int_t TrackID, Double_t Time, Double_t Momentum, Double_t Radius, Double_t TrackX, Double_t TrackY,
  std::vector<SpecMUV3AssociationRecord> Rec) :
-  fTrackID(TrackID), fTrackTime(Time), fSearchRadius(Radius),
+  fTrackID(TrackID), fTrackTime(Time), fTrackMomentum(Momentum), fSearchRadius(Radius),
   fTrackX(TrackX), fTrackY(TrackY), fAssociationRecordContainer(Rec) {}
 
 SpecMUV3Muon::SpecMUV3Muon
-(Int_t TrackID, Double_t Time, Double_t Radius, TVector2 TrackXY, std::vector<SpecMUV3AssociationRecord> Rec) :
-  fTrackID(TrackID), fTrackTime(Time), fSearchRadius(Radius),
+(Int_t TrackID, Double_t Time, Double_t Momentum, Double_t Radius, TVector2 TrackXY,
+ std::vector<SpecMUV3AssociationRecord> Rec) :
+  fTrackID(TrackID), fTrackTime(Time), fTrackMomentum(Momentum), fSearchRadius(Radius),
   fTrackX(TrackXY.X()), fTrackY(TrackXY.Y()), fAssociationRecordContainer(Rec) {}
+
+Double_t SpecMUV3Muon::GetMinimumTrackTileDistance() {
+  if (!fAssociationRecordContainer.size()) return 99999;
+  Double_t Rmin = 99999;
+  for (UInt_t i=0; i<fAssociationRecordContainer.size(); i++) {
+    if (fAssociationRecordContainer[i].GetTrackTileDistance() < Rmin) {
+      Rmin = fAssociationRecordContainer[i].GetTrackTileDistance();
+    }
+  }
+  return Rmin;
+}
+
+Double_t SpecMUV3Muon::GetMinimumTrackCandidateDistance() {
+  if (!fAssociationRecordContainer.size()) return 99999;
+  Double_t Rmin = 99999;
+  for (UInt_t i=0; i<fAssociationRecordContainer.size(); i++) {
+    if (fAssociationRecordContainer[i].GetTrackCandidateDistance() < Rmin) {
+      Rmin = fAssociationRecordContainer[i].GetTrackCandidateDistance();
+    }
+  }
+  return Rmin;
+}
 
 void SpecMUV3Muon::SetTrackXY(Double_t TrackX, Double_t TrackY) {
   fTrackX = TrackX;
@@ -67,7 +92,8 @@ void SpecMUV3Muon::Clear() {
 void SpecMUV3Muon::Print() {
   cout << "SpecMUV3Muon: TrackID: " << fTrackID
        << " Time: " << fTrackTime
-       << " SearchRadius: " << fSearchRadius
+       << " Mom: " << fTrackMomentum
+       << " SearchR: " << fSearchRadius
        << " TrackXY: " << fTrackX << " " << fTrackY
        << " MuRecords: " << fAssociationRecordContainer.size() << endl;
 }

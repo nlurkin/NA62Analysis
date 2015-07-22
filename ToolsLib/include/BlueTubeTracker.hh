@@ -28,7 +28,11 @@ public:
   { fInitialMomentum = TVector3(x,y,z); }
   void     SetZFinal         (Double_t value) { fZFinal = value;          }
   void     SetCharge         (Int_t value)    { fCharge = value;          }
+
+  TVector3 GetInitialPosition()               { return fInitialPosition;  }
+  TVector3 GetInitialMomentum()               { return fInitialMomentum;  }
   TVector3 GetFinalPosition()                 { return fFinalPosition;    }
+  TVector3 GetFinalPositionNonCorrected();
   TVector3 GetFinalMomentum()                 { return fFinalMomentum;    }
 
 private:
