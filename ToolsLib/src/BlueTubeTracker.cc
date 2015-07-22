@@ -55,6 +55,14 @@ BlueTubeTracker::~BlueTubeTracker() {
   delete fMap;
 }
 
+/////////////////////////////////////////////////////////////
+// Compute the final position assuming straight line.
+// Useful for debugging and quantifying the blue tube effect.
+
+TVector3 BlueTubeTracker::GetFinalPositionNonCorrected() {
+  return fInitialPosition + (fZFinal-fInitialPosition.Z())/fInitialMomentum.Z() * fInitialMomentum;
+}
+
 void BlueTubeTracker::TrackOneStep (Int_t ipl1, Int_t ipl2) {
 
   // Step length, including special cases of the first and last steps

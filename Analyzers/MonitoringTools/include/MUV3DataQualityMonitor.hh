@@ -44,6 +44,7 @@ private:
   TH2D *fHChannelProfileVsBurst, *fHChannelProfileVsBurstEOB;
   TH1D *fHNEventsProcessedPerBurst;
   TH1D *fHTileAsymmetry, *fHTileAsymmetryEOB;
+  TH1D *fHTotalPrimitiveCountsEOB, *fHErrorCountsEOB;
   std::vector<TH2D*> fHList;
 
   void GenerateTileAsymmetryVsBurstIDPlots();

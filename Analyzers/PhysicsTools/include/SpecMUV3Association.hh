@@ -29,6 +29,6 @@ public:
 
 protected:
   vector<SpecMUV3Muon> fMuons;
-
+  Double_t fScaleFactor; ///< Scale factor to modify the MUV3 search radius
 };
 #endif

@@ -49,6 +49,7 @@ using namespace NA62Constants;
 /// \EndDetailed
 
 SpecMUV3Association::SpecMUV3Association(Core::BaseAnalysis *ba) : Analyzer(ba, "SpecMUV3Association") {
+  fScaleFactor = 4.0; // defines the track-MUV3 candidate association distance
   RequestTree("MUV3",         new TRecoMUV3Event,         "Reco");
   RequestTree("Spectrometer", new TRecoSpectrometerEvent, "Reco");
 }
@@ -72,14 +73,11 @@ void SpecMUV3Association::Process(int iEvent) {
 
     ////////////////////////////////////////////////////////////////////////////////
     // Estimated effect of scattering and STRAW resolution: sigma(xP,yP)=530 mm*GeV.
-    // The search radius is currently set to 3 sigma.
 
-    Double_t SearchRadius = (Scand->GetMomentum() > 0) ?
-      3.0 * 530 * 1000 / Scand->GetMomentum() :
-      3.0 * 53000; // assume a 10 GeV track if momentum is not valid
+    Double_t Momentum     = (Scand->GetMomentum()>0) ? Scand->GetMomentum() : 10000.0;
+    Double_t SearchRadius = fScaleFactor * 530000 / Momentum;
 
-    Double_t SearchRadius2 = pow(SearchRadius, 2);
-    SpecMUV3Muon Muon(iTrack, Time, SearchRadius, xt, yt);
+    SpecMUV3Muon Muon(iTrack, Time, Scand->GetMomentum(), SearchRadius, xt, yt);
 
     for (Int_t iMu=0; iMu<MUV3event->GetNCandidates(); iMu++) {
       TRecoMUV3Candidate* Mcand = (TRecoMUV3Candidate*)MUV3event->GetCandidate(iMu);
@@ -97,39 +95,23 @@ void SpecMUV3Association::Process(int iEvent) {
       Double_t ym1 = ym - 0.5*length;
       Double_t ym2 = ym + 0.5*length;
 
+      Double_t TrackTileDistance = -1;
       Bool_t DirectMatch = (xt>xm1 && xt<xm2 && yt>ym1 && yt<ym2);
-      Bool_t Match       = DirectMatch;
 
-      ///////////////////////////////////////////////
-      // Do the tile and the search circle intersect?
-
-      if (!Match) {
-	// Are the corners of the pad within the search circle?
-        Double_t R1sq = (xm1-xt)*(xm1-xt) + (ym1-yt)*(ym1-yt);
-	Double_t R2sq = (xm1-xt)*(xm1-xt) + (ym2-yt)*(ym2-yt);
-	Double_t R3sq = (xm2-xt)*(xm2-xt) + (ym1-yt)*(ym1-yt);
-        Double_t R4sq = (xm2-xt)*(xm2-xt) + (ym2-yt)*(ym2-yt);
-
-        if (R1sq < SearchRadius2 || R2sq < SearchRadius2 ||
-            R3sq < SearchRadius2 || R4sq < SearchRadius2) Match = true;
+      if (!DirectMatch) {
+	if      (yt>ym1 && yt<ym2) TrackTileDistance = TMath::Min(fabs(xt-xm1), fabs(xt-xm2));
+	else if (xt>xm1 && xt<xm2) TrackTileDistance = TMath::Min(fabs(yt-ym1), fabs(yt-ym2));
+	else if (xt>xm2 && yt>ym2) TrackTileDistance = sqrt((xt-xm2)*(xt-xm2)+(yt-ym2)*(yt-ym2));
+	else if (xt>xm2 && yt<ym1) TrackTileDistance = sqrt((xt-xm2)*(xt-xm2)+(yt-ym1)*(yt-ym1));
+	else if (xt<xm1 && yt<ym1) TrackTileDistance = sqrt((xt-xm1)*(xt-xm1)+(yt-ym1)*(yt-ym1));
+	else if (xt<xm1 && yt>ym2) TrackTileDistance = sqrt((xt-xm1)*(xt-xm1)+(yt-ym2)*(yt-ym2));
       }
 
-      if (!Match) {
-	// Are the extremes of the search circle within the pad?
-        Double_t xc1 = xt - SearchRadius;
-        Double_t xc2 = xt + SearchRadius;
-        Double_t yc1 = yt - SearchRadius;
-        Double_t yc2 = yt + SearchRadius;
-        if (xc1>xm1 && xc1<xm2 && yt>ym1 && yt<ym2) Match = true;
-        if (xc2>xm1 && xc2<xm2 && yt>ym1 && yt<ym2) Match = true;
-        if (yc1>ym1 && yc1<ym2 && xt>xm1 && xt<xm2) Match = true;
-        if (yc2>ym1 && yc2<ym2 && xt>xm1 && xt<xm2) Match = true;   
-      }
-
-      if (Match) {
-        Double_t Distance = sqrt((xt-xm)*(xt-xm)+(yt-ym)*(yt-ym));
+      if (TrackTileDistance<SearchRadius) {
+        Double_t TrackCandidateDistance = sqrt((xt-xm)*(xt-xm)+(yt-ym)*(yt-ym));
 	Double_t Time = Mcand->GetTime();
-	SpecMUV3AssociationRecord Record(iMu, iTile, Time, DirectMatch, Distance, xm, ym);
+	SpecMUV3AssociationRecord Record(iMu, iTile, Time,
+					 TrackTileDistance, TrackCandidateDistance, xm, ym);
 	Muon.AddAssociationRecord(Record);
       }
     }

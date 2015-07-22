@@ -2,6 +2,15 @@
 NA62Analysis Project
 ################################################################
 
+2015-07-22      Plamen Petrov (plpetrov@cern.ch)
+                rev.595
+                - VertexLSF tool introduced
+                - MultipleLinesCDA tool introduced
+
+2015-07-18      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev.594
+                - Updated MUV3 monitoring Spectrometr-MUV3 association tool
+
 2015-07-10      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev.586
                 - Spectrometer to MUV3 candidate association tools introduced

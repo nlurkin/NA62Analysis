@@ -65,6 +65,10 @@ void MUV3DataQualityMonitor::InitHist() {
   // EOB: L0 primitives
   fHList[16] = (TH2D*)RequestHistogram(fDirName, "TightPrimitiveProfile2D EOB",      true);
   fHList[17] = (TH2D*)RequestHistogram(fDirName, "TightPrimitiveProfile2DInner EOB", true);
+
+  // SL EOB data
+  fHTotalPrimitiveCountsEOB = (TH1D*)RequestHistogram(fDirName, "TotalPrimitiveCountsEOB", true);
+  fHErrorCountsEOB          = (TH1D*)RequestHistogram(fDirName, "ErrorCountsEOB",          true);
 }
 
 void MUV3DataQualityMonitor::EndOfRunUser() {
@@ -155,11 +159,13 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     fHChannelProfile->Draw();
 
     if (fHNEventsProcessedPerBurst) {
+      Canvas->Update();
       Text->SetTextSize(0.07);
       Text->SetTextColor(kBlack);
       Text->SetTextAlign(kHAlignLeft+kVAlignTop);
-      Text->DrawText(10, fHChannelProfile->GetMaximum(), Form("Bursts processed: %d", NBurstsProcessed));
-      Text->DrawText(10, 0.88*fHChannelProfile->GetMaximum(), Form("Events processed: %d", NEventsProcessed));
+      Text->DrawText(10, 0.92*gPad->GetUymax(), Form("Bursts processed: %d", NBurstsProcessed));
+      Text->DrawText(10, 0.80*gPad->GetUymax(), Form("Events processed: %d", NEventsProcessed));
+      Text->DrawText(10, 0.68*gPad->GetUymax(), Form("Digis: %d", (int)fHChannelProfile->Integral()));
     }
 
     Canvas->cd(2);
@@ -260,15 +266,15 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
   fHList[15]->Add(fHList[13], fHList[11], 1, -1);
 
   vector <TString> titles(9, TString());
-  titles [0] = "N(RecoHits), Low PMT";
-  titles [1] = "N(RecoHits), High PMT";
-  titles [2] = "N(RecoHits), High#minusLow and A=(High#minusLow)/(High+Low)";
+  titles [0] = "N(Digis, low PMT)";
+  titles [1] = "N(Digis, high PMT)";
+  titles [2] = "N(Digis), High#minusLow and A=(High#minusLow)/(High+Low)";
   titles [3] = "N(Candidates)";
   titles [4] = "void"; // tight candidates are not plotted separately
-  titles [5] = "EOB: N(hits), Low PMT";
-  titles [6] = "EOB: N(hits), High PMT";
+  titles [5] = "EOB: N(hits, low PMT)";
+  titles [6] = "EOB: N(hits, high PMT)";
   titles [7] = "EOB: N(hits), High#minusLow and A=(High#minusLow)/(High+Low)";
-  titles [8] = "SL EOB: N(tight L0 muons)";
+  titles [8] = "N(EOB L0FW hits)";
 
   TBox *b = new TBox();
   b->SetFillStyle(0);
@@ -282,6 +288,17 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     fHList[i]->GetYaxis()->SetTitle("");
 
     if (i%2==0) { // Outer tiles
+
+      // Display integrals in title
+      if (i==0 || i==2 || i==6) {
+	titles[i/2] += Form(". Inner: %d, outer: %d",
+			    (int)fHList[i+1]->Integral(), (int)fHList[i]->Integral());
+      }
+      if (i==10 || i==12 || i==16) {
+	titles[i/2] += Form(". Inner: %4.2fM, outer: %4.2fM",
+			    1e-6*fHList[i+1]->Integral(), 1e-6*fHList[i]->Integral());
+      }
+
       Canvas2->Clear();
       fHList[i]->SetTitle(titles[i/2]);
       fHList[i]->GetXaxis()->SetTickLength(0);
@@ -404,6 +421,66 @@ void MUV3DataQualityMonitor::EndOfRunUser() {
     }
   }
 
+  //////////////////////////////////////
+  // EOB primitive type and error counts
+
+  if (fHTotalPrimitiveCountsEOB && fHErrorCountsEOB) {
+    TCanvas *Canvas3 = new TCanvas("Canvas3");
+    Canvas3->Divide(2,1);
+    Canvas3->SetLeftMargin(0.01);
+    Canvas3->SetRightMargin(0.01);
+    Canvas3->SetTopMargin(0.01);
+    Canvas3->SetBottomMargin(0.01);
+    for (int i=1; i<=2; i++) {
+      Canvas3->GetPad(i)->SetLeftMargin(0.08);
+      Canvas3->GetPad(i)->SetRightMargin(0.01);
+      Canvas3->GetPad(i)->SetTopMargin(0.06);
+      Canvas3->GetPad(i)->SetBottomMargin(0.05);
+    }
+
+    Canvas3->cd(1);
+    fHTotalPrimitiveCountsEOB->SetTitle("EOB primitive counts by type [mln]");
+    fHTotalPrimitiveCountsEOB->GetXaxis()->SetTitle("Primitive type");
+    fHTotalPrimitiveCountsEOB->GetXaxis()->SetLabelSize(0); // suppress labels
+    fHTotalPrimitiveCountsEOB->GetXaxis()->SetTitleOffset(0.4);
+    fHTotalPrimitiveCountsEOB->SetLineWidth(1);
+    fHTotalPrimitiveCountsEOB->SetLineColor(kBlue);
+    fHTotalPrimitiveCountsEOB->SetFillColor(kYellow);
+    fHTotalPrimitiveCountsEOB->Draw();
+
+    Text->SetTextSize(0.04);
+    Text->SetTextAngle(90);
+    Text->SetTextAlign(kHAlignCenter+kVAlignCenter);
+    Text->SetTextColor(kGreen+2);
+    for (int i=0; i<16; i++) {
+      Text->DrawText(i, 0.5*fHTotalPrimitiveCountsEOB->GetMaximum(),
+		     fHTotalPrimitiveCountsEOB->GetXaxis()->GetBinLabel(i+1));
+    }
+    TLine *l = new TLine();
+    l->SetLineColor(kRed);
+    Canvas3->Update();
+    l->DrawLine( 9.5, 0,  9.5, gPad->GetUymax());
+    l->DrawLine(13.5, 0, 13.5, gPad->GetUymax());
+      
+    Canvas3->cd(2);
+    fHErrorCountsEOB->SetTitle("SL EOB error counts by type");
+    fHErrorCountsEOB->GetXaxis()->SetTitle("Error type");
+    fHErrorCountsEOB->GetXaxis()->SetLabelSize(0); // suppress labels
+    fHErrorCountsEOB->GetXaxis()->SetTitleOffset(0.4);
+    fHErrorCountsEOB->SetLineWidth(1);
+    fHErrorCountsEOB->SetLineColor(kBlue);
+    fHErrorCountsEOB->SetFillColor(kYellow);
+    fHErrorCountsEOB->Draw();
+    for (int i=0; i<12; i++) {
+      Text->DrawText(i, 0.5*fHErrorCountsEOB->GetMaximum(),
+		     fHErrorCountsEOB->GetXaxis()->GetBinLabel(i+1));
+    }
+    Text->SetTextAngle(0);
+
+    Canvas3->Print(fOutPDFFileName, "pdf");
+  }
+
+  /////////////////////////////////////////////////
   // Tile asymmetry vs burst ID plots for each tile
   GenerateTileAsymmetryVsBurstIDPlots();
 
