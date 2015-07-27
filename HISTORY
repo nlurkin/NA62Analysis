@@ -2,12 +2,13 @@
 NA62Analysis Project
 ################################################################
 
-2015-07-xx      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev.xxx
+2015-07-27      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.600
         - Add GetHistoFromArray
         - Automatically add missing analyzer dependencies
         - Analyzer can specify grid position where some or all of the
           plots should be placed on CanvasOrganizer.
+        - Improve stability of OnlineMonitor
         
 2015-07-22      Plamen Petrov (plpetrov@cern.ch)
                 rev.595
