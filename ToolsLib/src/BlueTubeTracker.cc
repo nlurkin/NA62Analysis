@@ -31,6 +31,8 @@
 
 #include "BlueTubeTracker.hh"
 
+using namespace std;
+
 BlueTubeTracker::BlueTubeTracker() {
   fZmin = 100000; // The last tracking step may extend beyond the end of field map (z0=104458mm)
   fZmax = 183311; // This is the end of the map region and just in front of STRAW1

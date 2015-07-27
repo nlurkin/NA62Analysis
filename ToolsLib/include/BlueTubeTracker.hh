@@ -11,6 +11,8 @@
 
 #include "TMath.h"
 #include "BlueTubeMagneticFieldMap.hh"
+#include <iostream>
+#include <TVector3.h>
 
 class BlueTubeTracker {
 

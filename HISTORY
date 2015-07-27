@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-07-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.598
+		- Compatibility with recent NA62MC and NA62Reco updates
+
 2015-07-22      Plamen Petrov (plpetrov@cern.ch)
                 rev.595
                 - VertexLSF tool introduced
