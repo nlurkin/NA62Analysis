@@ -67,13 +67,11 @@ void CanvasOrganizer::Draw() const {
 	for(auto it : fHistos){
 		if(it.row!=-1 && it.row<fHeight && it.col!=-1 && it.col<fWidth){
 			int canvasIndex = it.row*fWidth + it.col+1;
-			std::cout << "Printing now with index " << canvasIndex << std::endl;
 			fCanvas->cd(canvasIndex);
 			busySlots.insert(canvasIndex);
 			drawPlot(it);
 		}
 		else{
-			std::cout << "Printing later" << std::endl;
 			delayedPlots.push_back(it);
 		}
 

@@ -12,6 +12,7 @@
 
 #include <TString.h>
 #include <TFile.h>
+#include "TMutex.h"
 #include "Verbose.hh"
 #include "TimeCounter.h"
 
@@ -133,6 +134,14 @@ public:
 	}
 
 	int ReadCurrentFileRevision();
+
+	void SetMutex(TMutex *m){
+		/// \MemberDescr
+		/// Set the mutex
+		/// \EndMemberDescr
+
+		fGraphicalMutex = m;
+	}
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
@@ -152,6 +161,7 @@ protected:
 	std::ofstream fSkippedFD; ///< Skipped files output stream
 
 	mutable TimeCounter fIOTimeCount; ///< Counter for the time spent in IO
+	TMutex *fGraphicalMutex;
 };
 
 bool TestIsTextFile(TString fileName);

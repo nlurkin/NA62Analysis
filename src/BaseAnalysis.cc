@@ -461,6 +461,8 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 			<< (type==IOHandlerType::kHISTO ? "kHisto" : "kTree") << std::endl;
 	if(type==IOHandlerType::kHISTO) fIOHandler = new IOHisto();
 	else fIOHandler = new IOTree();
+
+	fIOHandler->SetMutex(&fGraphicalMutex);
 }
 
 void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime) {

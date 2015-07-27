@@ -299,28 +299,35 @@ bool IOTree::LoadEvent(int iEvent){
 	std::pair<eventIterator, eventIterator> eventRange;
 	std::pair<objectIterator, objectIterator> objectRange;
 
-	fIOTimeCount.Start();
-	if(fWithMC) fMCTruthTree->GetEntry(iEvent);
-	if(fWithRawHeader) fRawHeaderTree->GetEntry(iEvent);
-	fIOTimeCount.Stop();
+	if (fGraphicalMutex->Lock() == 0) {
+		fIOTimeCount.Start();
+		if (fWithMC)
+			fMCTruthTree->GetEntry(iEvent);
+		if (fWithRawHeader)
+			fRawHeaderTree->GetEntry(iEvent);
+		fIOTimeCount.Stop();
 
-	//Loop over all our trees
-	for(it=fTree.begin(); it!=fTree.end(); it++){
-		//Loop over all event and object branch and load the corresponding entry for each of them
-		eventRange = fEvent.equal_range(it->first);
-		for(itEvt=eventRange.first; itEvt!=eventRange.second; ++itEvt){
-			if(it->second->GetBranch(itEvt->second->fBranchName))
-				fIOTimeCount.Start();
+		//Loop over all our trees
+		for (it = fTree.begin(); it != fTree.end(); it++) {
+			//Loop over all event and object branch and load the corresponding entry for each of them
+			eventRange = fEvent.equal_range(it->first);
+			for (itEvt = eventRange.first; itEvt != eventRange.second;
+					++itEvt) {
+				if (it->second->GetBranch(itEvt->second->fBranchName))
+					fIOTimeCount.Start();
 				it->second->GetEntry(iEvent);
 				fIOTimeCount.Stop();
-		}
-		objectRange = fObject.equal_range(it->first);
-		for(itObj=objectRange.first; itObj!=objectRange.second; ++itObj){
-			if(it->second->GetBranch(itObj->second->fBranchName))
-				fIOTimeCount.Start();
+			}
+			objectRange = fObject.equal_range(it->first);
+			for (itObj = objectRange.first; itObj != objectRange.second;
+					++itObj) {
+				if (it->second->GetBranch(itObj->second->fBranchName))
+					fIOTimeCount.Start();
 				it->second->GetEntry(iEvent);
 				fIOTimeCount.Stop();
+			}
 		}
+		fGraphicalMutex->UnLock();
 	}
 	return true;
 }
@@ -609,9 +616,13 @@ bool IOTree::checkInputFile(TString fileName){
 	/// Open the input file to check if MC are present and if yes, what's the name of the TTree
 	/// \EndMemberDescr
 
-	fIOTimeCount.Start();
-	TFile *fd = TFile::Open(fileName.Data(), "R");
-	fIOTimeCount.Stop();
+	TFile *fd;
+	if(fGraphicalMutex->Lock()==0){
+		fIOTimeCount.Start();
+		fd = TFile::Open(fileName.Data(), "R");
+		fIOTimeCount.Stop();
+		fGraphicalMutex->UnLock();
+	}
 
 	if(!fd)
 		return kFALSE;
