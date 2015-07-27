@@ -154,8 +154,8 @@
 ///     <td align="center">Validated</td><td align="center">579</td></tr>
 ///	<tr><td>functions.cc</td><td>Provides some functions. Some might be useful but most of them are here by legacy from early development stages. 
 ///	This component should be reviewed.</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
-///     <tr><td>SpecMUV3AssociationRecord</td><td>Auxiliary class for Spectrometer-MUV3 association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
-///     <tr><td>SpecMUV3Muon</td><td>Auxiliary class for Spectrometer-MUV3 association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecMUV3AssociationRecord</td><td>Auxiliary class used by SpecMUV3Association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecMUV3Muon</td><td>Auxiliary class used by SpecMUV3Association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>StrawAddress</td><td>Auxiliary class used by SpectrometerT0</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>StrawPlace</td><td>Auxiliary class used by SpectrometerT0</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>T0Evaluation</td><td>Base class of the T0 evaluaion tools in Analyzers/CalibrationTools</td><td align="center">Validated</td><td align="center">523</td></tr>
