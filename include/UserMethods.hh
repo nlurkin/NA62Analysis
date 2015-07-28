@@ -186,7 +186,7 @@ public:
 	void SetUpdateInterval(int interval);
 	int GetUpdateInterval() const;
 	void CreateCanvas(TString name, int width=0, int length=0);
-	bool PlacePlotOnCanvas(TString histoName, TString canvasName);
+	bool PlacePlotOnCanvas(TString histoName, TString canvasName, int row=-1, int col=-1);
 	bool SetCanvasAutoUpdate(TString canvasName);
 	bool UpdateCanvas(TString canvasName);
 	void SetCanvasReference(TString canvasName, TString histo, TH1* refPtr);

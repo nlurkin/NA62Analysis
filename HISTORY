@@ -2,6 +2,14 @@
 NA62Analysis Project
 ################################################################
 
+2015-07-27      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.600
+        - Add GetHistoFromArray
+        - Automatically add missing analyzer dependencies
+        - Analyzer can specify grid position where some or all of the
+          plots should be placed on CanvasOrganizer.
+        - Improve stability of OnlineMonitor
+        
 2015-07-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.598
 		- Compatibility with recent NA62MC and NA62Reco updates
@@ -15,6 +23,7 @@ NA62Analysis Project
                 rev.594
                 - Updated MUV3 monitoring Spectrometr-MUV3 association tool
 
+>>>>>>> SVNBranch
 2015-07-10      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev.586
                 - Spectrometer to MUV3 candidate association tools introduced

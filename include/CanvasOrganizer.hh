@@ -9,7 +9,7 @@
 #define INCLUDE_CANVASORGANIZER_HH_
 
 #include <TString.h>
-
+#include <set>
 
 class TH1;
 class TH2;
@@ -29,7 +29,7 @@ namespace Core {
 /// this class will organize the canvas for the best display (unless given)
 /// and will draw and refresh everything automatically.
 /// \EndDetailed
-class CanvasOrganizer {
+class CanvasOrganizer{
 public:
 	CanvasOrganizer(TString name);
 	virtual ~CanvasOrganizer();
@@ -38,9 +38,9 @@ public:
 	void Update(int currentEvent=0) const;
 	void UpdateRef() const;
 
-	void AddHisto(TH1* histoPtr);
-	void AddHisto(TH2* histoPtr);
-	void AddHisto(TGraph* histoPtr);
+	void AddHisto(TH1* histoPtr, int row=-1, int col=-1);
+	void AddHisto(TH2* histoPtr, int row=-1, int col=-1);
+	void AddHisto(TGraph* histoPtr, int row=-1, int col=-1);
 
 	void SetReference(TH1* refPtr, TH1* histoPtr);
 	void SetReference(TGraph* refPtr, TGraph* histoPtr);
@@ -71,30 +71,28 @@ public:
 		return fName;
 	};
 	void SetCanvas(TCanvas* c);
+	TCanvas *const GetCanvas() const {
+		/// \MemberDescr
+		/// \return Pointer to the TCanvas
+		/// \EndMemberDescr
+		return fCanvas;
+	};
 private:
 	/// \struct size_t
 	/// \Brief
 	/// Struct containing two int for width and height
 	/// \EndBrief
 	struct size_t{
-		int width; ///< Width
+		int width;  ///< Width
 		int height; ///< Height
 	};
-	size_t computeSize(int nElements) const;
-
-	int fUpdateFrequency; ///< Update frequency (in events) of the canvas
-	int fWidth; ///< Width of the canvas
-	int fHeight; ///< Height of the canvas
-	mutable bool fChanged; ///< True when the canvas has been modified and must be redrawn completely
-	const TString fName; ///< Name of the CanvasOrganizer
-	mutable TCanvas *fCanvas; ///< Pointer to the actual TCanvas
 
 	/// \union plotType_u
 	/// \Brief
 	/// Union containing a pointer to a TH1 derived or TGraph derived class
 	/// \EndBrief
 	union plotType_u{
-		TH1* histo; ///< Pointer to TH1 derived
+		TH1* histo;    ///< Pointer to TH1 derived
 		TGraph* graph; ///< Pointer to TGraph derived
 	};
 
@@ -110,7 +108,20 @@ private:
 		plotType_u ptr; ///< Pointer to the plot
 		plotType_e tag; ///< Indicated type of plot
 		plotType_u ref; ///< Pointer to reference plot
+		int row;          ///< x position of the plot on the grid
+		int col;          ///< y position of the plot on the grid
 	};
+
+	size_t computeSize(int nElements) const;
+	void drawPlot(plot_t p) const;
+	static int findAvailableSlot(std::set<int> busy);
+
+	int fUpdateFrequency;     ///< Update frequency (in events) of the canvas
+	int fWidth;               ///< Width of the canvas
+	int fHeight;              ///< Height of the canvas
+	mutable bool fChanged;    ///< True when the canvas has been modified and must be redrawn completely
+	const TString fName;      ///< Name of the CanvasOrganizer
+	mutable TCanvas *fCanvas; ///< Pointer to the actual TCanvas
 
 	std::vector<plot_t> fHistos; ///< Container for plots
 };

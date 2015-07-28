@@ -773,6 +773,17 @@ TH1* HistoHandler::GetHisto(TString name) {
 	}
 }
 
+TH1* HistoHandler::GetHistoFromArray(TString baseName, int index) {
+	/// \MemberDescr
+	/// \param baseName : Name of the histogram. The index will be appended
+	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
+	///
+	///	If the histogram does not exist, print an error message and return NULL.
+	/// \EndMemberDescr
+
+	return GetHisto(baseName + (Long_t)index);
+}
+
 void HistoHandler::Mkdir(TString name, TString analyzerName) const{
 	/// \MemberDescr
 	/// \param name: Name of the directory to create
@@ -946,7 +957,7 @@ void HistoHandler::CreateCanvas(TString name, int width, int length) {
 	fCanvas.insert(std::make_pair(c->GetName(), c));
 }
 
-bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName, int row, int col) {
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
@@ -963,13 +974,13 @@ bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName) {
 	if((it=fCanvas.find(canvasName))!=fCanvas.end()){
 
 		if((ptr1=fHisto.find(histoName))!=fHisto.end()){
-			it->second->AddHisto(ptr1->second);
+			it->second->AddHisto(ptr1->second, row, col);
 		}
 		else if((ptr2=fHisto2.find(histoName))!=fHisto2.end()){
-			it->second->AddHisto(ptr2->second);
+			it->second->AddHisto(ptr2->second, row, col);
 		}
 		else if((ptr3=fGraph.find(histoName))!=fGraph.end()){
-			it->second->AddHisto(ptr3->second);
+			it->second->AddHisto(ptr3->second, row, col);
 		}
 		else{
 			std::cerr << "Histogram " << histoName << " does not exist." << std::endl;

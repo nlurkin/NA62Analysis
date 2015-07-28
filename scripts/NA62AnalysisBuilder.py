@@ -53,12 +53,12 @@ def updateOld(UserPath, FWPath):
 	if os.path.exists("%s/Analyzer" % UserPath):
 		if os.path.exists("%s/Analyzers" % UserPath):
 			print ("""
-   You have a "Analyzer" folder in you user directory.
+   \033[33;1m WARNING: You have a "Analyzer" folder in you user directory.
    This folder has been renamed "Analyzers" but it seems to still exist.
    Please move all your analyzers still inside to the correct "Analyzers" folder.
    Warning : When moving your analyzers in the new folder, they may already exist
    from the automatic update of the user folder. Take care of not overwriting
-   you previous work.
+   you previous work.\033[0m
 """)
 			sys.exit(0)
 		else:
@@ -123,7 +123,7 @@ def updateHeaderSignature(UserPath):
 		
 		shutil.copy2(original, backup)
 		if not os.path.exists(backup):
-			print "Unable to create backup copy of %s in %s" % (original,backup)
+			print "\033[33;1m WARNING: Unable to create backup copy of %s in %s\033[0m" % (original,backup)
 			continue
 		with open(backup, 'r') as f1:
 			with open(original, 'w') as f2:
@@ -158,7 +158,7 @@ def updateHeaderSignature(UserPath):
 		
 		shutil.copy2(original, backup)
 		if not os.path.exists(backup):
-			print "Unable to create backup copy of %s in %s" % (original,backup)
+			print "\033[33;1m WARNING: Unable to create backup copy of %s in %s\033[0m" % (original,backup)
 			continue
 		
 		with open(backup, 'r') as f1:
@@ -270,7 +270,7 @@ def bash_command(cmd):
 def getCheckVar(name):
 	var = os.getenv(name, -1);
 	if var == -1:
-		print "Environment variable %s was not found." % name
+		print "\033[33;1m WARNING: Environment variable %s was not found.\033[0m" % name
 		sys.exit(0)
 	return var
 
@@ -364,7 +364,7 @@ def check_histo(an, iPath):
 		# Check all used histograms have been booked
 		for e in uses:
 			if not e[0] in defs:
-				print "Error in analyzer %s : Histogram %s not defined at line %s" % (an, e[0],e[1])
+				print "\033[31;1mError in analyzer %s : Histogram %s not defined at line %s\033[0m" % (an, e[0],e[1])
 				error = True
 	
 	return error
@@ -541,7 +541,7 @@ def createAnalyzer(args):
 	for i in inputs:
 		i = i.strip()
 		if not " " in i:
-			print "Error while creating new analyzer %s: input type not specified for %s. Please add 'MC' or 'Reco' identifier before tree name." % (anName, i)
+			print "\033[31;1mError while creating new analyzer %s: input type not specified for %s. Please add 'MC' or 'Reco' identifier before tree name.\033[0m" % (anName, i)
 			return
 		[type, tree] = i.split(" ")
 		if type=="MC":
@@ -564,7 +564,7 @@ def renameAnalyzer(args):
 	[newName] = args.newName
 	
 	if not os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, oldName)):
-		print "This analyzer does not exist (%s). It cannot be renamed." % oldName
+		print "\033[31;1mThis analyzer does not exist (%s). It cannot be renamed.\033[0m" % oldName
 		return
 
 	if os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, newName)):
@@ -601,7 +601,7 @@ def build(args):
 	
 	cp = SimpleConfigParser.SimpleConfigParser()
 	if is_binary(filename):
-		print "Error reading the configuration file. It seems to be a binary file."
+		print "\033[31;1mError reading the configuration file. It seems to be a binary file.\033[0m"
 		return
 	cp.read(filename)
 
@@ -623,9 +623,9 @@ def build(args):
 		noExecutable = True
 	
 	if noAnalyzer:
-		print "No analyzers found in config file"
+		print "\033[31;1mNo analyzers found in config file\033[0m"
 	if noExecutable:
-		print "No executable name in config file"
+		print "\033[31;1mNo executable name in config file\033[0m"
 	
 	if noAnalyzer or noExecutable:
 		return
@@ -678,8 +678,9 @@ def build(args):
 			checkDependence(depsGraph, an, prefix)
 			for d in depsGraph.getDependencies(an):
 				if not d in analyzers:
-					print "Missing dependence %s for %s" % (d, an)
-					missing = True
+					print "\033[33;1mWARNING: Missing dependence %s for %s. Adding it to the list of analyzers\033[0m" % (d, an)
+					analyzers.append(d)
+					#missing = True
 	
 	if missing == True:
 		return

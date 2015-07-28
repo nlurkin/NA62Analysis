@@ -30,7 +30,8 @@ IOHandler::IOHandler():
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
-	fCurrentFile(NULL)
+	fCurrentFile(NULL),
+	fGraphicalMutex(NULL)
 {
 	/// \MemberDescr
 	/// Constructor
@@ -44,7 +45,8 @@ IOHandler::IOHandler(std::string name):
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
 	fOutFile(0),
-	fCurrentFile(NULL)
+	fCurrentFile(NULL),
+	fGraphicalMutex(NULL)
 {
 	/// \MemberDescr
 	/// \param name : Display name
@@ -61,7 +63,8 @@ IOHandler::IOHandler(const IOHandler& c):
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
 	fOutFileName(c.fOutFileName),
-	fCurrentFile(c.fCurrentFile)
+	fCurrentFile(c.fCurrentFile),
+	fGraphicalMutex(c.fGraphicalMutex)
 {
 	/// \MemberDescr
 	/// \param c : Reference of the object to copy

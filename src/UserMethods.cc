@@ -934,7 +934,7 @@ void UserMethods::CreateCanvas(TString name, int width, int length) {
 	fHisto.CreateCanvas(name, width, length);
 }
 
-bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName) {
+bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName, int row, int col) {
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
@@ -943,7 +943,7 @@ bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName) {
 	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
 	/// \EndMemberDescr
 
-	return fHisto.PlacePlotOnCanvas(histoName, canvasName);
+	return fHisto.PlacePlotOnCanvas(histoName, canvasName, row, col);
 }
 
 bool UserMethods::SetCanvasAutoUpdate(TString canvasName) {
