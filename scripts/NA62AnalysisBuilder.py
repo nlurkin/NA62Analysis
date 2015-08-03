@@ -220,6 +220,8 @@ def checkUpdate():
 	NA62MCSOURCE = getCheckVar("NA62MCSOURCE")
 	
 	if UserPath != -1:
+		if not os.path.exists(UserPath) or not os.path.exists("%s/Analyzers" % UserPath):
+			return
 		#check version number
 		version = getUserVersion(UserPath)
 		
