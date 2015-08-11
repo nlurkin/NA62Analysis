@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-08-11	Viacheslav Duk (Viacheslav.Duk@cern.ch)
+		rev. 611
+		- minor update of the CHODT0 analyzer
+
 2015-07-27      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.600
         - Add GetHistoFromArray
