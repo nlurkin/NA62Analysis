@@ -402,6 +402,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 			<< branchClass << std::endl;
 
 	fIOTimeCount.Start();
+	std::cout << debug() << "Retrieving list of branches in " << branchName << " tree" << std::endl;
 	branchesList = tree->GetListOfBranches();
 	fIOTimeCount.Stop();
 	if(!branchesList){
@@ -426,19 +427,8 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 						<< branchClass << ") for " << tree->GetTree()->GetName() << std::endl;
 				raise(SIGABRT);
 			}
-			std::cout << normal() << "Found " << branchName << " of class " << branchClass
-					<< "(" << tree->GetEntries() << ")" << std::endl;
+			std::cout << normal() << "Found " << branchName << " of class " << branchClass << std::endl;
 			tree->SetBranchAddress(branchName, evt);
-			if ( eventNb <= 0 )
-			{
-				eventNb = tree->GetEntries();
-			}
-			else if (eventNb != tree->GetEntries())
-			{
-				std::cout << normal() << "Input file inconsistent. Bad number of entries for "
-						<< branchName << "(" << tree->GetEntries() << ")" << std::endl;
-				raise(SIGABRT);
-			}
 			return;
 		}
 	}
@@ -456,6 +446,7 @@ int IOTree::FillMCTruth(){
 	if(!fWithMC) return eventNb;
 
 	fIOTimeCount.Start();
+	std::cout << debug() << "Retrieving number of entries in MCTruth tree" << std::endl;
 	eventNb = fMCTruthTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
@@ -463,6 +454,7 @@ int IOTree::FillMCTruth(){
 		return -1;
 	}
 
+	std::cout << debug() << "Retrieving list of branches in MCTruth tree" << std::endl;
 	fIOTimeCount.Start();
 	TObjArray* branchesList = fMCTruthTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();
@@ -490,18 +482,9 @@ int IOTree::FillMCTruth(){
 						<< ", Expected: Event)" << std::endl;
 			}
 			else{
-				std::cout << normal() << "Found " << branchName << "(" << fMCTruthTree->GetEntries()
+				std::cout << normal() << "Found " << branchName << "(" << eventNb
 						<< ")" << std::endl;
 				fMCTruthTree->SetBranchAddress(branchName, &fMCTruthEvent );
-				if ( eventNb < 0 )
-				{
-					eventNb = fMCTruthTree->GetEntries();
-				}
-				else if (eventNb != fMCTruthTree->GetEntries())
-				{
-					std::cout << normal() << "Input file inconsistent. Bad number of entries for "
-							<< branchName << "(" << fMCTruthTree->GetEntries() << ")" << std::endl;
-				}
 			}
 		}
 	}
@@ -519,6 +502,7 @@ int IOTree::FillRawHeader(){
 	if(!fWithRawHeader) return eventNb;
 
 	fIOTimeCount.Start();
+	std::cout << debug() << "Retrieving number of entries in RawHeader tree" << std::endl;
 	eventNb = fRawHeaderTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
@@ -527,6 +511,7 @@ int IOTree::FillRawHeader(){
 	}
 
 	fIOTimeCount.Start();
+	std::cout << debug() << "Retrieving list of branches in RawHeader tree" << std::endl;
 	TObjArray* branchesList = fRawHeaderTree->GetListOfBranches();
 	int jMax = branchesList->GetEntries();
 	fIOTimeCount.Stop();
@@ -550,18 +535,9 @@ int IOTree::FillRawHeader(){
 
 			}
 			else{
-				std::cout << normal() << "Found " << branchName << "(" << fRawHeaderTree->GetEntries()
+				std::cout << normal() << "Found " << branchName << "(" << eventNb
 						<< ")" << std::endl;
 				fRawHeaderTree->SetBranchAddress(branchName, &fRawHeaderEvent );
-				if ( eventNb < 0 )
-				{
-					eventNb = fRawHeaderTree->GetEntries();
-				}
-				else if (eventNb != fRawHeaderTree->GetEntries())
-				{
-					std::cout << normal() << "Input file inconsistent. Bad number of entries for "
-							<< branchName << "(" << fRawHeaderTree->GetEntries() << ")" << std::endl;
-				}
 			}
 		}
 	}

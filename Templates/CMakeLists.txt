@@ -4,6 +4,7 @@ project(NA62AnalysisUser)
 
 # Get NA62Analysis
 set(NA62ANALYSIS $ENV{ANALYSISFW_PATH})
+set(NA62USE_USER 1)
 include(${NA62ANALYSIS}/scripts/NA62Analysis.cmake)
 
 # Define NA62Analysis/NA62MC include and lib directories  

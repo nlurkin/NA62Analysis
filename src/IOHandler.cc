@@ -36,6 +36,7 @@ IOHandler::IOHandler():
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
+	fCurrentDir = get_current_dir_name();
 }
 
 IOHandler::IOHandler(std::string name):
@@ -53,6 +54,7 @@ IOHandler::IOHandler(std::string name):
 	///
 	/// Constructor with name
 	/// \EndMemberDescr
+	fCurrentDir = get_current_dir_name();
 }
 
 IOHandler::IOHandler(const IOHandler& c):
@@ -63,6 +65,7 @@ IOHandler::IOHandler(const IOHandler& c):
 	fCurrentFileNumber(c.fCurrentFileNumber),
 	fOutFile(c.fOutFile),
 	fOutFileName(c.fOutFileName),
+	fCurrentDir(c.fCurrentDir),
 	fCurrentFile(c.fCurrentFile),
 	fGraphicalMutex(c.fGraphicalMutex)
 {
@@ -78,6 +81,7 @@ IOHandler::~IOHandler(){
 	/// Destructor
 	/// \EndMemberDescr
 
+	free(fCurrentDir);
 	if(fSkippedFD.is_open()){
 		fSkippedFD.close();
 	}
@@ -274,7 +278,16 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	//Print fileName in the output file for future reference
 	MkOutputDir("InputFiles");
 	gFile->cd("InputFiles");
-	TObjString fileName(fCurrentFile->GetName());
+	TString fileNameT = TString(fCurrentFile->GetName());
+	TObjString fileName;
+	if(fileNameT.BeginsWith("/") ||
+			fileNameT.BeginsWith("root://")){
+		//It is an absolute path
+		fileName = TObjString(fileNameT);
+	}
+	else{
+		fileName = TObjString(TString(fCurrentDir) + "/" + fileNameT);
+	}
 	fileName.Write();
 	gFile->cd();
 	fIOTimeCount.Stop();

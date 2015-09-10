@@ -15,7 +15,7 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 569
+__rev__ = 645
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -220,6 +220,8 @@ def checkUpdate():
 	NA62MCSOURCE = getCheckVar("NA62MCSOURCE")
 	
 	if UserPath != -1:
+		if not os.path.exists(UserPath) or not os.path.exists("%s/Analyzers" % UserPath):
+			return
 		#check version number
 		version = getUserVersion(UserPath)
 		

@@ -2,6 +2,15 @@
 NA62Analysis Project
 ################################################################
 
+2015-10-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.645
+        - Skip trees entries consistency check to speed up 
+        initialisation process
+        - Fix Bug NA62RKD-117
+        - Save absolute path of used files instead of name only
+        - User compilation does not write anything in fw dir anymore
+        - Apply parameters before initialising histo and output
+
 2015-08-28      Roberta Volpe (roberta.volpe@cern.ch)
 		rev.641
 		- changing histo name in RICHT0 
@@ -54,7 +63,6 @@ NA62Analysis Project
                 rev.594
                 - Updated MUV3 monitoring and Spectrometer-MUV3 association tools
 
->>>>>>> SVNBranch
 2015-07-10      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev.586
                 - Spectrometer to MUV3 candidate association tools introduced

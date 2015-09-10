@@ -153,6 +153,7 @@ protected:
 
 	TFile *fOutFile; ///< Output file
 	TString fOutFileName; ///< Output fileName
+	char *fCurrentDir;
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 

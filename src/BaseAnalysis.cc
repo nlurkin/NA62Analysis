@@ -116,10 +116,11 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
 		fIOHandler->MkOutputDir(fAnalyzerList[i]->GetAnalyzerName());
 		gFile->cd(fAnalyzerList[i]->GetAnalyzerName());
-		fAnalyzerList[i]->InitOutput();
-		fAnalyzerList[i]->InitHist();
 
 		confParser.ApplyParams(fAnalyzerList[i]);
+
+		fAnalyzerList[i]->InitOutput();
+		fAnalyzerList[i]->InitHist();
 
 		fAnalyzerList[i]->DefineMCSimple();
 		fAnalyzerList[i]->PrintInitSummary();
