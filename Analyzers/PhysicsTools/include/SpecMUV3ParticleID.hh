@@ -6,16 +6,16 @@
 //
 // ---------------------------------------------------------------
 
-#ifndef SPECMUV3ASSOCIATION_HH
-#define SPECMUV3ASSOCIATION_HH
+#ifndef SPECMUV3PARTICLEID_HH
+#define SPECMUV3PARTICLEID_HH
 
 #include "Analyzer.hh"
-#include "SpecMUV3Muon.hh"
+#include "SpecMUV3Association.hh"
 
-class SpecMUV3Association : public NA62Analysis::Analyzer {
+class SpecMUV3ParticleID : public NA62Analysis::Analyzer {
 
 public:
-  SpecMUV3Association(NA62Analysis::Core::BaseAnalysis *ba);
+  SpecMUV3ParticleID(NA62Analysis::Core::BaseAnalysis *ba);
   void InitHist() {}
   void InitOutput();
   void DefineMCSimple() {}
@@ -28,7 +28,8 @@ public:
   void DrawPlot() {}
 
 protected:
-  vector<SpecMUV3Muon> fMuons;
+  vector<SpecMUV3Association> fContainer;
   Double_t fScaleFactor; ///< Scale factor to modify the MUV3 search radius
 };
+
 #endif

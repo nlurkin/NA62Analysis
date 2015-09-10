@@ -21,55 +21,8 @@
 /// The procedure is iterative. After each iteration the track parameters and derivatives matrices \n
 /// are updated at the new vertex position. \n
 /// A note describing the method is in preparation. \n
-/// \n
-/// An example of how to use the method in an Analyzer: \n
-/// \code 
-/// 
-///   VertexLSF vertexlsf(ntrk);
-///   // Select your candidate tracks....
-///   cand = (TRecoSpectrometerCandidate*)SpectrometerEvent->GetCandidate(i);
-///
-///   // Take the track parameters from the spectrometer at a given Z-position
-///   // In this case at the first station of the GTK (z = 180000 cm)
-///   TMatrixD par(5,1);
-///   par(0,0) = cand->GetSlopeXBeforeMagnet();
-///   par(1,0) = cand->GetSlopeYBeforeMagnet();
-///   par(2,0) = cand->GetPositionBeforeMagnet().X();
-///   par(3,0) = cand->GetPositionBeforeMagnet().Y();
-///   par(4,0) = cand->GetMomentum();
-///   TMatrixD candcov(5,5); // 
-///   for (Int_t m=0; m<5; m++){
-///     for (Int_t n=0; n<5; n++){
-///       candcov(m,n) = cand->GetCovariance(m,n);
-///     }
-///   }
-///   // Set the reference Z position
-///   vertexlsf.SetZref(180000.);
-///   // Transform the cov matrix from the spectrometer fit
-///   // because it is for sigma(1/P) instead of sigma(P)
-///   TMatrixD T(5,5);
-///   T(0,0) = 1.;
-///   T(1,1) = 1.;
-///   T(2,2) = 1.;
-///   T(3,3) = 1.;
-///   T(4,4) = -1.*(P_meas.at(w)*P_meas.at(w));
-///   TMatrixD cov1(T, TMatrixD::kTransposeMult, cov.at(w));
-///   TMatrixD cov2(cov1, TMatrixD::kMult, T);
-///   // Add the track parameters and cov elements to the vertex.
-///   vertexlsf.AddTrack(cov2, par);
-///   // Fit.... 
-///   vertexlsf.FitStraightTracksNoBlueField();
-///   // Get the fitted vertex position and track momentum.
-///   TVector3 vtex = vertexlsf.GetVertex();
-///   Double_t chi2 = vertexlsf.GetChi2();
-///   TVector3 trk;
-///   vertexlsf.GetTrackMomentum(trk, n);  // n - track number
-///   // Use the kaon momentum if available from GTK for constraints
-///   vertexlsf.Apply3MomConstraints(kaonpx, kaonpy, kaonpz);
-///   //Take again the vertex position and track momentum after the constraint fit
-/// \endcode
+/// This method is called by SpectrometerVertexBuilder to build the standard arrays of vertices. \n
 /// \todo 1. Include the track propagation through the blue tube field in the method.
-/// \todo 2. Simplify the use of the method in an Analyzer.
 /// \author Plamen Petrov (plpetrov@cern.ch)
 /// \EndDetailed
 #include "VertexLSF.hh"
@@ -125,9 +78,6 @@ VertexLSF::~VertexLSF() {
     fA.Clear("C");
     fK.Clear("C");
     fK4.Clear("C");
-    fV.Clear("C");
-    fT.Clear("C");
-    fT0.Clear("C");
     fNtrks = 0;
     fChi2 = 0.;
     fZref = 180000.;
@@ -138,22 +88,32 @@ void VertexLSF::Reset() {
     /// \MemberDescr 
     /// Reset all matrices and arrays to reuse the object in the next event.
   if (fNtrks) {
-    fV.Clear(); 
-    fT.Clear();
-    fT0.Clear();
-    fdT.Clear();
-    fM.Clear();
-    fW.Clear();
-    fE.Clear();
-    fD.Clear();
-    fEInv.Clear();
-    fF.Clear();
-    fA.Clear();
-    fK.Clear();
-    fK4.Clear();
-    fV.Clear();
-    fT.Clear();
-    fT0.Clear();
+    fVertex = TVector3(0,0,0);
+    fV.Clear("C"); 
+    fT.Clear("C");
+    fT0.Clear("C");
+    fdT.Clear("C");
+    fM.Clear("C");
+    fW.Clear("C");
+    fE.Clear("C");
+    fD.Clear("C");
+    fEInv.Clear("C");
+    fF.Clear("C");
+    fA.Clear("C");
+    fK.Clear("C");
+    fK4.Clear("C");
+    fB.Clear();
+    fD0.Clear();
+    fC0.Clear();
+    fCovK.Clear();
+    fCovK4.Clear();
+    fH.Clear();
+    fB.ResizeTo(5,3);
+    fD0.ResizeTo(3,3);
+    fC0.ResizeTo(3,3);
+    fCovK.ResizeTo(3,3);
+    fCovK4.ResizeTo(4,4);
+    fH.ResizeTo(4,4);
     fNtrks = 0;
     fChi2 = 0.;
     fZref = 180000.;
@@ -471,15 +431,31 @@ TMatrixD VertexLSF::GetCovCijConstr(Int_t i, Int_t j) {
   return Cij - Cij_temp;
 }
 
-Bool_t VertexLSF::GetTrackMomentum(TVector3 &track, Int_t i){
-    /// \MemberDescr 
-    /// Passes to \param track the fitted dx/dz, dy/dz and P of track i.
-  if (i>=fNtrks) return 0; 
-  TMatrixD &M = *(TMatrixD*)fM[i];
-  track(0) = M(0,0);
-  track(1) = M(1,0);
-  track(2) = M(2,0);
-  return 1;
+TVector3 VertexLSF::GetTrackThreeMomentum(Int_t i){
+  /// \MemberDescr 
+  /// Returns the fitted px, py and pz momentum components of track i.
+  TVector3 mom;
+  if (i<fNtrks) { 
+    TMatrixD &M = *(TMatrixD*)fM[i];
+    Double_t n = sqrt(1 + M(0,0)*M(0,0) + M(1,0)*M(1,0) );
+    mom.SetX( M(0,0)*M(2,0)/n );
+    mom.SetY( M(1,0)*M(2,0)/n );
+    mom.SetZ( M(2,0)/n );
+  }
+  return mom;
+}
+
+TVector3 VertexLSF::GetTrackSlopesAndMomentum(Int_t i){
+  /// \MemberDescr 
+  /// Returns the fitted dx/dz, dy/dz and P of track i.
+  TVector3 mom;
+  if (i<fNtrks) { 
+    TMatrixD &M = *(TMatrixD*)fM[i];
+    mom.SetX( M(0,0) );
+    mom.SetY( M(1,0) );
+    mom.SetZ( M(2,0) );
+  }
+  return mom;
 }
 
 Bool_t VertexLSF::FitStraightTracksNoBlueField(Int_t iter){
@@ -498,7 +474,7 @@ Bool_t VertexLSF::FitStraightTracksNoBlueField(Int_t iter){
     MultLinesCDA.AddLinePoint1Dir(point1, dir);
   }
   MultLinesCDA.ComputeVertex(); // use as seed for the LSF
-  SetVertex(MultLinesCDA.GetVertex()); 
+  fVertex = MultLinesCDA.GetVertex();
   // set starting vertex fit position
   UpdateABMatrix();
   UpdateTrackParams();

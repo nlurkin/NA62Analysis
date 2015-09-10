@@ -15,7 +15,7 @@ MUV3T0::MUV3T0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "MUV3") {
   fSignalPeakWidth     = 3.0;  // exclusion region half-width when looking for anomalous shape [ns]
   fIssueWarnings       = true; // check if the spectrum shape is OK?
   fPlotChannelTimes    = true; // plot times in each channel?
-  fPlotTimeDependences = true; // check and plot the time stability of the T0 constants?
+  fPlotTimeDependences = false; // check and plot the time stability of the T0 constants?
 }
 
 void MUV3T0::RequestUserHistograms() {
