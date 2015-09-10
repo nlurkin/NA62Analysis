@@ -3,7 +3,7 @@ NA62Analysis Project
 ################################################################
 
 2015-10-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev.600
+                rev.645
         - Skip trees entries consistency check to speed up 
         initialisation process
         - Fix Bug NA62RKD-117
