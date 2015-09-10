@@ -2,6 +2,15 @@
 NA62Analysis Project
 ################################################################
 
+2015-10-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.600
+        - Skip trees entries consistency check to speed up 
+        initialisation process
+        - Fix Bug NA62RKD-117
+        - Save absolute path of used files instead of name only
+        - User compilation does not write anything in fw dir anymore
+        - Apply parameters before initialising histo and output
+
 2015-08-28      Roberta Volpe (roberta.volpe@cern.ch)
 		rev.641
 		- changing histo name in RICHT0 
