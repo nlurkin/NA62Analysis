@@ -1,6 +1,33 @@
-################################################################
+###############################################################
 NA62Analysis Project
 ################################################################
+
+2015-08-28      Roberta Volpe (roberta.volpe@cern.ch)
+		rev.641
+		- changing histo name in RICHT0 
+
+2015-08-26	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.637
+		- Introduced the Spectrometer-RICH association tool
+		- Updated the Spectrometer-MUV3 association tool
+		- Introduced the Spectrometer vertex builder
+
+2015-08-26      Letizia Peruzzo (letizia.peruzzo@cern.ch)
+                rev.634
+                - Add MUV1 and MUV2 T0 evaluation tools
+
+2015-08-25      Plamen Petrov (plpetrov@cern.ch)
+                rev.628
+                - VertexLSF: changes in two Get functions:
+                  GetTrack3Momentum() and GetTrackSlopesAndMomentum()
+
+2015-08-21      Roberta Volpe (roberta.volpe@cern.ch)
+		rev.623
+		- set the right fTH2Name in RICHT0.cc
+
+2015-08-19	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.620
+		- Update/integration of the T0 evaluation tools
 
 2015-08-11	Viacheslav Duk (Viacheslav.Duk@cern.ch)
 		rev. 611
@@ -25,7 +52,7 @@ NA62Analysis Project
 
 2015-07-18      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev.594
-                - Updated MUV3 monitoring Spectrometr-MUV3 association tool
+                - Updated MUV3 monitoring and Spectrometer-MUV3 association tools
 
 >>>>>>> SVNBranch
 2015-07-10      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)

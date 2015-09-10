@@ -102,32 +102,28 @@ Double_t MultipleLinesCDA::GetCDA(Int_t n1, Int_t n2) {
 
 void MultipleLinesCDA::ComputeVertex() {
   // Based on TwoLinesCDA
-  Double_t c = TMath::Factorial(fNLines) / (2*TMath::Factorial(fNLines-2));
-  Double_t x, y, z;
+  Double_t c = 0.5 * TMath::Factorial(fNLines) / TMath::Factorial(fNLines-2);
+  Double_t x=0.0, y=0.0, z=0.0;
 
   TwoLinesCDA twolines;
-  for (Int_t i=0; i<fNLines; i++){
-    cout << "i: " << i << endl;
-    for (Int_t j=0; j<fNLines; j++){
-      if (j<=i) continue;
-      cout << "j: " << j << endl;
-      TVector3* l1p1 = (TVector3*)fLineP1[i];
+  for (Int_t i=0; i<fNLines; i++) {
+    for (Int_t j=i+1; j<fNLines; j++) {
+      TVector3* l1p1  = (TVector3*)fLineP1[i];
       TVector3* l1dir = (TVector3*)fDir[i];
-      TVector3* l2p1 = (TVector3*)fLineP1[j];
+      TVector3* l2p1  = (TVector3*)fLineP1[j];
       TVector3* l2dir = (TVector3*)fDir[j];
-      twolines.SetLine1Point1( l1p1->X(), l1p1->Y(), l1p1->Z() );
-      twolines.SetDir1( l1dir->X(), l1dir->Y(), l1dir->Z() );
-      twolines.SetLine2Point1( l2p1->X(), l2p1->Y(), l2p1->Z() );
-      twolines.SetDir2( l2dir->X(), l2dir->Y(), l2dir->Z() );
+      twolines.SetLine1Point1( l1p1->X(),  l1p1->Y(),  l1p1->Z()  );
+      twolines.SetDir1       ( l1dir->X(), l1dir->Y(), l1dir->Z() );
+      twolines.SetLine2Point1( l2p1->X(),  l2p1->Y(),  l2p1->Z()  );
+      twolines.SetDir2       ( l2dir->X(), l2dir->Y(), l2dir->Z() );
       twolines.ComputeVertexCDA();
       TVector3 vertex = twolines.GetVertex();
-      x += vertex.X();      
-      y += vertex.Y();      
-      z += vertex.Z();      
+      x += vertex.X();
+      y += vertex.Y();
+      z += vertex.Z();
     }
   }
   fVertex.SetXYZ(x/c, y/c, z/c);
-  return;
 }
 
 void MultipleLinesCDA::Print() {
@@ -135,12 +131,10 @@ void MultipleLinesCDA::Print() {
     for (Int_t i=0; i<fNLines; i++){
       TVector3* p1 = (TVector3*)fLineP1[i];
       TVector3* dir = (TVector3*)fDir[i];
-      
       cout << "Line " << i <<"  Point 1   = "<<p1->X()<<" "<<p1->Y()<<" "<<p1->Z()<<endl;
       cout << "Line " << i <<"  Direction = "<<dir->X()<<" "<<dir->Y()<<" "<<dir->Z()<<endl;
       cout << endl;
     }
     cout << "Vertex     = "<<fVertex.X()<<" "<<fVertex.Y()<<" "<<fVertex.Z()<<endl;
   }
-
 }

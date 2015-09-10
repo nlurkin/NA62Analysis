@@ -27,8 +27,7 @@ using namespace NA62Constants;
 /// Basic checks of time distribution shape are made, and warnings are issued if requested by user.
 /// The output is a (potentially) NA62Reco-readable text with the T0 constants and a PDF report with plots.
 /// The input for the global T0 computation is a histogram filled with the "raw"
-/// RecoHit leading times (not corrected for anything).
-/// The recommended histogram name is "LeadingTimeRaw".
+/// Digi leading times (not corrected for anything), called "DigiTimeRaw".
 /// The recommended number of bins is 5000, the recommended range is (-5000, 5000)ns.
 /// Daughter classes for each subdetector are in Analyzers/CalibrationTools.
 /// \EndDetailed
@@ -43,7 +42,7 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fOutTextFileName     = "./" + fDetectorName + "-T0.dat";
   fOutPDFFileName      = "./" + fDetectorName + "-T0.pdf";
   fTH2Name             = "RecoHitTimeWrtReferenceVsReadoutChannelNoT0";
-  fRawTimeHistoName    = "LeadingTimeRaw";
+  fRawTimeHistoName    = "DigiTimeRaw";
 
   fMinIntegral         = 100;   // minimal number of entries (excluding underflows, overflows) for fit attempt
   fMinContentMaxBin    = 10.0;  // minimal content of most populated bin for fit attempt
@@ -51,6 +50,9 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fNFilesToAccumulate  = 20;    // for the T0 stability plots
   fHistoTimeLimit      = 30.0;  // time half-span of plotted histograms [ns]
   fSignalPeakWidth     = 1.0;   // exclusion region half-width for the spectrum shape check
+  fMaxResol            = 2.0;   // max time resolution to consider the fit successful
+  fMaxDeltaT0          = 0.5;   // max precision of T0 to consider the fit successful
+  fMaxDeltaResol       = 0.5;   // max precision on resolution to consider the fit successful
   fIssueWarnings       = false; // check if the spectrum shape is OK?
   fPlotChannelTimes    = true;  // plot times in each channel?
   fPlotTimeDependences = true;  // check and plot the time stability of the T0 constants?
@@ -306,7 +308,7 @@ bool T0Evaluation::FitChannel(int ich, double c0, double cmin, double cmax, doub
   double DeltaResol = fFChannelFit[ich]->GetParError(2);
 
   // If the first fit fails, make a second attempt with more degrees of freedom
-  if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) {
+  if (Resol>fMaxResol || DeltaT0>fMaxDeltaT0 || DeltaResol>fMaxDeltaResol) {
 
     delete fFChannelFit[ich];
     fFChannelFit[ich] = new TF1("GausPol", "gaus(0)+pol0(3)", cmin, cmax);
@@ -318,7 +320,7 @@ bool T0Evaluation::FitChannel(int ich, double c0, double cmin, double cmax, doub
     DeltaResol = fFChannelFit[ich]->GetParError(2);
 
     // Check if the second fit is successful
-    if (Resol>2.0 || DeltaT0>0.5 || DeltaResol>0.5) return false;
+    if (Resol>fMaxResol || DeltaT0>fMaxDeltaT0 || DeltaResol>fMaxDeltaResol) return false;
   }
 
   fT0[ich]         = T0;
@@ -503,10 +505,14 @@ void T0Evaluation::GeneratePDFReport() {
 	  fText->DrawText(0, 0.55*c0, "EMPTY");
 	}
 	else if (Integral<fMinIntegral) {
+	  fText->SetTextColor(kRed);
 	  fText->DrawText(0, 0.55*c0, "FEW ENTRIES");
+	  fText->SetTextColor(kGreen+2);
 	}
 	else if (fT0[ich]>999.0) {
+	  fText->SetTextColor(kRed);
 	  fText->DrawText(0, 0.55*c0, "FIT FAILED");
+	  fText->SetTextColor(kGreen+2);
 	}
       }
       fCanvas->Print(fOutPDFFileName, "pdf");
@@ -578,11 +584,11 @@ void T0Evaluation::GenerateT0TextFile() {
   outfile << "# "<<fDetectorName<<" T0 constants. Format: RO channel; geometric ID; T0 offset (ns)."<<endl;
   outfile << "# These T0 offsets should be subtracted from the raw times."<<endl;
   outfile << "# Special values: -999.999 for masked channels, +999.999 for failed T0 fits."<<endl;
-  outfile << "# An offset T0 is ignored by the reconstruction in case |T0|>999ns."<<endl;
+  outfile << "# An offset T0 must be ignored by the reconstruction in case |T0|>999ns."<<endl;
   outfile << "#\n# Generated on "<<asctime(localtime(&now));
   outfile << "#"<<endl;
   for (int i=0; i<fNChannels; i++) {
-    if (fIsActive[i]) outfile << Form("%4d %4d %7.3f\n", i, fChannelID[i], fT0[i]);
+    if (fIsActive[i]) outfile << Form("%4d %4d %8.3f\n", i, fChannelID[i], fT0[i]);
   }
   outfile.close();
 }

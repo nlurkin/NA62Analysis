@@ -11,6 +11,6 @@ RICHT0::RICHT0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "RICH") {
   fIssueWarnings       = true; // check if the spectrum shape is OK?
   fPlotChannelTimes    = true; // plot times in each channel?
   fPlotTimeDependences = true; // check and plot the time stability of the T0 constants?
-
+  fTH2Name             = "RecoHitTimeWrtReferenceVsSeqChannelNoT0";  // The RICHReconstruction uses SeqChannelID to apply the corrections  
   fRawTimeHistoName    = "LeadingTimeRawStation00"; // a non-standard name
 }

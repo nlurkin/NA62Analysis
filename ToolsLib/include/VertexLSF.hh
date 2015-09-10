@@ -15,16 +15,18 @@ public:
   void     AddTrack(TMatrixD cov, TMatrixD par);
   void     SetNtrks(Int_t ntrk) {fNtrks = ntrk;  }
   void     SetZref(Double_t zref)  {fZref = zref;  }
-  void     SetVertex(TVector3 val) { fVertex = val; }
+  void     SetVertexPosition(TVector3 val) { fVertex = val; }
   void     UpdateABMatrix();
   void     UpdateTrackParams();
   void     UpdateCovC0();
-  Bool_t   GetTrackMomentum(TVector3 &track, Int_t i);
-  TVector3 GetVertex()             { return fVertex; }
+  TVector3 GetTrackThreeMomentum(Int_t i);
+  TVector3 GetTrackSlopesAndMomentum(Int_t i);
+  TVector3 GetVertexPosition() { return fVertex; }
   TMatrixD GetCovC0i(Int_t i);
   TMatrixD GetCovCij(Int_t i, Int_t j);
   TMatrixD GetCovC0iConstr(Int_t i);
   TMatrixD GetCovCijConstr(Int_t i, Int_t j);
+  Int_t    GetNTracks() { return fNtrks; }
   Double_t GetChi2() {return fChi2;}
   void     Fit();
   Double_t Chi2();
@@ -37,7 +39,7 @@ private:
   Double_t fChi2;  ///< \f$\chi^{2}\f$ 
   Int_t fNtrks;    ///< Number of selected tracks for the vertex fit
   Double_t fZref;  ///< Z position of the track parametrisation reference plane
-  TVector3 fVertex;///< Vertex coordinates
+  TVector3 fVertex;///< Vertex position
   TClonesArray fV; ///< TClonesArray of covariance matrices of spectrometer tracks
   TClonesArray fT; ///< Tracks parameters from spectrometer track fit (dX/dZ, dY/dZ, X, Y, P)
   TClonesArray fT0;///< Track parameters calculated with updated vertex coordinates (X, Y, Z) and track (dX/dZ, dY/dZ, P)

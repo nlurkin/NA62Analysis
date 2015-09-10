@@ -29,7 +29,7 @@
 ///	The demo column indicates a short list of features used/demonstrated by the analyzer.
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td><td align="center" width="250">Demo</td></tr>
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td><td align="center" width="250">Demo</td></tr>
 ///	<tr><td>LKrPhotonMC</td><td>Example Analyzer linking MC photons to LKr clusters.</td><td align="center">Not validated</td><td align="center">N/A</td><td>
 ///	<ul>
 ///		<li>RequestTree
@@ -58,7 +58,7 @@
 ///	The analyzers in this folder are supposed to be relevant to analysis. 
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
 ///	<tr><td></td><td></td><td></td><td></td></tr>
 ///	</table>
 ///	
@@ -66,8 +66,12 @@
 ///	The analyzers in this folder are meant to be of general help for analysis by processing/transforming/generating physical objects.
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
-///	<tr><td>SpecMUV3Association</td><td>Geometrical association of spectrometer candidates to MUV3 candidates
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
+///	<tr><td>SpecMUV3ParticleID</td><td>Geometrical association of spectrometer candidates to MUV3 candidates
+///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///	<tr><td>SpecyrometerVertexBuilder</td><td>Builds the 3-track vertices using the VertexLSF class</td>
+///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///	<tr><td>SpecRICHParticleID</td><td>Geometrical association of spectrometer candidates to RICH hits and candidates
 ///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	</table>
 ///	
@@ -75,11 +79,11 @@
 ///	The analyzers in this folder are meant to help validate/test the NA62 software framework.
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
-///	<tr><td>CedarMCTester</td><td>A Test Tool to check the output of the Cedar component of NA62MC, showing photon distributions at various planes in the detector.
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
+///	<tr><td>CedarMCTester</td><td>A test tool to check the output of the Cedar component of NA62MC, showing photon distributions at various planes in the detector.
 ///	It can be run on the standard output of NA62MC or on special output produced by compiling NA62MC with MDEFINES=CEDARRAYTRACING 
 ///	</td><td align="center">Validated</td><td align="center">342</td></tr>
-///	<tr><td>MUV3MCTester</td><td>A Test Tool to check the output of the MUV3 component of NA62MC 
+///	<tr><td>MUV3MCTester</td><td>A test tool to check the output of the MUV3 component of NA62MC 
 ///	</td><td align="center">Validated</td><td align="center">510</td></tr>
 ///	</table>
 ///
@@ -87,16 +91,18 @@
 ///	The analyzers in this folder are for data quality monitoring.
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
 ///	<tr><td>MUV3DataQualityMonitor</td><td>Builds a PDF report using the standard MUV3 monitoring histograms.
 ///	</td><td align="center">Validated</td><td align="center">568</td></tr>
+///	<tr><td>SpecRICHEventMonitor.hh</td><td>Builds a PDF report on Spectrometer-RICH candidate association.
+///	</td><td align="center">Validated</td><td align="center">608</td></tr>
 ///	</table>
 /// 
 /// \subsection calibrationTools Calibration Tools
 ///	This folder contains the analyzers that compute the detector calibrations and related.
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
 ///	<tr><td>CedarT0</td><td>Analyzer for Cedar T0 computation. Actual implementation of T0 computation
 /// is done with the standard T0 code in T0Evaluation. This analyzer inherits it and defines the parameters. 
 ///	</td><td align="center">Validated</td><td align="center">511</td></tr>
@@ -149,19 +155,25 @@
 ///	Useful tools for the physics analysis
 /// <table>
 ///	<tr><td align="center" width="250">Component name</td><td align="center" width="650">Description</td>
-///	<td align="center" width="100">Status</td><td align="center" width="50">rev.</td></tr>
+///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
 ///	<tr><td>BlueTubeTracker</td><td>Extrapolate charged particle trajectories reconstructed by the Spectrometer backwards in the blue tube magnetic field</td>
 ///     <td align="center">Validated</td><td align="center">579</td></tr>
-///	<tr><td>functions.cc</td><td>Provides some functions. Some might be useful but most of them are here by legacy from early development stages. 
-///	This component should be reviewed.</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
-///     <tr><td>SpecMUV3AssociationRecord</td><td>Auxiliary class used by SpecMUV3Association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
-///     <tr><td>SpecMUV3Muon</td><td>Auxiliary class used by SpecMUV3Association</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///	<tr><td>functions.cc</td><td>Provides some functions.
+///     Some might be useful but most of them are here by legacy from early development stages.
+///     This component should be reviewed.</td>
+///	<td align="center">Not validated</td><td align="center">N/A</td></tr>
+///    	<tr><td>MultipleLinesCDA</td><td>Computation of the starting (seed) vertex position for VertexLSF, based on TwoLinesCDA</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecMUV3Association</td><td>Auxiliary class used by SpecMUV3ParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecMUV3AssociationRecord</td><td>Auxiliary class used by SpecMUV3ParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpectrometerTrackVertex</td><td>A 3-track vertex structure built by SpectrometerVertexBuilder</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecRICHAssociation</td><td>Auxiliary class used by SpecRICHParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>StrawAddress</td><td>Auxiliary class used by SpectrometerT0</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>StrawPlace</td><td>Auxiliary class used by SpectrometerT0</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>T0Evaluation</td><td>Base class of the T0 evaluaion tools in Analyzers/CalibrationTools</td><td align="center">Validated</td><td align="center">523</td></tr>
-///	<tr><td>TwoLinesCDA</td><td>Computation of distance between two lines (useful for vertexing)</td><td align="center">Validated</td><td align="center">342</td></tr>
+///	<tr><td>TwoLinesCDA</td><td>Computation of distance between two lines</td><td align="center">Validated</td><td align="center">342</td></tr>
+///     <tr><td>VertexLSF</td><td>Track vertex fitting</td><td>align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	</table>
-///	
+///
 ///	\section addition Adding new components
 ///	If you think one of your component should be distributed with the framework (encouraged), please contact <a href="mailto:nicolas.lurkin@cern.ch">Nicolas Lurkin</a>
 ///	with a short description of your component that can be included in this page.
