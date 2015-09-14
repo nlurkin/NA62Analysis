@@ -300,7 +300,7 @@ bool IOTree::LoadEvent(int iEvent){
 				}
 			}
 			for (itObj = fObject.begin(); itObj != fObject.end(); ++itObj) {
-				if (it->second->GetBranch(itObj->second->fBranchName)){
+				if (it->second->GetBranch(itObj->first)){
 					fIOTimeCount.Start();
 					it->second->GetBranch(itObj->first)->GetEntry(iEvent);
 					fIOTimeCount.Stop();
@@ -342,12 +342,12 @@ RawHeader* IOTree::GetRawHeaderEvent(TString treeName){
 	/// \return Pointer to the RawHeader
 	/// \EndMemberDescr
 
-	cout << fWithRawHeader << endl;
+	//cout << fWithRawHeader << endl;
 	if(!fWithRawHeader) return nullptr;
 	objectIterator itObj;
 
-	for(itObj = fObject.find("Rawheader"); itObj!=fObject.end(); ++itObj){
-		cout << itObj->second->fBranchName << " " << treeName << endl;
+	for(itObj = fObject.find("RawHeader"); itObj!=fObject.end(); ++itObj){
+		//cout << itObj->second->fBranchName << " " << treeName << endl;
 		if(itObj->second->fBranchName.CompareTo(treeName)==0) return (RawHeader*)itObj->second->fObject;
 	}
 	std::cout << standard() << "RawHeader not found in tree " << treeName << std::endl;
