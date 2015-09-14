@@ -66,7 +66,7 @@ public:
 	void PrintInitSummary() const;
 
 private:
-	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb);
+	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt);
 
 	/// \class ObjectTriplet
 	/// \Brief
@@ -137,7 +137,6 @@ private:
 	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects (Branch name, ObjectTriplet)
 
 	TChain *fMCTruthTree; ///< Pointer to (first) TTree containing MCTruth
-
 	TChain *fRawHeaderTree; ///< Pointer to (first) TTree containing RawHeader
 
 	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting

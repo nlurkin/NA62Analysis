@@ -21,9 +21,7 @@ namespace Core {
 IOTree::IOTree():
 	IOHisto("IOTree"),
 	fMCTruthTree(0),
-	//fMCTruthEvent(new Event()),
 	fRawHeaderTree(0),
-	//fRawHeaderEvent(new RawHeader()),
 	fWithMC(false),
 	fWithRawHeader(false),
 	fAllowNonExisting(false)
@@ -177,8 +175,6 @@ int IOTree::BranchTrees(int eventNb){
 	treeIterator it;
 	eventIterator ptr1;
 	objectIterator ptr2;
-	std::pair<eventIterator, eventIterator> eventRange;
-	std::pair<objectIterator, objectIterator> objectRange;
 
 	for(it=fTree.begin(); it!=fTree.end(); ++it){
 		TObjArray * arr = it->second->GetListOfBranches();
@@ -190,12 +186,12 @@ int IOTree::BranchTrees(int eventNb){
 	}
 	//Loop over all detector branches and branch them
 	for(ptr1=fEvent.begin(); ptr1!=fEvent.end(); ++ptr1){
-		FindAndBranchTree(fTree.find(ptr1->second->fTreeName)->second, ptr1->first, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent), eventNb);
+		FindAndBranchTree(fTree.find(ptr1->second->fTreeName)->second, ptr1->first, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent));
 	}
 
 	//Loop over all generic branches and branch them
 	for(ptr2=fObject.begin(); ptr2!=fObject.end(); ++ptr2){
-		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
+		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject));
 	}
 
 	return eventNb;
@@ -389,7 +385,7 @@ TChain* IOTree::GetTree(TString name) {
 	}
 }
 
-void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt, Int_t &eventNb){
+void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt){
 	/// \MemberDescr
 	/// \param tree :
 	/// \param branchName : name of the branch
