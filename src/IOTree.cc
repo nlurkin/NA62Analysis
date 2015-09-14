@@ -114,11 +114,13 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 
 	cout << normal() << "TTree name set to " << outputName << endl;
 
-	//Is this branch already requested?
+	//Is this branch of this tree already requested?
 	//If yes delete evt and return (we already have the branching object instance)
 	eventRange = fEvent.equal_range(detectorName);
+	//Loop over detectors with this name
 	for(it=eventRange.first; it!=eventRange.second; ++it){
-		if(it->second->fBranchName.CompareTo(outputName)==0){
+		//Does it point to this TTree?
+		if(it->second->fTreeName.CompareTo(outputName)==0){
 			cout << debug() << "Branch already requested... Continue" << std::endl;
 			delete evt;
 			return;
@@ -149,11 +151,13 @@ bool IOTree::RequestTree(TString branchName, TString name, TString className, vo
 		fTree.insert(chainPair(name, new TChain(name)));
 	}
 
-	//Is this branch already requested?
+	//Is this branch of this tree already requested?
 	//If yes signal the caller that obj shoud be deleted and return (we already have the branching object instance)
-	objectRange = fObject.equal_range(name);
+	objectRange = fObject.equal_range(branchName);
+	//Loop over all objects with this name
 	for(it=objectRange.first; it!=objectRange.second; ++it){
-		if(it->second->fBranchName.CompareTo(branchName)==0){
+		//Does it point to the same tree?
+		if(it->second->fTreeName.CompareTo(name)==0){
 			cout << debug() << "Branch already requested... Continue" << std::endl;
 			return false;
 		}
@@ -176,15 +180,22 @@ int IOTree::BranchTrees(int eventNb){
 	std::pair<eventIterator, eventIterator> eventRange;
 	std::pair<objectIterator, objectIterator> objectRange;
 
+	for(it=fTree.begin(); it!=fTree.end(); ++it){
+		TObjArray * arr = it->second->GetListOfBranches();
+		for(int i=0; i<arr->GetEntries(); ++i){
+			TString name = ((TBranch*)arr->At(i))->GetName();
+			cout << debug() << "Disabling branch " << name << "from tree " << it->second->GetName() << endl;
+			it->second->SetBranchStatus(name + "*", 0);
+		}
+	}
 	//Loop over all detector branches and branch them
 	for(ptr1=fEvent.begin(); ptr1!=fEvent.end(); ++ptr1){
-		FindAndBranchTree(fTree.find(ptr1->second->fBranchName)->second, ptr1->first, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent), eventNb);
+		FindAndBranchTree(fTree.find(ptr1->second->fTreeName)->second, ptr1->first, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent), eventNb);
 	}
 
 	//Loop over all generic branches and branch them
 	for(ptr2=fObject.begin(); ptr2!=fObject.end(); ++ptr2){
-		cout << ptr2->second->fBranchName << " " << ptr2->first << " " << ptr2->second->fClassName << endl;
-		FindAndBranchTree(fTree.find(ptr2->second->fBranchName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
+		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject), eventNb);
 	}
 
 	return eventNb;
@@ -215,7 +226,7 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 		//No branchName specified but only a single branch has been requested in this tree. Must be the one...
 		it = eventRange.first;
 		if(branchName.CompareTo("")==0 && (++it==eventRange.first)){
-			std::cout << debug() << "No branch specified, only one found... Using " << eventRange.second->second->fBranchName << std::endl;
+			std::cout << debug() << "No branch specified, only one found... Using " << eventRange.second->second->fTreeName << std::endl;
 			return eventRange.second->second->fEvent;
 		}
 		it = eventRange.first;;
@@ -223,11 +234,11 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 			//If the branch is not specified but we find Reco or Hits, we return it
 			//Or if this is the requested branch also return it
 			if(( branchName.CompareTo("")==0 && (
-					it->second->fBranchName.CompareTo("Reco")==0 ||
-					it->second->fBranchName.CompareTo("Digis")==0 ||
-					it->second->fBranchName.CompareTo("Hits")==0))
-					|| it->second->fBranchName.CompareTo(branchName)==0){
-				std::cout << debug() << "Using branch " << it->second->fBranchName << std::endl;
+					it->second->fTreeName.CompareTo("Reco")==0 ||
+					it->second->fTreeName.CompareTo("Digis")==0 ||
+					it->second->fTreeName.CompareTo("Hits")==0))
+					|| it->second->fTreeName.CompareTo(branchName)==0){
+				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fEvent;
 			}
 		}
@@ -262,8 +273,8 @@ void *IOTree::GetObject(TString name, TString branchName){
 			// If the branch is not specified or this is the requested one,
 			// return it
 			if( branchName.CompareTo("")==0 ||
-					it->second->fBranchName.CompareTo(branchName)==0){
-				std::cout << debug() << "Using branch " << it->second->fBranchName << std::endl;
+					it->second->fTreeName.CompareTo(branchName)==0){
+				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fObject;
 			}
 		}
@@ -321,7 +332,7 @@ Event* IOTree::GetMCTruthEvent(TString treeName){
 	objectIterator itObj;
 
 	for(itObj = fObject.find("mcEvent"); itObj!=fObject.end(); ++itObj){
-		if(itObj->second->fBranchName.CompareTo(treeName)==0) return (Event*)itObj->second->fObject;
+		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (Event*)itObj->second->fObject;
 	}
 	std::cout << normal() << "MCTruth not found in tree " << treeName << std::endl;
 	return nullptr;
@@ -342,13 +353,11 @@ RawHeader* IOTree::GetRawHeaderEvent(TString treeName){
 	/// \return Pointer to the RawHeader
 	/// \EndMemberDescr
 
-	//cout << fWithRawHeader << endl;
 	if(!fWithRawHeader) return nullptr;
 	objectIterator itObj;
 
 	for(itObj = fObject.find("RawHeader"); itObj!=fObject.end(); ++itObj){
-		//cout << itObj->second->fBranchName << " " << treeName << endl;
-		if(itObj->second->fBranchName.CompareTo(treeName)==0) return (RawHeader*)itObj->second->fObject;
+		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (RawHeader*)itObj->second->fObject;
 	}
 	std::cout << standard() << "RawHeader not found in tree " << treeName << std::endl;
 	return nullptr;
@@ -398,7 +407,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 			<< branchClass << std::endl;
 
 	fIOTimeCount.Start();
-	std::cout << debug() << "Retrieving list of branches in " << branchName << " tree" << std::endl;
+	std::cout << debug() << "Retrieving list of branches in " << tree->GetName() << " tree" << std::endl;
 	branchesList = tree->GetListOfBranches();
 	fIOTimeCount.Stop();
 	if(!branchesList){
@@ -424,6 +433,9 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 				raise(SIGABRT);
 			}
 			std::cout << normal() << "Found " << branchName << " of class " << branchClass << std::endl;
+			//Activate branch
+			cout << debug() << "Enabling branch " << branchName << " of tree " << tree->GetName() << endl;
+			tree->SetBranchStatus(branchName + "*", 1);
 			tree->SetBranchAddress(branchName, evt);
 			return;
 		}

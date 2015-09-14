@@ -93,6 +93,7 @@ public:
 
 	//Writing
 	void MkOutputDir(TString name) const;
+	void PurgeOutput() const;
 
 	//Printing
 	virtual void PrintInitSummary() const;

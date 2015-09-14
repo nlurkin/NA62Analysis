@@ -75,25 +75,25 @@ private:
 	///
 	/// \Detailed
 	/// It contains everything needed to fully define the custom object:
-	///	The class name, the branch name and the pointer to the object (stored as void*)
+	///	The class name, the tree name and the pointer to the object (stored as void*)
 	/// \EndDetailed
 
 	class ObjectTriplet{
 	public:
-		ObjectTriplet(TString c, TString branch, void* obj):
+		ObjectTriplet(TString c, TString tree, void* obj):
 			fClassName(c),
-			fBranchName(branch),
+			fTreeName(tree),
 			fObject(obj)
 		{
 			/// \MemberDescr
 			///	\param c : Class name of the object
-			///	\param branch : Name of the branch
+			///	\param tree : Name of the TTree
 			/// \param obj : Pointer to the object
 			///	Constructor
 			///	\EndMemberDescr
 		};
 		TString fClassName; ///< Class name of the object
-		TString fBranchName; ///< Branch name
+		TString fTreeName; ///< TTree name
 		void* fObject; ///< Pointer to the object
 	};
 
@@ -103,17 +103,17 @@ private:
 	/// \EndBrief
 	///
 	/// \Detailed
-	/// It contains the branch from which the eventis extracted and
+	/// It contains the tree from which the event is extracted and
 	/// the pointer to the event itself.
 	/// \EndDetailed
 	class EventTriplet{
 		public:
-			EventTriplet(TString branch, TDetectorVEvent* obj):
-				fBranchName(branch),
+			EventTriplet(TString tree, TDetectorVEvent* obj):
+				fTreeName(tree),
 				fEvent(obj)
 			{
 				/// \MemberDescr
-				///	\param branch : Name of the branch
+				///	\param tree : Name of the TTree
 				/// \param obj : Pointer to the event
 				///	Constructor
 				///	\EndMemberDescr
@@ -121,7 +121,7 @@ private:
 			~EventTriplet(){
 				delete fEvent;
 			}
-			TString fBranchName; ///< Branch name
+			TString fTreeName; ///< TTree name
 			TDetectorVEvent* fEvent; ///< Pointer to the event
 	};
 
@@ -132,13 +132,13 @@ private:
 	typedef NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type::iterator eventIterator; ///< typedef for iterators of map of EventTriplet
 	typedef NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type::iterator objectIterator; ///< typedef for iterators of map of ObjectTriplet
 
-	NA62Analysis::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees
-	NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events
-	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects
+	NA62Analysis::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees (Name, pointer)
+	NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events (Detector, EventTriplet)
+	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects (Branch name, ObjectTriplet)
 
-	TChain *fMCTruthTree; ///< Container for the MC TTrees
+	TChain *fMCTruthTree; ///< Pointer to (first) TTree containing MCTruth
 
-	TChain *fRawHeaderTree; ///< Container for the RawHeader TTrees
+	TChain *fRawHeaderTree; ///< Pointer to (first) TTree containing RawHeader
 
 	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 

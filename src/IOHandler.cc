@@ -490,5 +490,10 @@ bool TestMultiByteChar(unsigned char c) {
 	return false;
 }
 
+void IOHandler::PurgeOutput() const {
+	fOutFile->Purge();
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
+

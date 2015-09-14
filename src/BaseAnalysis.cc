@@ -308,6 +308,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd();
 	}
 	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
+	fIOHandler->PurgeOutput();
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
