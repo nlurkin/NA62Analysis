@@ -53,9 +53,9 @@ public:
 	int FillMCTruth();
 	int FillRawHeader();
 	bool LoadEvent(int iEvent);
-	Event* GetMCTruthEvent();
+	Event* GetMCTruthEvent(TString treeName = "Reco");
 	bool GetWithMC() const;
-	RawHeader* GetRawHeaderEvent();
+	RawHeader* GetRawHeaderEvent(TString treeName = "Reco");
 	bool GetWithRawHeader() const;
 
 	//Writing
@@ -137,10 +137,8 @@ private:
 	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects
 
 	TChain *fMCTruthTree; ///< Container for the MC TTrees
-	Event *fMCTruthEvent; ///< MC Event
 
 	TChain *fRawHeaderTree; ///< Container for the RawHeader TTrees
-	RawHeader *fRawHeaderEvent; ///< RawHeader
 
 	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
