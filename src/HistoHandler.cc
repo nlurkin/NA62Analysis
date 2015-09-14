@@ -779,6 +779,7 @@ TH1* HistoHandler::GetHistoFromArray(TString baseName, int index) {
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
 	///
 	///	If the histogram does not exist, print an error message and return NULL.
+	/// \return Pointer to histogram if found, NULL pointer else.
 	/// \EndMemberDescr
 
 	return GetHisto(baseName + (Long_t)index);
@@ -942,7 +943,7 @@ HistoHandler::IteratorTGraph HistoHandler::GetIteratorTGraph(TString baseName) {
 }
 
 
-void HistoHandler::CreateCanvas(TString name, int width, int length) {
+void HistoHandler::CreateCanvas(TString name, int width, int height) {
 	/// \MemberDescr
 	/// \param name: Name of the canvas
 	/// \param width: width of the canvas (default=0=automatic)
@@ -952,7 +953,7 @@ void HistoHandler::CreateCanvas(TString name, int width, int length) {
 	/// \EndMemberDescr
 
 	CanvasOrganizer *c = new CanvasOrganizer(name);
-	if(width!=0 && length!=0) c->SetSize(width, length);
+	if(width!=0 && height!=0) c->SetSize(width, height);
 
 	fCanvas.insert(std::make_pair(c->GetName(), c));
 }
@@ -961,6 +962,8 @@ bool HistoHandler::PlacePlotOnCanvas(TString histoName, TString canvasName, int 
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
+	/// \param row: Row position on the canvas
+	/// \param col: Column position on the canvas
 	/// \return True if canvas and histograms were found
 	///
 	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer

@@ -321,6 +321,7 @@ bool IOTree::LoadEvent(int iEvent){
 
 Event* IOTree::GetMCTruthEvent(TString treeName){
 	/// \MemberDescr
+	/// \param treeName: Name of the tree from which MCTruth should be extracted
 	/// \return Pointer to the MCTruthEvent
 	/// \EndMemberDescr
 
@@ -346,6 +347,7 @@ bool IOTree::GetWithMC() const{
 
 RawHeader* IOTree::GetRawHeaderEvent(TString treeName){
 	/// \MemberDescr
+	/// \param treeName: Name of the tree from which RawHeader should be extracted
 	/// \return Pointer to the RawHeader
 	/// \EndMemberDescr
 
@@ -391,7 +393,6 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 	/// \param branchName : name of the branch
 	/// \param branchClass : name of the branch class
 	/// \param evt :
-	/// \param eventNb : number of expected events
 	///
 	/// Branch the tree.
 	/// \EndMemberDescr

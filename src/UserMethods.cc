@@ -922,7 +922,7 @@ int UserMethods::GetUpdateInterval() const {
 	return fHisto.GetUpdateInterval();
 }
 
-void UserMethods::CreateCanvas(TString name, int width, int length) {
+void UserMethods::CreateCanvas(TString name, int width, int height) {
 	/// \MemberDescr
 	/// \param name: Name of the canvas
 	/// \param width: width of the canvas (default=0=automatic)
@@ -931,13 +931,15 @@ void UserMethods::CreateCanvas(TString name, int width, int length) {
 	/// Create a new named canvas in the analyzer
 	/// \EndMemberDescr
 
-	fHisto.CreateCanvas(name, width, length);
+	fHisto.CreateCanvas(name, width, height);
 }
 
 bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName, int row, int col) {
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
+	/// \param row: Row position on the canvas
+	/// \param col: Column position on the canvas
 	/// \return True if canvas and histograms were found
 	///
 	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
@@ -970,7 +972,7 @@ bool UserMethods::UpdateCanvas(TString canvasName) {
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
 	/// \MemberDescr
-	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
 	/// \param refPtr Pointer to the reference histogram to link to histo.
 	///
@@ -982,7 +984,7 @@ void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* ref
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
 	/// \MemberDescr
-	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
 	/// \param refPtr Pointer to the reference histogram to link to histo.
 	///

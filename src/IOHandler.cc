@@ -486,11 +486,20 @@ bool TestASCIIChar(unsigned char c) {
 }
 
 bool TestMultiByteChar(unsigned char c) {
+	/// \MemberDescr
+	/// \param c : char to test
+	/// \return True if the given char is a multibyte char
+	/// \MemberDescr
+
 	if(c>128 && c<255) return true;
 	return false;
 }
 
 void IOHandler::PurgeOutput() const {
+	/// \MemberDescr
+	/// Purge the output file
+	/// \MemberDescr
+
 	fOutFile->Purge();
 }
 
