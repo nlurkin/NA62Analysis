@@ -9,6 +9,7 @@
 
 #include <signal.h>
 #include <iostream>
+#include <sstream>
 
 #include <TChain.h>
 #include <TKey.h>
@@ -617,11 +618,23 @@ void IOTree::PrintInitSummary() const{
 
 	IOHandler::PrintInitSummary();
 
-	NA62Analysis::NA62Map<TString,TChain*>::type::const_iterator itTree;
+	NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type::const_iterator itEv;
+	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type::const_iterator itObj;
+
 	StringBalancedTable treeTable("List of requested TTrees");
 
-	for(itTree=fTree.begin(); itTree!=fTree.end(); itTree++){
-		treeTable << itTree->first;
+	stringstream ss;
+	for(itEv=fEvent.begin(); itEv!=fEvent.end(); itEv++){
+		ss << itEv->second->fTreeName << "->" << itEv->first;
+		treeTable << ss.str();
+		ss.clear();
+		ss.str(string());
+	}
+	for(itObj=fObject.begin(); itObj!=fObject.end(); itObj++){
+		ss << itObj->second->fTreeName << "->" << itObj->first;
+		treeTable << ss.str();
+		ss.clear();
+		ss.str(string());
 	}
 
 	treeTable.Print("\t");
