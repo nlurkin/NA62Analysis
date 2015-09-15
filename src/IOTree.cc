@@ -179,9 +179,9 @@ int IOTree::BranchTrees(int eventNb){
 	for(it=fTree.begin(); it!=fTree.end(); ++it){
 		TObjArray * arr = it->second->GetListOfBranches();
 		for(int i=0; i<arr->GetEntries(); ++i){
-			TString name = ((TBranch*)arr->At(i))->GetName();
-			cout << debug() << "Disabling branch " << name << "from tree " << it->second->GetName() << endl;
-			it->second->SetBranchStatus(name + "*", 0);
+			TBranch *b = (TBranch*)arr->At(i);
+			cout << debug() << "Disabling branch " << b->GetName() << " from tree " << it->second->GetName() << endl;
+			b->SetStatus(0);
 		}
 	}
 	//Loop over all detector branches and branch them
@@ -432,7 +432,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 			std::cout << normal() << "Found " << branchName << " of class " << branchClass << std::endl;
 			//Activate branch
 			cout << debug() << "Enabling branch " << branchName << " of tree " << tree->GetName() << endl;
-			tree->SetBranchStatus(branchName + "*", 1);
+			tree->GetBranch(branchName)->SetStatus(1);
 			tree->SetBranchAddress(branchName, evt);
 			return;
 		}
