@@ -182,6 +182,7 @@ int IOTree::BranchTrees(int eventNb){
 		for(int i=0; i<arr->GetEntries(); ++i){
 			TBranch *b = (TBranch*)arr->At(i);
 			cout << debug() << "Disabling branch " << b->GetName() << " from tree " << it->second->GetName() << endl;
+			b->ResetAddress();
 			b->SetStatus(0);
 		}
 	}
@@ -299,9 +300,12 @@ bool IOTree::LoadEvent(int iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
+			it->second->GetEntry(iEvent);
+			continue;
 			//Loop over all event and object branch and load the corresponding entry for each of them
 			for (itEvt = fEvent.begin(); itEvt != fEvent.end(); ++itEvt) {
 				if (it->second->GetBranch(itEvt->first)){
+					std::cout << debug() << "Getting entry " << iEvent << " for " << itEvt->first << std::endl;
 					fIOTimeCount.Start();
 					it->second->GetBranch(itEvt->first)->GetEntry(iEvent);
 					fIOTimeCount.Stop();
@@ -657,6 +661,7 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else if(fWithRawHeader){
 		openedFileNumber = fRawHeaderTree->GetTreeNumber();
+		//std::cout << fRawHeaderTree->GetNtrees() << " " << openedFileNumber << std::endl;
 		currFile = fRawHeaderTree->GetFile();
 	}
 	else if(fTree.size()>0){
@@ -665,6 +670,7 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else return false;
 
+	//std::cout << fCurrentFileNumber << std::endl;
 	if(openedFileNumber>fCurrentFileNumber){
 		IOHandler::NewFileOpened(openedFileNumber, currFile);
 		return true;

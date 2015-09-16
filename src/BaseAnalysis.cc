@@ -386,6 +386,7 @@ void BaseAnalysis::CheckNewFileOpened(){
 
 	if(!fIOHandler->CheckNewFileOpened()) return;
 	//New file opened
+	std::cout << debug() << "New file opened" << std::endl;
 	//first burst or not? Call end of burst only if it's not
 	if(fIOHandler->GetCurrentFileNumber()>0){
 		//end of burst
