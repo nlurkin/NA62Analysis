@@ -234,7 +234,7 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fTreeName.CompareTo("Reco")==0 ||
 					it->second->fTreeName.CompareTo("Digis")==0 ||
-					it->second->fTreeName.CompareTo("Hits")==0))
+					it->second->fTreeName.CompareTo("MC")==0))
 					|| it->second->fTreeName.CompareTo(branchName)==0){
 				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fEvent;
@@ -333,7 +333,7 @@ Event* IOTree::GetMCTruthEvent(TString treeName){
 	if(!fWithMC) return nullptr;
 	objectIterator itObj;
 
-	for(itObj = fObject.find("mcEvent"); itObj!=fObject.end(); ++itObj){
+	for(itObj = fObject.find("Generated"); itObj!=fObject.end(); ++itObj){
 		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (Event*)itObj->second->fObject;
 	}
 	std::cout << normal() << "MCTruth not found in tree " << treeName << std::endl;
@@ -556,9 +556,9 @@ bool IOTree::checkInputFile(TString fileName){
 		if(TString(k->GetClassName()).CompareTo("TTree")!=0) continue;
 		TTree* tree = (TTree*)fd->Get(k->GetName());
 
-		if(tree->FindBranch("mcEvent")){
+		if(tree->FindBranch("Generated")){
 			fWithMC = true;
-			RequestTree("mcEvent", tree->GetName(), "Event", new Event);
+			RequestTree("Generated", tree->GetName(), "Event", new Event);
 			if(!fMCTruthTree) fMCTruthTree = fTree.find(tree->GetName())->second;
 		}
 
