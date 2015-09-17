@@ -17,9 +17,6 @@
 #include <TH2I.h>
 #include <TH2F.h>
 #include <TDetectorVEvent.hh>
-#include "L0TPData.hh"
-#include "L1TPData.hh"
-#include "L2EBData.hh"
 
 #include "HistoHandler.hh"
 #include "FWEnums.hh"
@@ -29,6 +26,9 @@
 
 class RawHeader;
 class Event;
+class L0TPData;
+class L1TPData;
+class L2EBData;
 
 namespace NA62Analysis {
 
