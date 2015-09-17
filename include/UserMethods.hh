@@ -294,6 +294,11 @@ public:
 
 	int GetNEvents();
 
+	template <class T>
+	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, T parameterValue){
+		fParent->ReconfigureAnalyzer(analyzerName, parameterName, parameterValue);
+	}
+
 private:
 	UserMethods();
 
