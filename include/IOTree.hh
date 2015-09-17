@@ -41,8 +41,8 @@ public:
 	bool CheckNewFileOpened();
 
 	//TTree
-	void RequestTree(TString detectorName, TDetectorVEvent* const evt, TString outputName="");
-	bool RequestTree(TString branchName, TString name, TString className, void* const obj);
+	void RequestTree(TString detectorName, TDetectorVEvent* const evt, TString outputStage="");
+	bool RequestTree(TString treeName, TString branchName, TString className, void* const obj);
 	int BranchTrees(int eventNb);
 	TChain* GetTree(TString name);
 	void SetIgnoreNonExisting(bool bFlag);

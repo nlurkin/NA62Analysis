@@ -81,11 +81,11 @@ IOTree::~IOTree() {
 }
 
 
-void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TString outputName){
+void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TString outputStage){
 	/// \MemberDescr
 	/// \param detectorName : Name of the requested Detector
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
-	/// \param outputName : Name of the output type to request (Reco, Hits, Digis, ...)
+	/// \param outputName : Name of the output type to request (Reco, MCHits, Digis, ...)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
@@ -99,19 +99,19 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	std::pair<eventIterator, eventIterator> eventRange;
 
 	//Which branch are we dealing with?
-	if(outputName.CompareTo("")==0){
-		if(strstr(evt->ClassName(), "Reco")!=NULL) outputName="Reco";
-		else if(strstr(evt->ClassName(), "Digi")!=NULL) outputName="Digis";
-		else outputName="Hits";
+	if(outputStage.CompareTo("")==0){
+		if(strstr(evt->ClassName(), "Reco")!=NULL) outputStage="Reco";
+		else if(strstr(evt->ClassName(), "Digi")!=NULL) outputStage="Digis";
+		else outputStage="MCHits";
 	}
 
 	//Create the tree if not yet requested
-	if(fTree.count(outputName)==0){
+	if(fTree.count(outputStage)==0){
 		cout << debug() << "First request... Creating TTree" << std::endl;
-		fTree.insert(chainPair(outputName, new TChain(outputName)));
+		fTree.insert(chainPair(outputStage, new TChain(outputStage)));
 	}
 
-	cout << normal() << "TTree name set to " << outputName << endl;
+	cout << normal() << "TTree name set to " << outputStage << endl;
 
 	//Is this branch of this tree already requested?
 	//If yes delete evt and return (we already have the branching object instance)
@@ -119,18 +119,18 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	//Loop over detectors with this name
 	for(it=eventRange.first; it!=eventRange.second; ++it){
 		//Does it point to this TTree?
-		if(it->second->fTreeName.CompareTo(outputName)==0){
+		if(it->second->fTreeName.CompareTo(outputStage)==0){
 			cout << debug() << "Branch already requested... Continue" << std::endl;
 			delete evt;
 			return;
 		}
 	}
-	fEvent.insert(eventPair(detectorName, new EventTriplet(outputName, evt)));
+	fEvent.insert(eventPair(detectorName, new EventTriplet(outputStage, evt)));
 }
 
-bool IOTree::RequestTree(TString branchName, TString name, TString className, void* const obj){
+bool IOTree::RequestTree(TString treeName, TString branchName, TString className, void* const obj){
 	/// \MemberDescr
-	/// \param name : Name of the requested TTree
+	/// \param treName : Name of the requested TTree
 	/// \param branchName : Name of the Branch to retrieve
 	/// \param className : Name of the class type in this branch
 	/// \param obj : Pointer to an instance of any class
@@ -139,15 +139,15 @@ bool IOTree::RequestTree(TString branchName, TString name, TString className, vo
 	/// Request a tree in the input file. If already requested before, do nothing.
 	/// \EndMemberDescr
 
-	std::cout << normal() << "Requesting branch " << branchName << " of generic TTree " << name << std::endl;
+	std::cout << normal() << "Requesting branch " << branchName << " of generic TTree " << treeName << std::endl;
 	std::cout << normal() << "Object class is expected to be " << className << std::endl;
 	objectIterator it;
 	std::pair<objectIterator, objectIterator> objectRange;
 
 	//Create the tree if not yet requested
-	if(fTree.count(name)==0){
+	if(fTree.count(treeName)==0){
 		cout << debug() << "First request... Creating TTree" << std::endl;
-		fTree.insert(chainPair(name, new TChain(name)));
+		fTree.insert(chainPair(treeName, new TChain(treeName)));
 	}
 
 	//Is this branch of this tree already requested?
@@ -156,12 +156,12 @@ bool IOTree::RequestTree(TString branchName, TString name, TString className, vo
 	//Loop over all objects with this name
 	for(it=objectRange.first; it!=objectRange.second; ++it){
 		//Does it point to the same tree?
-		if(it->second->fTreeName.CompareTo(name)==0){
+		if(it->second->fTreeName.CompareTo(treeName)==0){
 			cout << debug() << "Branch already requested... Continue" << std::endl;
 			return false;
 		}
 	}
-	fObject.insert(objectPair(branchName,new ObjectTriplet(className, name, obj)));
+	fObject.insert(objectPair(branchName,new ObjectTriplet(className, treeName, obj)));
 	return true;
 }
 
@@ -234,7 +234,7 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fTreeName.CompareTo("Reco")==0 ||
 					it->second->fTreeName.CompareTo("Digis")==0 ||
-					it->second->fTreeName.CompareTo("MC")==0))
+					it->second->fTreeName.CompareTo("MCHits")==0))
 					|| it->second->fTreeName.CompareTo(branchName)==0){
 				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fEvent;

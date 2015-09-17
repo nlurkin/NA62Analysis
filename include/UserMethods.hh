@@ -17,6 +17,9 @@
 #include <TH2I.h>
 #include <TH2F.h>
 #include <TDetectorVEvent.hh>
+#include "L0TPData.hh"
+#include "L1TPData.hh"
+#include "L2EBData.hh"
 
 #include "HistoHandler.hh"
 #include "FWEnums.hh"
@@ -248,11 +251,14 @@ public:
 
 	//###### Input (Event/TTree) related
 	//Request new tree to analyze
-	void RequestTree(TString name, TDetectorVEvent *evt, TString branchName="");
+	void RequestL0Data();
+	void RequestL1Data();
+	void RequestL2Data();
+	void RequestTree(TString detectorName, TDetectorVEvent *evt, TString outputStage="");
 	template <class T>
-	void RequestTree(TString name, TString branchName, TString className, T* obj){
+	void RequestTree(TString treeName, TString branchName, TString className, T* obj){
 		/// \MemberDescr
-		/// \param name : Name of the requested TTree
+		/// \param treeName : Name of the requested TTree
 		/// \param branchName : Name of the Branch to retrieve
 		/// \param className : Name of the class type in this branch
 		/// \param obj : Pointer to an instance of any class
@@ -260,7 +266,7 @@ public:
 		/// Request a tree in the input file. If already requested before, only add the new branch.
 		/// \EndMemberDescr
 
-		if(!RequestTreeVoid(name, branchName, className, obj)){
+		if(!RequestTreeVoid(treeName, branchName, className, obj)){
 			delete obj;
 		}
 	}
@@ -269,6 +275,9 @@ public:
 	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
 	Event* GetMCEvent();
 	RawHeader* GetRawHeader();
+	L0TPData* GetL0Data();
+	L1TPData* GetL1Data();
+	L2EBData* GetL2Data();
 	bool GetWithMC();
 	bool GetWithRawHeader();
 	bool GetIsTree();
