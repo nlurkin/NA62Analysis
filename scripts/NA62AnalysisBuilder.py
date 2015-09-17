@@ -495,8 +495,9 @@ def available(args):
 	
 	print "FW Analyzers : "
 	for dir in listDirClean("%s/Analyzers" % FWPath):
-		for el in listFileClean("%s/Analyzers/%s/include" % (FWPath,dir)):
-			print "\t%s" % el.replace(".hh", "")
+		if os.path.exists("%s/Analyzers/%s/include" % (FWPath,dir)):
+			for el in listFileClean("%s/Analyzers/%s/include" % (FWPath,dir)):
+				print "\t%s" % el.replace(".hh", "")
 	print "Examples Analyzers : "
 	for el in listFileClean("%s/Examples/include" % FWPath):
 		print "\t%s" % el.replace(".hh", "")
@@ -590,6 +591,36 @@ def renameAnalyzer(args):
 	os.remove("%s/Analyzers/include/%s.hh" % (UserPath, oldName))
 	os.remove("%s/Analyzers/src/%s.cc" % (UserPath, oldName))
 
+# Clone a user analyzer
+def cloneAnalyzer(args):
+	FWPath = getCheckVar("ANALYSISFW_PATH")
+	UserPath = getCheckVar("ANALYSISFW_USERDIR")
+	
+	[origin] = args.origin
+	[dest] = args.dest
+	
+	if not os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, origin)):
+		print "\033[31;1mThis analyzer does not exist (%s). It cannot be cloned.\033[0m" % origin
+		return
+
+	if os.path.exists("%s/Analyzers/include/%s.hh" % (UserPath, dest)):
+		answer = raw_input("This analyzer (%) already exists. Do you want to overwrite it [Y/N] ? " % dest)
+		if answer.lower() == 'y':
+			os.remove("%s/Analyzers/include/%s.hh" % (UserPath, dest))
+			os.remove("%s/Analyzers/src/%s.cc" % (UserPath, dest))
+		else:
+			print "Please choose a different name."
+			return
+	if os.path.exists("%s/Analyzers/include/%s.hh" % (FWPath, dest)):
+		print "This analyzer already exists. Please choose a different name."
+		return
+	if os.path.exists("%s/Examples/include/%s.hh" % (FWPath, dest)):
+		print "This analyzer already exists. Please choose a different name."
+		return
+	
+	readAndReplace("%s/Analyzers/include/%s.hh" % (UserPath, origin), "%s/Analyzers/include/%s.hh" % (UserPath, dest), {origin:dest, origin.upper():dest.upper()}, skipComments=False)
+	readAndReplace("%s/Analyzers/src/%s.cc" % (UserPath, origin), "%s/Analyzers/src/%s.cc" % (UserPath, dest), {origin:dest}, skipComments=False)
+	
 # Build the framework against the provided config file
 def build(args):
 	[filename] = args.configFileName
@@ -863,6 +894,13 @@ def parseArgs():
 	parser_rename.set_defaults(func=renameAnalyzer)
 	parser_rename.add_argument('oldName', type=str, nargs=1, help="Old name of the analyzer")
 	parser_rename.add_argument('newName', type=str, nargs=1, help="New name of the analyzer")
+
+	''' Clone command'''
+	parser_rename = subparsers.add_parser('clone', help='Clone a user analyzer with a new name',
+										description="Clone a user analyzer with a new name")
+	parser_rename.set_defaults(func=cloneAnalyzer)
+	parser_rename.add_argument('origin', type=str, nargs=1, help="Origin analyzer")
+	parser_rename.add_argument('dest', type=str, nargs=1, help="Destination analyzer")
 	
 	''' new command'''
 	parser_new = subparsers.add_parser('new', help='Create a new analyzer in the user directory',
