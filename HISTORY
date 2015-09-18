@@ -2,6 +2,14 @@
 NA62Analysis Project
 ################################################################
 
+2015-10-18      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.xxx
+        - Clone command added to NA62AnalysisBuilder.py
+        - ReconfigureAnalyzer method added. Can be used from within an
+          analyzer to modify parameters of another analyzer. Parameter
+          are declared with the AddParam method.
+          Usage: ReconfigureAnalyzer("otherAnalyzer", "myIntegerParam", 6);
+
 2015-10-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.645
         - Skip trees entries consistency check to speed up 
