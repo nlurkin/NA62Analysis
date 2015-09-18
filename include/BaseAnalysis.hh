@@ -83,17 +83,7 @@ public:
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
 
-	template <class T>
-	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, T parameter){
-		for(auto it : fAnalyzerList){
-			if(it->GetAnalyzerName().CompareTo(analyzerName)==0){
-				stringstream ss;
-				ss << parameter;
-				TString paramStringValue(ss.str());
-				it->ApplyParam(parameterName, paramStringValue);
-			}
-		}
-	}
+	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction

@@ -598,6 +598,14 @@ void BaseAnalysis::ContinuousLoop(void* args) {
 	ban->fSignalStop = false;
 }
 
+void BaseAnalysis::ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter){
+	for(auto it : fAnalyzerList){
+		if(it->GetAnalyzerName().CompareTo(analyzerName)==0){
+			it->ApplyParam(parameterName, parameter);
+		}
+	}
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
 

@@ -992,4 +992,10 @@ void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* 
 	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 
+void UserMethods::CallReconfigureAnalyer(TString analyerName,
+		TString parameterName, TString parameterValue) {
+	fParent->ReconfigureAnalyzer(analyerName, parameterName, parameterValue);
+}
+
 } /* namespace NA62Analysis */
+

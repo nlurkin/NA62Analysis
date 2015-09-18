@@ -9,6 +9,7 @@
 #define USERMETHODS_HH_
 
 #include <map>
+#include <sstream>
 
 #include <TString.h>
 #include <TChain.h>
@@ -296,7 +297,10 @@ public:
 
 	template <class T>
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, T parameterValue){
-		fParent->ReconfigureAnalyzer(analyzerName, parameterName, parameterValue);
+		stringstream ss;
+		ss << parameterValue;
+		TString paramStringValue(ss.str());
+		CallReconfigureAnalyer(analyzerName, parameterName, paramStringValue);
 	}
 
 private:
@@ -305,6 +309,7 @@ private:
 	const void* GetOutputVoid(TString name, OutputState &state) const;
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
 	void* GetObjectVoid(TString name);
+	void CallReconfigureAnalyer(TString analyerName, TString parameterName, TString parameterValue);
 
 protected:
 	Core::HistoHandler fHisto; ///< Local instance of HistoHandler
