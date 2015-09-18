@@ -1,6 +1,8 @@
 #ifndef BASEANALYSIS_HH
 #define BASEANALYSIS_HH 1
 
+#include <sstream>
+
 #include "Analyzer.hh"
 #include "DetectorAcceptance.hh"
 #include "CounterHandler.hh"
@@ -81,6 +83,8 @@ public:
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
 
+	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
+
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
@@ -108,8 +112,6 @@ protected:
 
 	NA62Analysis::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
 	NA62Analysis::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
-
-	//AnalysisFW::NA62Map<TString, MCSimple*>::type fMCSimple; ///< Container for MCSimple
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
