@@ -10,8 +10,8 @@ NA62Analysis Project
           are declared with the AddParam method.
           Usage: ReconfigureAnalyzer("otherAnalyzer", "myIntegerParam", 6);
         - Revolution: switch roles of Branches and Trees
-		  - Can request trigger data: see RequestLxData() and GetLxData()
-		    methods (x=0,1,2)
+        - Can request trigger data: see RequestLxData() and GetLxData()
+          methods (x=0,1,2)
 
 2015-09-10      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.645
