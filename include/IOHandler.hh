@@ -93,6 +93,7 @@ public:
 
 	//Writing
 	void MkOutputDir(TString name) const;
+	void PurgeOutput() const;
 
 	//Printing
 	virtual void PrintInitSummary() const;
@@ -113,6 +114,8 @@ public:
 
 	void SetContinuousReading(bool continuousReading) {
 		/// \MemberDescr
+		/// \param continuousReading: Value to set
+		///
 		/// Set continuous reading flag
 		/// \EndMemberDescr
 		fContinuousReading = continuousReading;
@@ -137,6 +140,8 @@ public:
 
 	void SetMutex(TMutex *m){
 		/// \MemberDescr
+		/// \param m: Pointer to the mutex to use
+		///
 		/// Set the mutex
 		/// \EndMemberDescr
 
@@ -153,7 +158,7 @@ protected:
 
 	TFile *fOutFile; ///< Output file
 	TString fOutFileName; ///< Output fileName
-	char *fCurrentDir;
+	char *fCurrentDir; ///< Current work directory
 
 	TFile *fCurrentFile; ///< Pointer to the currently opened file in the TChain
 
@@ -162,7 +167,7 @@ protected:
 	std::ofstream fSkippedFD; ///< Skipped files output stream
 
 	mutable TimeCounter fIOTimeCount; ///< Counter for the time spent in IO
-	TMutex *fGraphicalMutex;
+	TMutex *fGraphicalMutex; ///< Mutex to prevent graphical objects to change while processing GUI events
 };
 
 bool TestIsTextFile(TString fileName);

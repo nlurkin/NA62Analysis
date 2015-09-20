@@ -41,4 +41,7 @@
 #include "TSpectrometerEvent.hh"
 
 #include "RawHeader.hh"
+#include "L0TPData.hh"
+#include "L1TPData.hh"
+#include "L2EBData.hh"
 #endif /* PERSISTENCY_HH_ */

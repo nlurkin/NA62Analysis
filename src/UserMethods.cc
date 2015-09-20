@@ -568,20 +568,77 @@ const void* UserMethods::GetOutputVoid(TString name, OutputState &state) const {
 	return fParent->GetOutput(name, state);
 }
 
-void UserMethods::RequestTree(TString name, TDetectorVEvent *evt, TString branchName){
+void UserMethods::RequestL0Data(){
 	/// \MemberDescr
-	/// \param name : Name of the TTree to open
+	/// Request the L0 data branch
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L0TPData", "L0TPData", new L0TPData);
+	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+}
+
+void UserMethods::RequestL1Data(){
+	/// \MemberDescr
+	/// Request the L1 data branch
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L1TPData", "L1TPData", new L1TPData);
+	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+}
+
+void UserMethods::RequestL2Data(){
+	/// \MemberDescr
+	/// Request the L2 data branch
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L2EBData", "L2EBData", new L2EBData);
+	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+}
+
+void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt, TString outputStage){
+	/// \MemberDescr
+	/// \param detectorName : Name of the Detector branch to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
-	/// \param branchName : Name of the branch to request
+	/// \param branchName : Name of the tree to request (outputStage = Reco, Digis, MCHits)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
-	/// If branchName is not specified, the branch "Reco" or "Hits" will be used (depending on the
+	/// If outputStage is not specified, the branch "Reco" or "Digis" or "MCHits" will be used (depending on the
 	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(name, evt, branchName);
+	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(detectorName, evt, outputStage);
 	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+}
+
+L0TPData* UserMethods::GetL0Data(){
+	/// \MemberDescr
+	/// \return L0TPData object
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) return static_cast<L0TPData*>(fParent->GetIOTree()->GetObject("L0TPData", "Reco"));
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	return nullptr;
+}
+
+L1TPData* UserMethods::GetL1Data(){
+	/// \MemberDescr
+	/// \return L0TPData object
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) return static_cast<L1TPData*>(fParent->GetIOTree()->GetObject("L1TPData", "Reco"));
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	return nullptr;
+}
+
+L2EBData* UserMethods::GetL2Data(){
+	/// \MemberDescr
+	/// \return L0TPData object
+	/// \EndMemberDescr
+
+	if(fParent->IsTreeType()) return static_cast<L2EBData*>(fParent->GetIOTree()->GetObject("L2EBData", "Reco"));
+	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	return nullptr;
 }
 
 TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
@@ -922,7 +979,7 @@ int UserMethods::GetUpdateInterval() const {
 	return fHisto.GetUpdateInterval();
 }
 
-void UserMethods::CreateCanvas(TString name, int width, int length) {
+void UserMethods::CreateCanvas(TString name, int width, int height) {
 	/// \MemberDescr
 	/// \param name: Name of the canvas
 	/// \param width: width of the canvas (default=0=automatic)
@@ -931,13 +988,15 @@ void UserMethods::CreateCanvas(TString name, int width, int length) {
 	/// Create a new named canvas in the analyzer
 	/// \EndMemberDescr
 
-	fHisto.CreateCanvas(name, width, length);
+	fHisto.CreateCanvas(name, width, height);
 }
 
 bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName, int row, int col) {
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
+	/// \param row: Row position on the canvas
+	/// \param col: Column position on the canvas
 	/// \return True if canvas and histograms were found
 	///
 	/// Add a plot to the list of Plots managed by the specified CanvasOrganizer
@@ -970,7 +1029,7 @@ bool UserMethods::UpdateCanvas(TString canvasName) {
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
 	/// \MemberDescr
-	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
 	/// \param refPtr Pointer to the reference histogram to link to histo.
 	///
@@ -982,7 +1041,7 @@ void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* ref
 
 void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
 	/// \MemberDescr
-	/// \param canvas Name of the canvas that contains the histogram to which the reference will be added
+	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
 	/// \param refPtr Pointer to the reference histogram to link to histo.
 	///

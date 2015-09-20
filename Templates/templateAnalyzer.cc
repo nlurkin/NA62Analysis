@@ -62,6 +62,8 @@ templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templ
 	/// Example with RecoEvent\n
 	///	\code
 	///		RequestTree("GigaTracker", new TRecoGigaTrackerEvent);
+	///		RequestTree("GigaTracker", new TRecoGigaTrackerEvent, "Reco");
+	///		RequestTree("GigaTracker", new TRecoGigaTrackerEvent, "Digis");
 	/// \endcode
 	/// Example with MC Event\n
 	///	\code
@@ -70,6 +72,13 @@ templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templ
 	/// Example with generic tree\n
 	///	\code
 	///		RequestTree<MyClass>("MyTree", "BranchName", "MyClass", new MyClass);
+	///		RequestTree("MyTree", "BranchName", "MyClass", new MyClass);
+	/// \endcode
+	/// Requesting Trigger data\n
+	///	\code
+	///		RequestL0Data();
+	///		RequestL1Data();
+	///		RequestL2Data();
 	/// \endcode
 	//// \n
 	/// Initialize DetectorAcceptance if needed\n
@@ -265,7 +274,8 @@ void templateAnalyzer::Process(int iEvent){
 	/// \endcode
 	/// You can retrieve the events from the trees with\n
 	/// \code
-	/// 	(eventClass*)GetEvent("treeName");
+	/// 	(eventClass*)GetEvent("detectorName");
+	/// 	(eventClass*)GetEvent("detectorName", "Digis");
 	/// \endcode
 	/// You can retrieve data from generic TTrees with\n
 	/// \code
@@ -274,10 +284,18 @@ void templateAnalyzer::Process(int iEvent){
 	/// You can retrieve full MC events if available ( GetWithMC() ) with\n
 	/// \code
 	/// 	GetMCEvent();
+	/// 	GetMCEvent("Digis");
 	/// \endcode
 	/// You can retrieve RawHeader if available ( GetWithRawHeader() ) with\n
 	/// \code
 	/// 	GetRawHeader();
+	/// 	GetRawHeader("Digis");
+	/// \endcode
+	/// You can retrieve Trigger data if requested with\n
+	/// \code
+	/// 	GetL0Data();
+	/// 	GetL1Data();
+	/// 	GetL2Data();
 	/// \endcode
 	/// You can retrieve the histograms you booked (for drawing, changing, filling, ...) with\n
 	/// \code

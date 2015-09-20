@@ -71,7 +71,7 @@ public:
 		return fName;
 	};
 	void SetCanvas(TCanvas* c);
-	TCanvas *const GetCanvas() const {
+	TCanvas * GetCanvas() const {
 		/// \MemberDescr
 		/// \return Pointer to the TCanvas
 		/// \EndMemberDescr
