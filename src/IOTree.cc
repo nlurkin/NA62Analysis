@@ -558,13 +558,13 @@ bool IOTree::checkInputFile(TString fileName){
 
 		if(tree->FindBranch("Generated")){
 			fWithMC = true;
-			RequestTree("Generated", tree->GetName(), "Event", new Event);
+			RequestTree(tree->GetName(), "Generated", "Event", new Event);
 			if(!fMCTruthTree) fMCTruthTree = fTree.find(tree->GetName())->second;
 		}
 
 		if(tree->FindBranch("RawHeader")){
 			fWithRawHeader = true;
-			RequestTree("RawHeader", tree->GetName(), "RawHeader", new RawHeader);
+			RequestTree(tree->GetName(), "RawHeader", "RawHeader", new RawHeader);
 			if(!fRawHeaderTree) fRawHeaderTree = fTree.find(tree->GetName())->second;
 		}
 	}
