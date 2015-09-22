@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.664
+		- Bug fix when reading non-reconstructed MC files
+
 2015-09-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.663
 		- SpectrometerVertexBuilder can build vertices with 2-5 tracks (used to be only 3)
@@ -139,7 +143,6 @@ NA62Analysis Project
 		- Fix unable to write NA62Analysis.skipped file 
 		- Skip obviously empty input files (non-empty file is supposed
 		to contain at least a key that is different from a TDirectoryFile)
->>>>>>> SVNBranch
 
 2015-06-08	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.546
