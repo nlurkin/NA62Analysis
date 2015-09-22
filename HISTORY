@@ -2,7 +2,7 @@
 NA62Analysis Project
 ################################################################
 
-2015-09-21      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-09-22      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.xxx
         - Clone command added to NA62AnalysisBuilder.py
         - ReconfigureAnalyzer method added. Can be used from within an
