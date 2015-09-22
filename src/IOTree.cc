@@ -324,9 +324,8 @@ bool IOTree::LoadEvent(int iEvent){
 	return true;
 }
 
-Event* IOTree::GetMCTruthEvent(TString treeName){
+Event* IOTree::GetMCTruthEvent(){
 	/// \MemberDescr
-	/// \param treeName: Name of the tree from which MCTruth should be extracted
 	/// \return Pointer to the MCTruthEvent
 	/// \EndMemberDescr
 
@@ -334,10 +333,9 @@ Event* IOTree::GetMCTruthEvent(TString treeName){
 	objectIterator itObj;
 
 	for(itObj = fObject.find("Generated"); itObj!=fObject.end(); ++itObj){
-		if(treeName.CompareTo("")==0) return (Event*)itObj->second->fObject;
-		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (Event*)itObj->second->fObject;
+		if(itObj->second->fTreeName.CompareTo("MC")==0) return (Event*)itObj->second->fObject;
 	}
-	std::cout << normal() << "MCTruth not found in tree " << treeName << std::endl;
+	std::cout << normal() << "MCTruth not found in tree MC" << std::endl;
 	return nullptr;
 }
 

@@ -269,7 +269,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
 			//Get reality
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
-			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent(""));
+			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
 			fAnalyzerList[j]->Process(i);
 			if(fGraphicalMutex.Lock()==0){

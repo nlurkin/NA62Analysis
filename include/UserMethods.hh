@@ -274,7 +274,7 @@ public:
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
-	Event* GetMCEvent(TString treeName = "Reco");
+	Event* GetMCEvent();
 	RawHeader* GetRawHeader();
 	L0TPData* GetL0Data();
 	L1TPData* GetL1Data();

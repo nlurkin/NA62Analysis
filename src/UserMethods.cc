@@ -659,13 +659,12 @@ TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
 	return nullptr;
 }
 
-Event* UserMethods::GetMCEvent(TString treeName){
+Event* UserMethods::GetMCEvent(){
 	/// \MemberDescr
-	/// \param treeName Tree from which the MCEvent should be retrieved
 	/// \return Pointer to the MC event.
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent(treeName);
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent();
 	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
