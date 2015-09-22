@@ -2,9 +2,27 @@
 NA62Analysis Project
 ################################################################
 
+2015-09-22      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev.662
+        - Clone command added to NA62AnalysisBuilder.py
+        - ReconfigureAnalyzer method added. Can be used from within an
+          analyzer to modify parameters of another analyzer. Parameter
+          are declared with the AddParam method.
+          Usage: ReconfigureAnalyzer("otherAnalyzer", "myIntegerParam", 6);
+        - Swap between the role of TTree and TBranch to include special triggers:
+          the output is now organised with output stage trees having one single 
+			 branch each SubDetector, rather than one tree for SubDetector having
+			 one single output stagee branch.
+          *** WARNING: this change is NOT backward compatible ***
+			 This revision is not able to read root files with the old structure.
+			 If you have to work on both old and new files, please read instructions
+			 in the "HOWTO_OLD_NEW.txt" file.
+        - Can request trigger data: see RequestLxData() and GetLxData()
+          methods (x=0,1,2)
+
 2015-09-20      Antonino Sergi (Antonino.Sergi@cern.ch)
                 rev.656
-                - env scripts now point to cmake on afs, for batch building
+        - env scripts now point to cmake on afs, for batch building
 
 2015-09-10      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.645

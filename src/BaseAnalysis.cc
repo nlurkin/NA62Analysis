@@ -308,6 +308,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd();
 	}
 	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
+	fIOHandler->PurgeOutput();
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
@@ -385,6 +386,7 @@ void BaseAnalysis::CheckNewFileOpened(){
 
 	if(!fIOHandler->CheckNewFileOpened()) return;
 	//New file opened
+	std::cout << debug() << "New file opened" << std::endl;
 	//first burst or not? Call end of burst only if it's not
 	if(fIOHandler->GetCurrentFileNumber()>0){
 		//end of burst
@@ -596,6 +598,14 @@ void BaseAnalysis::ContinuousLoop(void* args) {
 		TThread::CancelPoint();
 	}
 	ban->fSignalStop = false;
+}
+
+void BaseAnalysis::ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter){
+	for(auto it : fAnalyzerList){
+		if(it->GetAnalyzerName().CompareTo(analyzerName)==0){
+			it->ApplyParam(parameterName, parameter);
+		}
+	}
 }
 
 } /* namespace Core */

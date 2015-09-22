@@ -132,6 +132,8 @@ void CanvasOrganizer::Update(int currentEvent) const {
 void CanvasOrganizer::AddHisto(TH1* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
+	/// \param row : Row position
+	/// \param col : Column position
 	///
 	/// Add an histogram in the list of managed histograms
 	/// \EndMemberDescr
@@ -149,6 +151,8 @@ void CanvasOrganizer::AddHisto(TH1* histoPtr, int row, int col) {
 void CanvasOrganizer::AddHisto(TH2* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
+	/// \param row : Row position
+	/// \param col : Column position
 	///
 	/// Add an histogram in the list of managed histograms
 	/// \EndMemberDescr
@@ -166,6 +170,8 @@ void CanvasOrganizer::AddHisto(TH2* histoPtr, int row, int col) {
 void CanvasOrganizer::AddHisto(TGraph* histoPtr, int row, int col) {
 	/// \MemberDescr
 	/// \param histoPtr : Pointer to added histogram
+	/// \param row : Row position
+	/// \param col : Column position
 	///
 	/// Add an histogram in the list of managed histograms
 	/// \EndMemberDescr
@@ -250,7 +256,7 @@ int CanvasOrganizer::findAvailableSlot(std::set<int> busy){
 	/// \MemberDescr
 	/// \param busy: Sorted set of numbers
 	///
-	/// Returns the first available number not in busy (starting from 1)
+	/// \return First available number not in busy (starting from 1)
 	/// \EndMemberDescr
 
 	int i=1;

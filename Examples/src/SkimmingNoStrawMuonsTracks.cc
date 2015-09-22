@@ -85,7 +85,7 @@ void SkimmingNoStrawMuonsTracks::Process(int){
 
 	if(useMUV){
 		TRecoMUV3Event *muvEvent = (TRecoMUV3Event*)GetEvent("MUV3");
-		if(muvEvent->GetCandidates()>0) hasMuon=true;
+		if(muvEvent->GetNCandidates()>0) hasMuon=true;
 	}
 	IncrementCounter("TotalEvents");
 	if(!hasMuon){

@@ -1,0 +1,23 @@
+HOWTO
+-----
+This file presents instructions to use the analysis framework on root files with old and new structure.
+
+
+If you need to work on both new reconstructed files and old reconstructed files, you can keep two versions of NA62Analysis.
+old one at: /path/to/old/framework  (use svn co svn+ssh://svn.cern.ch/reps/na62fw/trunk/NA62Analysis -r 656 to extract latest version able to read old files)
+new one at: /path/to/new/framework
+
+To switch between old framework and new framework, modify your scripts/env.(c)sh to have twice the export ANALYSISFW_PATH. One pointing to the old version and one pointing to the new one.
+export ANALYSISFW_PATH=/path/to/old/framework
+export ANALYSISFW_PATH=/path/to/new/framework
+
+If you want to use the old one, comment out the second line. Then run
+source scripts/env.sh
+NA62AnalysisBuilder.py cleanuser
+NA62AnalysisBuilder.py your-config-file
+
+If you want to switch to the new one, comment out the first line. Then run
+source scripts/env.sh
+NA62AnalysisBuilder.py cleanuser
+NA62AnalysisBuilder.py your-config-file
+

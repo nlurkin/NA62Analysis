@@ -129,7 +129,7 @@ public:
 	void UpdatePlots(int evtNbr);
 	void SetUpdateInterval(int interval);
 	int GetUpdateInterval() const;
-	void CreateCanvas(TString name, int width=0, int length=0);
+	void CreateCanvas(TString name, int width=0, int height=0);
 	bool PlacePlotOnCanvas(TString histoName, TString canvasName, int row=-1, int col=-1);
 	bool UpdateCanvas(TString canvasName) const;
 	void SetCanvasReference(TString canvas, TString histo, TH1* refPtr);
