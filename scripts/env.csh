@@ -33,3 +33,5 @@ set temp=`dirname "$gccPath"`
 setenv ANALYSISFW_STDLIBSPATH `dirname "$temp"`
 setenv CC `which  gcc`
 setenv CXX `which g++`
+setenv PATH /afs/cern.ch/sw/lcg/contrib/CMake/3.2.3/Linux-x86_64/bin/:${PATH}
+
