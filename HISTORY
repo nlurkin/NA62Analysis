@@ -2,6 +2,10 @@
 NA62Analysis Project
 ################################################################
 
+2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.664
+		- Bug fix when reading non-reconstructed MC files
+
 2015-09-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.663
 		- SpectrometerVertexBuilder can build vertices with 2-5 tracks (used to be only 3)
