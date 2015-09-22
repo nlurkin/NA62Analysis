@@ -22,7 +22,8 @@
 /// around the track impact point. The "search radius" is inversely proportional to
 /// the track momentum.
 /// No SpecMUV3AssociationRecords in a SpecMUV3Association structure means that
-/// no MUV3 candidates are associated with the track. Example of use:
+/// no MUV3 candidates are associated with the track, otherwise a MUV3 candidate is accociated.
+///  Example of use:
 /// \code
 ///  OutputState state;
 ///  std::vector<SpecMUV3Association> SpecMUV3 =
@@ -77,7 +78,7 @@ void SpecMUV3ParticleID::Process(int iEvent) {
 
     Double_t Momentum      = (Scand->GetMomentum()>0) ? Scand->GetMomentum() : 10000.0;
     Double_t SearchRadius  = fScaleFactor * 530000 / Momentum;
-    Bool_t InnerAcceptance = (sqrt(xt*xt + yt*yt)>103.0);
+    Bool_t InnerAcceptance = (sqrt(xt*xt+yt*yt)>103.0);
     Bool_t OuterAcceptance = (fabs(xt)<1320.0 && fabs(yt)<1320.0);
     Bool_t InAcceptance    = InnerAcceptance && OuterAcceptance;
 

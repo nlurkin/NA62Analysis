@@ -2,6 +2,12 @@
 NA62Analysis Project
 ################################################################
 
+2015-09-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.663
+		- SpectrometerVertexBuilder can build vertices with 2-5 tracks (used to be only 3)
+		- Track to LKr association introduced, including E/p computation
+		- Minor updates of T0Evaluation
+
 2015-09-22      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.662
         - Clone command added to NA62AnalysisBuilder.py

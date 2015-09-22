@@ -27,6 +27,7 @@
 /// TVector3 NewPosition = tracker->GetFinalPosition(); // mm
 /// TVector3 NewMomentum = tracker->GetFinalMomentum(); // MeV
 /// \endcode
+/// \author Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 /// \EndDetailed
 
 #include "BlueTubeTracker.hh"
