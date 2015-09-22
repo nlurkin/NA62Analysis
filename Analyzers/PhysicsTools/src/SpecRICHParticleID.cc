@@ -24,11 +24,11 @@ using namespace NA62Constants;
 /// Two particle identification algorithms are available:
 /// 1) straw track association to reconstructed RICH rings;
 /// 2) straw track association to RICH reconstructed hits.
-/// Each algorithm outputs the verdict: whether the track is compatible with
-/// being an electron, a muon and a pion. The verdicts are not exclusive.
+/// Each algorithm outputs three decisions: whether the track is compatible with
+/// being an electron, a muon and a pion. The decisions are not exclusive.
 /// The output is a SpecRICHAssociation structure.
 /// An example of use is available in the SpecRICHEventMonitor class.
-/// Below is the most basic example.
+/// Below is a very basic example.
 /// \code
 ///  OutputState state;
 ///  std::vector<SpecRICHAssociation> SpecRICH =
@@ -40,6 +40,7 @@ using namespace NA62Constants;
 ///    // ...
 ///  }
 /// \endcode
+/// \author Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 /// \EndDetailed
 
 SpecRICHParticleID::SpecRICHParticleID(Core::BaseAnalysis *ba) : Analyzer(ba, "SpecRICHParticleID") {

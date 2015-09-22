@@ -83,9 +83,10 @@ protected:
   double  fHistoTimeLimit;     ///< Half-size of the X axis span for the PDF report [ns]
   double  fPeakBkgThreshold;   ///< Second highest peak/Bkg threshold
   double  fSignalPeakWidth;    ///< Exclusion region half-width when looking for anomalous shape
+  double  fInitialResol;       ///< Initial value of the time resolution parameter for the fit
   double  fMaxResol;           ///< Maximum time resolution to consider the fit successful
-  double  fMaxDeltaT0;         ///< Maximum precision of T0 to consider the fit successful
-  double  fMaxDeltaResol;      ///< Maximum precision on resolution to consider the fit successful
+  double  fMaxDeltaT0;         ///< Maximum statistical error on T0 to consider the fit successful
+  double  fMaxDeltaResol;      ///< Maximum statistical error on time resolution to consider the fit successful
 
   TCanvas *fCanvas, *fFrontCanvas;
   TText   *fText;

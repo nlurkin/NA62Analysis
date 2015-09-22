@@ -69,7 +69,7 @@ void SpecMUV3Association::Clear() {
   fTrackID = -1;
   fSearchRadius = -1.0;
   fTrackMomentum = fTrackTime = fTrackX = fTrackY = 0.0;
-  fInAcceptance = false;
+  fInAcceptance = kFALSE;
   fDistanceToEdge = 0.0;
   fAssociationRecordContainer.clear();
 }

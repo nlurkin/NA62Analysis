@@ -66,9 +66,11 @@
 /// <table>
 ///	<tr><td align="center" width="250">Analyzer name</td><td align="center" width="650">Description</td>
 ///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
+///	<tr><td>SpecLKrParticleID</td><td>Geometrical association of spectrometer candidates to LKr candidates
+///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>SpecMUV3ParticleID</td><td>Geometrical association of spectrometer candidates to MUV3 candidates
 ///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
-///	<tr><td>SpecyrometerVertexBuilder</td><td>Builds the 3-track vertices using the VertexLSF class</td>
+///	<tr><td>SpectrometerVertexBuilder</td><td>Build multi-track vertices using the VertexLSF class</td>
 ///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>SpecRICHParticleID</td><td>Geometrical association of spectrometer candidates to RICH hits and candidates
 ///	</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
@@ -93,7 +95,7 @@
 ///	<td align="center" width="100">Status</td><td align="center" width="50">Rev.</td></tr>
 ///	<tr><td>MUV3DataQualityMonitor</td><td>Builds a PDF report using the standard MUV3 monitoring histograms.
 ///	</td><td align="center">Validated</td><td align="center">568</td></tr>
-///	<tr><td>SpecRICHEventMonitor.hh</td><td>Builds a PDF report on Spectrometer-RICH candidate association.
+///	<tr><td>SpecRICHEventMonitor</td><td>Builds a PDF report on Spectrometer-RICH candidate association.
 ///	</td><td align="center">Validated</td><td align="center">608</td></tr>
 ///	</table>
 /// 
@@ -162,6 +164,7 @@
 ///     This component should be reviewed.</td>
 ///	<td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///    	<tr><td>MultipleLinesCDA</td><td>Computation of the starting (seed) vertex position for VertexLSF, based on TwoLinesCDA</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>SpecLKrAssociation</td><td>Auxiliary class used by SpecLKrParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///     <tr><td>SpecMUV3Association</td><td>Auxiliary class used by SpecMUV3ParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///     <tr><td>SpecMUV3AssociationRecord</td><td>Auxiliary class used by SpecMUV3ParticleID</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///     <tr><td>SpectrometerTrackVertex</td><td>A 3-track vertex structure built by SpectrometerVertexBuilder</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
@@ -170,7 +173,7 @@
 ///	<tr><td>StrawPlace</td><td>Auxiliary class used by SpectrometerT0</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	<tr><td>T0Evaluation</td><td>Base class of the T0 evaluaion tools in Analyzers/CalibrationTools</td><td align="center">Validated</td><td align="center">523</td></tr>
 ///	<tr><td>TwoLinesCDA</td><td>Computation of distance between two lines</td><td align="center">Validated</td><td align="center">342</td></tr>
-///     <tr><td>VertexLSF</td><td>Track vertex fitting</td><td>align="center">Not validated</td><td align="center">N/A</td></tr>
+///     <tr><td>VertexLSF</td><td>Vertex fitting</td><td align="center">Not validated</td><td align="center">N/A</td></tr>
 ///	</table>
 ///
 ///	\section addition Adding new components
