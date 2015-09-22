@@ -10,14 +10,18 @@ NA62Analysis Project
           are declared with the AddParam method.
           Usage: ReconfigureAnalyzer("otherAnalyzer", "myIntegerParam", 6);
 
-2015-10-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+2015-09-20      Antonino Sergi (Antonino.Sergi@cern.ch)
+                rev.656
+                - env scripts now point to cmake on afs, for batch building
+
+2015-09-09      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.645
-        - Skip trees entries consistency check to speed up 
-        initialisation process
-        - Fix Bug NA62RKD-117
-        - Save absolute path of used files instead of name only
-        - User compilation does not write anything in fw dir anymore
-        - Apply parameters before initialising histo and output
+                - Skip trees entries consistency check to speed up 
+                initialisation process
+                - Fix Bug NA62RKD-117
+                - Save absolute path of used files instead of name only
+                - User compilation does not write anything in fw dir anymore
+                - Apply parameters before initialising histo and output
 
 2015-08-28      Roberta Volpe (roberta.volpe@cern.ch)
 		rev.641
@@ -52,11 +56,11 @@ NA62Analysis Project
 
 2015-07-27      Nicolas Lurkin (nicolas.lurkin@cern.ch)
                 rev.600
-        - Add GetHistoFromArray
-        - Automatically add missing analyzer dependencies
-        - Analyzer can specify grid position where some or all of the
-          plots should be placed on CanvasOrganizer.
-        - Improve stability of OnlineMonitor
+                - Add GetHistoFromArray
+                - Automatically add missing analyzer dependencies
+                - Analyzer can specify grid position where some or all of the
+                  plots should be placed on CanvasOrganizer.
+                - Improve stability of OnlineMonitor
         
 2015-07-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 		rev.598

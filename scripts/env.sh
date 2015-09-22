@@ -32,4 +32,5 @@ gccPath=`which gcc`
 export ANALYSISFW_STDLIBSPATH="$(dirname $(dirname "$gccPath"))"
 export CC=`which gcc`
 export CXX=`which g++`
+export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/3.2.3/Linux-x86_64/bin/:$PATH
 
