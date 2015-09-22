@@ -334,6 +334,7 @@ Event* IOTree::GetMCTruthEvent(TString treeName){
 	objectIterator itObj;
 
 	for(itObj = fObject.find("Generated"); itObj!=fObject.end(); ++itObj){
+		if(treeName.CompareTo("")==0) return (Event*)itObj->second->fObject;
 		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (Event*)itObj->second->fObject;
 	}
 	std::cout << normal() << "MCTruth not found in tree " << treeName << std::endl;
