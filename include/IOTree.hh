@@ -53,7 +53,7 @@ public:
 	int FillMCTruth();
 	int FillRawHeader();
 	bool LoadEvent(int iEvent);
-	Event* GetMCTruthEvent(TString treeName = "MC");
+	Event* GetMCTruthEvent(TString treeName = "Reco");
 	bool GetWithMC() const;
 	RawHeader* GetRawHeaderEvent(TString treeName = "Reco");
 	bool GetWithRawHeader() const;

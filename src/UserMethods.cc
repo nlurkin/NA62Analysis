@@ -599,11 +599,11 @@ void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt, TStrin
 	/// \MemberDescr
 	/// \param detectorName : Name of the Detector branch to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
-	/// \param branchName : Name of the tree to request (outputStage = Reco, Digis, MCHits)
+	/// \param branchName : Name of the tree to request (outputStage = Reco, Digis, MC)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
-	/// If outputStage is not specified, the branch "Reco" or "Digis" or "MCHits" will be used (depending on the
+	/// If outputStage is not specified, the branch "Reco" or "Digis" or "MC" will be used (depending on the
 	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 

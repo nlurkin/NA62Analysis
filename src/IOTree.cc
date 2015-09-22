@@ -85,7 +85,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	/// \MemberDescr
 	/// \param detectorName : Name of the requested Detector
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
-	/// \param outputName : Name of the output type to request (Reco, MCHits, Digis, ...)
+	/// \param outputName : Name of the output type to request (Reco, MC, Digis, ...)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
@@ -102,7 +102,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	if(outputStage.CompareTo("")==0){
 		if(strstr(evt->ClassName(), "Reco")!=NULL) outputStage="Reco";
 		else if(strstr(evt->ClassName(), "Digi")!=NULL) outputStage="Digis";
-		else outputStage="MCHits";
+		else outputStage="MC";
 	}
 
 	//Create the tree if not yet requested
@@ -234,7 +234,7 @@ TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
 			if(( branchName.CompareTo("")==0 && (
 					it->second->fTreeName.CompareTo("Reco")==0 ||
 					it->second->fTreeName.CompareTo("Digis")==0 ||
-					it->second->fTreeName.CompareTo("MCHits")==0))
+					it->second->fTreeName.CompareTo("MC")==0))
 					|| it->second->fTreeName.CompareTo(branchName)==0){
 				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fEvent;
