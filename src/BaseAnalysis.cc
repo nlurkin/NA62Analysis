@@ -258,7 +258,6 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime);
 		}
 		if ( fEventsDownscaling>0 && (i % fEventsDownscaling != 0) ) continue;
-		cout << "Processing" << endl;
 
 		// Load event infos
 		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
