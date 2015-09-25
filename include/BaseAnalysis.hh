@@ -82,6 +82,7 @@ public:
 	};
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
+	void SetDownscaling(bool bVal);
 
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
 
@@ -103,6 +104,7 @@ private:
 	};
 protected:
 	int fNEvents; ///< Number of events available in the TChains
+	int fEventsDownscaling; ///< Downscaling. Read 1 out of x events
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized
 	bool fContinuousReading; ///< Continuous reading enabled?

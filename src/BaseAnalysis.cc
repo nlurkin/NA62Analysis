@@ -19,6 +19,7 @@ namespace Core {
 BaseAnalysis::BaseAnalysis():
 	Verbose("BaseAnalysis"),
 	fNEvents(-1),
+	fEventsDownscaling(0),
 	fGraphicMode(false),
 	fInitialized(false),
 	fContinuousReading(false),
@@ -256,6 +257,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 		if ( i % i_offset == 0 ){
 			printCurrentEvent(i, processEvents, defaultPrecision, displayType, processLoopTime);
 		}
+		if ( fEventsDownscaling>0 && (i % fEventsDownscaling != 0) ) continue;
 
 		// Load event infos
 		if(!fIOHandler->LoadEvent(i)) std::cout << normal() << "Unable to read event " << i << std::endl;
@@ -523,6 +525,17 @@ void BaseAnalysis::SetContinuousReading(bool flagContinuousReading) {
 
 	fContinuousReading = flagContinuousReading;
 	fIOHandler->SetContinuousReading(flagContinuousReading);
+}
+
+void BaseAnalysis::SetDownscaling(bool flagDownscaling) {
+	/// \MemberDescr
+	/// \param flagDownscaling: enable/disable flag
+	///
+	/// Enable/Disable the downscaling
+	/// \EndMemberDescr
+
+	if(flagDownscaling) fEventsDownscaling = Configuration::ConfigSettings::global::fEventsDownscaling;
+	else fEventsDownscaling = 0;
 }
 
 void BaseAnalysis::StartContinuous(TString inFileList) {

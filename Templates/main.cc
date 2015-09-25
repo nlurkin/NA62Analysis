@@ -30,6 +30,7 @@ void usage(char* name)
 	cout << "  -p/--params string\t: List of parameters to pass to analyzers." << endl
 		 << "\t\t\t  The format of the string is " << endl
 		 << "\t\t\t  \"analyzerName:param=val;param=val&analyzerName:param=val&...\"" << endl;
+	cout << "  -d/--downscaling\t: Activate downscaling (dowscaling factor in .settingsna62file)." << endl;
 	cout << "  --histo\t\t: Read histograms only and bypass TTree reading." << endl;
 	cout << "  --start int\t\t: Index of the first event to process." << endl
 		 << "\t\t\t  Event index starts at 0." << endl;
@@ -90,6 +91,7 @@ int main(int argc, char** argv){
 	VerbosityLevel verbosity = VerbosityLevel::kStandard;
 	bool readPlots = false;
 	bool continuousReading = false;
+	bool downscaling = false;
 
 	int opt;
 	int n_options_read = 0;
@@ -104,6 +106,7 @@ int main(int argc, char** argv){
 			{ "nevt",	required_argument,	NULL,	'n'},
 			{ "output",	required_argument,	NULL,	'o'},
 			{ "params",	required_argument,	NULL,	'p'},
+			{ "downscaling",required_argument,NULL,	'd'},
 			{ "histo",	no_argument,		&flReadPlots,	1},
 			{ "start",	required_argument,	NULL,		'0'},
 			{ "config",	required_argument,	NULL,		'1'},
@@ -114,7 +117,7 @@ int main(int argc, char** argv){
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:3:", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:3:d", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -155,7 +158,9 @@ int main(int argc, char** argv){
 		case 'p': /* Analyzer params, long_options: params */
 			params = TString(optarg);
 			break;
-
+		case 'd': /* Downscaling, long_options: downscaling */
+			downscaling = true;
+			break;
 		// long options only cases
 		case '0':	/* First event to process, long_option: start */
 			NEvt = TString(optarg).Atoi();
@@ -203,6 +208,7 @@ int main(int argc, char** argv){
 	ban->SetGlobalVerbosity(verbosity);
 	if(logToFile) ban->SetLogToFile(logFile);
 	ban->SetGraphicMode(graphicMode);
+	ban->SetDownscaling(downscaling);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
 	if(continuousReading) ban->SetContinuousReading(flContinuousReading);
