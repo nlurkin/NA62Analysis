@@ -3,3 +3,4 @@ UseColors = false
 ProcessOutputNewLine = false
 SkippedName = NA62Analysis
 svcClass = na62
+EventsDownscaling = 1000
