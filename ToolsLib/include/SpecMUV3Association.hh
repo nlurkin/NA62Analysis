@@ -61,7 +61,7 @@ private:
   Double_t fSearchRadius;   ///< MUV3 candidate tile search radius around the extrapolated track
   Double_t fTrackX;         ///< X coordinate of track extrapolated to MUV3 tile front plane
   Double_t fTrackY;         ///< Y coordinate of track extrapolated to MUV3 tile front plane
-  Bool_t   fInAcceptance;   ///< Inside or outside MUV3 acceptance?
+  Bool_t   fInAcceptance;   ///< Inside or outside MUV3 geometrical acceptance?
   Double_t fDistanceToEdge; ///< Distance to outer MUV3 edge
   std::vector<SpecMUV3AssociationRecord> fAssociationRecordContainer; ///< Records of matching MUV3 candidates
 };

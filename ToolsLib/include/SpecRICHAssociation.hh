@@ -16,7 +16,6 @@ public:
 
   SpecRICHAssociation();
   SpecRICHAssociation(Int_t, Double_t, Double_t, Double_t, Double_t);
-
   ~SpecRICHAssociation() {}
 
   Int_t    GetTrackID()             { return fTrackID;             }

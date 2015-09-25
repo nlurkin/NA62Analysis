@@ -17,19 +17,22 @@ using namespace NA62Constants;
 /// \EndBrief
 ///
 /// \Detailed
-/// A generic tool for computation of the T0 constants and the global T0 for any subdetector.
+/// A generic tool for computation of the T0 constants for each subdetector.
+/// Daughter classes for each subdetector are located in Analyzers/CalibrationTools. 
 /// The input for T0 computations is a 2-dimensional histogram of
-/// (Uncorrected RecoHit time wrt reference time) vs (Readout channel number).
+/// (Uncorrected RecoHit time wrt reference time) vs (Readout channel ID).
 /// The only correction to be made to the RecoHit time is the subtraction of the global T0.
 /// The recommended histogram name is "RecoHitTimeWrtReferenceVsReadoutChannelNoT0".
 /// The recommended time bin width is 0.2ns.
-/// Gaussian fits are performed to each slice of the histogram to evaluate the T0s.
-/// Basic checks of time distribution shape are made, and warnings are issued if requested by user.
+/// Gaussian and polynomial+Gaussian fits are performed to each slice of the input histogram
+/// to evaluate the T0s. Basic checks of the time distribution shape are performed,
+/// and warnings are issued if requested by user.
 /// The output is a (potentially) NA62Reco-readable text with the T0 constants and a PDF report with plots.
+/// The tool also checks the global time offset (but is not meant to be used for its standard evaluation).
 /// The input for the global T0 computation is a histogram filled with the "raw"
 /// Digi leading times (not corrected for anything), called "DigiTimeRaw".
 /// The recommended number of bins is 5000, the recommended range is (-5000, 5000)ns.
-/// Daughter classes for each subdetector are in Analyzers/CalibrationTools.
+/// \author Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
 /// \EndDetailed
 
 T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : Analyzer(ba) {
@@ -49,10 +52,11 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fFittingRange        = 0.9;   // fitting range = [-0.9ns:+0.9ns], i.e. 9 bins of 0.2ns width
   fNFilesToAccumulate  = 20;    // for the T0 stability plots
   fHistoTimeLimit      = 30.0;  // time half-span of plotted histograms [ns]
-  fSignalPeakWidth     = 1.0;   // exclusion region half-width for the spectrum shape check
-  fMaxResol            = 2.0;   // max time resolution to consider the fit successful
-  fMaxDeltaT0          = 0.5;   // max precision of T0 to consider the fit successful
-  fMaxDeltaResol       = 0.5;   // max precision on resolution to consider the fit successful
+  fSignalPeakWidth     = 1.0;   // exclusion region half-width for the spectrum shape check [ns]
+  fInitialResol        = 1.0;   // initial value of the time resolution parameter for the fit [ns]
+  fMaxResol            = 2.0;   // max time resolution to consider the fit successful [ns]
+  fMaxDeltaT0          = 0.5;   // max statistical error on T0 to consider the fit successful [ns]
+  fMaxDeltaResol       = 0.5;   // max statistical error on time resolution to consider the fit successful [ns]
   fIssueWarnings       = false; // check if the spectrum shape is OK?
   fPlotChannelTimes    = true;  // plot times in each channel?
   fPlotTimeDependences = true;  // check and plot the time stability of the T0 constants?
@@ -295,24 +299,40 @@ void T0Evaluation::EvaluateChannelT0 (int ich, bool IssueWarning) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-// The fitting routine in a channel: can be overloaded in daughter classes
+// The fitting routine in a channel, can be overloaded in daughter classes
+// Parameters:
+//   ich: channel number;
+//   c0: centre of the most populated bin of the time distribution;
+//   cmin, cmax: fitting range;
+//   cmax: content of the most populated bin
 
 bool T0Evaluation::FitChannel(int ich, double c0, double cmin, double cmax, double maxc) {
 
   fFChannelFit[ich] = new TF1("gaus", "gaus", cmin, cmax);
-  fFChannelFit[ich]->SetParameters(maxc, c0, 1.0);
+
+  // Initial parameters of the fitting function: Gaussian amplitude, mean value (=T0) and RMS (=time resolution)
+  fFChannelFit[ich]->SetParameters(maxc, c0, fInitialResol);
   fHTime[ich]->Fit(fFChannelFit[ich], "R0Q");
   double T0         = fFChannelFit[ich]->GetParameter(1);
   double Resol      = fFChannelFit[ich]->GetParameter(2);
   double DeltaT0    = fFChannelFit[ich]->GetParError(1);
   double DeltaResol = fFChannelFit[ich]->GetParError(2);
 
-  // If the first fit fails, make a second attempt with more degrees of freedom
+  //////////////////////////////////////////////////////////////////////////////
+  // If the first fit fails, make a second attempt with more degrees of freedom.
+  // The fit success checks are performed on:
+  //   time resolution (fMaxResol);
+  //   statistical error on T0 (fMaxDeltaT0);
+  //   statistical error on time resolution (fMaxDeltaResol).
+
   if (Resol>fMaxResol || DeltaT0>fMaxDeltaT0 || DeltaResol>fMaxDeltaResol) {
 
     delete fFChannelFit[ich];
     fFChannelFit[ich] = new TF1("GausPol", "gaus(0)+pol0(3)", cmin, cmax);
-    fFChannelFit[ich]->SetParameters(maxc, c0, 1.0, 0.0);
+
+    // Initial parameters of the fitting function:
+    // Gaussian amplitude, mean value (=T0) and RMS (=time resolution), flat background rate
+    fFChannelFit[ich]->SetParameters(maxc, c0, fInitialResol, 0.0);
     fHTime[ich]->Fit(fFChannelFit[ich], "R0Q");
     T0         = fFChannelFit[ich]->GetParameter(1);
     Resol      = fFChannelFit[ich]->GetParameter(2);
@@ -585,7 +605,7 @@ void T0Evaluation::GenerateT0TextFile() {
   outfile << "# These T0 offsets should be subtracted from the raw times."<<endl;
   outfile << "# Special values: -999.999 for masked channels, +999.999 for failed T0 fits."<<endl;
   outfile << "# An offset T0 must be ignored by the reconstruction in case |T0|>999ns."<<endl;
-  outfile << "#\n# Generated on "<<asctime(localtime(&now));
+  outfile << "#\n# Generated by the T0Evaluation tool on "<<asctime(localtime(&now));
   outfile << "#"<<endl;
   for (int i=0; i<fNChannels; i++) {
     if (fIsActive[i]) outfile << Form("%4d %4d %8.3f\n", i, fChannelID[i], fT0[i]);
