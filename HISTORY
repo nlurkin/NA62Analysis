@@ -2,6 +2,11 @@
 NA62Analysis Project
 ################################################################
 
+2015-09-25  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.671
+      - Added eclipse projet files
+		- Add downscaling option (enable with -d, configure in .settingsna62)
+
 2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.664
 		- Bug fix when reading non-reconstructed MC files
