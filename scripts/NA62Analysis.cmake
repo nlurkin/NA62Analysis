@@ -77,35 +77,31 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 #Get NA62MC and NA62RECO
-set(SUBDIRS RICH LKr Spectrometer GigaTracker LAV IRC CHANTI Cedar CHOD NewCHOD MUV1 MUV2 SAC MUV3 MUV0 HAC)
+find_package(NA62MC)
+# It defines the following variables
+# Paths
+#  NA62MC_PERS_INCLUDE_DIRS - include directories for NA62MC Persistency
+#  NA62MC_CONFIG_DIR        - configuration files path (cmake, conf, ...)
+#  NA62MC_PERS_LIBRARY_DIRS - library directories for NA62MC Persistency
+# Lists
+#  NA62MC_PERS_LIBRARIES    - persistency libraries to link against
 
-set(NA62MCSOURCE $ENV{NA62MCSOURCE})
-set(NA62MC_INC_DIRS ${NA62MCSOURCE}/Persistency/include)
-set(NA62MC_LIB_DIRS ${NA62MCSOURCE}/Persistency/lib)
-set(NA62MC_LIBS "")
+#set(SUBDIRS RICH LKr Spectrometer GigaTracker LAV IRC CHANTI Cedar CHOD MUV1 MUV2 SAC MUV3 MUV0 HAC)
 
 IF(DEFINED ENV{NA62RECOSOURCE})
 	set(NA62RECOSOURCE $ENV{NA62RECOSOURCE})
 	set(NA62RECO_LIB_DIRS ${NA62RECOSOURCE}/RecoBase/lib ${NA62RECOSOURCE}/Service/lib ${NA62RECOSOURCE}/EventDisplay/lib ${NA62RECOSOURCE}/lib)
 	set(NA62RECO_LIBS "")
-ENDIF()
 
-FOREACH (DIR ${SUBDIRS})
-	include_directories(${NA62MCSOURCE}/${DIR}/Persistency/include)
-	set(NA62MC_INC_DIRS ${NA62MC_INC_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/include)
-	set(NA62MC_LIB_DIRS ${NA62MC_LIB_DIRS} ${NA62MCSOURCE}/${DIR}/Persistency/lib)
-	set(NA62MC_LIBS ${NA62MC_LIBS} ${DIR}Persistency${EXTLIBTYPEPOSTFIX})
-	
-	IF(DEFINED ENV{NA62RECOSOURCE})
+    FOREACH (DIR ${SUBDIRS})
 		set(NA62RECO_LIB_DIRS ${NA62RECO_LIB_DIRS} ${NA62RECOSOURCE}/${DIR}/lib)
 		set(NA62RECO_LIBS ${NA62RECO_LIBS} ${DIR}Reconstruction${EXTLIBTYPEPOSTFIX})
-	ENDIF()
-ENDFOREACH(DIR)
-set(NA62MC_LIBS ${NA62MC_LIBS} NA62Persistency${EXTLIBTYPEPOSTFIX})
-IF(DEFINED ENV{NA62RECOSOURCE})
-	set(NA62RECO_LIBS ${NA62RECO_LIBS} RecoBase${EXTLIBTYPEPOSTFIX} Service${EXTLIBTYPEPOSTFIX} EventDisplay${EXTLIBTYPEPOSTFIX} NA62Reconstruction${EXTLIBTYPEPOSTFIX})
+    ENDFOREACH(DIR)
+    
+    set(NA62RECO_LIBS ${NA62RECO_LIBS} RecoBase${EXTLIBTYPEPOSTFIX} Service${EXTLIBTYPEPOSTFIX} EventDisplay${EXTLIBTYPEPOSTFIX} NA62Reconstruction${EXTLIBTYPEPOSTFIX})
 ENDIF()
-include_directories(${NA62MCSOURCE}/Persistency/include)
+
+include_directories(${NA62MC_PERS_INCLUDE_DIRS})
 
 #FW include directories
 include_directories(${NA62ANALYSIS}/include)

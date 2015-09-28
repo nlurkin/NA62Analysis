@@ -11,7 +11,7 @@ include(${NA62ANALYSIS}/scripts/NA62Analysis.cmake)
 include_directories(Analyzers/include)
 include_directories(${NA62ANALYSIS_ANALYZER_INCLUDES})
 link_directories(${NA62ANALYSIS}/lib)
-link_directories(${NA62MC_LIB_DIRS})
+link_directories(${NA62MC_PERS_LIBRARY_DIRS})
 link_directories(${NA62RECO_LIB_DIRS})
 
 # Get analyzers definition from builder
@@ -46,7 +46,7 @@ ENDFOREACH(lib)
 target_link_libraries(${TARGET_EXEC} AnalysisFW${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ToolsLib${LIBTYPEPOSTFIX})
 target_link_libraries(${TARGET_EXEC} ${NA62RECO_LIBS})
-target_link_libraries(${TARGET_EXEC} ${NA62MC_LIBS})
+target_link_libraries(${TARGET_EXEC} ${NA62MC_PERS_LIBRARIES_STATIC})
 target_link_libraries(${TARGET_EXEC} ${ROOT_LIBRARIES} Minuit Geom TMVA EG Eve)
 
 # Specify extra libraries
