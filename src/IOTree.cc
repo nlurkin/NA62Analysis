@@ -13,6 +13,7 @@
 
 #include <TChain.h>
 #include <TKey.h>
+#include <TTreeCache.h>
 
 #include "StringBalancedTable.hh"
 
@@ -189,13 +190,24 @@ int IOTree::BranchTrees(int eventNb){
 	//Loop over all detector branches and branch them
 	for(ptr1=fEvent.begin(); ptr1!=fEvent.end(); ++ptr1){
 		FindAndBranchTree(fTree.find(ptr1->second->fTreeName)->second, ptr1->first, ptr1->second->fEvent->ClassName(), &(ptr1->second->fEvent));
+		//fTree.find(ptr1->second->fTreeName)->second->AddBranchToCache(ptr1->first, kTRUE);
+		//fTree.find(ptr1->second->fTreeName)->second->SetBasketSize(ptr1->first, 500000);
 	}
 
 	//Loop over all generic branches and branch them
 	for(ptr2=fObject.begin(); ptr2!=fObject.end(); ++ptr2){
 		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject));
+		//fTree.find(ptr2->second->fTreeName)->second->AddBranchToCache(ptr2->first, kTRUE);
 	}
+	
+	for(it=fTree.begin(); it!=fTree.end(); it++){
+		it->second->SetCacheSize(400000000);
+		//it->second->StopCacheLearningPhase();
+		//TFile *fd = it->second->GetCurrentFile();
+		//printf("Reading %lld bytes in %d transactions\n",fd->GetBytesRead(),  fd->GetReadCalls());
+		it->second->SetCacheLearnEntries(2);
 
+	}
 	return eventNb;
 }
 
@@ -300,8 +312,9 @@ bool IOTree::LoadEvent(int iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
-			it->second->GetEntry(iEvent);
-			continue;
+			it->second->LoadTree(iEvent);
+			//it->second->GetEntry(iEvent);
+			//continue;
 			//Loop over all event and object branch and load the corresponding entry for each of them
 			for (itEvt = fEvent.begin(); itEvt != fEvent.end(); ++itEvt) {
 				if (it->second->GetBranch(itEvt->first)){
