@@ -1,6 +1,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <signal.h>
+#include <stdlib.h>
 
 #include <TString.h>
 #include <TApplication.h>
@@ -62,7 +63,7 @@ void sighandler(int sig)
 
 	if(theApp) theApp->Terminate();
 
-	exit(0);
+	exit(EXIT_FAILURE);
 }
 
 int main(int argc, char** argv){
@@ -182,18 +183,18 @@ int main(int argc, char** argv){
 		// Default (includes help)
 		default: /* '?' */
 			usage(argv[0]);
-			return 0;
+			return EXIT_FAILURE;
 		}
 	}
 
 	if (!n_options_read) {
 		usage(argv[0]);
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	if(!fromList && NFiles>0){
 		cerr << "Option -B can only be used with the -l parameter" << endl;
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	ignoreNonExisting = flIgnoreNonExisting;
@@ -203,6 +204,7 @@ int main(int argc, char** argv){
 
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
+	bool retCode = 0;
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetGlobalVerbosity(verbosity);
@@ -217,12 +219,12 @@ int main(int argc, char** argv){
 
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	if(continuousReading) ban->StartContinuous(inFileName);
-	else ban->Process(NEvt, evtNb);
+	else retCode = ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
 
 /*$$ANALYZERSDELETE$$*/
 	delete ban;
 
-	return 0;
+	return retCode;
 }

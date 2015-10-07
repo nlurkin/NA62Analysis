@@ -270,6 +270,12 @@ void IOHandler::NewFileOpened(int index, TFile* currFile){
 	/// It will signal a new burst to the analyzers
 	/// \EndMemberDescr
 
+	if(index!=(fCurrentFileNumber+1)){
+		for(int i=fCurrentFileNumber+1; i<index; i++){
+			std::cout << normal() << "File " << i << ":" << fInputfiles[i] << " has been skipped" << std::endl;
+			FileSkipped(fInputfiles[i]);
+		}
+	}
 	std::cout << normal() << "Opening file " << index << ":" << currFile->GetName() << std::endl;
 	fCurrentFileNumber = index;
 	fCurrentFile = currFile;
