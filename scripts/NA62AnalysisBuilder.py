@@ -377,7 +377,7 @@ def checkDependence(depsGraph, name, prefix):
 	with open("%s/src/%s.cc" % (prefix, name), 'r') as f:
 		for line in f:
 			# skip comment blocks
-			if line.find("/**")>=0:
+			if line.find("/**")>=0 and line.find("//**")<0:
 				inComment = True
 			if inComment:
 				if line.find("*/")>=0:
@@ -391,6 +391,7 @@ def checkDependence(depsGraph, name, prefix):
 			# Regex matching analyzer call introducing dependency
 			m = re.search("(?:[^/+].*)?GetOutput(?:<.*>)?\(\"(.*)\..*\",.*\);", line)
 			if m:
+				print m.group(1)
 				depsGraph.addDependency(name, m.group(1))
 
 # Check analyzer existence and return to which hierarchy it belongs to
