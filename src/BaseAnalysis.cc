@@ -210,7 +210,7 @@ void BaseAnalysis::PreProcess(){
 }
 
 
-void BaseAnalysis::Process(int beginEvent, int maxEvent){
+bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// \MemberDescr
 	/// \param beginEvent : index of the first event to be processed
 	/// \param maxEvent : maximum number of events to be processed
@@ -218,7 +218,7 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	/// Main process loop. Read the files event by event and process each analyzer in turn for each event
 	/// \EndMemberDescr
 
-	if(!fInitialized) return;
+	if(!fInitialized) return false;
 
 	TimeCounter processLoopTime;
 	TimeCounter processTime;
@@ -324,6 +324,8 @@ void BaseAnalysis::Process(int beginEvent, int maxEvent){
 	std::cout << "   - Processing time: " << std::setw(7) << processTime.GetTotalTime() << " seconds" << std::endl;
 	std::cout << "IO time: " << std::setw(20) << fIOHandler->GetIoTimeCount().GetTotalTime() << " seconds" << std::endl;
 	std::cout << std::endl << "Analysis complete" << std::endl << "###################################" << std::endl;
+
+	return true;
 }
 
 DetectorAcceptance* BaseAnalysis::GetDetectorAcceptanceInstance(){

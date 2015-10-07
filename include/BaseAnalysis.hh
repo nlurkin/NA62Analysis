@@ -38,7 +38,7 @@ public:
 	void AddAnalyzer(Analyzer * const an);
 	void StartContinuous(TString inFileList);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
-	void Process(int beginEvent, int maxEvent);
+	bool Process(int beginEvent, int maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
