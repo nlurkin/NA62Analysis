@@ -312,7 +312,8 @@ bool IOTree::LoadEvent(int iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
-			it->second->LoadTree(iEvent);
+			int entryNumber = it->second->GetEntryNumber(iEvent);
+			int localEntry = it->second->LoadTree(iEvent);
 			//it->second->GetEntry(iEvent);
 			//continue;
 			//Loop over all event and object branch and load the corresponding entry for each of them
@@ -320,14 +321,14 @@ bool IOTree::LoadEvent(int iEvent){
 				if (it->second->GetBranch(itEvt->first)){
 					std::cout << debug() << "Getting entry " << iEvent << " for " << itEvt->first << std::endl;
 					fIOTimeCount.Start();
-					it->second->GetBranch(itEvt->first)->GetEntry(iEvent);
+					it->second->GetBranch(itEvt->first)->GetEntry(localEntry);
 					fIOTimeCount.Stop();
 				}
 			}
 			for (itObj = fObject.begin(); itObj != fObject.end(); ++itObj) {
 				if (it->second->GetBranch(itObj->first)){
 					fIOTimeCount.Start();
-					it->second->GetBranch(itObj->first)->GetEntry(iEvent);
+					it->second->GetBranch(itObj->first)->GetEntry(localEntry);
 					fIOTimeCount.Stop();
 				}
 			}
