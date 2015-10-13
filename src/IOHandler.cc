@@ -523,7 +523,7 @@ bool IOHandler::IsLastFileReached() const {
 	return false;
 }
 
-long long IOHandler::GetNEvents() {
+Long64_t IOHandler::GetNEvents() {
 	return GetInputFileNumber();
 }
 

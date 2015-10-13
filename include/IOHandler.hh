@@ -87,7 +87,7 @@ public:
 	std::vector<TString> GetListOfTH2(TString dir);
 	std::vector<TString> GetListOfTGraph(TString dir);
 	std::vector<TString> GetListOfHistos(TString dir);
-	virtual long long GetNEvents();
+	virtual Long64_t GetNEvents();
 
 	bool CheckDirExists(TString dir) const;
 	void FileSkipped(TString fileName);

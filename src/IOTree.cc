@@ -694,8 +694,17 @@ bool IOTree::CheckNewFileOpened(){
 	return false;
 }
 
-long long IOTree::GetNEvents(){
-	return fRawHeaderTree->GetEntriesFast();
+Long64_t IOTree::GetNEvents(){
+	if(fWithMC){
+		return fMCTruthTree->GetEntriesFast();
+	}
+	else if(fWithRawHeader){
+		return fRawHeaderTree->GetEntriesFast();
+	}
+	else if(fTree.size()>0){
+		return fTree.begin()->second->GetEntriesFast();
+	}
+	else return 0;
 }
 
 } /* namespace Core */

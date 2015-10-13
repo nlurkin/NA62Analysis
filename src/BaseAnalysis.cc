@@ -210,7 +210,7 @@ void BaseAnalysis::PreProcess(){
 }
 
 
-bool BaseAnalysis::Process(long long beginEvent, long long maxEvent){
+bool BaseAnalysis::Process(Long64_t beginEvent, Long64_t maxEvent){
 	/// \MemberDescr
 	/// \param beginEvent : index of the first event to be processed
 	/// \param maxEvent : maximum number of events to be processed
