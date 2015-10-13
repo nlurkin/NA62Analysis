@@ -38,7 +38,7 @@ public:
 	void AddAnalyzer(Analyzer * const an);
 	void StartContinuous(TString inFileList);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
-	bool Process(int beginEvent, int maxEvent);
+	bool Process(long long beginEvent, long long maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
@@ -83,6 +83,9 @@ public:
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
 	void SetDownscaling(bool bVal);
+	void SetFastStart(bool bVal) {
+		fIOHandler->SetFastStart(bVal);
+	}
 
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
 
@@ -103,7 +106,7 @@ private:
 		TString inFileList; ///< Path to the input list file
 	};
 protected:
-	int fNEvents; ///< Number of events available in the TChains
+	long long fNEvents; ///< Number of events available in the TChains
 	int fEventsDownscaling; ///< Downscaling. Read 1 out of x events
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized

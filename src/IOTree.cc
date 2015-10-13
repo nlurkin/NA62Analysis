@@ -470,7 +470,8 @@ int IOTree::FillMCTruth(){
 
 	fIOTimeCount.Start();
 	std::cout << debug() << "Retrieving number of entries in MCTruth tree" << std::endl;
-	eventNb = fMCTruthTree->GetEntries();
+	if(fFastStart) eventNb = fMCTruthTree->GetEntriesFast();
+	else eventNb = fMCTruthTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithMC = false;
@@ -492,7 +493,8 @@ int IOTree::FillRawHeader(){
 
 	fIOTimeCount.Start();
 	std::cout << debug() << "Retrieving number of entries in RawHeader tree" << std::endl;
-	eventNb = fRawHeaderTree->GetEntries();
+	if(fFastStart) eventNb = fRawHeaderTree->GetEntriesFast();
+	else eventNb = fRawHeaderTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithRawHeader = false;
@@ -528,13 +530,16 @@ bool IOTree::OpenInput(TString inFileName, int nFiles){
 
 	treeIterator it;
 	bool inputChecked = false;
+	int success;
 
 	for(auto fileName : fInputfiles){
 		if(!inputChecked && checkInputFile(fileName))
 			inputChecked = true;
 		fIOTimeCount.Start();
-		for(it=fTree.begin(); it!=fTree.end(); it++) it->second->AddFile(fileName);
+		for(it=fTree.begin(); it!=fTree.end(); it++) success = it->second->AddFile(fileName);
 		fIOTimeCount.Stop();
+
+		if(success==0) FileSkipped(fileName);
 	}
 	return inputChecked;
 }
@@ -674,7 +679,6 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else if(fWithRawHeader){
 		openedFileNumber = fRawHeaderTree->GetTreeNumber();
-		//std::cout << fRawHeaderTree->GetNtrees() << " " << openedFileNumber << std::endl;
 		currFile = fRawHeaderTree->GetFile();
 	}
 	else if(fTree.size()>0){
@@ -683,12 +687,15 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else return false;
 
-	//std::cout << fCurrentFileNumber << std::endl;
 	if(openedFileNumber>fCurrentFileNumber){
 		IOHandler::NewFileOpened(openedFileNumber, currFile);
 		return true;
 	}
 	return false;
+}
+
+long long IOTree::GetNEvents(){
+	return fRawHeaderTree->GetEntriesFast();
 }
 
 } /* namespace Core */

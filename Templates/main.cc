@@ -93,6 +93,7 @@ int main(int argc, char** argv){
 	bool readPlots = false;
 	bool continuousReading = false;
 	bool downscaling = false;
+	bool fastStart = false;
 
 	int opt;
 	int n_options_read = 0;
@@ -100,21 +101,23 @@ int main(int argc, char** argv){
 	int flIgnoreNonExisting = 0;
 	bool logToFile = false;
 	int flContinuousReading = 0;
+	int flFastStart = 0;
 
 	struct option longopts[] = {
-			{ "list",	required_argument,	NULL,	'l'},
-			{ "nfiles",	required_argument,	NULL,	'B'},
-			{ "nevt",	required_argument,	NULL,	'n'},
-			{ "output",	required_argument,	NULL,	'o'},
-			{ "params",	required_argument,	NULL,	'p'},
-			{ "downscaling",required_argument,NULL,	'd'},
-			{ "histo",	no_argument,		&flReadPlots,	1},
-			{ "start",	required_argument,	NULL,		'0'},
-			{ "config",	required_argument,	NULL,		'1'},
-			{ "reffile",required_argument,	NULL,		'2'},
-			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
-			{ "logtofile",required_argument,NULL,	'3'},
-			{ "continuous",no_argument,		&flContinuousReading,	1},
+			{ "list",		required_argument,	NULL,					'l'},
+			{ "nfiles",		required_argument,	NULL,					'B'},
+			{ "nevt",		required_argument,	NULL,					'n'},
+			{ "output",		required_argument,	NULL,					'o'},
+			{ "params",		required_argument,	NULL,					'p'},
+			{ "downscaling",required_argument,	NULL,					'd'},
+			{ "histo",		no_argument,		&flReadPlots,			1},
+			{ "start",		required_argument,	NULL,					'0'},
+			{ "config",		required_argument,	NULL,					'1'},
+			{ "reffile",	required_argument,	NULL,					'2'},
+			{ "ignore",		no_argument,		&flIgnoreNonExisting,	1},
+			{ "logtofile",	required_argument,	NULL,					'3'},
+			{ "continuous",	no_argument,		&flContinuousReading,	1},
+			{ "fast-start",	no_argument,		&flFastStart,			1},
 			{0,0,0,0}
 	};
 
@@ -201,6 +204,7 @@ int main(int argc, char** argv){
 	readPlots = flReadPlots;
 	continuousReading = flContinuousReading;
 	if(continuousReading) graphicMode = true;
+	fastStart = flFastStart;
 
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
@@ -213,6 +217,7 @@ int main(int argc, char** argv){
 	ban->SetDownscaling(downscaling);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
+	if(fastStart) ban->SetFastStart(fastStart);
 	if(continuousReading) ban->SetContinuousReading(flContinuousReading);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/

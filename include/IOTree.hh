@@ -57,6 +57,7 @@ public:
 	bool GetWithMC() const;
 	RawHeader* GetRawHeaderEvent(TString treeName = "Reco");
 	bool GetWithRawHeader() const;
+	long long GetNEvents();
 
 	//Writing
 	void WriteEvent();

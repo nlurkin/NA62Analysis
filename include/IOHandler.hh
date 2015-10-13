@@ -87,13 +87,15 @@ public:
 	std::vector<TString> GetListOfTH2(TString dir);
 	std::vector<TString> GetListOfTGraph(TString dir);
 	std::vector<TString> GetListOfHistos(TString dir);
+	virtual long long GetNEvents();
 
-	bool CheckDirExists(TString dir);
+	bool CheckDirExists(TString dir) const;
 	void FileSkipped(TString fileName);
+	bool IsLastFileReached() const;
 
 	//Writing
 	void MkOutputDir(TString name) const;
-	void PurgeOutput() const;
+	void Finalise();
 
 	//Printing
 	virtual void PrintInitSummary() const;
@@ -147,10 +149,20 @@ public:
 
 		fGraphicalMutex = m;
 	}
+
+	void SetFastStart(bool fastStart) {
+		fFastStart = fastStart;
+	}
+
+	bool IsFastStart() const {
+		return fFastStart;
+	}
+
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
 	bool fContinuousReading; ///< Continuous reading enabled?
+	bool fFastStart; ///< Fast start flag enabled? (Start processing directly without checking files)
 	mutable bool fSignalExit; ///< Signal from main thread to exit
 	IOHandlerType fIOType; ///< Type of IO handler
 

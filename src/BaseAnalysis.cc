@@ -210,7 +210,7 @@ void BaseAnalysis::PreProcess(){
 }
 
 
-bool BaseAnalysis::Process(int beginEvent, int maxEvent){
+bool BaseAnalysis::Process(long long beginEvent, long long maxEvent){
 	/// \MemberDescr
 	/// \param beginEvent : index of the first event to be processed
 	/// \param maxEvent : maximum number of events to be processed
@@ -233,9 +233,11 @@ bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 
 	//Print event processing summary
 	if ( maxEvent > fNEvents || maxEvent <= 0 ) maxEvent = fNEvents;
-	std::cout << normal() << "Treating " << maxEvent << " " << displayType << "s, beginning with " << displayType << " " << beginEvent << std::endl;
+	std::cout << normal() << "Treating " << maxEvent << " " << displayType <<
+			"s, beginning with " << displayType << " " << beginEvent << std::endl;
 
-	i_offset = maxEvent/100.;
+	if(fIOHandler->IsFastStart()) i_offset = 1000;
+	else i_offset = maxEvent/100.;
 	if(i_offset==0) i_offset=1;
 	std::cout << extended() << "i_offset : " << i_offset << std::endl;
 
@@ -251,7 +253,7 @@ bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 	int defaultPrecision = std::cout.precision();
 	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
 
-	for (int i=beginEvent; i < processEvents; i++)
+	for (int i=beginEvent; (i < processEvents || processEvents<0); i++)
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
@@ -269,7 +271,7 @@ bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 		//Process event in Analyzer
 		exportEvent = false;
 		for(unsigned int j=0; j<fAnalyzerList.size(); j++){
-			//Get reality
+			//Get MCSimple
 			gFile->cd(fAnalyzerList[j]->GetAnalyzerName());
 			if(IsTreeType() && static_cast<IOTree*>(fIOHandler)->GetWithMC()) fAnalyzerList[j]->FillMCSimple( static_cast<IOTree*>(fIOHandler)->GetMCTruthEvent());
 
@@ -290,6 +292,9 @@ bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 		processTime.Stop();
 
 		if(IsTreeType() && exportEvent) static_cast<IOTree*>(fIOHandler)->WriteEvent();
+
+		//We finally know the total number of events in the sample
+		if(fIOHandler->IsFastStart() && fNEvents<processEvents) processEvents = fNEvents;
 	}
 
 	printCurrentEvent(processEvents-1, processEvents, defaultPrecision, displayType, processLoopTime);
@@ -310,7 +315,7 @@ bool BaseAnalysis::Process(int beginEvent, int maxEvent){
 		gFile->cd();
 	}
 	if(IsTreeType()) static_cast<IOTree*>(fIOHandler)->WriteTree();
-	fIOHandler->PurgeOutput();
+	fIOHandler->Finalise();
 	fCounterHandler.WriteEventFraction(fIOHandler->GetOutputFileName());
 
 	//Complete the analysis
@@ -401,6 +406,8 @@ void BaseAnalysis::CheckNewFileOpened(){
 	}
 
 	for(unsigned int i=0; i<fAnalyzerList.size(); i++){
+		// Update number of events
+		if(fIOHandler->IsFastStart()) fNEvents = fIOHandler->GetNEvents();
 		fAnalyzerList[i]->StartOfBurst();
 	}
 }

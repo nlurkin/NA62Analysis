@@ -26,6 +26,7 @@ namespace Core {
 
 IOHandler::IOHandler():
 	fContinuousReading(false),
+	fFastStart(false),
 	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
@@ -42,6 +43,7 @@ IOHandler::IOHandler():
 IOHandler::IOHandler(std::string name):
 	Verbose(name),
 	fContinuousReading(false),
+	fFastStart(false),
 	fSignalExit(false),
 	fIOType(IOHandlerType::kNOIO),
 	fCurrentFileNumber(-1),
@@ -60,6 +62,7 @@ IOHandler::IOHandler(std::string name):
 IOHandler::IOHandler(const IOHandler& c):
 	Verbose(c),
 	fContinuousReading(false),
+	fFastStart(c.fFastStart),
 	fSignalExit(false),
 	fIOType(c.GetIOType()),
 	fCurrentFileNumber(c.fCurrentFileNumber),
@@ -95,7 +98,7 @@ IOHandler::~IOHandler(){
 	}
 }
 
-bool IOHandler::CheckDirExists(TString dir) {
+bool IOHandler::CheckDirExists(TString dir) const {
 	/// \MemberDescr
 	/// \param dir : Directory to check
 	/// \return True if the directory exists in the input file (and the input file is open)
@@ -501,12 +504,27 @@ bool TestMultiByteChar(unsigned char c) {
 	return false;
 }
 
-void IOHandler::PurgeOutput() const {
+void IOHandler::Finalise() {
 	/// \MemberDescr
-	/// Purge the output file
+	/// Finalise the IO: purge the output file, check that the last file
+	/// has been read.
 	/// \MemberDescr
-
+	if(!IsLastFileReached()){
+		for(unsigned int i=fCurrentFileNumber+1; i<fInputfiles.size(); i++){
+			std::cout << normal() << "File " << i << ":" << fInputfiles[i] << " has been skipped" << std::endl;
+			FileSkipped(fInputfiles[i]);
+		}
+	}
 	fOutFile->Purge();
+}
+
+bool IOHandler::IsLastFileReached() const {
+	if(fCurrentFileNumber==(int)fInputfiles.size()-1) return true;
+	return false;
+}
+
+long long IOHandler::GetNEvents() {
+	return GetInputFileNumber();
 }
 
 } /* namespace Core */
