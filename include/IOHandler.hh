@@ -71,7 +71,7 @@ public:
 		/// \EndMemberDescr
 		return fInputfiles.size();
 	};
-	virtual bool LoadEvent(int) {
+	virtual bool LoadEvent(Long64_t) {
 		/// \MemberDescr
 		/// \param : Event index to load
 		/// \return true

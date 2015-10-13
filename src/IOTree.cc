@@ -166,7 +166,7 @@ bool IOTree::RequestTree(TString treeName, TString branchName, TString className
 	return true;
 }
 
-int IOTree::BranchTrees(int eventNb){
+Long64_t IOTree::BranchTrees(Long64_t eventNb){
 	/// \MemberDescr
 	///	\param eventNb : Number of events that should be read in the tree
 	/// \return Number of events found in the Tree
@@ -293,7 +293,7 @@ void *IOTree::GetObject(TString name, TString branchName){
 	return NULL;
 }
 
-bool IOTree::LoadEvent(int iEvent){
+bool IOTree::LoadEvent(Long64_t iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Index of the event
 	/// \return true
@@ -312,8 +312,8 @@ bool IOTree::LoadEvent(int iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
-			int entryNumber = it->second->GetEntryNumber(iEvent);
-			int localEntry = it->second->LoadTree(iEvent);
+			Long64_t entryNumber = it->second->GetEntryNumber(iEvent);
+			Long64_t localEntry = it->second->LoadTree(iEvent);
 			//it->second->GetEntry(iEvent);
 			//continue;
 			//Loop over all event and object branch and load the corresponding entry for each of them
@@ -458,14 +458,14 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 	std::cout << normal() << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << std::endl;
 }
 
-int IOTree::FillMCTruth(){
+Long64_t IOTree::FillMCTruth(){
 	/// \MemberDescr
 	/// \return Number of events in the Event Tree
 	///
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
 	/// \EndMemberDescr
 
-	int eventNb = -1;
+	Long64_t eventNb = -1;
 	if(!fWithMC) return eventNb;
 
 	fIOTimeCount.Start();
@@ -481,14 +481,14 @@ int IOTree::FillMCTruth(){
 	return eventNb;
 }
 
-int IOTree::FillRawHeader(){
+Long64_t IOTree::FillRawHeader(){
 	/// \MemberDescr
 	/// \return Number of events in the RawHeader Tree
 	///
 	/// Branch the RawHeader trees.
 	/// \EndMemberDescr
 
-	int eventNb = -1;
+	Long64_t eventNb = -1;
 	if(!fWithRawHeader) return eventNb;
 
 	fIOTimeCount.Start();

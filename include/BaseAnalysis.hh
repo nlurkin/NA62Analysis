@@ -58,7 +58,7 @@ public:
 
 	CounterHandler* GetCounterHandler();
 
-	int GetNEvents();
+	Long64_t GetNEvents();
 	TChain* GetTree(TString name);
 
 	bool IsHistoType() {
@@ -93,7 +93,7 @@ private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
-	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
+	void printCurrentEvent(Long64_t iEvent, Long64_t totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
 	static void ContinuousLoop(void* args);
 	void CreateOMWindow();
 

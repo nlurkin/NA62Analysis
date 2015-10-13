@@ -838,7 +838,7 @@ TGraph* UserMethods::GetReferenceTGraph(TString name){
 	return nullptr;
 }
 
-int UserMethods::GetNEvents(){
+Long64_t UserMethods::GetNEvents(){
 	/// \MemberDescr
 	/// \return Total number of events loaded from input trees.
 	/// \EndMemberDescr

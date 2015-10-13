@@ -251,9 +251,9 @@ bool BaseAnalysis::Process(Long64_t beginEvent, Long64_t maxEvent){
 	//Begin event loop
 	//##############################
 	int defaultPrecision = std::cout.precision();
-	int processEvents = std::min(beginEvent+maxEvent, fNEvents);
+	Long64_t processEvents = std::min(beginEvent+maxEvent, fNEvents);
 
-	for (int i=beginEvent; (i < processEvents || processEvents<0); i++)
+	for (Long64_t i=beginEvent; (i < processEvents || processEvents<0); i++)
 	{
 		//Print current event
 		if ( i % i_offset == 0 ){
@@ -428,7 +428,7 @@ CounterHandler* BaseAnalysis::GetCounterHandler() {
 	return &fCounterHandler;
 }
 
-int BaseAnalysis::GetNEvents(){
+Long64_t BaseAnalysis::GetNEvents(){
 	/// \MemberDescr
 	///	\return Total number of events loaded from the input files
 	/// \EndMemberDescr
@@ -479,7 +479,7 @@ void BaseAnalysis::SetReadType(IOHandlerType type) {
 	fIOHandler->SetMutex(&fGraphicalMutex);
 }
 
-void BaseAnalysis::printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime) {
+void BaseAnalysis::printCurrentEvent(Long64_t iEvent, Long64_t totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime) {
 	/// \MemberDescr
 	/// \param iEvent: currently processed object
 	/// \param totalEvents: total number of objects
