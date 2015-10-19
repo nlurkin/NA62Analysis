@@ -318,7 +318,7 @@ public:
 		stringstream ss;
 		ss << parameterValue;
 		TString paramStringValue(ss.str());
-		CallReconfigureAnalyer(analyzerName, parameterName, paramStringValue);
+		CallReconfigureAnalyzer(analyzerName, parameterName, paramStringValue);
 	}
 
 private:
