@@ -3,7 +3,7 @@ NA62Analysis Project
 ################################################################
 
 2015-10-19  Nicolas Lurkin (nicolas.lurkin@cern.ch)
-            rev.688
+            rev.689
         - Improve performances on CASTOR
         - Fix issue with dependencies resolution with some type of comments
         - Set return code to EXIT_FAILURE in case of failure
