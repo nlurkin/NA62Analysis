@@ -111,12 +111,12 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="NA62Analysis-eclipse.null.1382224156" name="NA62Analysis-eclipse"/>
+		<project id="NA62Analysis.null.1382224156" name="NA62Analysis"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/NA62Analysis-eclipse"/>
+			<resource resourceType="PROJECT" workspacePath="/NA62Analysis"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">

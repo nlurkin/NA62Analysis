@@ -13,6 +13,7 @@ file(GLOB MAINO
 	"src/*.cc"
 )
 
+EXCLUDEEMACS(MAINO)
 add_library(AnalysisFW${LIBTYPEPOSTFIX} ${LIBTYPE} ${MAINO})
 
 add_subdirectory(Examples)

@@ -307,7 +307,7 @@ bool IOHisto::CheckNewFileOpened() {
 	return ret;
 }
 
-bool IOHisto::LoadEvent(int iEvent) {
+bool IOHisto::LoadEvent(Long64_t iEvent) {
 	/// \MemberDescr
 	/// \param iEvent : Index of the file to load
 	/// \return true if the file was loaded successfully, else false

@@ -1,6 +1,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <signal.h>
+#include <stdlib.h>
 
 #include <TString.h>
 #include <TApplication.h>
@@ -38,6 +39,8 @@ void usage(char* name)
 	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
 	cout << "  --logtofile path\t: Write the log output to the specified file instead of standard output." << endl;
+	cout << "  --fast-start\t: Start processing immediately without reading input files headers." << endl;
+	cout << "\t\t\t Can be useful on CASTOR but total number of events is not known a priori" << endl;
 	cout << endl;
 	cout << "Mutually exclusive options groups:" << endl;
 	cout << " Group1:" << endl;
@@ -62,7 +65,7 @@ void sighandler(int sig)
 
 	if(theApp) theApp->Terminate();
 
-	exit(0);
+	exit(EXIT_FAILURE);
 }
 
 int main(int argc, char** argv){
@@ -92,6 +95,7 @@ int main(int argc, char** argv){
 	bool readPlots = false;
 	bool continuousReading = false;
 	bool downscaling = false;
+	bool fastStart = false;
 
 	int opt;
 	int n_options_read = 0;
@@ -99,21 +103,23 @@ int main(int argc, char** argv){
 	int flIgnoreNonExisting = 0;
 	bool logToFile = false;
 	int flContinuousReading = 0;
+	int flFastStart = 0;
 
 	struct option longopts[] = {
-			{ "list",	required_argument,	NULL,	'l'},
-			{ "nfiles",	required_argument,	NULL,	'B'},
-			{ "nevt",	required_argument,	NULL,	'n'},
-			{ "output",	required_argument,	NULL,	'o'},
-			{ "params",	required_argument,	NULL,	'p'},
-			{ "downscaling",required_argument,NULL,	'd'},
-			{ "histo",	no_argument,		&flReadPlots,	1},
-			{ "start",	required_argument,	NULL,		'0'},
-			{ "config",	required_argument,	NULL,		'1'},
-			{ "reffile",required_argument,	NULL,		'2'},
-			{ "ignore",	no_argument,		&flIgnoreNonExisting,	1},
-			{ "logtofile",required_argument,NULL,	'3'},
-			{ "continuous",no_argument,		&flContinuousReading,	1},
+			{ "list",		required_argument,	NULL,					'l'},
+			{ "nfiles",		required_argument,	NULL,					'B'},
+			{ "nevt",		required_argument,	NULL,					'n'},
+			{ "output",		required_argument,	NULL,					'o'},
+			{ "params",		required_argument,	NULL,					'p'},
+			{ "downscaling",required_argument,	NULL,					'd'},
+			{ "histo",		no_argument,		&flReadPlots,			1},
+			{ "start",		required_argument,	NULL,					'0'},
+			{ "config",		required_argument,	NULL,					'1'},
+			{ "reffile",	required_argument,	NULL,					'2'},
+			{ "ignore",		no_argument,		&flIgnoreNonExisting,	1},
+			{ "logtofile",	required_argument,	NULL,					'3'},
+			{ "continuous",	no_argument,		&flContinuousReading,	1},
+			{ "fast-start",	no_argument,		&flFastStart,			1},
 			{0,0,0,0}
 	};
 
@@ -182,27 +188,29 @@ int main(int argc, char** argv){
 		// Default (includes help)
 		default: /* '?' */
 			usage(argv[0]);
-			return 0;
+			return EXIT_FAILURE;
 		}
 	}
 
 	if (!n_options_read) {
 		usage(argv[0]);
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	if(!fromList && NFiles>0){
 		cerr << "Option -B can only be used with the -l parameter" << endl;
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	ignoreNonExisting = flIgnoreNonExisting;
 	readPlots = flReadPlots;
 	continuousReading = flContinuousReading;
 	if(continuousReading) graphicMode = true;
+	fastStart = flFastStart;
 
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
+	bool retCode = 0;
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetGlobalVerbosity(verbosity);
@@ -211,18 +219,19 @@ int main(int argc, char** argv){
 	ban->SetDownscaling(downscaling);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
+	if(fastStart) ban->SetFastStart(fastStart);
 	if(continuousReading) ban->SetContinuousReading(flContinuousReading);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	if(continuousReading) ban->StartContinuous(inFileName);
-	else ban->Process(NEvt, evtNb);
+	else retCode = ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
 
 /*$$ANALYZERSDELETE$$*/
 	delete ban;
 
-	return 0;
+	return retCode;
 }

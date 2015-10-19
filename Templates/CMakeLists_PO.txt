@@ -5,6 +5,8 @@ include_directories(${EXTRA_INCLUDE_DIRS})
 
 file(GLOB EXHH "include/*.hh")
 
+EXCLUDEEMACS(EXHH)
+
 SET (USERPOLIBS "")
 FOREACH (lib ${EXHH})
 	GET_FILENAME_COMPONENT(libName ${lib} NAME_WE)

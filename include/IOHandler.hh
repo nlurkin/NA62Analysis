@@ -71,7 +71,7 @@ public:
 		/// \EndMemberDescr
 		return fInputfiles.size();
 	};
-	virtual bool LoadEvent(int) {
+	virtual bool LoadEvent(Long64_t) {
 		/// \MemberDescr
 		/// \param : Event index to load
 		/// \return true
@@ -87,13 +87,15 @@ public:
 	std::vector<TString> GetListOfTH2(TString dir);
 	std::vector<TString> GetListOfTGraph(TString dir);
 	std::vector<TString> GetListOfHistos(TString dir);
+	virtual Long64_t GetNEvents();
 
-	bool CheckDirExists(TString dir);
+	bool CheckDirExists(TString dir) const;
 	void FileSkipped(TString fileName);
+	bool IsLastFileReached() const;
 
 	//Writing
 	void MkOutputDir(TString name) const;
-	void PurgeOutput() const;
+	void Finalise();
 
 	//Printing
 	virtual void PrintInitSummary() const;
@@ -147,10 +149,28 @@ public:
 
 		fGraphicalMutex = m;
 	}
+
+	void SetFastStart(bool fastStart) {
+		/// \MemberDescr
+		/// \param fastStart : true/false
+		///
+		/// Enabled/Disable the fastStart option
+		/// \EndMemberDescr
+		fFastStart = fastStart;
+	}
+
+	bool IsFastStart() const {
+		/// \MemberDescr
+		/// \return True if fastStart is enabled
+		/// \EndMemberDescr
+		return fFastStart;
+	}
+
 protected:
 	void NewFileOpened(int index, TFile* currFile);
 
 	bool fContinuousReading; ///< Continuous reading enabled?
+	bool fFastStart; ///< Fast start flag enabled? (Start processing directly without checking files)
 	mutable bool fSignalExit; ///< Signal from main thread to exit
 	IOHandlerType fIOType; ///< Type of IO handler
 

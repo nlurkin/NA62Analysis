@@ -43,20 +43,21 @@ public:
 	//TTree
 	void RequestTree(TString detectorName, TDetectorVEvent* const evt, TString outputStage="");
 	bool RequestTree(TString treeName, TString branchName, TString className, void* const obj);
-	int BranchTrees(int eventNb);
+	Long64_t BranchTrees(Long64_t eventNb);
 	TChain* GetTree(TString name);
 	void SetIgnoreNonExisting(bool bFlag);
 
 	//Events
 	TDetectorVEvent *GetEvent(TString name, TString branchName="");
 	void* GetObject(TString name, TString branchName="");
-	int FillMCTruth();
-	int FillRawHeader();
-	bool LoadEvent(int iEvent);
+	Long64_t FillMCTruth();
+	Long64_t FillRawHeader();
+	bool LoadEvent(Long64_t iEvent);
 	Event* GetMCTruthEvent();
 	bool GetWithMC() const;
 	RawHeader* GetRawHeaderEvent(TString treeName = "Reco");
 	bool GetWithRawHeader() const;
+	Long64_t GetNEvents();
 
 	//Writing
 	void WriteEvent();

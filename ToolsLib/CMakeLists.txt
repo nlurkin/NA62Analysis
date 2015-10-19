@@ -6,4 +6,6 @@ file(GLOB LIBFILES
 	"src/*.cc"
 )
 
+EXCLUDEEMACS(LIBFILES)
+
 add_library(ToolsLib${LIBTYPEPOSTFIX} ${LIBTYPE} ${LIBFILES})

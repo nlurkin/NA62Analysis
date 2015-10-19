@@ -17,9 +17,9 @@ namespace NA62Analysis {
 namespace Core {
 
 /// \class BaseAnalysis
-/// \Brief 
+/// \Brief
 /// Is taking care of the initialization and closing procedure. Process the analyzers in the required order.
-/// \EndBrief 
+/// \EndBrief
 ///
 /// \Detailed
 /// Main class of the framework. It takes care of initializing everything properly, processing the events,
@@ -38,7 +38,7 @@ public:
 	void AddAnalyzer(Analyzer * const an);
 	void StartContinuous(TString inFileList);
 	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
-	void Process(int beginEvent, int maxEvent);
+	bool Process(Long64_t beginEvent, Long64_t maxEvent);
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
@@ -58,7 +58,7 @@ public:
 
 	CounterHandler* GetCounterHandler();
 
-	int GetNEvents();
+	Long64_t GetNEvents();
 	TChain* GetTree(TString name);
 
 	bool IsHistoType() {
@@ -82,7 +82,15 @@ public:
 	};
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
-	void SetDownscaling(bool bVal);
+	void SetDownscaling(bool flagDownscaling);
+	void SetFastStart(bool bVal) {
+		/// \MemberDescr
+		/// \param bVal : true/false
+		///
+		/// Enabled/Disable the FastStart option
+		/// \EndMemberDescr
+		fIOHandler->SetFastStart(bVal);
+	}
 
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
 
@@ -90,7 +98,7 @@ private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
-	void printCurrentEvent(int iEvent, int totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
+	void printCurrentEvent(Long64_t iEvent, Long64_t totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
 	static void ContinuousLoop(void* args);
 	void CreateOMWindow();
 
@@ -103,7 +111,7 @@ private:
 		TString inFileList; ///< Path to the input list file
 	};
 protected:
-	int fNEvents; ///< Number of events available in the TChains
+	Long64_t fNEvents; ///< Number of events available in the TChains
 	int fEventsDownscaling; ///< Downscaling. Read 1 out of x events
 	bool fGraphicMode; ///< Indicating if we only want output file or display
 	bool fInitialized; ///< Indicate if BaseAnalysis has been initialized

@@ -186,7 +186,7 @@ public:
 
 	//Methods for drawing plots on screen
 	void DrawAllPlots();
-	void UpdatePlots(int evtNbr);
+	void UpdatePlots(Long64_t evtNbr);
 	void SetUpdateInterval(int interval);
 	int GetUpdateInterval() const;
 	void CreateCanvas(TString name, int width=0, int height=0);
@@ -302,14 +302,23 @@ public:
 		return (T*)GetObjectVoid(name);
 	}
 
-	int GetNEvents();
+	Long64_t GetNEvents();
 
 	template <class T>
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, T parameterValue){
+		/// \MemberDescr
+		/// \param analyzerName : Analyzer to reconfigure
+		/// \param parameterName : Parameter to change
+		/// \param parameterValue : New value for the parameter
+		///
+		/// Reconfigure an analyzer at processing time (parameters).
+		/// Template call.
+		/// \EndMemberDescr
+
 		stringstream ss;
 		ss << parameterValue;
 		TString paramStringValue(ss.str());
-		CallReconfigureAnalyer(analyzerName, parameterName, paramStringValue);
+		CallReconfigureAnalyzer(analyzerName, parameterName, paramStringValue);
 	}
 
 private:
@@ -318,7 +327,7 @@ private:
 	const void* GetOutputVoid(TString name, OutputState &state) const;
 	bool RequestTreeVoid(TString name, TString branchName, TString className, void* obj);
 	void* GetObjectVoid(TString name);
-	void CallReconfigureAnalyer(TString analyerName, TString parameterName, TString parameterValue);
+	void CallReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameterValue);
 
 protected:
 	Core::HistoHandler fHisto; ///< Local instance of HistoHandler

@@ -13,6 +13,7 @@
 
 #include <TChain.h>
 #include <TKey.h>
+#include <TTreeCache.h>
 
 #include "StringBalancedTable.hh"
 
@@ -85,7 +86,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	/// \MemberDescr
 	/// \param detectorName : Name of the requested Detector
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
-	/// \param outputName : Name of the output type to request (Reco, MC, Digis, ...)
+	/// \param outputStage : Name of the output type to request (Reco, MC, Digis, ...)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
@@ -130,7 +131,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 
 bool IOTree::RequestTree(TString treeName, TString branchName, TString className, void* const obj){
 	/// \MemberDescr
-	/// \param treName : Name of the requested TTree
+	/// \param treeName : Name of the requested TTree
 	/// \param branchName : Name of the Branch to retrieve
 	/// \param className : Name of the class type in this branch
 	/// \param obj : Pointer to an instance of any class
@@ -165,7 +166,7 @@ bool IOTree::RequestTree(TString treeName, TString branchName, TString className
 	return true;
 }
 
-int IOTree::BranchTrees(int eventNb){
+Long64_t IOTree::BranchTrees(Long64_t eventNb){
 	/// \MemberDescr
 	///	\param eventNb : Number of events that should be read in the tree
 	/// \return Number of events found in the Tree
@@ -196,6 +197,11 @@ int IOTree::BranchTrees(int eventNb){
 		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject));
 	}
 
+	for(it=fTree.begin(); it!=fTree.end(); it++){
+		it->second->SetCacheSize(400000000);
+		it->second->SetCacheLearnEntries(2);
+
+	}
 	return eventNb;
 }
 
@@ -281,7 +287,7 @@ void *IOTree::GetObject(TString name, TString branchName){
 	return NULL;
 }
 
-bool IOTree::LoadEvent(int iEvent){
+bool IOTree::LoadEvent(Long64_t iEvent){
 	/// \MemberDescr
 	/// \param iEvent : Index of the event
 	/// \return true
@@ -300,21 +306,21 @@ bool IOTree::LoadEvent(int iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
-			it->second->GetEntry(iEvent);
-			continue;
+			Long64_t entryNumber = it->second->GetEntryNumber(iEvent);
+			Long64_t localEntry = it->second->LoadTree(iEvent);
 			//Loop over all event and object branch and load the corresponding entry for each of them
 			for (itEvt = fEvent.begin(); itEvt != fEvent.end(); ++itEvt) {
 				if (it->second->GetBranch(itEvt->first)){
 					std::cout << debug() << "Getting entry " << iEvent << " for " << itEvt->first << std::endl;
 					fIOTimeCount.Start();
-					it->second->GetBranch(itEvt->first)->GetEntry(iEvent);
+					it->second->GetBranch(itEvt->first)->GetEntry(localEntry);
 					fIOTimeCount.Stop();
 				}
 			}
 			for (itObj = fObject.begin(); itObj != fObject.end(); ++itObj) {
 				if (it->second->GetBranch(itObj->first)){
 					fIOTimeCount.Start();
-					it->second->GetBranch(itObj->first)->GetEntry(iEvent);
+					it->second->GetBranch(itObj->first)->GetEntry(localEntry);
 					fIOTimeCount.Stop();
 				}
 			}
@@ -444,19 +450,20 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 	std::cout << normal() << "Unable to find branch " << branchName << " in TTree " << tree->GetName() << std::endl;
 }
 
-int IOTree::FillMCTruth(){
+Long64_t IOTree::FillMCTruth(){
 	/// \MemberDescr
 	/// \return Number of events in the Event Tree
 	///
 	/// Branch the MC trees. Name is different if the input file comes from the MC or Reconstruction.
 	/// \EndMemberDescr
 
-	int eventNb = -1;
+	Long64_t eventNb = -1;
 	if(!fWithMC) return eventNb;
 
 	fIOTimeCount.Start();
 	std::cout << debug() << "Retrieving number of entries in MCTruth tree" << std::endl;
-	eventNb = fMCTruthTree->GetEntries();
+	if(fFastStart) eventNb = fMCTruthTree->GetEntriesFast();
+	else eventNb = fMCTruthTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithMC = false;
@@ -466,19 +473,20 @@ int IOTree::FillMCTruth(){
 	return eventNb;
 }
 
-int IOTree::FillRawHeader(){
+Long64_t IOTree::FillRawHeader(){
 	/// \MemberDescr
 	/// \return Number of events in the RawHeader Tree
 	///
 	/// Branch the RawHeader trees.
 	/// \EndMemberDescr
 
-	int eventNb = -1;
+	Long64_t eventNb = -1;
 	if(!fWithRawHeader) return eventNb;
 
 	fIOTimeCount.Start();
 	std::cout << debug() << "Retrieving number of entries in RawHeader tree" << std::endl;
-	eventNb = fRawHeaderTree->GetEntries();
+	if(fFastStart) eventNb = fRawHeaderTree->GetEntriesFast();
+	else eventNb = fRawHeaderTree->GetEntries();
 	fIOTimeCount.Stop();
 	if(eventNb==0){
 		fWithRawHeader = false;
@@ -514,13 +522,16 @@ bool IOTree::OpenInput(TString inFileName, int nFiles){
 
 	treeIterator it;
 	bool inputChecked = false;
+	int success;
 
 	for(auto fileName : fInputfiles){
 		if(!inputChecked && checkInputFile(fileName))
 			inputChecked = true;
 		fIOTimeCount.Start();
-		for(it=fTree.begin(); it!=fTree.end(); it++) it->second->AddFile(fileName);
+		for(it=fTree.begin(); it!=fTree.end(); it++) success = it->second->AddFile(fileName);
 		fIOTimeCount.Stop();
+
+		if(success==0) FileSkipped(fileName);
 	}
 	return inputChecked;
 }
@@ -660,7 +671,6 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else if(fWithRawHeader){
 		openedFileNumber = fRawHeaderTree->GetTreeNumber();
-		//std::cout << fRawHeaderTree->GetNtrees() << " " << openedFileNumber << std::endl;
 		currFile = fRawHeaderTree->GetFile();
 	}
 	else if(fTree.size()>0){
@@ -669,12 +679,29 @@ bool IOTree::CheckNewFileOpened(){
 	}
 	else return false;
 
-	//std::cout << fCurrentFileNumber << std::endl;
 	if(openedFileNumber>fCurrentFileNumber){
 		IOHandler::NewFileOpened(openedFileNumber, currFile);
 		return true;
 	}
 	return false;
+}
+
+Long64_t IOTree::GetNEvents(){
+	/// \MemberDescr
+	/// \return Total number of events. If used with --fast-start, returns kBigNumber
+	/// as long as the last file is not reached.
+	/// \EndMemberDescr
+
+	if(fWithMC){
+		return fMCTruthTree->GetEntriesFast();
+	}
+	else if(fWithRawHeader){
+		return fRawHeaderTree->GetEntriesFast();
+	}
+	else if(fTree.size()>0){
+		return fTree.begin()->second->GetEntriesFast();
+	}
+	else return 0;
 }
 
 } /* namespace Core */
