@@ -13,6 +13,7 @@ NA62Analysis Project
           needed. Especially useful when reading from CASTOR. Drawback is that
           the number of events is not known until the last file is reached.
         - CMake ignores emacs backup files (was preventing a successful build)
+        - AddParam should be called in the constructor of the Analyzer
         
 2015-09-25  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.671

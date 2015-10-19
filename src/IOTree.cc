@@ -86,7 +86,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	/// \MemberDescr
 	/// \param detectorName : Name of the requested Detector
 	/// \param evt : Pointer to an instance of detector event (MC or Reco)
-	/// \param outputName : Name of the output type to request (Reco, MC, Digis, ...)
+	/// \param outputStage : Name of the output type to request (Reco, MC, Digis, ...)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
@@ -131,7 +131,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 
 bool IOTree::RequestTree(TString treeName, TString branchName, TString className, void* const obj){
 	/// \MemberDescr
-	/// \param treName : Name of the requested TTree
+	/// \param treeName : Name of the requested TTree
 	/// \param branchName : Name of the Branch to retrieve
 	/// \param className : Name of the class type in this branch
 	/// \param obj : Pointer to an instance of any class
@@ -199,7 +199,7 @@ Long64_t IOTree::BranchTrees(Long64_t eventNb){
 		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject));
 		//fTree.find(ptr2->second->fTreeName)->second->AddBranchToCache(ptr2->first, kTRUE);
 	}
-	
+
 	for(it=fTree.begin(); it!=fTree.end(); it++){
 		it->second->SetCacheSize(400000000);
 		//it->second->StopCacheLearningPhase();
@@ -695,6 +695,11 @@ bool IOTree::CheckNewFileOpened(){
 }
 
 Long64_t IOTree::GetNEvents(){
+	/// \MemberDescr
+	/// \return Total number of events. If used with --fast-start, returns kBigNumber
+	/// as long as the last file is not reached.
+	/// \EndMemberDescr
+
 	if(fWithMC){
 		return fMCTruthTree->GetEntriesFast();
 	}

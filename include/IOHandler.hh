@@ -151,10 +151,18 @@ public:
 	}
 
 	void SetFastStart(bool fastStart) {
+		/// \MemberDescr
+		/// \param fastStart : true/false
+		///
+		/// Enabled/Disable the fastStart option
+		/// \EndMemberDescr
 		fFastStart = fastStart;
 	}
 
 	bool IsFastStart() const {
+		/// \MemberDescr
+		/// \return True if fastStart is enabled
+		/// \EndMemberDescr
 		return fFastStart;
 	}
 

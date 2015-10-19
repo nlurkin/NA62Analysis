@@ -17,9 +17,9 @@ namespace NA62Analysis {
 namespace Core {
 
 /// \class BaseAnalysis
-/// \Brief 
+/// \Brief
 /// Is taking care of the initialization and closing procedure. Process the analyzers in the required order.
-/// \EndBrief 
+/// \EndBrief
 ///
 /// \Detailed
 /// Main class of the framework. It takes care of initializing everything properly, processing the events,
@@ -82,8 +82,13 @@ public:
 	};
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
-	void SetDownscaling(bool bVal);
+	void SetDownscaling(bool flagDownscaling);
 	void SetFastStart(bool bVal) {
+		/// \MemberDescr
+		/// \param bVal : true/false
+		///
+		/// Enabled/Disable the FastStart option
+		/// \EndMemberDescr
 		fIOHandler->SetFastStart(bVal);
 	}
 

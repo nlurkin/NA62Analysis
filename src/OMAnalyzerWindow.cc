@@ -19,7 +19,7 @@ OMAnalyzerWindow::OMAnalyzerWindow(TGCompositeFrame* parent):
 	/// \param parent: parent element
 	///
 	/// Default constructor. Creates the tab element and add it to the parent frame
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	fCanvasTab = new TGTab(fParentFrame);
 	fParentFrame->AddFrame(fCanvasTab, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX | kLHintsExpandY,2,2,2,2));
@@ -28,7 +28,7 @@ OMAnalyzerWindow::OMAnalyzerWindow(TGCompositeFrame* parent):
 OMAnalyzerWindow::~OMAnalyzerWindow() {
 	/// \MemberDescr
 	/// Default destructor.
-	/// \MemberDescr
+	/// \EndMemberDescr
 }
 
 TCanvas* OMAnalyzerWindow::AddTab(TString tabName) {
@@ -38,7 +38,7 @@ TCanvas* OMAnalyzerWindow::AddTab(TString tabName) {
 	/// window.
 	///
 	/// Add a tab to the analyzer window
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	TGCompositeFrame *f = fCanvasTab->AddTab(tabName);
 	TRootEmbeddedCanvas *c = new TRootEmbeddedCanvas(tabName, f, gClient->GetDisplayHeight()-100, gClient->GetDisplayWidth()-100);

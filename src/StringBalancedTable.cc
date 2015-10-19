@@ -15,7 +15,7 @@ StringBalancedTable::StringBalancedTable(TString t) : StringTable(t){
 	/// \param t : Name of the table
 	///
 	/// Default constructor
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 }
 
@@ -27,14 +27,14 @@ StringBalancedTable::StringBalancedTable(const StringBalancedTable& c) :
 	/// \param c : Reference of the object to copy
 	///
 	/// Copy constructor
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 }
 
 StringBalancedTable::~StringBalancedTable() {
 	/// \MemberDescr
 	/// Default destructor
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 }
 
@@ -44,7 +44,7 @@ StringBalancedTable& StringBalancedTable::operator <<(TString v){
 	/// \return Reference to current StringBalancedTable instance
 	///
 	/// Append a value to the list
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	fValuesList.push_back(v);
 	return *this;
@@ -56,7 +56,7 @@ void StringBalancedTable::Print(TString prefix) const{
 	///
 	/// Print the table to stdout. Prefix is prepended to every line.\n
 	/// Example \\t to add a tabulation in front of the whole table.
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	Print(prefix, std::cout);
 }
@@ -68,7 +68,7 @@ void StringBalancedTable::Print(TString prefix, ostream &s) const{
 	///
 	/// Print the table to the specified stream. Prefix is prepended to every line.\n
 	/// Example \\t to add a tabulation in front of the whole table.
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	int size, colsNumber;
 	std::vector<TString>::const_iterator it;

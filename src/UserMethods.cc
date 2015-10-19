@@ -599,7 +599,7 @@ void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt, TStrin
 	/// \MemberDescr
 	/// \param detectorName : Name of the Detector branch to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
-	/// \param branchName : Name of the tree to request (outputStage = Reco, Digis, MC)
+	/// \param outputStage : Name of the tree to request (outputStage = Reco, Digis, MC)
 	///
 	/// Request a branch in a tree in the input file. If the tree has already been requested before,
 	/// only add the new branch.
@@ -1051,9 +1051,17 @@ void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* 
 	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 
-void UserMethods::CallReconfigureAnalyer(TString analyerName,
+void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 		TString parameterName, TString parameterValue) {
-	fParent->ReconfigureAnalyzer(analyerName, parameterName, parameterValue);
+	/// \MemberDescr
+	/// \param analyzerName : Analyzer to reconfigure
+	/// \param parameterName : Parameter to change
+	/// \param parameterValue : New value for the parameter
+	///
+	/// Reconfigure an analyzer at processing time (parameters).
+	/// \EndMemberDescr
+
+	fParent->ReconfigureAnalyzer(analyzerName, parameterName, parameterValue);
 }
 
 } /* namespace NA62Analysis */

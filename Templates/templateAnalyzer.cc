@@ -12,7 +12,7 @@ using namespace NA62Analysis;
 using namespace NA62Constants;
 
 /// \class templateAnalyzer
-/// \Brief 
+/// \Brief
 /// Short description of your Analyzer
 /// \EndBrief
 ///
@@ -90,6 +90,17 @@ templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templ
 	///	\code
 	///		fDetectorAcceptanceInstance = new DetectorAcceptance("./NA62.root");
 	/// \endcode
+	/// \n
+	/// Call one of: \n
+	///	\code
+	/// 	AddParam("paramName", &variableName, defaultValue);
+	/// \endcode
+	/// for each parameter of the analyzer. These parameters can be set when starting the FW from the command line with the -p option.\n
+	/// paramName is the name of the parameter in the command line\n
+	/// variableName is the name of the variable that should be declared in the definition of the class\n
+	/// defaultValue is the default value if not specified in the command line\n
+	/// The allowed types for parameters are the following: bool, int, long, float, double, char, string, TString\n
+	/// \EndMemberDescr
 
 /*$$TREEREQUEST$$*/
 
@@ -105,16 +116,6 @@ void templateAnalyzer::InitOutput(){
 	/// for each variable that should be in the output of the Analyzer\n
 	/// The name of the analyzer will be prepended to the outputName (to avoid collisions with other analyzers)\n
 	/// variableName should be the name of a variable declared in the definition of the class\n
-	/// \n
-	/// Call one of: \n
-	///	\code
-	/// 	AddParam("paramName", &variableName, defaultValue);
-	/// \endcode
-	/// for each parameter of the analyzer. These parameters can be set when starting the FW from the command line with the -p option.\n
-	/// paramName is the name of the parameter in the command line\n
-	/// variableName is the name of the variable that should be declared in the definition of the class\n
-	/// defaultValue is the default value if not specified in the command line\n
-	/// The allowed types for parameters are the following: bool, int, long, float, double, char, string, TString\n
 	/// \n
 	/// To create a new TTree in the output file, call: \n
 	///	\code

@@ -445,7 +445,7 @@ void IOHandler::FileSkipped(TString fileName) {
 int IOHandler::ReadCurrentFileRevision() {
 	/// \MemberDescr
 	/// \return Revision number embedded in the input ROOT file or -1 if not found
-	/// \MemberDescr
+	/// \EndMemberDescr
 	TList *keys = fCurrentFile->GetListOfKeys();
 	int revValue = -1;
 	for(int kIndex = 0; kIndex<keys->GetEntries(); kIndex++){
@@ -465,7 +465,7 @@ bool TestIsTextFile(TString fileName){
 	/// Test all the characters in the first 1KB chunk of the file. If all of them
 	/// are found to be valid text characters (ASCII or 8-bit variable length encoding),
 	/// the file is considered as being a valid text file.
-	/// \MemberDescr
+	/// \EndMemberDescr
 	unsigned char buffer[1000];
 	std::ifstream fd(fileName.Data(), std::ifstream::binary);
 
@@ -489,7 +489,7 @@ bool TestASCIIChar(unsigned char c) {
 	/// \MemberDescr
 	/// \param c : char to test
 	/// \return True if the given char is ASCII
-	/// \MemberDescr
+	/// \EndMemberDescr
 	if((c>9 && c<13) || (c>32 && c<126)) return true;
 	return false;
 }
@@ -498,7 +498,7 @@ bool TestMultiByteChar(unsigned char c) {
 	/// \MemberDescr
 	/// \param c : char to test
 	/// \return True if the given char is a multibyte char
-	/// \MemberDescr
+	/// \EndMemberDescr
 
 	if(c>128 && c<255) return true;
 	return false;
@@ -508,7 +508,7 @@ void IOHandler::Finalise() {
 	/// \MemberDescr
 	/// Finalise the IO: purge the output file, check that the last file
 	/// has been read.
-	/// \MemberDescr
+	/// \EndMemberDescr
 	if(!IsLastFileReached()){
 		for(unsigned int i=fCurrentFileNumber+1; i<fInputfiles.size(); i++){
 			std::cout << normal() << "File " << i << ":" << fInputfiles[i] << " has been skipped" << std::endl;
@@ -519,11 +519,18 @@ void IOHandler::Finalise() {
 }
 
 bool IOHandler::IsLastFileReached() const {
+	/// \MemberDescr
+	/// \return True if the current file is the last file of the list
+	/// \EndMemberDescr
 	if(fCurrentFileNumber==(int)fInputfiles.size()-1) return true;
 	return false;
 }
 
 Long64_t IOHandler::GetNEvents() {
+	/// \MemberDescr
+	/// \return Total number of input files.
+	/// Overloaded in IOTree.
+	/// \EndMemberDescr
 	return GetInputFileNumber();
 }
 
