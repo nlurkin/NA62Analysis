@@ -379,7 +379,7 @@ void UserMethods::DrawAllPlots(){
 	fHisto.DrawAllPlots(fAnalyzerName);
 }
 
-void UserMethods::UpdatePlots(int evtNbr){
+void UserMethods::UpdatePlots(Long64_t evtNbr){
 	/// \MemberDescr
 	/// \param evtNbr : Current event number
 	///
