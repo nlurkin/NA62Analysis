@@ -16,10 +16,16 @@ NA62Analysis Project
         - AddParam should be called in the constructor of the Analyzer
 		    (documentation updated)
         
+
+2015-10-12	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+		rev.682
+		- BlueTubeTracker: forward tracking functionality added
+
 2015-09-25  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.671
-        - Added eclipse project files
-        - Add downscaling option (enable with -d, configure in .settingsna62)
+		- Added eclipse project files
+		- Add downscaling option (enable with -d, configure in .settingsna62)
+>>>>>>> SVNBranch
 
 2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.664

@@ -44,7 +44,9 @@ private:
   TVector3 fInitialPosition, fInitialMomentum;
   TVector3 fFinalPosition, fFinalMomentum;
   Double_t fZFinal;
-  Int_t    fCharge;
+  Int_t    fCharge; ///< Track charge
+  Int_t    fSign; ///< +1 or -1, as required to generalize formulae for backward/forward tracking
+  Bool_t   fTrackingBackward; ///< Tracking backward or forward?
 
   TVector3 fPosIn, fPosOut, fMomIn, fMomOut;
 
