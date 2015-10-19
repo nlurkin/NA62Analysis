@@ -2,23 +2,35 @@
 NA62Analysis Project
 ################################################################
 
+2015-10-xx  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.xxx
+        - Improve performances on CASTOR
+        - Fix issue with dependencies resolution with some type of comments
+        - Set return code to EXIT_FAILURE in case of failure
+        - Correctly detect skipped files in TChain
+        - Add --fast-start option: do not try to read files during 
+          initalisation. Start directly analysing and load file only when
+          needed. Especially useful when reading from CASTOR. Drawback is that
+          the number of events is not known until the last file is reached.
+        - CMake ignores emacs backup files (was preventing a successful build)
+        
 2015-09-25  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.671
-      - Added eclipse project files
-		- Add downscaling option (enable with -d, configure in .settingsna62)
+        - Added eclipse project files
+        - Add downscaling option (enable with -d, configure in .settingsna62)
 
 2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.664
-		- Bug fix when reading non-reconstructed MC files
+        - Bug fix when reading non-reconstructed MC files
 
 2015-09-22	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-		rev.663
-		- SpectrometerVertexBuilder can build vertices with 2-5 tracks (used to be only 3)
-		- Track to LKr association introduced, including E/p computation
-		- Minor updates of T0Evaluation
+            rev.663
+        - SpectrometerVertexBuilder can build vertices with 2-5 tracks (used to be only 3)
+        - Track to LKr association introduced, including E/p computation
+        - Minor updates of T0Evaluation
 
-2015-09-22      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev.662
+2015-09-22  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.662
         - Clone command added to NA62AnalysisBuilder.py
         - ReconfigureAnalyzer method added. Can be used from within an
           analyzer to modify parameters of another analyzer. Parameter
@@ -26,12 +38,12 @@ NA62Analysis Project
           Usage: ReconfigureAnalyzer("otherAnalyzer", "myIntegerParam", 6);
         - Swap between the role of TTree and TBranch to include special triggers:
           the output is now organised with output stage trees having one single 
-			 branch each SubDetector, rather than one tree for SubDetector having
-			 one single output stagee branch.
+          branch each SubDetector, rather than one tree for SubDetector having
+          one single output stagee branch.
           *** WARNING: this change is NOT backward compatible ***
-			 This revision is not able to read root files with the old structure.
-			 If you have to work on both old and new files, please read instructions
-			 in the "HOWTO_OLD_NEW.txt" file.
+          This revision is not able to read root files with the old structure.
+          If you have to work on both old and new files, please read instructions
+          in the "HOWTO_OLD_NEW.txt" file.
         - Can request trigger data: see RequestLxData() and GetLxData()
           methods (x=0,1,2)
 
@@ -39,24 +51,24 @@ NA62Analysis Project
                 rev.656
         - env scripts now point to cmake on afs, for batch building
 
-2015-09-10      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev.645
-                - Skip trees entries consistency check to speed up 
-                initialisation process
-                - Fix Bug NA62RKD-117
-                - Save absolute path of used files instead of name only
-                - User compilation does not write anything in fw dir anymore
-                - Apply parameters before initialising histo and output
+2015-09-10  Nicolas Lurkin (nicolas.lurkin@cern.ch)
+            rev.645
+        - Skip trees entries consistency check to speed up 
+          initialisation process
+        - Fix Bug NA62RKD-117
+        - Save absolute path of used files instead of name only
+        - User compilation does not write anything in fw dir anymore
+        - Apply parameters before initialising histo and output
 
 2015-08-28      Roberta Volpe (roberta.volpe@cern.ch)
-		rev.641
-		- changing histo name in RICHT0 
+                rev.641
+        - changing histo name in RICHT0 
 
-2015-08-26	Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
-		rev.637
-		- Introduced the Spectrometer-RICH association tool
-		- Updated the Spectrometer-MUV3 association tool
-		- Introduced the Spectrometer vertex builder
+2015-08-26      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
+                rev.637
+        - Introduced the Spectrometer-RICH association tool
+        - Updated the Spectrometer-MUV3 association tool
+        - Introduced the Spectrometer vertex builder
 
 2015-08-26      Letizia Peruzzo (letizia.peruzzo@cern.ch)
                 rev.634
