@@ -39,6 +39,8 @@ void usage(char* name)
 	cout << "  --reffile path\t: Path to a ROOT file containing reference plots." << endl;
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
 	cout << "  --logtofile path\t: Write the log output to the specified file instead of standard output." << endl;
+	cout << "  --fast-start\t: Start processing immediately without reading input files headers." << endl;
+	cout << "\t\t\t Can be useful on CASTOR but total number of events is not known a priori" << endl;
 	cout << endl;
 	cout << "Mutually exclusive options groups:" << endl;
 	cout << " Group1:" << endl;
