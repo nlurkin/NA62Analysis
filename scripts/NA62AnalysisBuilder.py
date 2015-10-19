@@ -15,7 +15,8 @@ except ImportError:
 	from scripts.argparse import ArgumentParser, RawDescriptionHelpFormatter
 import scripts
 
-__rev__ = 671
+
+__rev__ = 687
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
