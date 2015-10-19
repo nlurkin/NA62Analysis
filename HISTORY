@@ -14,6 +14,7 @@ NA62Analysis Project
           the number of events is not known until the last file is reached.
         - CMake ignores emacs backup files (was preventing a successful build)
         - AddParam should be called in the constructor of the Analyzer
+		    (documentation updated)
         
 2015-09-25  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.671
