@@ -306,7 +306,6 @@ bool IOTree::LoadEvent(Long64_t iEvent){
 	if (fGraphicalMutex->Lock() == 0) {
 		//Loop over all our trees
 		for (it = fTree.begin(); it != fTree.end(); it++) {
-			Long64_t entryNumber = it->second->GetEntryNumber(iEvent);
 			Long64_t localEntry = it->second->LoadTree(iEvent);
 			//Loop over all event and object branch and load the corresponding entry for each of them
 			for (itEvt = fEvent.begin(); itEvt != fEvent.end(); ++itEvt) {
