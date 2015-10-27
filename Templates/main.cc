@@ -210,7 +210,7 @@ int main(int argc, char** argv){
 
 	if(graphicMode) theApp = new TApplication("NA62Analysis", &argc, argv);
 
-	bool retCode = 0;
+	bool retCode = false;
 
 	ban = new NA62Analysis::Core::BaseAnalysis();
 	ban->SetGlobalVerbosity(verbosity);
@@ -233,5 +233,5 @@ int main(int argc, char** argv){
 /*$$ANALYZERSDELETE$$*/
 	delete ban;
 
-	return retCode;
+	return retCode ? 0 : EXIT_FAILURE;
 }
