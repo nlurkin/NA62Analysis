@@ -17,6 +17,7 @@ else
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/CHANTI/Persistency/lib
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/Cedar/Persistency/lib
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/CHOD/Persistency/lib
+        	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/NewCHOD/Persistency/lib
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/MUV1/Persistency/lib
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/MUV2/Persistency/lib
         	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NA62MCSOURCE/SAC/Persistency/lib
@@ -32,5 +33,5 @@ gccPath=`which gcc`
 export ANALYSISFW_STDLIBSPATH="$(dirname $(dirname "$gccPath"))"
 export CC=`which gcc`
 export CXX=`which g++`
-export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/3.2.3/Linux-x86_64/bin/:$PATH
+#export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/3.2.3/Linux-x86_64/bin/:$PATH
 
