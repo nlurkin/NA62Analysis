@@ -30,7 +30,7 @@
 #include "TCHANTIEvent.hh"
 #include "TCedarEvent.hh"
 #include "TCHODEvent.hh"
-#include "NewTCHODEvent.hh"
+#include "TNewCHODEvent.hh"
 #include "TMUV1Event.hh"
 #include "TMUV2Event.hh"
 #include "TMUV3Event.hh"
