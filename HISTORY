@@ -6,7 +6,7 @@ NA62Analysis Project
 2015-11-02  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.710
         - Add link to NewCHOD persistency
-		  - Fix executable return code (was 1 in case of success now 0 as it should be)
+        - Fix executable return code (was 1 in case of success now 0 as it should be)
 
 2015-10-19  Nicolas Lurkin (nicolas.lurkin@cern.ch)
             rev.689
