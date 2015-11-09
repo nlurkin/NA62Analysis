@@ -24,6 +24,7 @@ IOTree::IOTree():
 	IOHisto("IOTree"),
 	fMCTruthTree(0),
 	fRawHeaderTree(0),
+	fReferenceTree(0),
 	fWithMC(false),
 	fWithRawHeader(false),
 	fAllowNonExisting(false)
@@ -41,6 +42,7 @@ IOTree::IOTree(const IOTree &c):
 	fObject(c.fObject),
 	fMCTruthTree(c.fMCTruthTree),
 	fRawHeaderTree(c.fRawHeaderTree),
+	fReferenceTree(c.fReferenceTree),
 	fExportTrees(c.fExportTrees),
 	fWithMC(c.fWithMC),
 	fWithRawHeader(c.fWithRawHeader),
@@ -108,11 +110,11 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 
 	//Create the tree if not yet requested
 	if(fTree.count(outputStage)==0){
-		cout << debug() << "First request... Creating TTree" << std::endl;
+		std::cout << debug() << "First request... Creating TTree" << std::endl;
 		fTree.insert(chainPair(outputStage, new TChain(outputStage)));
 	}
 
-	cout << normal() << "TTree name set to " << outputStage << endl;
+	std::cout << normal() << "TTree name set to " << outputStage << std::endl;
 
 	//Is this branch of this tree already requested?
 	//If yes delete evt and return (we already have the branching object instance)
@@ -121,7 +123,7 @@ void IOTree::RequestTree(TString detectorName, TDetectorVEvent * const evt, TStr
 	for(it=eventRange.first; it!=eventRange.second; ++it){
 		//Does it point to this TTree?
 		if(it->second->fTreeName.CompareTo(outputStage)==0){
-			cout << debug() << "Branch already requested... Continue" << std::endl;
+			std::cout << debug() << "Branch already requested... Continue" << std::endl;
 			delete evt;
 			return;
 		}
@@ -147,7 +149,7 @@ bool IOTree::RequestTree(TString treeName, TString branchName, TString className
 
 	//Create the tree if not yet requested
 	if(fTree.count(treeName)==0){
-		cout << debug() << "First request... Creating TTree" << std::endl;
+		std::cout << debug() << "First request... Creating TTree" << std::endl;
 		fTree.insert(chainPair(treeName, new TChain(treeName)));
 	}
 
@@ -158,7 +160,7 @@ bool IOTree::RequestTree(TString treeName, TString branchName, TString className
 	for(it=objectRange.first; it!=objectRange.second; ++it){
 		//Does it point to the same tree?
 		if(it->second->fTreeName.CompareTo(treeName)==0){
-			cout << debug() << "Branch already requested... Continue" << std::endl;
+			std::cout << debug() << "Branch already requested... Continue" << std::endl;
 			return false;
 		}
 	}
@@ -178,11 +180,13 @@ Long64_t IOTree::BranchTrees(Long64_t eventNb){
 	eventIterator ptr1;
 	objectIterator ptr2;
 
+	if(!fReferenceTree && fTree.size()>0) fReferenceTree = fTree.begin();
+
 	for(it=fTree.begin(); it!=fTree.end(); ++it){
 		TObjArray * arr = it->second->GetListOfBranches();
 		for(int i=0; i<arr->GetEntries(); ++i){
 			TBranch *b = (TBranch*)arr->At(i);
-			cout << debug() << "Disabling branch " << b->GetName() << " from tree " << it->second->GetName() << endl;
+			std::cout << debug() << "Disabling branch " << b->GetName() << " from tree " << it->second->GetName() << std::endl;
 			b->ResetAddress();
 			b->SetStatus(0);
 		}
@@ -440,7 +444,7 @@ void IOTree::FindAndBranchTree(TChain* tree, TString branchName, TString branchC
 			}
 			std::cout << normal() << "Found " << branchName << " of class " << branchClass << std::endl;
 			//Activate branch
-			cout << debug() << "Enabling branch " << branchName << " of tree " << tree->GetName() << endl;
+			std::cout << debug() << "Enabling branch " << branchName << " of tree " << tree->GetName() << std::endl;
 			tree->GetBranch(branchName)->SetStatus(1);
 			tree->SetBranchAddress(branchName, evt);
 			return;
@@ -569,12 +573,14 @@ bool IOTree::checkInputFile(TString fileName){
 			fWithMC = true;
 			RequestTree(tree->GetName(), "Generated", "Event", new Event);
 			if(!fMCTruthTree) fMCTruthTree = fTree.find(tree->GetName())->second;
+			fReferenceTree = fMCTruthTree;
 		}
 
 		if(tree->FindBranch("RawHeader")){
 			fWithRawHeader = true;
 			RequestTree(tree->GetName(), "RawHeader", "RawHeader", new RawHeader);
 			if(!fRawHeaderTree) fRawHeaderTree = fTree.find(tree->GetName())->second;
+			if(!fReferenceTree) fReferenceTree = fRawHeaderTree;
 		}
 	}
 	fd->Close();
@@ -597,7 +603,7 @@ void IOTree::WriteEvent(){
 	treeIterator it;
 	NA62Analysis::NA62Map<TString,TTree*>::type::iterator itTree;
 
-	cout << extended() << "Writing event in output" << std::endl;
+	std::cout << extended() << "Writing event in output" << std::endl;
 	if(fExportTrees.size()==0){
 		for(it=fTree.begin(); it!= fTree.end(); it++){
 			fExportTrees.insert(std::pair<TString,TTree*>(it->first, it->second->CloneTree(0)));
@@ -615,7 +621,7 @@ void IOTree::WriteTree() const{
 
 	NA62Analysis::NA62Map<TString,TTree*>::type::const_iterator itTree;
 
-	std::cout << normal() << "Writing output trees" << endl;
+	std::cout << normal() << "Writing output trees" << std::endl;
 	for(itTree=fExportTrees.begin(); itTree!=fExportTrees.end(); itTree++){
 		fIOTimeCount.Start();
 		itTree->second->Write();
@@ -636,18 +642,18 @@ void IOTree::PrintInitSummary() const{
 
 	StringBalancedTable treeTable("List of requested TTrees");
 
-	stringstream ss;
+	std::stringstream ss;
 	for(itEv=fEvent.begin(); itEv!=fEvent.end(); itEv++){
 		ss << itEv->second->fTreeName << "->" << itEv->first;
 		treeTable << ss.str();
 		ss.clear();
-		ss.str(string());
+		ss.str(std::string());
 	}
 	for(itObj=fObject.begin(); itObj!=fObject.end(); itObj++){
 		ss << itObj->second->fTreeName << "->" << itObj->first;
 		treeTable << ss.str();
 		ss.clear();
-		ss.str(string());
+		ss.str(std::string());
 	}
 
 	treeTable.Print("\t");
@@ -664,17 +670,9 @@ bool IOTree::CheckNewFileOpened(){
 	int openedFileNumber;
 	TFile *currFile;
 
-	if(fWithMC){
-		openedFileNumber = fMCTruthTree->GetTreeNumber();
-		currFile = fMCTruthTree->GetFile();
-	}
-	else if(fWithRawHeader){
-		openedFileNumber = fRawHeaderTree->GetTreeNumber();
-		currFile = fRawHeaderTree->GetFile();
-	}
-	else if(fTree.size()>0){
-		openedFileNumber = fTree.begin()->second->GetTreeNumber();
-		currFile = fTree.begin()->second->GetFile();
+	if(fReferenceTree){
+		openedFileNumber = fReferenceTree->GetTreeNumber();
+		currFile = fReferenceTree->GetFile();
 	}
 	else return false;
 
@@ -691,14 +689,8 @@ Long64_t IOTree::GetNEvents(){
 	/// as long as the last file is not reached.
 	/// \EndMemberDescr
 
-	if(fWithMC){
-		return fMCTruthTree->GetEntriesFast();
-	}
-	else if(fWithRawHeader){
-		return fRawHeaderTree->GetEntriesFast();
-	}
-	else if(fTree.size()>0){
-		return fTree.begin()->second->GetEntriesFast();
+	if(fReferenceTree){
+		return fReferenceTree->GetEntriesFast();
 	}
 	else return 0;
 }

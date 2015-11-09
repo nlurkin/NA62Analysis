@@ -139,6 +139,7 @@ private:
 
 	TChain *fMCTruthTree; ///< Pointer to (first) TTree containing MCTruth
 	TChain *fRawHeaderTree; ///< Pointer to (first) TTree containing RawHeader
+	TChain *fReferenceTree; ///< Pointer to the reference TTree used to retrieve common information
 
 	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 
