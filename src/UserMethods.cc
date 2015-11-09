@@ -641,20 +641,20 @@ L2EBData* UserMethods::GetL2Data(){
 	return nullptr;
 }
 
-TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
+TDetectorVEvent *UserMethods::GetEvent(TString detName, TString outputName){
 	/// \MemberDescr
-	/// \param name : Name of the tree from which the event is read
-	/// \param branchName : Name of the branch
+	/// \param detName : Name of the detector from which the event is read
+	/// \param outputName : Name of the output stage (Reco, Digis, MC)
 	/// \return the pointer to the event corresponding to the given tree and the given branch.
 	///
-	/// If branchName is left empty and there is only 1 branch requested on this tree, this
-	/// single branch is returned. If there is more than 1 branch requested on this tree,
-	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
-	/// if both "Reco" and "Hits" branches have been requested).
-	/// If branchName is specified, try to return the specified branch.
+	/// If outputName is left empty and there is only 1 tree requested for this detector, this
+	/// single tree is returned. If there is more than 1 tree requested for this detector,
+	/// return either the "Reco" or the "Hits" tree (the first one found - undefined behaviour
+	/// if both "Reco" and "Hits" trees have been requested).
+	/// If outputName is specified, try to return the specified tree.
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(name, branchName);
+	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(detName, outputName);
 	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }

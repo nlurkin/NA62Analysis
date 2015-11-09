@@ -273,7 +273,7 @@ public:
 	}
 
 	TChain* GetTree(TString name);
-	TDetectorVEvent *GetEvent(TString name, TString branchName = "");
+	TDetectorVEvent *GetEvent(TString detName, TString outputName = "");
 	Event* GetMCEvent();
 	RawHeader* GetRawHeader();
 	L0TPData* GetL0Data();

@@ -48,7 +48,7 @@ public:
 	void SetIgnoreNonExisting(bool bFlag);
 
 	//Events
-	TDetectorVEvent *GetEvent(TString name, TString branchName="");
+	TDetectorVEvent *GetEvent(TString detName, TString outputName="");
 	void* GetObject(TString name, TString branchName="");
 	Long64_t FillMCTruth();
 	Long64_t FillRawHeader();
@@ -68,6 +68,7 @@ public:
 
 private:
 	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt);
+	TString DetermineMainTree(TString detName);
 
 	/// \class ObjectTriplet
 	/// \Brief

@@ -180,7 +180,7 @@ Long64_t IOTree::BranchTrees(Long64_t eventNb){
 	eventIterator ptr1;
 	objectIterator ptr2;
 
-	if(!fReferenceTree && fTree.size()>0) fReferenceTree = fTree.begin();
+	if(!fReferenceTree && fTree.size()>0) fReferenceTree = fTree.begin()->second;
 
 	for(it=fTree.begin(); it!=fTree.end(); ++it){
 		TObjArray * arr = it->second->GetListOfBranches();
@@ -209,49 +209,41 @@ Long64_t IOTree::BranchTrees(Long64_t eventNb){
 	return eventNb;
 }
 
-TDetectorVEvent *IOTree::GetEvent(TString name, TString branchName){
+TDetectorVEvent *IOTree::GetEvent(TString detName, TString outputName){
 	/// \MemberDescr
-	/// \param name : Name of the TTree from which the event is read
-	/// \param branchName : Name of the branch
+	/// \param detName : Name of the detector from which the event is read (branch)
+	/// \param outputName : Name of the output stage (Reco, Digis, MC) (TTree)
 	/// \return Pointer to the event corresponding to the given tree and the given branch.
 	///
-	/// If branchName is left empty and there is only 1 branch requested on this tree, this
-	/// single branch is returned. If there is more than 1 branch requested on this tree,
-	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
-	/// if both "Reco" and "Hits" branches have been requested).
-	/// If branchName is specified, try to return the specified branch.
+	/// If outputName is left empty and there is only 1 tree requested for this detector, this
+	/// single tree is returned. If there is more than 1 tree requested for this detector,
+	/// return either the "Reco" or the "Hits" tree (the first one found - undefined behaviour
+	/// if both "Reco" and "Hits" trees have been requested).
+	/// If outputName is specified, try to return the specified tree.
 	/// \EndMemberDescr
 
 	eventIterator it;
 	std::pair<eventIterator, eventIterator> eventRange;
 
-	eventRange = fEvent.equal_range(name);
+	eventRange = fEvent.equal_range(detName);
 	if(eventRange.first==eventRange.second){ //Range is 0, no such event found
-		std::cout << normal() << "[Error] Unable to find event in branch " << branchName << " of tree " << name << std::endl;
+		std::cout << normal() << "[Error] Unable to find event in branch " << outputName << " of tree " << detName << std::endl;
 		return NULL;
 	}
 	else{
-		//No branchName specified but only a single branch has been requested in this tree. Must be the one...
-		it = eventRange.first;
-		if(branchName.CompareTo("")==0 && (++it==eventRange.first)){
-			std::cout << debug() << "No branch specified, only one found... Using " << eventRange.second->second->fTreeName << std::endl;
-			return eventRange.second->second->fEvent;
+		TString mainTree(outputName);
+		if(outputName.CompareTo("")==0) {
+			mainTree = DetermineMainTree(detName);
+			std::cout << debug() << "No TTree specified... Using " << mainTree << std::endl;
 		}
-		it = eventRange.first;;
 		for(it=eventRange.first; it!=eventRange.second; ++it){
-			//If the branch is not specified but we find Reco or Hits, we return it
-			//Or if this is the requested branch also return it
-			if(( branchName.CompareTo("")==0 && (
-					it->second->fTreeName.CompareTo("Reco")==0 ||
-					it->second->fTreeName.CompareTo("Digis")==0 ||
-					it->second->fTreeName.CompareTo("MC")==0))
-					|| it->second->fTreeName.CompareTo(branchName)==0){
+				if(it->second->fTreeName.CompareTo(mainTree)==0){
 				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
 				return it->second->fEvent;
 			}
 		}
+		std::cout << normal() << "[Error] Unable to find event in branch " << detName << " of tree " << mainTree << std::endl;
 	}
-	std::cout << normal() << "[Error] Unable to find event in branch " << branchName << " of tree " << name << std::endl;
 	return NULL;
 }
 
@@ -693,6 +685,29 @@ Long64_t IOTree::GetNEvents(){
 		return fReferenceTree->GetEntriesFast();
 	}
 	else return 0;
+}
+
+TString IOTree::DetermineMainTree(TString detName) {
+	eventIterator it;
+	std::pair<eventIterator, eventIterator> eventRange;
+
+	eventRange = fEvent.equal_range(detName);
+	it = eventRange.first;
+	if(++it==eventRange.second){
+		//Only one branch, main is this one
+		return eventRange.first->second->fTreeName;
+	}
+
+	TString mainTree;
+	//Order is Reco, MC, Digis, Anything else
+	for(it = eventRange.first; it!= eventRange.second; ++it){
+		if(it->second->fTreeName.CompareTo("Reco")==0) return "Reco"; //Shortcut, cannot be higher than Reco
+		else if(it->second->fTreeName.CompareTo("MC")==0) mainTree = "MC";
+		else if(it->second->fTreeName.CompareTo("Digis")==0 && mainTree.CompareTo("MC")!=0) mainTree = "Digis";
+		else mainTree = it->second->fTreeName;
+	}
+
+	return mainTree;
 }
 
 } /* namespace Core */
