@@ -155,16 +155,16 @@ bool IOTree::RequestTree(TString treeName, TString branchName, TString className
 
 	//Is this branch of this tree already requested?
 	//If yes signal the caller that obj shoud be deleted and return (we already have the branching object instance)
-	objectRange = fObject.equal_range(branchName);
+	objectRange = fObject.equal_range(treeName);
 	//Loop over all objects with this name
 	for(it=objectRange.first; it!=objectRange.second; ++it){
-		//Does it point to the same tree?
-		if(it->second->fTreeName.CompareTo(treeName)==0){
+		//Does it point to the same branch?
+		if(it->second->fBranchName.CompareTo(branchName)==0){
 			std::cout << debug() << "Branch already requested... Continue" << std::endl;
 			return false;
 		}
 	}
-	fObject.insert(objectPair(branchName,new ObjectTriplet(className, treeName, obj)));
+	fObject.insert(objectPair(treeName,new ObjectTriplet(className, branchName, obj)));
 	return true;
 }
 
@@ -198,8 +198,10 @@ Long64_t IOTree::BranchTrees(Long64_t eventNb){
 
 	//Loop over all generic branches and branch them
 	for(ptr2=fObject.begin(); ptr2!=fObject.end(); ++ptr2){
-		FindAndBranchTree(fTree.find(ptr2->second->fTreeName)->second, ptr2->first, ptr2->second->fClassName, &(ptr2->second->fObject));
+		FindAndBranchTree(fTree.find(ptr2->first)->second, ptr2->second->fBranchName, ptr2->second->fClassName, &(ptr2->second->fObject));
 	}
+
+	if(eventNb==-1) eventNb = GetNEvents();
 
 	for(it=fTree.begin(); it!=fTree.end(); it++){
 		it->second->SetCacheSize(400000000);
@@ -273,8 +275,8 @@ void *IOTree::GetObject(TString name, TString branchName){
 			// If the branch is not specified or this is the requested one,
 			// return it
 			if( branchName.CompareTo("")==0 ||
-					it->second->fTreeName.CompareTo(branchName)==0){
-				std::cout << debug() << "Using branch " << it->second->fTreeName << std::endl;
+					it->second->fBranchName.CompareTo(branchName)==0){
+				std::cout << debug() << "Using branch " << it->second->fBranchName << std::endl;
 				return it->second->fObject;
 			}
 		}
@@ -313,9 +315,9 @@ bool IOTree::LoadEvent(Long64_t iEvent){
 				}
 			}
 			for (itObj = fObject.begin(); itObj != fObject.end(); ++itObj) {
-				if (it->second->GetBranch(itObj->first)){
+				if (it->second->GetBranch(itObj->second->fBranchName)){
 					fIOTimeCount.Start();
-					it->second->GetBranch(itObj->first)->GetEntry(localEntry);
+					it->second->GetBranch(itObj->second->fBranchName)->GetEntry(localEntry);
 					fIOTimeCount.Stop();
 				}
 			}
@@ -333,8 +335,8 @@ Event* IOTree::GetMCTruthEvent(){
 	if(!fWithMC) return nullptr;
 	objectIterator itObj;
 
-	for(itObj = fObject.find("Generated"); itObj!=fObject.end(); ++itObj){
-		if(itObj->second->fTreeName.CompareTo("MC")==0) return (Event*)itObj->second->fObject;
+	for(itObj = fObject.find("MC"); itObj!=fObject.end(); ++itObj){
+		if(itObj->second->fBranchName.CompareTo("Generated")==0) return (Event*)itObj->second->fObject;
 	}
 	std::cout << normal() << "MCTruth not found in tree MC" << std::endl;
 	return nullptr;
@@ -359,8 +361,8 @@ RawHeader* IOTree::GetRawHeaderEvent(TString treeName){
 	if(!fWithRawHeader) return nullptr;
 	objectIterator itObj;
 
-	for(itObj = fObject.find("RawHeader"); itObj!=fObject.end(); ++itObj){
-		if(itObj->second->fTreeName.CompareTo(treeName)==0) return (RawHeader*)itObj->second->fObject;
+	for(itObj = fObject.find(treeName); itObj!=fObject.end(); ++itObj){
+		if(itObj->second->fBranchName.CompareTo("RawHeader")==0) return (RawHeader*)itObj->second->fObject;
 	}
 	std::cout << standard() << "RawHeader not found in tree " << treeName << std::endl;
 	return nullptr;
@@ -642,7 +644,7 @@ void IOTree::PrintInitSummary() const{
 		ss.str(std::string());
 	}
 	for(itObj=fObject.begin(); itObj!=fObject.end(); itObj++){
-		ss << itObj->second->fTreeName << "->" << itObj->first;
+		ss << itObj->first << "->" << itObj->second->fBranchName;
 		treeTable << ss.str();
 		ss.clear();
 		ss.str(std::string());

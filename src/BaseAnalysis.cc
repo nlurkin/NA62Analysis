@@ -92,11 +92,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		fNEvents = std::max(treeHandler->FillMCTruth(),
 				treeHandler->FillRawHeader());
 
+		fNEvents = GetIOTree()->BranchTrees(fNEvents);
 		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
 	}
-
-	if (IsTreeType())
-		fNEvents = GetIOTree()->BranchTrees(fNEvents);
 	else if (IsHistoType())
 		fNEvents = fIOHandler->GetInputFileNumber();
 
