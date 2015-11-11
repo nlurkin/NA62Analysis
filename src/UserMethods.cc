@@ -1151,12 +1151,17 @@ void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 void UserMethods::AddPrimitiveReader(TString detName) {
 	if (fParent->GetIOPrimitive())
 		fParent->GetIOPrimitive()->AddReader(detName);
-	else std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
 }
 
 TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
-	if(!fParent->GetIOPrimitive()){
-		std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
+	if (!fParent->GetIOPrimitive()) {
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
 		return nullptr;
 	}
 	return fParent->GetIOPrimitive()->GetReader(detName)->FindMatchingPrimitive(
@@ -1165,12 +1170,36 @@ TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
 
 std::vector<TPrimitive> UserMethods::FindAllPrimitiveInMatchingWindow(
 		TString detName) {
-	if(!fParent->GetIOPrimitive()){
-		std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
+	if (!fParent->GetIOPrimitive()) {
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
 		return std::vector<TPrimitive>();
 	}
 	return fParent->GetIOPrimitive()->GetReader(detName)->FindAllPrimitiveInMatchingWindow(
 			GetRawHeader()->GetTimeStamp(), GetRawHeader()->GetFineTime());
 }
 
+void UserMethods::SetL0MatchingWindowWidth(TString detName, float ns) {
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
+				ns);
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+}
+
+void UserMethods::SetL0MatchingWindowWidth(TString detName, int timeStamp,
+		short fineTime) {
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
+				timeStamp, fineTime);
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+}
+
 } /* namespace NA62Analysis */
+

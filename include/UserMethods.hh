@@ -283,6 +283,8 @@ public:
 	L2EBData* GetL2Data();
 	TPrimitive* FindMatchingPrimitive(TString detName);
 	std::vector<TPrimitive>  FindAllPrimitiveInMatchingWindow(TString detName);
+	void  SetL0MatchingWindowWidth(TString detName, float ns);
+	void  SetL0MatchingWindowWidth(TString detName, int timeStamp, short fineTime);
 
 	bool GetWithMC();
 	bool GetWithRawHeader();
