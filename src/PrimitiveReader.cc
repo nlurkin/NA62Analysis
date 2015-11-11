@@ -10,6 +10,7 @@
 #include <TChain.h>
 
 #include "TVEvent.hh" //For ClockPeriod
+#include "TPrimitive.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -31,7 +32,7 @@ bool PrimitiveReader::AddFile(TString fileName) {
 	return true;
 }
 
-TPrimitive* PrimitiveReader::findMatchingPrimitive(int timeStamp,
+TPrimitive* PrimitiveReader::FindMatchingPrimitive(int timeStamp,
 		short fineTime) {
 
 	TPrimitive previousPrimitive;
@@ -82,7 +83,7 @@ TPrimitive* PrimitiveReader::findMatchingPrimitive(int timeStamp,
 	return checkPrimitiveDeltaAndMoveTree(timeStamp, fineTime, tempPrimitive);
 }
 
-std::vector<TPrimitive> PrimitiveReader::findAllPrimitiveInMatchingWindow(
+std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 		int timeStamp, short fineTime) {
 	std::vector<TPrimitive> listPrim;
 

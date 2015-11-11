@@ -12,6 +12,7 @@
 #include "TermManip.hh"
 #include "ConfigSettings.hh"
 #include "OMMainWindow.hh"
+#include "IOPrimitive.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -20,8 +21,8 @@ BaseAnalysis::BaseAnalysis() :
 		Verbose("BaseAnalysis"), fNEvents(-1), fEventsDownscaling(0), fGraphicMode(
 				false), fInitialized(false), fContinuousReading(false), fSignalStop(
 				false), fDetectorAcceptanceInstance(nullptr), fIOHandler(
-				nullptr), fInitTime(true), fRunThread(nullptr), fOMMainWindow(
-				nullptr) {
+		nullptr), fIOPrimitive(nullptr), fInitTime(true), fRunThread(nullptr), fOMMainWindow(
+		nullptr) {
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
@@ -94,8 +95,7 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 
 		fNEvents = GetIOTree()->BranchTrees(fNEvents);
 		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
-	}
-	else if (IsHistoType())
+	} else if (IsHistoType())
 		fNEvents = fIOHandler->GetInputFileNumber();
 
 	int testEvent = 0;
@@ -706,6 +706,15 @@ void BaseAnalysis::ReconfigureAnalyzer(TString analyzerName,
 			it->ApplyParam(parameterName, parameter);
 		}
 	}
+}
+
+IOPrimitive* BaseAnalysis::GetIOPrimitive() {
+	return fIOPrimitive;
+}
+
+void BaseAnalysis::AddPrimitiveFile(TString fileName) {
+	if (fIOPrimitive)
+		fIOPrimitive->AddFile(fileName);
 }
 
 } /* namespace Core */

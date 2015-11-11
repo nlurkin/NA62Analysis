@@ -30,6 +30,7 @@ class Event;
 class L0TPData;
 class L1TPData;
 class L2EBData;
+class TPrimitive;
 
 namespace NA62Analysis {
 
@@ -271,6 +272,7 @@ public:
 			delete obj;
 		}
 	}
+	void AddPrimitiveReader(TString detName);
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString detName, TString outputName = "");
@@ -279,6 +281,9 @@ public:
 	L0TPData* GetL0Data();
 	L1TPData* GetL1Data();
 	L2EBData* GetL2Data();
+	TPrimitive* FindMatchingPrimitive(TString detName);
+	std::vector<TPrimitive>  FindAllPrimitiveInMatchingWindow(TString detName);
+
 	bool GetWithMC();
 	bool GetWithRawHeader();
 	bool GetIsTree();

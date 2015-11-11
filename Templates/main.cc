@@ -40,6 +40,7 @@ void usage(char* name)
 	cout << "  --ignore\t\t: Ignore non-existing trees and continue processing." << endl;
 	cout << "  --logtofile path\t: Write the log output to the specified file instead of standard output." << endl;
 	cout << "  --fast-start\t: Start processing immediately without reading input files headers." << endl;
+	cout << "  --prim path\t: Path to a primitive ROOT file." << endl;
 	cout << "\t\t\t Can be useful on CASTOR but total number of events is not known a priori" << endl;
 	cout << endl;
 	cout << "Mutually exclusive options groups:" << endl;
@@ -84,6 +85,7 @@ int main(int argc, char** argv){
 	TString configFile;
 	TString argTS;
 	TString logFile;
+	TString primFile;
 
 	int NEvt = 0;
 	int evtNb = -1;
@@ -96,12 +98,13 @@ int main(int argc, char** argv){
 	bool continuousReading = false;
 	bool downscaling = false;
 	bool fastStart = false;
+	bool logToFile = false;
+	bool usePrim = false;
 
 	int opt;
 	int n_options_read = 0;
 	int flReadPlots = 0;
 	int flIgnoreNonExisting = 0;
-	bool logToFile = false;
 	int flContinuousReading = 0;
 	int flFastStart = 0;
 
@@ -120,10 +123,11 @@ int main(int argc, char** argv){
 			{ "logtofile",	required_argument,	NULL,					'3'},
 			{ "continuous",	no_argument,		&flContinuousReading,	1},
 			{ "fast-start",	no_argument,		&flFastStart,			1},
+			{ "prim",		required_argument,	NULL,					'4'},
 			{0,0,0,0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:3:d", longopts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hi:v:gl:B:b:n:o:p:0:1:2:3:4:d", longopts, NULL)) != -1) {
 		n_options_read++;
 		switch (opt) {
 		// Short options only cases
@@ -181,6 +185,10 @@ int main(int argc, char** argv){
 			logFile = TString(optarg);
 			logToFile = true;
 			break;
+		case '4': /* primitive fiel, long_option: prim */
+			primFile = TString(optarg);
+			usePrim = true;
+			break;
 
 		case 0: /* getopt_long() set a variable, continue */
 			break;
@@ -226,6 +234,7 @@ int main(int argc, char** argv){
 
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	if(continuousReading) ban->StartContinuous(inFileName);
+	if(usePrim) ban->AddPrimitiveFile(primFile);
 	else retCode = ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();

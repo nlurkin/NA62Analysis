@@ -22,8 +22,8 @@ public:
 	virtual ~PrimitiveReader();
 
 	bool AddFile(TString fileName);
-	TPrimitive* findMatchingPrimitive(int timeStamp, short fineTime);
-	std::vector<TPrimitive> findAllPrimitiveInMatchingWindow(int timeStamp, short fineTime);
+	TPrimitive* FindMatchingPrimitive(int timeStamp, short fineTime);
+	std::vector<TPrimitive> FindAllPrimitiveInMatchingWindow(int timeStamp, short fineTime);
 
 private:
 	PrimitiveReader() :
