@@ -41,6 +41,7 @@ public:
 			TString configFile, Int_t NFiles, TString refFile,
 			bool allowNonExisting);
 	bool Process(Long64_t beginEvent, Long64_t maxEvent);
+	void InitPrimitives();
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);

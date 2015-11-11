@@ -1149,16 +1149,26 @@ void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 }
 
 void UserMethods::AddPrimitiveReader(TString detName) {
-	fParent->GetIOPrimitive()->AddReader(detName);
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->AddReader(detName);
+	else std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
 }
 
 TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
+	if(!fParent->GetIOPrimitive()){
+		std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
+		return nullptr;
+	}
 	return fParent->GetIOPrimitive()->GetReader(detName)->FindMatchingPrimitive(
 			GetRawHeader()->GetTimeStamp(), GetRawHeader()->GetFineTime());
 }
 
 std::vector<TPrimitive> UserMethods::FindAllPrimitiveInMatchingWindow(
 		TString detName) {
+	if(!fParent->GetIOPrimitive()){
+		std::cout << normal() << "Trying to use primitives but no primitive file provided." << std::endl;
+		return std::vector<TPrimitive>();
+	}
 	return fParent->GetIOPrimitive()->GetReader(detName)->FindAllPrimitiveInMatchingWindow(
 			GetRawHeader()->GetTimeStamp(), GetRawHeader()->GetFineTime());
 }

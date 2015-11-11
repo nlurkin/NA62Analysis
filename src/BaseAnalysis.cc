@@ -717,6 +717,10 @@ void BaseAnalysis::AddPrimitiveFile(TString fileName) {
 		fIOPrimitive->AddFile(fileName);
 }
 
+void BaseAnalysis::InitPrimitives() {
+	if(!fIOPrimitive) fIOPrimitive = new IOPrimitive();
+}
+
 } /* namespace Core */
 } /* namespace NA62Analysis */
 

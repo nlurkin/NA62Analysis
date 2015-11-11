@@ -227,14 +227,15 @@ int main(int argc, char** argv){
 	ban->SetDownscaling(downscaling);
 	if(readPlots) ban->SetReadType(NA62Analysis::Core::IOHandlerType::kHISTO);
 	else ban->SetReadType(NA62Analysis::Core::IOHandlerType::kTREE);
+	if(usePrim) ban->InitPrimitives();
 	if(fastStart) ban->SetFastStart(fastStart);
 	if(continuousReading) ban->SetContinuousReading(flContinuousReading);
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
+	if(usePrim) ban->AddPrimitiveFile(primFile);
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	if(continuousReading) ban->StartContinuous(inFileName);
-	if(usePrim) ban->AddPrimitiveFile(primFile);
 	else retCode = ban->Process(NEvt, evtNb);
 
 	if(graphicMode) theApp->Run();
