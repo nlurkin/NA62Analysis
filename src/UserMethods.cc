@@ -11,13 +11,14 @@
 
 #include "BaseAnalysis.hh"
 #include "CanvasOrganizer.hh"
+#include "IOPrimitive.hh"
+#include "TPrimitive.hh"
+#include "PrimitiveReader.hh"
 
 namespace NA62Analysis {
 
-UserMethods::UserMethods(Core::BaseAnalysis *ba):
-		Verbose("UserMethods"),
-		fParent(ba)
-{
+UserMethods::UserMethods(Core::BaseAnalysis *ba) :
+		Verbose("UserMethods"), fParent(ba) {
 	/// \MemberDescr
 	/// \param ba : Pointer to the parent BaseAnalysis instance
 	///
@@ -25,11 +26,8 @@ UserMethods::UserMethods(Core::BaseAnalysis *ba):
 	/// \EndMemberDescr
 }
 
-UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name):
-		Verbose(name),
-		fAnalyzerName(name),
-		fParent(ba)
-{
+UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name) :
+		Verbose(name), fAnalyzerName(name), fParent(ba) {
 	/// \MemberDescr
 	/// \param ba : Pointer to the parent BaseAnalysis instance
 	/// \param name : Display name
@@ -38,10 +36,8 @@ UserMethods::UserMethods(Core::BaseAnalysis *ba, std::string name):
 	/// \EndMemberDescr
 }
 
-UserMethods::UserMethods(const UserMethods &c):
-		Verbose(c),
-		fParent(c.fParent)
-{
+UserMethods::UserMethods(const UserMethods &c) :
+		Verbose(c), fParent(c.fParent) {
 	/// \MemberDescr
 	/// \param c : Reference of the object to copy
 	///
@@ -55,8 +51,8 @@ UserMethods::~UserMethods() {
 	/// \EndMemberDescr
 }
 
-
-void UserMethods::BookHisto(TString name, TH1* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TString name, TH1* histo, bool refresh,
+		TString directory) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
@@ -68,7 +64,7 @@ void UserMethods::BookHisto(TString name, TH1* histo, bool refresh, TString dire
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
 }
-void UserMethods::BookHisto(TH1* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TH1* histo, bool refresh, TString directory) {
 	/// \MemberDescr
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
@@ -77,10 +73,12 @@ void UserMethods::BookHisto(TH1* histo, bool refresh, TString directory){
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
-	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh,
+			directory);
 }
 
-void UserMethods::BookHisto(TString name, TH2* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TString name, TH2* histo, bool refresh,
+		TString directory) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
@@ -92,7 +90,7 @@ void UserMethods::BookHisto(TString name, TH2* histo, bool refresh, TString dire
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
 }
-void UserMethods::BookHisto(TH2* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TH2* histo, bool refresh, TString directory) {
 	/// \MemberDescr
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
@@ -101,10 +99,12 @@ void UserMethods::BookHisto(TH2* histo, bool refresh, TString directory){
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
-	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh,
+			directory);
 }
 
-void UserMethods::BookHisto(TString name, TGraph* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TString name, TGraph* histo, bool refresh,
+		TString directory) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param histo : Pointer to the histogram
@@ -116,7 +116,7 @@ void UserMethods::BookHisto(TString name, TGraph* histo, bool refresh, TString d
 
 	fHisto.BookHisto(name, histo, fAnalyzerName, refresh, directory);
 }
-void UserMethods::BookHisto(TGraph* histo, bool refresh, TString directory){
+void UserMethods::BookHisto(TGraph* histo, bool refresh, TString directory) {
 	/// \MemberDescr
 	/// \param histo : Pointer to the histogram
 	/// \param refresh : Set the plot as AutoUpdate
@@ -125,10 +125,12 @@ void UserMethods::BookHisto(TGraph* histo, bool refresh, TString directory){
 	/// Book a new histogram and make it available in the whole analyzer
 	/// \EndMemberDescr
 
-	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh, directory);
+	fHisto.BookHisto(histo->GetName(), histo, fAnalyzerName, refresh,
+			directory);
 }
 
-void UserMethods::BookHistoArray(TString baseName, TH1* histo, int number, bool refresh, TString directory){
+void UserMethods::BookHistoArray(TString baseName, TH1* histo, int number,
+		bool refresh, TString directory) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	/// \param histo : Pointer to the histogram to replicate
@@ -139,9 +141,11 @@ void UserMethods::BookHistoArray(TString baseName, TH1* histo, int number, bool 
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
+	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh,
+			directory);
 }
-void UserMethods::BookHistoArray(TH1* histo, int number, bool refresh, TString directory){
+void UserMethods::BookHistoArray(TH1* histo, int number, bool refresh,
+		TString directory) {
 	/// \MemberDescr
 	/// \param histo : Pointer to the histogram to replicate
 	///	\param number : Number of histograms to create
@@ -151,36 +155,12 @@ void UserMethods::BookHistoArray(TH1* histo, int number, bool refresh, TString d
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName,
+			refresh, directory);
 }
 
-void UserMethods::BookHistoArray(TString baseName, TH2* histo, int number, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param baseName : Name of the histogram. The index will be appended
-	/// \param histo : Pointer to the histogram to replicate
-	///	\param number : Number of histograms to create
-	/// \param refresh : Set the plots as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
-	///
-	/// Book an array of similar histograms and make it available in the whole analyzer.
-	/// \EndMemberDescr
-
-	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
-}
-void UserMethods::BookHistoArray(TH2* histo, int number, bool refresh, TString directory){
-	/// \MemberDescr
-	/// \param histo : Pointer to the histogram to replicate
-	///	\param number : Number of histograms to create
-	/// \param refresh : Set the plots as AutoUpdate
-	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
-	///
-	/// Book an array of similar histograms and make it available in the whole analyzer.
-	/// \EndMemberDescr
-
-	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
-}
-
-void UserMethods::BookHistoArray(TString baseName, TGraph* histo, int number, bool refresh, TString directory){
+void UserMethods::BookHistoArray(TString baseName, TH2* histo, int number,
+		bool refresh, TString directory) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	/// \param histo : Pointer to the histogram to replicate
@@ -191,9 +171,11 @@ void UserMethods::BookHistoArray(TString baseName, TGraph* histo, int number, bo
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh, directory);
+	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh,
+			directory);
 }
-void UserMethods::BookHistoArray(TGraph* histo, int number, bool refresh, TString directory){
+void UserMethods::BookHistoArray(TH2* histo, int number, bool refresh,
+		TString directory) {
 	/// \MemberDescr
 	/// \param histo : Pointer to the histogram to replicate
 	///	\param number : Number of histograms to create
@@ -203,10 +185,41 @@ void UserMethods::BookHistoArray(TGraph* histo, int number, bool refresh, TStrin
 	/// Book an array of similar histograms and make it available in the whole analyzer.
 	/// \EndMemberDescr
 
-	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName, refresh, directory);
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName,
+			refresh, directory);
 }
 
-void UserMethods::FillHisto(TString name, TString x, double w){
+void UserMethods::BookHistoArray(TString baseName, TGraph* histo, int number,
+		bool refresh, TString directory) {
+	/// \MemberDescr
+	/// \param baseName : Name of the histogram. The index will be appended
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	fHisto.BookHistoArray(baseName, histo, number, fAnalyzerName, refresh,
+			directory);
+}
+void UserMethods::BookHistoArray(TGraph* histo, int number, bool refresh,
+		TString directory) {
+	/// \MemberDescr
+	/// \param histo : Pointer to the histogram to replicate
+	///	\param number : Number of histograms to create
+	/// \param refresh : Set the plots as AutoUpdate
+	/// \param directory : analyzer subdirectory to save the plots when calling SaveAllPlots()
+	///
+	/// Book an array of similar histograms and make it available in the whole analyzer.
+	/// \EndMemberDescr
+
+	fHisto.BookHistoArray(histo->GetName(), histo, number, fAnalyzerName,
+			refresh, directory);
+}
+
+void UserMethods::FillHisto(TString name, TString x, double w) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -218,7 +231,7 @@ void UserMethods::FillHisto(TString name, TString x, double w){
 	fHisto.FillHisto(name, x, w);
 }
 
-void UserMethods::FillHisto(TString name, TString x, double y, double w){
+void UserMethods::FillHisto(TString name, TString x, double y, double w) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -231,7 +244,7 @@ void UserMethods::FillHisto(TString name, TString x, double y, double w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHisto(TString name, TString x, TString y, double w){
+void UserMethods::FillHisto(TString name, TString x, TString y, double w) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -244,7 +257,7 @@ void UserMethods::FillHisto(TString name, TString x, TString y, double w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHisto(TString name, double x, double w){
+void UserMethods::FillHisto(TString name, double x, double w) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -256,7 +269,7 @@ void UserMethods::FillHisto(TString name, double x, double w){
 	fHisto.FillHisto(name, x, w);
 }
 
-void UserMethods::FillHisto(TString name, double x){
+void UserMethods::FillHisto(TString name, double x) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -267,7 +280,7 @@ void UserMethods::FillHisto(TString name, double x){
 	fHisto.FillHisto(name, x);
 }
 
-void UserMethods::FillHisto(TString name, double x, double y, double w){
+void UserMethods::FillHisto(TString name, double x, double y, double w) {
 	/// \MemberDescr
 	/// \param name : Name of the histogram
 	/// \param x : abscissa
@@ -280,7 +293,8 @@ void UserMethods::FillHisto(TString name, double x, double y, double w){
 	fHisto.FillHisto(name, x, y, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, double w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x,
+		double w) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -293,7 +307,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, double 
 	fHisto.FillHistoArray(baseName, index, x, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, double y, double w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x,
+		double y, double w) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -307,7 +322,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, double 
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString y, double w){
+void UserMethods::FillHistoArray(TString baseName, int index, TString x,
+		TString y, double w) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -321,7 +337,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, TString x, TString
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, double x, double w){
+void UserMethods::FillHistoArray(TString baseName, int index, double x,
+		double w) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -334,7 +351,7 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x, double w
 	fHisto.FillHistoArray(baseName, index, x, w);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, double x){
+void UserMethods::FillHistoArray(TString baseName, int index, double x) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -346,7 +363,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x){
 	fHisto.FillHistoArray(baseName, index, x);
 }
 
-void UserMethods::FillHistoArray(TString baseName, int index, double x, double y, double w){
+void UserMethods::FillHistoArray(TString baseName, int index, double x,
+		double y, double w) {
 	/// \MemberDescr
 	/// \param baseName : Name of the histogram. The index will be appended
 	///	\param index : Array index of the Histogram to fill. If booked with BookHistoArray, starts at 0 to N-1.
@@ -360,7 +378,8 @@ void UserMethods::FillHistoArray(TString baseName, int index, double x, double y
 	fHisto.FillHistoArray(baseName, index, x, y, w);
 }
 
-void UserMethods::ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TString,void*> &branches){
+void UserMethods::ExportAllPlot(std::map<TString, TTree*> &trees,
+		std::map<TString, void*> &branches) {
 	/// \MemberDescr
 	/// \param trees : pointer to the list of TTrees
 	/// \param branches : point to the list of branches
@@ -371,7 +390,7 @@ void UserMethods::ExportAllPlot(std::map<TString,TTree*> &trees, std::map<TStrin
 	fHisto.ExportAllPlot(trees, branches);
 }
 
-void UserMethods::DrawAllPlots(){
+void UserMethods::DrawAllPlots() {
 	/// \MemberDescr
 	/// Draw all booked histograms on the screen
 	/// \EndMemberDescr
@@ -379,7 +398,7 @@ void UserMethods::DrawAllPlots(){
 	fHisto.DrawAllPlots(fAnalyzerName);
 }
 
-void UserMethods::UpdatePlots(Long64_t evtNbr){
+void UserMethods::UpdatePlots(Long64_t evtNbr) {
 	/// \MemberDescr
 	/// \param evtNbr : Current event number
 	///
@@ -389,7 +408,7 @@ void UserMethods::UpdatePlots(Long64_t evtNbr){
 	fHisto.UpdatePlots(evtNbr);
 }
 
-void UserMethods::SaveAllPlots(){
+void UserMethods::SaveAllPlots() {
 	/// \MemberDescr
 	/// Write all the booked histograms into the output file
 	/// \EndMemberDescr
@@ -397,28 +416,30 @@ void UserMethods::SaveAllPlots(){
 	fHisto.SaveAllPlots(fAnalyzerName);
 }
 
-void UserMethods::SetUpdateInterval(int interval){
+void UserMethods::SetUpdateInterval(int interval) {
 	/// \MemberDescr
 	/// \param interval : Events interval at which the plots should be updated
 	//
 	/// Set the update interval for the plots
 	/// \EndMemberDescr
 
-	std::cout << normal() << "Setting plot update interval to " << interval << std::endl;
+	std::cout << normal() << "Setting plot update interval to " << interval
+			<< std::endl;
 	fHisto.SetUpdateInterval(interval);
 }
 
-void UserMethods::BookCounter(TString cName){
+void UserMethods::BookCounter(TString cName) {
 	/// \MemberDescr
 	/// \param cName : Name of the Counter
 	///
 	/// Book a new counter
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->BookCounter(fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->BookCounter(
+			fAnalyzerName + TString(".") + cName);
 }
 
-void UserMethods::AddCounterToEventFraction(TString efName, TString cName){
+void UserMethods::AddCounterToEventFraction(TString efName, TString cName) {
 	/// \MemberDescr
 	/// \param efName : Name of the EventFraction instance
 	/// \param cName : Name of the Counter
@@ -426,9 +447,10 @@ void UserMethods::AddCounterToEventFraction(TString efName, TString cName){
 	/// Add a counter in the specified EventFraction table
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->AddCounterToEventFraction(efName, fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->AddCounterToEventFraction(efName,
+			fAnalyzerName + TString(".") + cName);
 }
-void UserMethods::NewEventFraction(TString name){
+void UserMethods::NewEventFraction(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the eventFraction table
 	///
@@ -437,7 +459,7 @@ void UserMethods::NewEventFraction(TString name){
 
 	fParent->GetCounterHandler()->NewEventFraction(name);
 }
-void UserMethods::DefineSampleSizeCounter(TString efName, TString cName){
+void UserMethods::DefineSampleSizeCounter(TString efName, TString cName) {
 	/// \MemberDescr
 	/// \param efName : Name of the EventFraction instance
 	/// \param cName : Name of the Counter
@@ -445,9 +467,10 @@ void UserMethods::DefineSampleSizeCounter(TString efName, TString cName){
 	/// Define counter as SampleSize in the specified EventFraction table
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->DefineSampleSizeCounter(efName, fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->DefineSampleSizeCounter(efName,
+			fAnalyzerName + TString(".") + cName);
 }
-void UserMethods::SetSignificantDigits(TString efName, int v){
+void UserMethods::SetSignificantDigits(TString efName, int v) {
 	/// \MemberDescr
 	/// \param efName : Name of the EventFraction instance
 	/// \param v : Number of significant digits
@@ -458,7 +481,7 @@ void UserMethods::SetSignificantDigits(TString efName, int v){
 	fParent->GetCounterHandler()->SetSignificantDigits(efName, v);
 }
 
-void UserMethods::SetCounterValue(TString cName, int v){
+void UserMethods::SetCounterValue(TString cName, int v) {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	/// \param v : value
@@ -466,9 +489,10 @@ void UserMethods::SetCounterValue(TString cName, int v){
 	/// Set the value of a previously booked counter
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->SetCounterValue(fAnalyzerName + TString(".") + cName, v);
+	fParent->GetCounterHandler()->SetCounterValue(
+			fAnalyzerName + TString(".") + cName, v);
 }
-void UserMethods::IncrementCounter(TString cName, int delta){
+void UserMethods::IncrementCounter(TString cName, int delta) {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	/// \param delta : value
@@ -476,9 +500,10 @@ void UserMethods::IncrementCounter(TString cName, int delta){
 	/// Increment a previously booked counter by delta
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->IncrementCounter(fAnalyzerName + TString(".") + cName, delta);
+	fParent->GetCounterHandler()->IncrementCounter(
+			fAnalyzerName + TString(".") + cName, delta);
 }
-void UserMethods::DecrementCounter(TString cName, int delta){
+void UserMethods::DecrementCounter(TString cName, int delta) {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	/// \param delta : value
@@ -486,27 +511,30 @@ void UserMethods::DecrementCounter(TString cName, int delta){
 	/// Decrement a previously booked counter by delta
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->DecrementCounter(fAnalyzerName + TString(".") + cName, delta);
+	fParent->GetCounterHandler()->DecrementCounter(
+			fAnalyzerName + TString(".") + cName, delta);
 }
-void UserMethods::IncrementCounter(TString cName){
+void UserMethods::IncrementCounter(TString cName) {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	///
 	/// Increment a previously booked counter by 1
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->IncrementCounter(fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->IncrementCounter(
+			fAnalyzerName + TString(".") + cName);
 }
-void UserMethods::DecrementCounter(TString cName){
+void UserMethods::DecrementCounter(TString cName) {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	///
 	/// Decrement a previously booked counter by 1
 	/// \EndMemberDescr
 
-	fParent->GetCounterHandler()->DecrementCounter(fAnalyzerName + TString(".") + cName);
+	fParent->GetCounterHandler()->DecrementCounter(
+			fAnalyzerName + TString(".") + cName);
 }
-int UserMethods::GetCounterValue(TString cName) const{
+int UserMethods::GetCounterValue(TString cName) const {
 	/// \MemberDescr
 	/// \param cName : Name of the counter
 	/// \return Value of the requested counter
@@ -514,10 +542,11 @@ int UserMethods::GetCounterValue(TString cName) const{
 	/// Get counter value
 	/// \EndMemberDescr
 
-	return fParent->GetCounterHandler()->GetCounterValue(fAnalyzerName + TString(".") + cName);
+	return fParent->GetCounterHandler()->GetCounterValue(
+			fAnalyzerName + TString(".") + cName);
 }
 
-void UserMethods::RegisterOutput(TString name, const void* const address){
+void UserMethods::RegisterOutput(TString name, const void* const address) {
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param address : pointer to the variable that is registered
@@ -528,7 +557,7 @@ void UserMethods::RegisterOutput(TString name, const void* const address){
 	fParent->RegisterOutput(fAnalyzerName + TString(".") + name, address);
 }
 
-void UserMethods::SetOutputState(TString name, OutputState state){
+void UserMethods::SetOutputState(TString name, OutputState state) {
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param state : state to be set
@@ -539,7 +568,7 @@ void UserMethods::SetOutputState(TString name, OutputState state){
 	fParent->SetOutputState(fAnalyzerName + TString(".") + name, state);
 }
 
-const void *UserMethods::GetOutput(TString name, OutputState &state) const{
+const void *UserMethods::GetOutput(TString name, OutputState &state) const {
 	/// \MemberDescr
 	/// \param name : name of the output
 	/// \param state : is filled with the current state of the output
@@ -549,7 +578,7 @@ const void *UserMethods::GetOutput(TString name, OutputState &state) const{
 	return fParent->GetOutput(name, state);
 }
 
-DetectorAcceptance *UserMethods::GetDetectorAcceptanceInstance(){
+DetectorAcceptance *UserMethods::GetDetectorAcceptanceInstance() {
 	/// \MemberDescr
 	/// \return Global instance of DetectorAcceptance
 	/// \EndMemberDescr
@@ -568,34 +597,44 @@ const void* UserMethods::GetOutputVoid(TString name, OutputState &state) const {
 	return fParent->GetOutput(name, state);
 }
 
-void UserMethods::RequestL0Data(){
+void UserMethods::RequestL0Data() {
 	/// \MemberDescr
 	/// Request the L0 data branch
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L0TPData", "L0TPData", new L0TPData);
-	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		fParent->GetIOTree()->RequestTree("Reco", "L0TPData", "L0TPData",
+				new L0TPData);
+	else
+		std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
 }
 
-void UserMethods::RequestL1Data(){
+void UserMethods::RequestL1Data() {
 	/// \MemberDescr
 	/// Request the L1 data branch
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L1TPData", "L1TPData", new L1TPData);
-	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		fParent->GetIOTree()->RequestTree("Reco", "L1TPData", "L1TPData",
+				new L1TPData);
+	else
+		std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
 }
 
-void UserMethods::RequestL2Data(){
+void UserMethods::RequestL2Data() {
 	/// \MemberDescr
 	/// Request the L2 data branch
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree("Reco", "L2EBData", "L2EBData", new L2EBData);
-	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		fParent->GetIOTree()->RequestTree("Reco", "L2EBData", "L2EBData",
+				new L2EBData);
+	else
+		std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
 }
 
-void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt, TString outputStage){
+void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt,
+		TString outputStage) {
 	/// \MemberDescr
 	/// \param detectorName : Name of the Detector branch to open
 	/// \param evt : Pointer to an instance of a detector event (MC or Reco)
@@ -607,79 +646,97 @@ void UserMethods::RequestTree(TString detectorName, TDetectorVEvent *evt, TStrin
 	/// TDetectorVEvent class instance).
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) fParent->GetIOTree()->RequestTree(detectorName, evt, outputStage);
-	else std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		fParent->GetIOTree()->RequestTree(detectorName, evt, outputStage);
+	else
+		std::cout << user() << "[WARNING] Not reading TTrees" << std::endl;
 }
 
-L0TPData* UserMethods::GetL0Data(){
+L0TPData* UserMethods::GetL0Data() {
 	/// \MemberDescr
 	/// \return L0TPData object
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return static_cast<L0TPData*>(fParent->GetIOTree()->GetObject("L0TPData", "Reco"));
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return static_cast<L0TPData*>(fParent->GetIOTree()->GetObject(
+				"Reco", "L0TPData"));
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-L1TPData* UserMethods::GetL1Data(){
+L1TPData* UserMethods::GetL1Data() {
 	/// \MemberDescr
 	/// \return L0TPData object
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return static_cast<L1TPData*>(fParent->GetIOTree()->GetObject("L1TPData", "Reco"));
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return static_cast<L1TPData*>(fParent->GetIOTree()->GetObject(
+				"Reco", "L1TPData"));
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-L2EBData* UserMethods::GetL2Data(){
+L2EBData* UserMethods::GetL2Data() {
 	/// \MemberDescr
 	/// \return L0TPData object
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return static_cast<L2EBData*>(fParent->GetIOTree()->GetObject("L2EBData", "Reco"));
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return static_cast<L2EBData*>(fParent->GetIOTree()->GetObject(
+				"Reco", "L2EBData"));
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-TDetectorVEvent *UserMethods::GetEvent(TString name, TString branchName){
+TDetectorVEvent *UserMethods::GetEvent(TString detName, TString outputName) {
 	/// \MemberDescr
-	/// \param name : Name of the tree from which the event is read
-	/// \param branchName : Name of the branch
+	/// \param detName : Name of the detector from which the event is read
+	/// \param outputName : Name of the output stage (Reco, Digis, MC)
 	/// \return the pointer to the event corresponding to the given tree and the given branch.
 	///
-	/// If branchName is left empty and there is only 1 branch requested on this tree, this
-	/// single branch is returned. If there is more than 1 branch requested on this tree,
-	/// return either the "Reco" or the "Hits" branch (the first one found - undefined behaviour
-	/// if both "Reco" and "Hits" branches have been requested).
-	/// If branchName is specified, try to return the specified branch.
+	/// If outputName is left empty and there is only 1 tree requested for this detector, this
+	/// single tree is returned. If there is more than 1 tree requested for this detector,
+	/// return either the "Reco" or the "Hits" tree (the first one found - undefined behaviour
+	/// if both "Reco" and "Hits" trees have been requested).
+	/// If outputName is specified, try to return the specified tree.
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetEvent(name, branchName);
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetEvent(detName, outputName);
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-Event* UserMethods::GetMCEvent(){
+Event* UserMethods::GetMCEvent() {
 	/// \MemberDescr
 	/// \return Pointer to the MC event.
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetMCTruthEvent();
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetMCTruthEvent();
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-RawHeader* UserMethods::GetRawHeader(){
+RawHeader* UserMethods::GetRawHeader() {
 	/// \MemberDescr
 	/// \return Pointer to the RawHeader.
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetRawHeaderEvent();
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetRawHeaderEvent();
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
 }
 
-TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendOnNewFile){
+TH1* UserMethods::RequestHistogram(TString directory, TString name,
+		bool appendOnNewFile) {
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file where this histogram will be searched
 	/// \param name : Name of the searched histogram
@@ -691,13 +748,16 @@ TH1* UserMethods::RequestHistogram(TString directory, TString name, bool appendO
 	/// Request histograms from input file.
 	/// \EndMemberDescr
 
-	if(!fParent->IsHistoType()){
+	if (!fParent->IsHistoType()) {
 		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 		return nullptr;
 	}
-	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, appendOnNewFile);
+	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name,
+			appendOnNewFile);
 
-	if(!histo) std::cout << normal() << "Requested input histogram was not found " << directory << "/" << name << std::endl;
+	if (!histo)
+		std::cout << normal() << "Requested input histogram was not found "
+				<< directory << "/" << name << std::endl;
 	return histo;
 }
 
@@ -753,7 +813,8 @@ Core::HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph() {
 	return fHisto.GetIteratorTGraph();
 }
 
-Core::HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph(TString baseName) {
+Core::HistoHandler::IteratorTGraph UserMethods::GetIteratorTGraph(
+		TString baseName) {
 	/// \MemberDescr
 	/// \param baseName: BaseName of the histograms to iterate over.
 	/// \return Iterator to TGraph
@@ -773,19 +834,22 @@ TChain* UserMethods::GetTree(TString name) {
 	return fParent->GetTree(name);
 }
 
-void* UserMethods::GetObjectVoid(TString name){
+void* UserMethods::GetObjectVoid(TString name) {
 	/// \MemberDescr
 	/// \param name: Name of the object
 	/// Internal interface to BaseAnalysis for GetObject method
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetObject(name);
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetObject(name);
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return nullptr;
 }
 
-bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString className, void* obj){
+bool UserMethods::RequestTreeVoid(TString name, TString branchName,
+		TString className, void* obj) {
 	/// \MemberDescr
 	/// \param name: Name of the tree
 	/// \param branchName: Name of the branch in the requested tree
@@ -796,87 +860,100 @@ bool UserMethods::RequestTreeVoid(TString name, TString branchName, TString clas
 	/// Internal interface to BaseAnalysis for RequestTree method
 	/// \EndMemberDescr
 
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->RequestTree(name, branchName, className, obj);
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->RequestTree(name, branchName, className,
+				obj);
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
 
-TH1* UserMethods::GetReferenceTH1(TString name){
+TH1* UserMethods::GetReferenceTH1(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the reference plot
 	/// \return Pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH1(name);
-	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
+	if (fParent->IsHistoType())
+		return fParent->GetIOHisto()->GetReferenceTH1(name);
+	else
+		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
 
-TH2* UserMethods::GetReferenceTH2(TString name){
+TH2* UserMethods::GetReferenceTH2(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the reference plot
 	/// \return Pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTH2(name);
-	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
+	if (fParent->IsHistoType())
+		return fParent->GetIOHisto()->GetReferenceTH2(name);
+	else
+		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
 
-TGraph* UserMethods::GetReferenceTGraph(TString name){
+TGraph* UserMethods::GetReferenceTGraph(TString name) {
 	/// \MemberDescr
 	/// \param name : Name of the reference plot
 	/// \return Pointer to the specified reference histogram. If not found, return NULL.
 	/// \EndMemberDescr
 
-	if(fParent->IsHistoType()) return fParent->GetIOHisto()->GetReferenceTGraph(name);
-	else std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
+	if (fParent->IsHistoType())
+		return fParent->GetIOHisto()->GetReferenceTGraph(name);
+	else
+		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 
 	return nullptr;
 }
 
-Long64_t UserMethods::GetNEvents(){
+Long64_t UserMethods::GetNEvents() {
 	/// \MemberDescr
 	/// \return Total number of events loaded from input trees.
 	/// \EndMemberDescr
 	return fParent->GetNEvents();
 }
 
-bool UserMethods::GetWithMC(){
+bool UserMethods::GetWithMC() {
 	/// \MemberDescr
 	/// \return true if the input file contains MC events
 	/// \EndMemberDescr
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithMC();
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetWithMC();
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
 
-bool UserMethods::GetWithRawHeader(){
+bool UserMethods::GetWithRawHeader() {
 	/// \MemberDescr
 	/// \return true if the input file contains RawHeader
 	/// \EndMemberDescr
-	if(fParent->IsTreeType()) return fParent->GetIOTree()->GetWithRawHeader();
-	else std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
+	if (fParent->IsTreeType())
+		return fParent->GetIOTree()->GetWithRawHeader();
+	else
+		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 
 	return false;
 }
 
 bool UserMethods::GetIsTree() {
-  /// \MemberDescr
-  /// \return True if the IO Handler is able to read TTrees
-  /// \EndMemberDescr
-  return fParent->IsTreeType();
+	/// \MemberDescr
+	/// \return True if the IO Handler is able to read TTrees
+	/// \EndMemberDescr
+	return fParent->IsTreeType();
 }
 
 bool UserMethods::GetIsHisto() {
-  /// \MemberDescr
-  /// \return True if the IO Handler is only able to read histograms (--histo flag)
-  /// \EndMemberDescr
-  return fParent->IsHistoType();
+	/// \MemberDescr
+	/// \return True if the IO Handler is only able to read histograms (--histo flag)
+	/// \EndMemberDescr
+	return fParent->IsHistoType();
 }
 
 TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
@@ -888,17 +965,21 @@ TH1* UserMethods::GetInputHistogram(TString directory, TString name) {
 	/// Request histograms from input file.
 	/// \EndMemberDescr
 
-	if(!fParent->IsHistoType()){
+	if (!fParent->IsHistoType()) {
 		std::cout << normal() << "[WARNING] Not reading Histos" << std::endl;
 		return nullptr;
 	}
-	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name, false);
+	TH1* histo = fParent->GetIOHisto()->GetInputHistogram(directory, name,
+			false);
 
-	if(!histo) std::cout << normal() << "Requested input histogram was not found " << directory << "/" << name << std::endl;
+	if (!histo)
+		std::cout << normal() << "Requested input histogram was not found "
+				<< directory << "/" << name << std::endl;
 	return histo;
 }
 
-std::vector<Core::IOHandler::keyPair> UserMethods::GetListOfKeys(TString directory) {
+std::vector<Core::IOHandler::keyPair> UserMethods::GetListOfKeys(
+		TString directory) {
 	/// \MemberDescr
 	/// \param directory : Directory in the input ROOT file
 	/// \return A vector of keys available in the given directory. The key contains
@@ -991,7 +1072,8 @@ void UserMethods::CreateCanvas(TString name, int width, int height) {
 	fHisto.CreateCanvas(name, width, height);
 }
 
-bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName, int row, int col) {
+bool UserMethods::PlacePlotOnCanvas(TString histoName, TString canvasName,
+		int row, int col) {
 	/// \MemberDescr
 	/// \param histoName: Name of the plot
 	/// \param canvasName: Name of the canvas
@@ -1027,7 +1109,8 @@ bool UserMethods::UpdateCanvas(TString canvasName) {
 	return fHisto.UpdateCanvas(canvasName);
 }
 
-void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* refPtr) {
+void UserMethods::SetCanvasReference(TString canvasName, TString histo,
+		TH1* refPtr) {
 	/// \MemberDescr
 	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
@@ -1039,7 +1122,8 @@ void UserMethods::SetCanvasReference(TString canvasName, TString histo, TH1* ref
 	fHisto.SetCanvasReference(canvasName, histo, refPtr);
 }
 
-void UserMethods::SetCanvasReference(TString canvasName, TString histo, TGraph* refPtr) {
+void UserMethods::SetCanvasReference(TString canvasName, TString histo,
+		TGraph* refPtr) {
 	/// \MemberDescr
 	/// \param canvasName Name of the canvas that contains the histogram to which the reference will be added
 	/// \param histo Name of the histogram to which the reference will be added
@@ -1062,6 +1146,59 @@ void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 	/// \EndMemberDescr
 
 	fParent->ReconfigureAnalyzer(analyzerName, parameterName, parameterValue);
+}
+
+void UserMethods::AddPrimitiveReader(TString detName, bool sorted) {
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->AddReader(detName, sorted);
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+}
+
+TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
+	if (!fParent->GetIOPrimitive()) {
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+		return nullptr;
+	}
+	return fParent->GetIOPrimitive()->GetReader(detName)->FindMatchingPrimitive(
+			GetRawHeader()->GetTimeStamp(), GetRawHeader()->GetFineTime());
+}
+
+std::vector<TPrimitive> UserMethods::FindAllPrimitiveInMatchingWindow(
+		TString detName) {
+	if (!fParent->GetIOPrimitive()) {
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+		return std::vector<TPrimitive>();
+	}
+	return fParent->GetIOPrimitive()->GetReader(detName)->FindAllPrimitiveInMatchingWindow(
+			GetRawHeader()->GetTimeStamp(), GetRawHeader()->GetFineTime());
+}
+
+void UserMethods::SetL0MatchingWindowWidth(TString detName, float ns) {
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
+				ns);
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
+}
+
+void UserMethods::SetL0MatchingWindowWidth(TString detName, int timeStamp,
+		short fineTime) {
+	if (fParent->GetIOPrimitive())
+		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
+				timeStamp, fineTime);
+	else
+		std::cout << normal()
+				<< "Trying to use primitives but no primitive file provided."
+				<< std::endl;
 }
 
 } /* namespace NA62Analysis */
