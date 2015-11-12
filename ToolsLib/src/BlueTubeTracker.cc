@@ -46,7 +46,7 @@ BlueTubeTracker::BlueTubeTracker() {
   // The valid range of initial and final Z coordinates extend beyond the above limits.
 
   fZmin = 100000;
-  fZmax = 183311; // start of the STRAW1 responsibility region in NA62MC
+  fZmax = 183311; // start of Spectrometer responsibility region 0 in NA62MC
 
   fMap = new BlueTubeMagneticFieldMap(fZmin, fZmax);
   fNPlanes = fMap->GetNPlanes();

@@ -16,8 +16,8 @@ class SpecMUV3AssociationRecord {
 public:
 
   SpecMUV3AssociationRecord();
-  SpecMUV3AssociationRecord (Int_t, Int_t, Double_t, Double_t, Double_t, Double_t, Double_t);
-  SpecMUV3AssociationRecord (Int_t, Int_t, Double_t, Double_t, Double_t, TVector2);
+  SpecMUV3AssociationRecord (Int_t, Int_t, Double_t, Double_t, Double_t, Double_t, Double_t, Bool_t);
+  SpecMUV3AssociationRecord (Int_t, Int_t, Double_t, Double_t, Double_t, TVector2, Bool_t);
 
   virtual ~SpecMUV3AssociationRecord() {}
 
@@ -26,7 +26,7 @@ public:
   Double_t GetMuonTime()               { return fMuonTime;                }
   Double_t GetTrackTileDistance()      { return fTrackTileDistance;       }
   Double_t GetTrackCandidateDistance() { return fTrackCandidateDistance;  }
-  Bool_t   GetDirectMatch()            { return (fTrackTileDistance<0);   }
+  Bool_t   GetDirectMatch()            { return fDirectMatch;             }
   Double_t GetMuonX()                  { return fMuonX;                   }
   Double_t GetMuonY()                  { return fMuonY;                   }
   TVector2 GetMuonXY()                 { return TVector2(fMuonX, fMuonY); }
@@ -49,10 +49,11 @@ private:
   Int_t    fMuonID;      ///< ID of the associated MUV3 candidate
   Int_t    fTileID;      ///< MUV3 candidate tile ID
   Double_t fMuonTime;    ///< MUV3 candidate time
-  Double_t fTrackTileDistance; ///< Distance between extrapolated track and tile boundary (-1 if inside tile)
+  Double_t fTrackTileDistance; ///< Distance between extrapolated track and tile boundary (0 if inside tile)
   Double_t fTrackCandidateDistance; ///< Distance between extrapolated track and centre of MUV3 tile
   Double_t fMuonX;       ///< Centre of MUV3 tile: X coordinate
   Double_t fMuonY;       ///< Centre of MUV3 tile: Y coordinate
+  Bool_t   fDirectMatch; ///< extrapolated track in the same tile as muon
 };
 
 #endif

@@ -18,25 +18,26 @@ using namespace std;
 
 SpecMUV3AssociationRecord::SpecMUV3AssociationRecord() :
   fMuonID(-1), fTileID(-1), fMuonTime(0),
-  fTrackTileDistance(-1), fTrackCandidateDistance(-1), fMuonX(0), fMuonY(0) {}
+  fTrackTileDistance(-1), fTrackCandidateDistance(-1), fMuonX(0), fMuonY(0), fDirectMatch(kTRUE) {}
 
 SpecMUV3AssociationRecord::SpecMUV3AssociationRecord
 (Int_t MuonID, Int_t TileID, Double_t Time,
- Double_t TrackTileDistance, Double_t TrackCandidateDistance, Double_t MuonX, Double_t MuonY) :
+ Double_t TrackTileDistance, Double_t TrackCandidateDistance, Double_t MuonX, Double_t MuonY, Bool_t DirectMatch) :
   fMuonID(MuonID), fTileID(TileID), fMuonTime(Time),
   fTrackTileDistance(TrackTileDistance), fTrackCandidateDistance(TrackCandidateDistance),
-  fMuonX(MuonX), fMuonY(MuonY) {}
+  fMuonX(MuonX), fMuonY(MuonY), fDirectMatch(DirectMatch) {}
 
 SpecMUV3AssociationRecord::SpecMUV3AssociationRecord
 (Int_t MuonID, Int_t TileID, Double_t Time,
- Double_t TrackTileDistance, Double_t TrackCandidateDistance, TVector2 MuonXY) :
+ Double_t TrackTileDistance, Double_t TrackCandidateDistance, TVector2 MuonXY, Bool_t DirectMatch) :
   fMuonID(MuonID), fTileID(TileID), fMuonTime(Time),
   fTrackTileDistance(TrackTileDistance), fTrackCandidateDistance(TrackCandidateDistance),
-  fMuonX(MuonXY.X()), fMuonY(MuonXY.Y()) {}
+  fMuonX(MuonXY.X()), fMuonY(MuonXY.Y()), fDirectMatch(DirectMatch) {}
 
 void SpecMUV3AssociationRecord::Clear() {
   fMuonID = fTileID = fTrackTileDistance = fTrackCandidateDistance = -1;
   fMuonTime = fMuonX = fMuonY = 0.0;
+  fDirectMatch = kTRUE;
 }
 
 void SpecMUV3AssociationRecord::Print() {
@@ -45,5 +46,6 @@ void SpecMUV3AssociationRecord::Print() {
        << " Time: " << fMuonTime
        << " MuonXY: " << fMuonX << " " << fMuonY
        << " D(TrTile): "<< fTrackTileDistance
-       << " D(TrMu): "<< fTrackCandidateDistance << endl;
+       << " D(TrMu): "<< fTrackCandidateDistance
+       << " DirectMatch: "<< fDirectMatch << endl;
 }

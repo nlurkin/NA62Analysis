@@ -43,7 +43,6 @@ public:
   void EvaluateT0s(TH2D*, int, bool);
   void EvaluateChannelT0(int, bool);
   virtual bool FitChannel(int, double, double, double, double);
-  void EvaluateGlobalOffset();
   void GenerateT0TextFile();
   void GeneratePDFReport();
   virtual void RequestUserHistograms() {}
@@ -54,10 +53,10 @@ private:
 
 protected:
 
-  bool    fEvaluateGlobalT0, fEvaluateT0s;
+  bool    fEvaluateT0s;
   int     fNChannels, fNChannelsActive, ActiveChannelMap[20000];
   int     fBurstCounter[20000], fTimeBinsCounter[20000];
-  double  fBinWidth, fGlobalT0;
+  double  fBinWidth;
   bool    fIsActive[20000];
   TH2D    *fH2, *fH2_Partial, *fH2_Integrated;
   TH1D    *fHNEventsProcessedPerBurst, *fHRawTime, *fHTime[20000], *fHT0VsTime[20000];
@@ -72,7 +71,6 @@ protected:
   TString fDetectorName;       ///< Name of the detector
   TString fDirName;            ///< Name of directory in the input file
   TString fTH2Name;            ///< Name of the input histogram for T0 evaluation
-  TString fRawTimeHistoName;   ///< Name of the input histogram for global offset evaluation
   TString fConfFileName;       ///< Configuration file name (optional, of one wants channel map in the printout)
   TString fOutTextFileName;    ///< Name of the output file with the computed T0 constants
   TString fOutPDFFileName;     ///< Name of the output PDF report file (optional, if report is required)

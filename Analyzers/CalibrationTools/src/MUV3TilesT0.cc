@@ -6,9 +6,7 @@ MUV3TilesT0::MUV3TilesT0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "MUV3Tiles")
   fDetectorName = "MUV3Tiles";
   fDirName      = "MUV3Monitor";
   fTH2Name      = "CandidateTimeWrtReferenceNoTileT0VsTile";
-
-  fRawTimeHistoName = ""; // global offset evaluation not required
-  fConfFileName     = ""; // channel map not required
+  fConfFileName = ""; // channel map not required
 
   // Optional parameters
   fMinIntegral         = 100;   // minimal number of entries (excluding underflows, overflows) for fit attempt
