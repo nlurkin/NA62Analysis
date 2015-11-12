@@ -9,7 +9,9 @@
 
 #include <iostream>
 
-#include <TChain.h>
+#include <TTree.h>
+#include <TTreeIndex.h>
+#include <TFile.h>
 
 #include "TVEvent.hh" //For ClockPeriod
 #include "TPrimitive.hh"
@@ -19,18 +21,31 @@ namespace Core {
 
 static double FineTimePeriod = ClockPeriod / 256.;
 
-PrimitiveReader::PrimitiveReader(TString detName) :
-		Verbose((detName + "Prim").Data()), fCurrentPrimitiveID(-1), fL0MatchingWindow(
-				0), fTree(new TChain(detName)), fCurrentPrimitive(
+PrimitiveReader::PrimitiveReader(TString detName, bool sorted) :
+		Verbose((detName + "Prim").Data()), fUseSorted(sorted), fCurrentPrimitiveID(
+				-1), fL0MatchingWindow(0), fDetName(detName), fTree(nullptr), fCurrentPrimitive(
 				new TPrimitive) {
-	fTree->SetBranchAddress("fPrimitive", &fCurrentPrimitive);
 }
 
 PrimitiveReader::~PrimitiveReader() {
 }
 
-bool PrimitiveReader::AddFile(TString fileName) {
-	fTree->AddFile(fileName);
+bool PrimitiveReader::SetFile(TString fileName) {
+	TFile *fd = TFile::Open(fileName, "R");
+
+	if(!fd->IsOpen()){
+		std::cout << normal() << "Unable to open primitives file " << fileName << std::endl;
+		return false;
+	}
+
+	fTree = static_cast<TTree*>(fd->Get(fDetName));
+
+	if(!fTree){
+		std::cout << normal() << "Unable to find TTree " << fDetName << " in file " << fileName << std::endl;
+		return false;
+	}
+
+	fTree->SetBranchAddress("fPrimitive", &fCurrentPrimitive);
 
 	return true;
 }
@@ -47,15 +62,15 @@ TPrimitive* PrimitiveReader::FindMatchingPrimitive(int timeStamp,
 	while (fCurrentPrimitive->GetTimeStamp() < timeStamp
 			&& fCurrentPrimitiveID < fTree->GetEntries()) {
 		previousPrimitive = *fCurrentPrimitive;
-		fTree->GetEntry(++fCurrentPrimitiveID);
+		fTree->GetEntry(GetNextPrimitiveID());
 	}
 
 	//Reached end of file: if the current is close enough, it's the matching one
 	if (fCurrentPrimitiveID == fTree->GetEntries()) {
 		std::cout << debug() << "Reached EOF without finding matching primitive"
 				<< std::endl;
-		std::cout << trace() << "Last primitive reached: "
-				<< fCurrentPrimitive << std::endl;
+		std::cout << trace() << "Last primitive reached: " << fCurrentPrimitive
+				<< std::endl;
 		return CheckPrimitiveDeltaAndMoveTree(timeStamp, fineTime,
 				fCurrentPrimitive);
 	}
@@ -83,15 +98,15 @@ TPrimitive* PrimitiveReader::FindMatchingPrimitive(int timeStamp,
 			&& fCurrentPrimitive->GetFineTime() < fineTime
 			&& fCurrentPrimitiveID < fTree->GetEntries()) {
 		previousPrimitive = *fCurrentPrimitive;
-		fTree->GetEntry(++fCurrentPrimitiveID);
+		fTree->GetEntry(GetNextPrimitiveID());
 	}
 
 	//Reached end of file, if the current is close enough, it's the matching one
 	if (fCurrentPrimitiveID == fTree->GetEntries()) {
 		std::cout << debug() << "Reached EOF without finding matching primitive"
 				<< std::endl;
-		std::cout << trace() << "Last primitive reached: "
-				<< fCurrentPrimitive << std::endl;
+		std::cout << trace() << "Last primitive reached: " << fCurrentPrimitive
+				<< std::endl;
 		return CheckPrimitiveDeltaAndMoveTree(timeStamp, fineTime,
 				fCurrentPrimitive);
 	}
@@ -152,7 +167,7 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 			<< std::endl;
 	while (fCurrentPrimitive->GetTimeStamp() < minTimeStamp
 			&& fCurrentPrimitiveID < fTree->GetEntries()) {
-		fTree->GetEntry(++fCurrentPrimitiveID);
+		fTree->GetEntry(GetNextPrimitiveID());
 	}
 
 	//If reached end of file: check if the last primitive is in the window
@@ -161,8 +176,8 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 	if (fCurrentPrimitiveID == fTree->GetEntries()) {
 		std::cout << debug() << "Reached EOF without finding matching primitive"
 				<< std::endl;
-		std::cout << trace() << "Last primitive reached: "
-				<< fCurrentPrimitive << std::endl;
+		std::cout << trace() << "Last primitive reached: " << fCurrentPrimitive
+				<< std::endl;
 		tempPrimitive = CheckPrimitiveDeltaAndMoveTree(timeStamp, fineTime,
 				fCurrentPrimitive);
 		if (tempPrimitive)
@@ -177,7 +192,7 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 	while (fCurrentPrimitive->GetTimeStamp() == minTimeStamp
 			&& fCurrentPrimitive->GetFineTime() < minFineTime
 			&& fCurrentPrimitiveID < fTree->GetEntries()) {
-		fTree->GetEntry(++fCurrentPrimitiveID);
+		fTree->GetEntry(GetNextPrimitiveID());
 	}
 
 	//If reached end of file: check if the last primitive is in the window
@@ -185,8 +200,8 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 	if (fCurrentPrimitiveID == fTree->GetEntries()) {
 		std::cout << debug() << "Reached EOF without finding matching primitive"
 				<< std::endl;
-		std::cout << trace() << "Last primitive reached: "
-				<< fCurrentPrimitive << std::endl;
+		std::cout << trace() << "Last primitive reached: " << fCurrentPrimitive
+				<< std::endl;
 		tempPrimitive = CheckPrimitiveDeltaAndMoveTree(timeStamp, fineTime,
 				fCurrentPrimitive);
 		if (tempPrimitive)
@@ -208,7 +223,7 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 		std::cout << trace() << "Adding primitive " << fCurrentPrimitive
 				<< std::endl;
 		listPrim.push_back(*fCurrentPrimitive);
-		fTree->GetEntry(++fCurrentPrimitiveID);
+		fTree->GetEntry(GetNextPrimitiveID());
 	}
 
 	return listPrim;
@@ -258,7 +273,7 @@ TPrimitive* PrimitiveReader::CheckPrimitiveDeltaAndMoveTree(int timeStamp,
 	//Else checked primitive is the Current one and the tree current entry
 	//is already good
 	if (p != fCurrentPrimitive)
-		fTree->GetEntry(--fCurrentPrimitiveID);
+		fTree->GetEntry(GetPreviousPrimitiveID());
 	std::cout << trace() << "Returning primitive " << fCurrentPrimitive
 			<< std::endl;
 	return fCurrentPrimitive;
@@ -270,6 +285,32 @@ void PrimitiveReader::SetL0MatchingWindowWidth(float ns) {
 
 void PrimitiveReader::SetL0MatchingWindowWidth(int timeStamp, short fineTime) {
 	fL0MatchingWindow = timeStamp * ClockPeriod + fineTime * FineTimePeriod;
+}
+
+Long64_t PrimitiveReader::GetNextPrimitiveID() {
+	++fCurrentPrimitiveID;
+	if (fUseSorted) {
+		TTreeIndex *index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());
+		if(!index){
+			fTree->BuildIndex("fPrimitive.fTimeStamp", "fPrimitive.fFineTime");
+			index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());
+		}
+		return index->GetIndex()[fCurrentPrimitiveID];
+	} else
+		return fCurrentPrimitiveID;
+}
+
+Long64_t PrimitiveReader::GetPreviousPrimitiveID() {
+	--fCurrentPrimitiveID;
+	if (fUseSorted) {
+		TTreeIndex *index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());
+		if(!index){
+			fTree->BuildIndex("fPrimitive.fTimeStamp", "fPrimitive.fFineTime");
+			index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());
+		}
+		return index->GetIndex()[fCurrentPrimitiveID];
+	} else
+		return fCurrentPrimitiveID;
 }
 
 } /* namespace Core */
@@ -284,3 +325,4 @@ std::ostream& operator <<(std::ostream& s, TPrimitive *p) {
 	s << "(" << p->GetTimeStamp() << "," << p->GetFineTime() << ")";
 	return s;
 }
+

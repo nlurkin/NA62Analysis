@@ -659,7 +659,7 @@ L0TPData* UserMethods::GetL0Data() {
 
 	if (fParent->IsTreeType())
 		return static_cast<L0TPData*>(fParent->GetIOTree()->GetObject(
-				"L0TPData", "Reco"));
+				"Reco", "L0TPData"));
 	else
 		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
@@ -672,7 +672,7 @@ L1TPData* UserMethods::GetL1Data() {
 
 	if (fParent->IsTreeType())
 		return static_cast<L1TPData*>(fParent->GetIOTree()->GetObject(
-				"L1TPData", "Reco"));
+				"Reco", "L1TPData"));
 	else
 		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
@@ -685,7 +685,7 @@ L2EBData* UserMethods::GetL2Data() {
 
 	if (fParent->IsTreeType())
 		return static_cast<L2EBData*>(fParent->GetIOTree()->GetObject(
-				"L2EBData", "Reco"));
+				"Reco", "L2EBData"));
 	else
 		std::cout << normal() << "[WARNING] Not reading TTrees" << std::endl;
 	return nullptr;
@@ -1148,9 +1148,9 @@ void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 	fParent->ReconfigureAnalyzer(analyzerName, parameterName, parameterValue);
 }
 
-void UserMethods::AddPrimitiveReader(TString detName) {
+void UserMethods::AddPrimitiveReader(TString detName, bool sorted) {
 	if (fParent->GetIOPrimitive())
-		fParent->GetIOPrimitive()->AddReader(detName);
+		fParent->GetIOPrimitive()->AddReader(detName, sorted);
 	else
 		std::cout << normal()
 				<< "Trying to use primitives but no primitive file provided."

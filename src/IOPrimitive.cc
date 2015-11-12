@@ -18,13 +18,13 @@ IOPrimitive::IOPrimitive() {
 IOPrimitive::~IOPrimitive() {
 }
 
-void IOPrimitive::AddReader(TString detName) {
-	fReaderList.insert(std::pair<TString,PrimitiveReader*>(detName,new PrimitiveReader(detName)));
+void IOPrimitive::AddReader(TString detName, bool sorted) {
+	fReaderList.insert(std::pair<TString,PrimitiveReader*>(detName,new PrimitiveReader(detName, sorted)));
 }
 
-void IOPrimitive::AddFile(TString fileName) {
+void IOPrimitive::SetFile(TString fileName) {
 	for(auto it : fReaderList)
-		it.second->AddFile(fileName);
+		it.second->SetFile(fileName);
 }
 
 PrimitiveReader* IOPrimitive::GetReader(TString detName) {

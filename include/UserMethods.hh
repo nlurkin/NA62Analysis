@@ -272,7 +272,7 @@ public:
 			delete obj;
 		}
 	}
-	void AddPrimitiveReader(TString detName);
+	void AddPrimitiveReader(TString detName, bool sorted=false);
 
 	TChain* GetTree(TString name);
 	TDetectorVEvent *GetEvent(TString detName, TString outputName = "");

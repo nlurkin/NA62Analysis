@@ -712,9 +712,9 @@ IOPrimitive* BaseAnalysis::GetIOPrimitive() {
 	return fIOPrimitive;
 }
 
-void BaseAnalysis::AddPrimitiveFile(TString fileName) {
+void BaseAnalysis::SetPrimitiveFile(TString fileName) {
 	if (fIOPrimitive)
-		fIOPrimitive->AddFile(fileName);
+		fIOPrimitive->SetFile(fileName);
 }
 
 void BaseAnalysis::InitPrimitives() {

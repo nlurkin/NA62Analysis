@@ -233,7 +233,7 @@ int main(int argc, char** argv){
 	//DEF_ANALYZER is the ClassName of the analyzer. Defined by Makefile target
 /*$$ANALYZERSNEW$$*/
 
-	if(usePrim) ban->AddPrimitiveFile(primFile);
+	if(usePrim) ban->SetPrimitiveFile(primFile);
 	ban->Init(inFileName, outFileName, params, configFile, NFiles, refFileName, ignoreNonExisting);
 	if(continuousReading) ban->StartContinuous(inFileName);
 	else retCode = ban->Process(NEvt, evtNb);

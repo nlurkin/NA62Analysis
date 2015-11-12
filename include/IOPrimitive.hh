@@ -22,8 +22,8 @@ public:
 	IOPrimitive();
 	virtual ~IOPrimitive();
 
-	void AddReader(TString detName);
-	void AddFile(TString fileName);
+	void AddReader(TString detName, bool sorted);
+	void SetFile(TString fileName);
 
 	PrimitiveReader* GetReader(TString detName);
 private:

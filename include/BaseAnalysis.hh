@@ -99,7 +99,7 @@ public:
 		/// \EndMemberDescr
 		fIOHandler->SetFastStart(bVal);
 	}
-	void AddPrimitiveFile(TString fileName);
+	void SetPrimitiveFile(TString fileName);
 
 	void ReconfigureAnalyzer(TString analyzerName, TString parameterName,
 			TString parameter);

@@ -12,17 +12,17 @@
 #include "TPrimitive.hh"
 #include "Verbose.hh"
 
-class TChain;
+class TTree;
 
 namespace NA62Analysis {
 namespace Core {
 
 class PrimitiveReader : public Verbose {
 public:
-	PrimitiveReader(TString detName);
+	PrimitiveReader(TString detName, bool sorted=false);
 	virtual ~PrimitiveReader();
 
-	bool AddFile(TString fileName);
+	bool SetFile(TString fileName);
 	TPrimitive* FindMatchingPrimitive(int timeStamp, short fineTime);
 	std::vector<TPrimitive> FindAllPrimitiveInMatchingWindow(int timeStamp, short fineTime);
 
@@ -31,14 +31,18 @@ public:
 
 private:
 	PrimitiveReader() :
-		fCurrentPrimitiveID(0), fL0MatchingWindow(0), fTree(nullptr), fCurrentPrimitive(nullptr){
+		fUseSorted(false), fCurrentPrimitiveID(0), fL0MatchingWindow(0), fTree(nullptr), fCurrentPrimitive(nullptr){
 	};
 	TPrimitive* FindClosestToTimeStamp(int timeStamp, short fineTime, TPrimitive* p1, TPrimitive *p2);
 	TPrimitive* CheckPrimitiveDeltaAndMoveTree(int timeStamp, short fineTime, TPrimitive* p);
+	Long64_t GetNextPrimitiveID();
+	Long64_t GetPreviousPrimitiveID();
 
-	int fCurrentPrimitiveID;
+	bool fUseSorted;
+	Long64_t fCurrentPrimitiveID;
 	float fL0MatchingWindow; // in ns
-	TChain *fTree;
+	TString fDetName;
+	TTree *fTree;
 	TPrimitive *fCurrentPrimitive;
 };
 
