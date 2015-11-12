@@ -25,12 +25,28 @@ PrimitiveReader::PrimitiveReader(TString detName, bool sorted) :
 		Verbose((detName + "Prim").Data()), fUseSorted(sorted), fCurrentPrimitiveID(
 				-1), fL0MatchingWindow(0), fDetName(detName), fTree(nullptr), fCurrentPrimitive(
 				new TPrimitive) {
+	/// \MemberDescr
+	/// \param detName: Name of the detector that should be read
+	/// \param sorted: Do the primitives need sorting or not?
+	///
+	/// Constructor.
+	/// \EndMemberDescr
 }
 
 PrimitiveReader::~PrimitiveReader() {
+	/// \MemberDescr
+	/// Destructor
+	/// \EndMemberDescr
 }
 
 bool PrimitiveReader::SetFile(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName: Path to a primitives ROOT file
+	/// \return True if the file was successfully read
+	///
+	/// Set a primitives ROOT file and read the detector TTree
+	/// \EndMemberDescr
+
 	TFile *fd = TFile::Open(fileName, "R");
 
 	if(!fd->IsOpen()){
@@ -52,6 +68,15 @@ bool PrimitiveReader::SetFile(TString fileName) {
 
 TPrimitive* PrimitiveReader::FindMatchingPrimitive(int timeStamp,
 		short fineTime) {
+	/// \MemberDescr
+	/// \param timeStamp: Event timestamp
+	/// \param fineTime: Event fine time
+	/// \return Pointer to the primitive corresponding to the event if found, else nullptr
+	///
+	/// Read the primitives and return the primitive closest to the event time.
+	/// If the primitive found is too far away from the event (outside of the
+	/// L0MatchingWindow around the event), the primitive is discarded.
+	/// \EndMemberDescr
 
 	std::cout << trace() << "FindMatchingPrimitive(" << timeStamp << ","
 			<< fineTime << ")" << std::endl;
@@ -134,6 +159,15 @@ TPrimitive* PrimitiveReader::FindMatchingPrimitive(int timeStamp,
 
 std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 		int timeStamp, short fineTime) {
+	/// \MemberDescr
+	/// \param timeStamp: Event timestamp
+	/// \param fineTime: Event fine time
+	/// \return Vector of all the Primitives found close to the Event time
+	///
+	/// Read the primitives and return the list of primitives within a time
+	/// window of L0MatchingWindow around the event time.
+	/// \EndMemberDescr
+
 	std::vector<TPrimitive> listPrim;
 
 	std::cout << trace() << "FindAllPrimitiveInMatchingWindow(" << timeStamp
@@ -231,6 +265,17 @@ std::vector<TPrimitive> PrimitiveReader::FindAllPrimitiveInMatchingWindow(
 
 TPrimitive* PrimitiveReader::FindClosestToTimeStamp(int timeStamp,
 		short fineTime, TPrimitive* p1, TPrimitive* p2) {
+	/// \MemberDescr
+	/// \param timeStamp: Event timestamp
+	/// \param fineTime: Event fine time
+	/// \param p1: Pointer to first primitive to compare
+	/// \param p2: Pointer to second primitive to compare
+	/// \return Of p1 and p2, pointer to the primitive closest to the given time
+	///
+	/// Computes the &Delta;T between p1 and the given time and between p2 and
+	/// the given time and returns the one with smallest &Delta;T.
+	/// Starts by converting timestamp in ns, then the FineTime in ns and sum them.
+	/// \EndMemberDescr
 
 	//fineTime = [0...256] 25ns/256
 	int deltaTS1(abs(p1->GetTimeStamp() - timeStamp) * ClockPeriod);
@@ -248,6 +293,17 @@ TPrimitive* PrimitiveReader::FindClosestToTimeStamp(int timeStamp,
 
 TPrimitive* PrimitiveReader::CheckPrimitiveDeltaAndMoveTree(int timeStamp,
 		short fineTime, TPrimitive* p) {
+	/// \MemberDescr
+	/// \param timeStamp: Event timestamp
+	/// \param fineTime: Event fine time
+	/// \param p: Pointer to primitive to check
+	/// \return Pointer to the current primitive in the TTree if close enough
+	/// to the event time (within L0MatchingWindow), or nullptr if too far away.
+	///
+	/// Check if the primitive is within the L0MatchingWindow around the given time.
+	/// If yes, move the TTree read pointer (current primitive) to the given primitive.
+	/// Else don't move the TTree and return nullptr.
+	/// \EndMemberDescr
 	//No primitive, return nullptr
 	if (p == nullptr)
 		return nullptr;
@@ -280,14 +336,35 @@ TPrimitive* PrimitiveReader::CheckPrimitiveDeltaAndMoveTree(int timeStamp,
 }
 
 void PrimitiveReader::SetL0MatchingWindowWidth(float ns) {
+	/// \MemberDescr
+	/// \param ns: L0MatchingWindow to set in ns
+	///
+	/// Set the L0Matching window. The window starts from ns ns before the event time
+	/// and ends ns ns after the event time.
+	/// \EndMemberDescr
 	fL0MatchingWindow = ns;
 }
 
 void PrimitiveReader::SetL0MatchingWindowWidth(int timeStamp, short fineTime) {
+	/// \MemberDescr
+	/// \param timeStamp: L0MatchingWindow to set in timeStamp units
+	/// \param fineTime: L0MatchingWindow to set in FineTime units
+	///
+	/// Set the L0Matching window. The window starts from (timeStamp+fineTime/256.) timestamps
+	/// units before the event time and ends (timeStamp+fineTime/256.) timestamps units
+	/// after the event time.
+	/// \EndMemberDescr
 	fL0MatchingWindow = timeStamp * ClockPeriod + fineTime * FineTimePeriod;
 }
 
 Long64_t PrimitiveReader::GetNextPrimitiveID() {
+	/// \MemberDescr
+	/// \return Next entry in the tree.
+	///
+	/// Selects the next entry in the tree. If not sorted, simply the next entry in the tree.
+	/// If sorted, tree entry corresponding to the next index.
+	/// \EndMemberDescr
+
 	++fCurrentPrimitiveID;
 	if (fUseSorted) {
 		TTreeIndex *index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());
@@ -301,6 +378,13 @@ Long64_t PrimitiveReader::GetNextPrimitiveID() {
 }
 
 Long64_t PrimitiveReader::GetPreviousPrimitiveID() {
+	/// \MemberDescr
+	/// \return Previous entry in the tree.
+	///
+	/// Selects the previous entry in the tree. If not sorted, simply the previous entry in the tree.
+	/// If sorted, tree entry corresponding to the previous index.
+	/// \EndMemberDescr
+
 	--fCurrentPrimitiveID;
 	if (fUseSorted) {
 		TTreeIndex *index = static_cast<TTreeIndex*>(fTree->GetTreeIndex());

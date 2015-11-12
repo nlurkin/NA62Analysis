@@ -17,6 +17,14 @@ namespace Core {
 
 class PrimitiveReader;
 
+/// \class IOPrimitive
+/// \Brief
+/// Class containing and handling primitive readers
+/// \EndBrief
+///
+/// \Detailed
+/// Class containing and handling primitive readers. Contains a list of PrimitiveReader
+/// \EndDetailed
 class IOPrimitive {
 public:
 	IOPrimitive();
@@ -27,7 +35,7 @@ public:
 
 	PrimitiveReader* GetReader(TString detName);
 private:
-	NA62Map<TString, PrimitiveReader*>::type fReaderList;
+	NA62Map<TString, PrimitiveReader*>::type fReaderList; ///< Container for PrimitiveReaders
 };
 
 } /* namespace Core */

@@ -1149,6 +1149,13 @@ void UserMethods::CallReconfigureAnalyzer(TString analyzerName,
 }
 
 void UserMethods::AddPrimitiveReader(TString detName, bool sorted) {
+	/// \MemberDescr
+	/// \param detName: Detector name for which the PrimitiveReader should be created
+	/// \param sorted: Flag to turn on/off the sorting of primitives (default: off)
+	///
+	/// Creates a new PrimitiveReader for the requested detector.
+	/// \EndMemberDescr
+
 	if (fParent->GetIOPrimitive())
 		fParent->GetIOPrimitive()->AddReader(detName, sorted);
 	else
@@ -1158,6 +1165,15 @@ void UserMethods::AddPrimitiveReader(TString detName, bool sorted) {
 }
 
 TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
+	/// \MemberDescr
+	/// \param detName: Name of the detector to get the primitive from.
+	/// \return Pointer to the primitive corresponding to the event if found, else nullptr
+	///
+	/// Read the primitives and return the primitive closest to the event time.
+	/// If the primitive found is too far away from the event (outside of the
+	/// L0MatchingWindow around the event), the primitive is discarded.
+	/// \EndMemberDescr
+
 	if (!fParent->GetIOPrimitive()) {
 		std::cout << normal()
 				<< "Trying to use primitives but no primitive file provided."
@@ -1170,6 +1186,14 @@ TPrimitive* UserMethods::FindMatchingPrimitive(TString detName) {
 
 std::vector<TPrimitive> UserMethods::FindAllPrimitiveInMatchingWindow(
 		TString detName) {
+	/// \MemberDescr
+	/// \param detName: name of the detector to get the primitives from.
+	/// \return Vector of all the Primitives found close to the Event time
+	///
+	/// Read the primitives and return the list of primitives within a time
+	/// window of L0MatchingWindow around the event time.
+	/// \EndMemberDescr
+
 	if (!fParent->GetIOPrimitive()) {
 		std::cout << normal()
 				<< "Trying to use primitives but no primitive file provided."
@@ -1181,6 +1205,14 @@ std::vector<TPrimitive> UserMethods::FindAllPrimitiveInMatchingWindow(
 }
 
 void UserMethods::SetL0MatchingWindowWidth(TString detName, float ns) {
+	/// \MemberDescr
+	/// \param detName: detector for which the matching window should be set
+	/// \param ns: L0MatchingWindow to set in ns
+	///
+	/// Set the L0Matching window. The window starts from ns ns before the event time
+	/// and ends ns ns after the event time.
+	/// \EndMemberDescr
+
 	if (fParent->GetIOPrimitive())
 		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
 				ns);
@@ -1192,6 +1224,16 @@ void UserMethods::SetL0MatchingWindowWidth(TString detName, float ns) {
 
 void UserMethods::SetL0MatchingWindowWidth(TString detName, int timeStamp,
 		short fineTime) {
+	/// \MemberDescr
+	/// \param detName: detector for which the matching window should be set
+	/// \param timeStamp: L0MatchingWindow to set in timeStamp units
+	/// \param fineTime: L0MatchingWindow to set in FineTime units
+	///
+	/// Set the L0Matching window. The window starts from (timeStamp+fineTime/256.) timestamps
+	/// units before the event time and ends (timeStamp+fineTime/256.) timestamps units
+	/// after the event time.
+	/// \EndMemberDescr
+
 	if (fParent->GetIOPrimitive())
 		fParent->GetIOPrimitive()->GetReader(detName)->SetL0MatchingWindowWidth(
 				timeStamp, fineTime);

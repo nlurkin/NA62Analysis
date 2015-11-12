@@ -139,7 +139,7 @@ protected:
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
-	IOPrimitive* fIOPrimitive;
+	IOPrimitive* fIOPrimitive; ///< Pointer to IOPrimitive instance
 
 	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
 

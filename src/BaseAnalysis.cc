@@ -709,15 +709,26 @@ void BaseAnalysis::ReconfigureAnalyzer(TString analyzerName,
 }
 
 IOPrimitive* BaseAnalysis::GetIOPrimitive() {
+	/// \MemberDescr
+	/// \return Pointer to IOPrimitive instance (nullptr if not instantiated)
+	/// \EndMemberDescr
 	return fIOPrimitive;
 }
 
 void BaseAnalysis::SetPrimitiveFile(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName : Path to the prrimitive file
+	///
+	/// If IOPrimitive instantiated, set the primitive root file
+	/// \EndMemberDescr
 	if (fIOPrimitive)
 		fIOPrimitive->SetFile(fileName);
 }
 
 void BaseAnalysis::InitPrimitives() {
+	/// \MemberDescr
+	/// Instantiate the IOPrimitive instance if not yet done.
+	/// \EndMemberDescr
 	if(!fIOPrimitive) fIOPrimitive = new IOPrimitive();
 }
 

@@ -17,6 +17,16 @@ class TTree;
 namespace NA62Analysis {
 namespace Core {
 
+/// \class PrimitiveReader
+/// \Brief
+/// Class reading a primitives ROOT file and matching primitives to Event time.
+/// \EndBrief
+///
+/// \Detailed
+/// Class reading a primitives ROOT file and matching primitives to Event time. Provides
+/// a method to request the primitive closest to the given (timestamp,finetime) and a method
+/// to request all the primitives within a window around the given (timestamp, finetime).
+/// \EndDetailed
 class PrimitiveReader : public Verbose {
 public:
 	PrimitiveReader(TString detName, bool sorted=false);
@@ -38,12 +48,12 @@ private:
 	Long64_t GetNextPrimitiveID();
 	Long64_t GetPreviousPrimitiveID();
 
-	bool fUseSorted;
-	Long64_t fCurrentPrimitiveID;
-	float fL0MatchingWindow; // in ns
-	TString fDetName;
-	TTree *fTree;
-	TPrimitive *fCurrentPrimitive;
+	bool fUseSorted; ///< Sort primitives or not?
+	Long64_t fCurrentPrimitiveID; ///< ID of current primitive (tree ID if not sorted, index ID if sorted)
+	float fL0MatchingWindow; ///< L0 Matching window in ns
+	TString fDetName; ///< Name of the detector the primitive are read from
+	TTree *fTree; ///< Pointer to the Primitives TTree
+	TPrimitive *fCurrentPrimitive; ///< Pointer to the current primitive in the TTree
 };
 
 } /* namespace Core */

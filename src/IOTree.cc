@@ -690,6 +690,12 @@ Long64_t IOTree::GetNEvents(){
 }
 
 TString IOTree::DetermineMainTree(TString detName) {
+	/// \MemberDescr
+	/// \param detName : DetectorName (branch) for which the main tree should be identified
+	/// \return Name of the main tree requested and containing the branch. The order is
+	/// Reco, MC, Digis, Other
+	/// \EndMemberDescr
+
 	eventIterator it;
 	std::pair<eventIterator, eventIterator> eventRange;
 
