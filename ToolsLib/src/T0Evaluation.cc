@@ -45,7 +45,6 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fOutTextFileName     = "./" + fDetectorName + "-T0.dat";
   fOutPDFFileName      = "./" + fDetectorName + "-T0.pdf";
   fTH2Name             = "RecoHitTimeWrtReferenceVsReadoutChannelNoT0";
-  fRawTimeHistoName    = "DigiTimeRaw";
 
   fMinIntegral         = 100;   // minimal number of entries (excluding underflows, overflows) for fit attempt
   fMinContentMaxBin    = 10.0;  // minimal content of most populated bin for fit attempt
@@ -62,7 +61,7 @@ T0Evaluation::T0Evaluation(Core::BaseAnalysis *ba, std::string DetectorName) : A
   fPlotTimeDependences = true;  // check and plot the time stability of the T0 constants?
 
   // Initialization of the analyzer
-  fEvaluateGlobalT0 = fEvaluateT0s = fUseChannelMap = true;
+  fEvaluateT0s = fUseChannelMap = true;
   fNChannels = fNChannelsActive = 0;
 }
 
@@ -73,18 +72,9 @@ void T0Evaluation::InitHist() {
     exit(0);
   }
 
-  //fHNEventsProcessedPerBurst = (TH1D*)RequestHistogram("/", "NProcessedEventsInFile", true);
+  // this histogram should be replaced with a more general (not MUV3) one.....
   fHNEventsProcessedPerBurst = (TH1D*)RequestHistogram("MUV3Monitor", "NEventsProcessedPerBurst", true);
   
-  if (fEvaluateGlobalT0) {
-    fHRawTime = (TH1D*)RequestHistogram(fDirName, fRawTimeHistoName, true);
-    if (!fHRawTime) {
-      fEvaluateGlobalT0 = 0;
-      cout << "Warning in "<<fAnalyzerName<<": histogram for global T0 evaluation (" <<
-	fDirName << "/" << fRawTimeHistoName << ") not found" << endl;
-    }
-  }
-
   if (fEvaluateT0s) {
     fH2            = (TH2D*)RequestHistogram(fDirName, fTH2Name, false); // reset for each input file
     fH2_Integrated = (TH2D*)RequestHistogram(fDirName, fTH2Name, true);  // accumulated    
@@ -155,7 +145,7 @@ void T0Evaluation::ParseConfFile() {
   while (Line.ReadLine(confFile)) {
     if (!Line.BeginsWith("ChRemap_")) continue;
     for (Int_t iCh=0; iCh<fNChannels/16; iCh++) {
-      if (Line.BeginsWith(Form("ChRemap_%d=",iCh))) {
+      if (Line.BeginsWith(Form("ChRemap_%04d=",iCh))) {
 	TObjArray *l = Line.Tokenize(" ");
 	for (Int_t jCh=0; jCh<16; jCh++) {
 	  fChannelID[16*iCh+jCh] = ((TObjString*)(l->At(jCh+1)))->GetString().Atoi();
@@ -208,7 +198,6 @@ void T0Evaluation::EndOfRunUser() {
   }
 
   // Evaluate the T0s and global offset with the full data sample
-  if (fEvaluateGlobalT0) EvaluateGlobalOffset();
   if (fEvaluateT0s) EvaluateT0s(fH2_Integrated, -1, fIssueWarnings); // -1: all channels
 
   // Generate and save the output
@@ -350,21 +339,6 @@ bool T0Evaluation::FitChannel(int ich, double c0, double cmin, double cmax, doub
   return true;
 }
 
-/////////////////////////////////////////////////////////////////////
-// Global T0 evaluation: discard bins with low content (accidentals),
-// then find the mean value of the remaining bins
-
-void T0Evaluation::EvaluateGlobalOffset() {
-  TH1D *fHRawTime1 = new TH1D(*fHRawTime);
-  double maxcontent = fHRawTime1->GetBinContent(fHRawTime1->GetMaximumBin());
-  for (int i=1; i<=fHRawTime1->GetNbinsX(); i++) {
-    if (fHRawTime1->GetBinContent(i)<0.5*maxcontent) fHRawTime1->SetBinContent(i,0);
-  }
-  fGlobalT0 = round(fHRawTime1->GetMean());
-  cout << fAnalyzerName << ": global T0 = " << fGlobalT0 << " ns " << endl;
-  delete fHRawTime1;
-}
-
 /////////////////////
 // Build a PDF report
 
@@ -394,8 +368,8 @@ void T0Evaluation::GeneratePDFReport() {
   gErrorIgnoreLevel = 5000; // suppress messages generated for each page printed
 
   fFrontCanvas = new TCanvas("FrontCanvas");
-  fFrontCanvas->Divide(1,3);
-  for (int i=1; i<=3; i++) {
+  fFrontCanvas->Divide(1,2);
+  for (int i=1; i<=2; i++) {
     fFrontCanvas->GetPad(i)->SetLeftMargin(0.05);
     fFrontCanvas->GetPad(i)->SetRightMargin(0.01);
     fFrontCanvas->GetPad(i)->SetTopMargin(0.01);
@@ -450,30 +424,6 @@ void T0Evaluation::GeneratePDFReport() {
   fHisto.GetHisto("T0Resolution")->SetLineColor(kBlue);
   fHisto.GetHisto("T0Resolution")->SetMarkerColor(kBlue);
   fHisto.GetHisto("T0Resolution")->Draw();
-
-  fFrontCanvas->cd(3);
-  if (fEvaluateGlobalT0) {
-    double maxcontent = fHRawTime->GetBinContent(fHRawTime->GetMaximumBin());
-
-    int maxbin = fHRawTime->GetNbinsX();
-    while (fHRawTime->GetBinContent(maxbin)<0.01*maxcontent &&
-	   maxbin>1) maxbin--;
-    int minbin = 1;
-    while (fHRawTime->GetBinContent(minbin)<0.01*maxcontent &&
-	   minbin<fHRawTime->GetNbinsX()) minbin++;
-
-    fHRawTime->SetStats(0);
-    fHRawTime->SetTitle(Form("Digi Raw Time: global T0 = %d ns", (int)fGlobalT0));
-    fHRawTime->GetXaxis()->SetRangeUser
-      (fHRawTime->GetBinLowEdge(minbin), fHRawTime->GetBinLowEdge(maxbin+1));
-    fHRawTime->SetLineColor(kBlue);
-    fHRawTime->SetMarkerColor(kBlue);
-    fHRawTime->SetLineWidth(1);
-    fHRawTime->Draw();
-    l->SetLineColor(kGreen+2);
-    l->SetLineWidth(1);
-    l->DrawLine(fGlobalT0, 0, fGlobalT0, fHRawTime->GetMaximum());
-  }
 
   fFrontCanvas->Print(Form(fOutPDFFileName + "("), "pdf"); // open and print the front canvas
 

@@ -23,7 +23,6 @@ SpectrometerT0::SpectrometerT0(Core::BaseAnalysis *ba) : T0Evaluation(ba, "Spect
   fHistoTimeLimit      = 120.0; // time half-span of plotted histograms [ns]
   fSignalPeakWidth     = 999;   // exclusion region half-width for the spectrum shape check
   fIssueWarnings       = false; // check if the spectrum shape is OK?
-  fEvaluateGlobalT0    = false; // does not work for the Spectrometer yet
   fPlotChannelTimes    = false; // do not plot channel times (they are too many)
   fPlotTimeDependences = false; // do not plot time stability of T0s im channels (they are too many)
 

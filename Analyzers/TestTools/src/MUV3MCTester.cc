@@ -84,7 +84,7 @@ void MUV3MCTester::Process(int iEvent) {
   int NMuonHits = 0;
   for (int ihit=0; ihit<NHits; ihit++) {
     TMUV3Hit *Hit = (TMUV3Hit*)MUV3Event->GetHits()->At(ihit);
-    if (Hit->GetMuonHit()) NMuonHits++;
+    if (Hit->IsMuonHit()) NMuonHits++;
   }
 
   FillHisto("NHits", NHits);
@@ -101,7 +101,7 @@ void MUV3MCTester::Process(int iEvent) {
     double z       = Hit->GetPosition().Z();
     double Energy  = Hit->GetEnergy();
     double Time    = Hit->GetTime();
-    bool   MuonHit = Hit->GetMuonHit();
+    bool   MuonHit = Hit->IsMuonHit();
 
     //bool HitInCentralCounter  = ((id%200)>=144);
 

@@ -132,7 +132,7 @@ void SpecMUV3ParticleID::Process(int iEvent) {
         Double_t TrackCandidateDistance = sqrt((xt-xm)*(xt-xm)+(yt-ym)*(yt-ym));
 	Double_t Time = Mcand->GetTime();
 	SpecMUV3AssociationRecord
-	  Record(iMu, iTile, Time, TrackTileDistance, TrackCandidateDistance, xm, ym);
+	  Record(iMu, iTile, Time, TrackTileDistance, TrackCandidateDistance, xm, ym, DirectMatch);
 	Asso.AddAssociationRecord(Record);
       }
     }
