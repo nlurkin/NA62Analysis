@@ -11,7 +11,21 @@
 /// repository is configured to allow read access to people in the na62-fw e-group and read/write 
 /// access to people in the na62-fw-dev e-group. In addition to being in the correct e-group you must
 /// also be known to https://gitlab.cern.ch. To do so, you must login at least once with your cern 
-/// account to https://gitlab.cern.ch
+/// account to https://gitlab.cern.ch. You must also import your ssh keys in gitlab for
+/// identification:
+/// <ul>
+/// 	<li> Check if you already have a ssh key: a file id_dsa.pub or id_rsa.pub should exist in your
+/// 		~/.ssh directory. If not, create a ssh key
+/// 		\code
+/// 		ssh-keygen -t rsa -b 4096 -C "your_email@cern.ch"
+/// 		\endcode
+/// 		And type \a Enter to every question
+/// 	<li> Add the key to your gitlab account: copy the content if the generated id_???.pub file in 
+/// 		https://gitlab.cern.ch -> Profile Settings -> SSH Keys --> ADD SSH KEY. Enter a meaningful
+/// 		title for the key (lxplus, my_laptop_name, ...)
+/// </ul>
+/// (see https://cern.service-now.com/service-portal/article.do?n=KB0003136 for more information
+/// and help)
 /// 
 /// \section getFW Getting the framework and keeping it up-to-date
 /// To get the framework you must clone to repository:
@@ -90,14 +104,16 @@
 /// git pull
 /// \endcode
 /// Then to avoid any problem of interference with other developer it is better to create and work
-/// on your own branch (let's call it here my-branch-name):
+/// on your own branch. As a general guideline, we advise to use as branch names
+/// \b feature/name_of_the_feature for new features and \b bugfix/jira_bug_number for bugfixes. 
+/// In this example, the branch is called \b feature/my_feature:
 /// \code
-/// git branch my-branch-name   //Create the branch
-/// git checkout my-branch-name //switch to the branch
+/// git branch feature/my_feature   //Create the branch
+/// git checkout feature/my_feature //switch to the branch
 /// \endcode
 /// or (shortcut)
 /// \code
-/// git checkout -b my-branch-name //Create and switch to the branch
+/// git checkout -b feature/my_feature //Create and switch to the branch
 /// \endcode
 /// \par Working on the code
 /// This new branch you created is now based on the latest version of \b develop and you may work
@@ -151,7 +167,7 @@
 /// 	\endcode
 /// 	<li> Incorporate the changes (e.g. from \b develop) into your branch
 /// 	\code
-/// 	git checkout my-branch-name
+/// 	git checkout feature/my_feature
 /// 	git rebase develop
 /// 	\endcode
 /// 	In case of conflict that git cannot handle, you will be notified and asked to solve it (git 
@@ -178,7 +194,7 @@
 /// 	<li> Integrate remote changes into you branch (see \ref merge-rebase "Merge")
 /// <li> Push your branch to the central repository (and set tracking)
 /// \code
-/// git push -u origin my-branch-name
+/// git push -u origin feature/my_feature
 /// \endcode
 /// <li> Got to https://gitlab.cern.ch/NA62FW/na62fw/merge_requests and create a new merge request. 
 /// 	Your branch should be used as the source branch and \b develop as the target branch. 
@@ -189,7 +205,7 @@
 /// 	<li> Once the merge request is accepted, your branch on the remote repository is automatically
 /// 	deleted. At this point you can as well delete it from you local repository if you wish:
 /// 	\code
-/// 	git branch -d my-branch-name
+/// 	git branch -d feature/my_feature
 /// 	\endcode
 /// </ul>
 /// 
