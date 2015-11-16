@@ -16,7 +16,7 @@ except ImportError:
 import scripts
 
 
-__rev__ = 710
+__rev__ = 737
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
