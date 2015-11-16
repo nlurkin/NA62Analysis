@@ -16,7 +16,7 @@ except ImportError:
 import scripts
 
 
-__rev__ = 710
+__rev__ = 737
 __descr__ = ("""
    Use this script when working with NA62Analysis. The script takes care of
    operations like preparing the environment, creating, renaming and cleaning 
@@ -874,6 +874,8 @@ def parseArgs():
 							(automatically disabled if compiler does not support c++11)""")
 	clean_group.add_argument('--full-warning', action="append_const", const="FULL_WARNING", 
 							dest="defines", help="Compile the framework and user directories with all the warning flags")
+	clean_group.add_argument('--shared', action="append_const", const="SHARED_LIB", 
+							dest="defines", help="Use shared libraries rather than static libraries")
 	
 	parser = ArgumentParser(description=program_short_description, formatter_class=RawDescriptionHelpFormatter)
 	parser.add_argument('-V', '--version', action='version', version=program_version_message)

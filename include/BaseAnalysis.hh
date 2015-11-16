@@ -28,17 +28,20 @@ namespace Core {
 /// \EndDetailed
 
 class OMMainWindow;
+class IOPrimitive;
 
-class BaseAnalysis : public Verbose
-{
+class BaseAnalysis: public Verbose {
 public:
 	BaseAnalysis();
 	~BaseAnalysis();
 
 	void AddAnalyzer(Analyzer * const an);
 	void StartContinuous(TString inFileList);
-	void Init(TString inFileName, TString outFileName, TString params, TString configFile, Int_t NFiles, TString refFile, bool allowNonExisting);
+	void Init(TString inFileName, TString outFileName, TString params,
+			TString configFile, Int_t NFiles, TString refFile,
+			bool allowNonExisting);
 	bool Process(Long64_t beginEvent, Long64_t maxEvent);
+	void InitPrimitives();
 
 	//Output methods
 	void RegisterOutput(TString name, const void* const address);
@@ -55,6 +58,7 @@ public:
 	IOHandler * GetIOHandler();
 	IOTree * GetIOTree();
 	IOHisto * GetIOHisto();
+	IOPrimitive * GetIOPrimitive();
 
 	CounterHandler* GetCounterHandler();
 
@@ -65,21 +69,25 @@ public:
 		/// \MemberDescr
 		/// \return true if IO Handler is compatible with Histo type
 		/// \EndMemberDescr
-		return fIOHandler->GetIOType()==IOHandlerType::kHISTO || fIOHandler->GetIOType()==IOHandlerType::kTREE;
-	};
+		return fIOHandler->GetIOType() == IOHandlerType::kHISTO
+				|| fIOHandler->GetIOType() == IOHandlerType::kTREE;
+	}
+	;
 	bool IsTreeType() {
 		/// \MemberDescr
 		/// \return true if IO Handler is compatible with Tree type
 		/// \EndMemberDescr
-		return fIOHandler->GetIOType()==IOHandlerType::kTREE;
-	};
+		return fIOHandler->GetIOType() == IOHandlerType::kTREE;
+	}
+	;
 
 	void SetGraphicMode(bool bVal) {
 		/// \MemberDescr
 		/// \param bVal : Graphic mode On/Off flag
 		/// \EndMemberDescr
 		fGraphicMode = bVal;
-	};
+	}
+	;
 	void SetReadType(IOHandlerType type);
 	void SetContinuousReading(bool flagContinuousReading);
 	void SetDownscaling(bool flagDownscaling);
@@ -91,14 +99,18 @@ public:
 		/// \EndMemberDescr
 		fIOHandler->SetFastStart(bVal);
 	}
+	void SetPrimitiveFile(TString fileName);
 
-	void ReconfigureAnalyzer(TString analyzerName, TString parameterName, TString parameter);
+	void ReconfigureAnalyzer(TString analyzerName, TString parameterName,
+			TString parameter);
 
 private:
 	BaseAnalysis(const BaseAnalysis&); ///< Prevents copy construction
 	BaseAnalysis& operator=(const BaseAnalysis&); ///< Prevents copy assignment
 	void PreProcess();
-	void printCurrentEvent(Long64_t iEvent, Long64_t totalEvents, int defaultPrecision, std::string displayType, TimeCounter startTime);
+	void printCurrentEvent(Long64_t iEvent, Long64_t totalEvents,
+			int defaultPrecision, std::string displayType,
+			TimeCounter startTime);
 	static void ContinuousLoop(void* args);
 	void CreateOMWindow();
 
@@ -106,7 +118,7 @@ private:
 	/// \Brief
 	/// Arguments to be passed to the thread function.
 	/// \EndBrief
-	struct ThreadArgs_t{
+	struct ThreadArgs_t {
 		BaseAnalysis* ban; ///< Pointer to the parent BaseAnalysis instance
 		TString inFileList; ///< Path to the input list file
 	};
@@ -120,13 +132,14 @@ protected:
 
 	std::vector<Analyzer*> fAnalyzerList; ///< Container for the analyzers
 
-	NA62Analysis::NA62Map<TString, const void* const>::type fOutput; ///< Container for outputs of all analyzers
+	NA62Analysis::NA62Map<TString, const void* const >::type fOutput; ///< Container for outputs of all analyzers
 	NA62Analysis::NA62Map<TString, Analyzer::OutputState>::type fOutputStates; ///< Container for output states for all analyzers
 
 	DetectorAcceptance *fDetectorAcceptanceInstance; ///< Global instance of DetectorAcceptance
 
 	CounterHandler fCounterHandler; ///< Handler for EventFraction and Counters
 	IOHandler* fIOHandler; ///< Handler for all IO objects
+	IOPrimitive* fIOPrimitive; ///< Pointer to IOPrimitive instance
 
 	TimeCounter fInitTime; ///< Time counter for the initialisation step (from constructor to end of Init())
 

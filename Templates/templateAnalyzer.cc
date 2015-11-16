@@ -49,6 +49,7 @@ using namespace NA62Constants;
 /// NA62Analysis::Core::IOHandler \n
 /// NA62Analysis::Core::HistoHandler \n
 /// NA62Analysis::Core::HistoHandler::Iterator \n
+/// NA62Analysis::Core::PrimitiveReader \n
 ///
 /// \EndDetailed
 
@@ -100,6 +101,20 @@ templateAnalyzer::templateAnalyzer(Core::BaseAnalysis *ba) : Analyzer(ba, "templ
 	/// variableName is the name of the variable that should be declared in the definition of the class\n
 	/// defaultValue is the default value if not specified in the command line\n
 	/// The allowed types for parameters are the following: bool, int, long, float, double, char, string, TString\n
+	/// \n
+	/// A primitive file can be read in parallel to the event file. You can request to read primitives for a sub-detector
+	/// with\n
+	/// \code
+	/// AddPrimitiveReader("detName", true/false);
+	/// \endcode
+	/// The boolean flag indicates if the primitives should be time sorted or kept in the original order they arrived from
+	/// the detector.\n
+	/// You can set the L0 matching window with \n
+	/// \code
+	/// SetL0MatchingWindowWidth("detName", val);
+	/// SetL0MatchingWindowWidth("detName", timestamp, finetime);
+	/// \endcode
+	/// where val is a value in nanoseconds.
 	/// \EndMemberDescr
 
 /*$$TREEREQUEST$$*/
@@ -361,7 +376,19 @@ void templateAnalyzer::Process(int iEvent){
 	/// 	ExportEvent();
 	/// \endcode
 	/// The structure of all the trees that have been opened (by all Analyzer) will be copied in the output file\n
-	/// and the events for which at least one analyzer called ExportEvent() will be replicated in the output trees.
+	/// and the events for which at least one analyzer called ExportEvent() will be replicated in the output trees.\n
+	/// \n
+	/// The primitives associated to the current event can be retrieved in two ways:\n
+	/// \code
+	/// FindAllPrimitiveInMatchingWindow("detName");
+	/// \endcode
+	/// allows to get all the primitives in a certain window around the event timestamp (L0MatchingWindowWidth)
+	/// while
+	/// \code
+	/// FindMatchingPrimitive("detName");
+	/// \endcode
+	/// allows to get the primitive closest the the event timestamp (but nevertheless withing the
+	/// L0MatchingWindowWidth).
 	/// @see ROOT TParticlePDG for the particle properties
 	/// @see ROOT TDatabasePDG for a list of PDG codes and particle naming convention
 	/// \EndMemberDescr

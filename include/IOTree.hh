@@ -48,7 +48,7 @@ public:
 	void SetIgnoreNonExisting(bool bFlag);
 
 	//Events
-	TDetectorVEvent *GetEvent(TString name, TString branchName="");
+	TDetectorVEvent *GetEvent(TString detName, TString outputName="");
 	void* GetObject(TString name, TString branchName="");
 	Long64_t FillMCTruth();
 	Long64_t FillRawHeader();
@@ -68,6 +68,7 @@ public:
 
 private:
 	void FindAndBranchTree(TChain* tree, TString branchName, TString branchClass, void* const evt);
+	TString DetermineMainTree(TString detName);
 
 	/// \class ObjectTriplet
 	/// \Brief
@@ -81,20 +82,20 @@ private:
 
 	class ObjectTriplet{
 	public:
-		ObjectTriplet(TString c, TString tree, void* obj):
+		ObjectTriplet(TString c, TString branch, void* obj):
 			fClassName(c),
-			fTreeName(tree),
+			fBranchName(branch),
 			fObject(obj)
 		{
 			/// \MemberDescr
 			///	\param c : Class name of the object
-			///	\param tree : Name of the TTree
+			///	\param branch : Name of the branch
 			/// \param obj : Pointer to the object
 			///	Constructor
 			///	\EndMemberDescr
 		};
 		TString fClassName; ///< Class name of the object
-		TString fTreeName; ///< TTree name
+		TString fBranchName; ///< Branch name
 		void* fObject; ///< Pointer to the object
 	};
 
@@ -122,7 +123,7 @@ private:
 			~EventTriplet(){
 				delete fEvent;
 			}
-			TString fTreeName; ///< TTree name
+			TString fTreeName; ///< Branch name
 			TDetectorVEvent* fEvent; ///< Pointer to the event
 	};
 
@@ -135,10 +136,11 @@ private:
 
 	NA62Analysis::NA62Map<TString,TChain*>::type fTree; ///< Container for the trees (Name, pointer)
 	NA62Analysis::NA62MultiMap<TString,EventTriplet*>::type fEvent; ///< Container for the events (Detector, EventTriplet)
-	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects (Branch name, ObjectTriplet)
+	NA62Analysis::NA62MultiMap<TString,ObjectTriplet*>::type fObject; ///< Container for the custom objects (Tree name, ObjectTriplet)
 
 	TChain *fMCTruthTree; ///< Pointer to (first) TTree containing MCTruth
 	TChain *fRawHeaderTree; ///< Pointer to (first) TTree containing RawHeader
+	TChain *fReferenceTree; ///< Pointer to the reference TTree used to retrieve common information
 
 	NA62Analysis::NA62Map<TString,TTree*>::type fExportTrees; ///< Container for TTrees for exporting
 

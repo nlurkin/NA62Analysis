@@ -12,6 +12,7 @@
 #include "TermManip.hh"
 #include "ConfigSettings.hh"
 #include "OMMainWindow.hh"
+#include "IOPrimitive.hh"
 
 namespace NA62Analysis {
 namespace Core {
@@ -20,8 +21,8 @@ BaseAnalysis::BaseAnalysis() :
 		Verbose("BaseAnalysis"), fNEvents(-1), fEventsDownscaling(0), fGraphicMode(
 				false), fInitialized(false), fContinuousReading(false), fSignalStop(
 				false), fDetectorAcceptanceInstance(nullptr), fIOHandler(
-				nullptr), fInitTime(true), fRunThread(nullptr), fOMMainWindow(
-				nullptr) {
+		nullptr), fIOPrimitive(nullptr), fInitTime(true), fRunThread(nullptr), fOMMainWindow(
+		nullptr) {
 	/// \MemberDescr
 	/// Constructor
 	/// \EndMemberDescr
@@ -92,12 +93,9 @@ void BaseAnalysis::Init(TString inFileName, TString outFileName, TString params,
 		fNEvents = std::max(treeHandler->FillMCTruth(),
 				treeHandler->FillRawHeader());
 
-		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
-	}
-
-	if (IsTreeType())
 		fNEvents = GetIOTree()->BranchTrees(fNEvents);
-	else if (IsHistoType())
+		std::cout << debug() << "Using " << fNEvents << " events" << std::endl;
+	} else if (IsHistoType())
 		fNEvents = fIOHandler->GetInputFileNumber();
 
 	int testEvent = 0;
@@ -708,6 +706,30 @@ void BaseAnalysis::ReconfigureAnalyzer(TString analyzerName,
 			it->ApplyParam(parameterName, parameter);
 		}
 	}
+}
+
+IOPrimitive* BaseAnalysis::GetIOPrimitive() {
+	/// \MemberDescr
+	/// \return Pointer to IOPrimitive instance (nullptr if not instantiated)
+	/// \EndMemberDescr
+	return fIOPrimitive;
+}
+
+void BaseAnalysis::SetPrimitiveFile(TString fileName) {
+	/// \MemberDescr
+	/// \param fileName : Path to the prrimitive file
+	///
+	/// If IOPrimitive instantiated, set the primitive root file
+	/// \EndMemberDescr
+	if (fIOPrimitive)
+		fIOPrimitive->SetFile(fileName);
+}
+
+void BaseAnalysis::InitPrimitives() {
+	/// \MemberDescr
+	/// Instantiate the IOPrimitive instance if not yet done.
+	/// \EndMemberDescr
+	if(!fIOPrimitive) fIOPrimitive = new IOPrimitive();
 }
 
 } /* namespace Core */

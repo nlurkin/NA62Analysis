@@ -2,6 +2,20 @@
 NA62Analysis Project
 ################################################################
 
+2015-11-16      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev. 737
+                - Replace GetMuonHit() -> IsMuonHit() in MUV3MCTester()
+                - GetEvent tries to deduce correct tree if not specified in Analyzer
+                - Fix some bugs when reading custom trees.
+                - Add reader for primitives. Can be used to find all primitives matching
+                  an event. See --prim option, AddPrimitiveReader(), SetL0MatchingWindowWidth(),
+                  FindAllPrimitiveInMatchingWindow() and FindMatchingPrimitive() for more details
+                - Can build either shared or static libraries. Static is the default. Shared 
+                  libraries are build if the option --shared is passed to NA62AnalysisBuilder.py
+                  during build.
+                - Add documentation: Git HowTo
+                
+
 2015-11-04      Evgueni Goudzovski (eg@hep.ph.bham.ac.uk)
                 rev. 719
                 - NewCHODT0 class introduced; minor bug fixes

@@ -1,0 +1,268 @@
+/// \page githowto Git HowTo
+/// 
+/// <b>Table of content</b>	
+/// <ul>
+/// 	<li>\ref getFW
+/// 	<li>\ref commitFW
+/// 	<li>\ref problems
+/// 	<li>\ref links
+/// </ul>
+/// For any operation involving git at CERN, you must be allowed to access the repository. The 
+/// repository is configured to allow read access to people in the na62-fw e-group and read/write 
+/// access to people in the na62-fw-dev e-group. In addition to being in the correct e-group you must
+/// also be known to https://gitlab.cern.ch. To do so, you must login at least once with your cern 
+/// account to https://gitlab.cern.ch. You must also import your ssh keys in gitlab for
+/// identification:
+/// <ul>
+/// 	<li> Check if you already have a ssh key: a file id_dsa.pub or id_rsa.pub should exist in your
+/// 		~/.ssh directory. If not, create a ssh key
+/// 		\code
+/// 		ssh-keygen -t rsa -b 4096 -C "your_email@cern.ch"
+/// 		\endcode
+/// 		And type \a Enter to every question
+/// 	<li> Add the key to your gitlab account: copy the content if the generated id_???.pub file in 
+/// 		https://gitlab.cern.ch -> Profile Settings -> SSH Keys --> ADD SSH KEY. Enter a meaningful
+/// 		title for the key (lxplus, my_laptop_name, ...)
+/// </ul>
+/// (see https://cern.service-now.com/service-portal/article.do?n=KB0003136 for more information
+/// and help)
+/// 
+/// \section getFW Getting the framework and keeping it up-to-date
+/// To get the framework you must clone to repository:
+/// \code
+/// git clone ssh://git@gitlab.cern.ch:7999/NA62FW/na62fw.git
+/// \endcode
+/// This operation will clone the repository locally with all the branches. The standard 
+/// branches in na62fw are:
+/// <ul>
+/// 	<li> master: "stable" production version
+/// 	<li> develop: "latest" development version
+/// </ul>
+/// The default checked-out branch is the \b master one. If you want to work with the latest working 
+/// revision (but not necessarily validated) you want to work with the develop branch. You must
+/// check-it out (switch to):
+/// \code
+/// git checkout develop
+/// \endcode
+/// 
+/// Several possibilities are offered when you want to update your local version to the latest revision
+/// from the central repository. \n
+/// \par You made no modifications to the code
+/// Simply run:
+/// \code
+/// git pull
+/// \endcode
+/// \par You made modification you want to throw away
+/// If you made modifications and you don't want to keep them, the following commands will simply
+/// erase all your local modifications:
+/// <ul>
+/// 	<li> Get the update from the central repository
+/// 		\code
+/// 		git fetch
+/// 		\endcode
+/// 	<li> Reset your local repository to the latest remote version (e.g. for branch develop)
+/// 		\code
+/// 		git reset --hard origin/develop
+/// 		\endcode
+/// </ul>
+/// \par You made modification you want to keep
+/// If you made modifications that you want to keep (but you are not planning to commit these
+/// changes), the following method allows to merge your local modifications with the
+/// modifications in the central repository:
+/// <ul>
+/// 	<li> Assuming you do not want to commit your changes (committing will be explained in the 
+/// 	next session), first save the changes you made:
+/// 	\code
+/// 	git stash
+/// 	\endcode
+/// 	<li> Get the update from the central repository
+/// 		\code
+/// 		git pull
+/// 		\endcode
+///		<li> Apply you changes again on top of the new revision
+/// 		\code
+/// 		git stash pop
+/// 		\endcode
+/// 	<li> In case of merge conflict that git is not able to resolve itself, you will see a
+/// 		message and you can solve yourself the conflict (the same way svn used to). Notify git
+/// 		that the conflict is resolved (again assuming you do not want to commit):
+/// 		\code
+/// 		git stash drop
+/// 		git reset HEAD
+/// 		\endcode
+/// 		The first command removes the temporary save we made.\n
+/// 		The second command notifies git that the conflict is resolved.
+/// </ul>
+/// \section commitFW Developing and committing
+/// If you are a developer and you are coding a new feature/bug fix for the framework, you can
+/// follow the following advices to minimise the risk of conflicts and problems.
+/// \par Before starting your work
+/// Before starting working on any new code/feature/bug fix, you probably want to start from the
+/// latest working code located in the \b develop branch of the central repository:
+/// \code
+/// git checkout develop
+/// git pull
+/// \endcode
+/// Then to avoid any problem of interference with other developer it is better to create and work
+/// on your own branch. As a general guideline, we advise to use as branch names
+/// \b feature/name_of_the_feature for new features and \b bugfix/jira_bug_number for bugfixes. 
+/// In this example, the branch is called \b feature/my_feature:
+/// \code
+/// git branch feature/my_feature   //Create the branch
+/// git checkout feature/my_feature //switch to the branch
+/// \endcode
+/// or (shortcut)
+/// \code
+/// git checkout -b feature/my_feature //Create and switch to the branch
+/// \endcode
+/// \par Working on the code
+/// This new branch you created is now based on the latest version of \b develop and you may work
+/// freely on it. Code a lot, commit often: every time you introduce a new feature, a new group of
+/// logically connected functions, every time you fix a typo, a bug, .... Ideally every commit should
+/// contains the changes for a single logical modification. Don't wait to have a perfectly working
+/// and tested version with all the changes you intended. Remember that in the case of git,
+/// committing before a feature is ready does not harm anyone as these commits stays private until
+/// you publish them (push). It is much easier this way to remove later a commit that broke 
+/// everything than searching through a single huge commit which line could possibly have
+/// broken the code.\n
+/// Committing is easy:
+/// <ul>
+/// 	<li> Check all the files that have been modified since last commit
+/// 	\code
+/// 	git status
+/// 	\endcode
+/// 	<li> Stage (= add to the commit) all the files that you want to commit
+/// 	\code
+/// 	git add fileName
+/// 	\endcode
+/// 	If you made a mistake and want to remove a file from the commit
+/// 	\code
+/// 	git reset fileName
+/// 	\endcode
+/// 	Don't forget, even if you made several changes that are not logically connected, you can still
+/// 	commit them separately. Only add the files related to one feature, commit, then add the files
+/// 	related to the next feature and commit them. This works as long as the different changes are
+/// 	in different files. If they are in the same file, you can still do different commits
+/// 	(see git add -p).
+/// </ul>
+///
+/// \anchor merge-rebase 
+/// \par Merge remote commits with your own code
+/// If someone commits some changes that you feel are important to integrate in your branch during
+/// the development of your feature, you can retrieve them and merge them with your local code.
+/// <ul>
+/// 	<li> Commit all your work in progress. If you feel some of this work in progress is not yet 
+/// 	ready for a commit, you can stash it for now (save it in a temporary commit that can be 
+/// 	retrieved later).
+/// 	\code
+/// 	git stash
+/// 	\endcode
+/// 	<li> Checkout the branch you want to import (e.g. \b develop)
+/// 	\code
+/// 	git checkout develop
+/// 	\endcode
+/// 	<li> Get the latest code from the central repository
+/// 	\code
+/// 	git pull
+/// 	\endcode
+/// 	<li> Incorporate the changes (e.g. from \b develop) into your branch
+/// 	\code
+/// 	git checkout feature/my_feature
+/// 	git rebase develop
+/// 	\endcode
+/// 	In case of conflict that git cannot handle, you will be notified and asked to solve it (git 
+/// 	will tell you where is the conflict). Once solved, run
+/// 	\code
+/// 	git rebase --continue
+/// 	\endcode
+/// 	until the rebase is completely finished (git stops complaining about conflicts - solve them
+/// 	as git warns you).
+/// </ul>
+/// Congratulations, the remote changes have been successfully integrated in your local code. You
+/// can keep working to finish your feature.
+///
+/// \par Publishing the code
+/// Once you think your feature is finished, it can be published on the central repository. If 
+/// you wish, you can also request the publication earlier to open discussions on your feature. If
+/// you think the amount of work is already enough and that your work needs input/discussion from
+/// others, the same procedure can be followed. Even if part of the code is already pushed to the
+/// central repository, work can still be carried on afterwards and new commits can be added before
+/// the actual merge with the main branch. This would also allow other developer to participate to 
+/// your work.\n
+/// The procedure to publish your work is the following:
+/// <ul>
+/// 	<li> Integrate remote changes into you branch (see \ref merge-rebase "Merge")
+/// <li> Push your branch to the central repository (and set tracking)
+/// \code
+/// git push -u origin feature/my_feature
+/// \endcode
+/// <li> Got to https://gitlab.cern.ch/NA62FW/na62fw/merge_requests and create a new merge request. 
+/// 	Your branch should be used as the source branch and \b develop as the target branch. 
+/// 	The owners/masters of the repository will be notified of your request, will review it (other
+/// 	people - you included - are also welcome to review and leave comments, open discussion). Once
+/// 	satisfactory the owners/masters will confirm the request and your feature will be merged
+/// 	with the \b develop branch.
+/// 	<li> Once the merge request is accepted, your branch on the remote repository is automatically
+/// 	deleted. At this point you can as well delete it from you local repository if you wish:
+/// 	\code
+/// 	git branch -d feature/my_feature
+/// 	\endcode
+/// </ul>
+/// 
+/// \section problems Solving problems
+/// You might eventually run into few issues. We identified some here and propose solution to
+/// solve them.
+/// \par You started working on protected branches (master, develop)
+/// By mistake you started working on protected branches (master, develop). Unfortunately you cannot
+/// commit on these branches on the central repository. It means you are not going to be allowed 
+/// to git push. Don't worry, your work is not lost!\n
+/// If you haven't done any commit yet, simply create a new branch and start committing your changes
+/// there:
+/// \code
+/// git checkout -b new-branch-name
+/// \endcode
+/// If at least one commit is already done, the idea is to create a new branch including all
+/// your commits and reset the protected one to its remote state. Be careful, this operation include
+/// a hard reset and any non-committed work is going to be lost. You should therefore <b>commit
+/// or stash any pending changes before doing the following operation</b>. In the example we
+/// assume you started working on the \b master branch. Change in the following lines accordingly:
+/// \code
+/// git branch new-branch-name //Create a new branch with the modified protected branch as source
+/// git reset --hard origin/master //Reset the master branch in the same state as the remote master
+/// git checkout new-branch-name
+/// \endcode
+/// After these operations, your tree will look like you started working on the branch
+/// \b new-branch-name from the beginning and never committed any work on the protected branch.
+/// \section links Useful Links
+/// Here is a list of useful resources:
+/// <ul>
+/// 	<li> Quick tutorial: https://www.atlassian.com/git/tutorials/saving-changes
+/// 	<li> General purpose interactive tutorial: https://try.github.io/levels/1/challenges/1
+/// 	<li> Comprehensive documentation: http://git-scm.com/doc
+/// 	<li> SSH keys: https://cern.service-now.com/service-portal/article.do?n=KB0003136
+/// </ul>
+
+
+
+
+/// 	<li> If you modified any code in your local repository, git will try to merge the central 
+/// 		version with your local one. In case of success it will create a new local commit. Git
+/// 		will ask you confirmation for the commit message, just accept. In case of merge
+/// 		conflict, git will offer you the possibility to resolve the conflict (the same way
+/// 		svn used to).\n
+/// 		If you don't want to generate new commits, you have to alternatives:
+/// 		<ol>
+/// 			<li> Ask git not to create merge commit:
+/// 			\code
+/// 			git pull --no-commit
+/// 			\endcode
+/// 			<li> Ask git to add your modification on top of the ones from the central
+/// 			repository (rebase):
+/// 			\code
+/// 			git pull --rebase
+/// 			\endcode
+/// 			In case of conflict here, simply solve it, then execute
+/// 			\code
+/// 			git rebase --continue
+/// 			\endcode
+/// 		</ol>
