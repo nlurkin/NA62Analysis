@@ -2,8 +2,8 @@
 NA62Analysis Project
 ################################################################
 
-2015-11-xx      Nicolas Lurkin (nicolas.lurkin@cern.ch)
-                rev. xxx
+2015-11-16      Nicolas Lurkin (nicolas.lurkin@cern.ch)
+                rev. 737
                 - Replace GetMuonHit() -> IsMuonHit() in MUV3MCTester()
                 - GetEvent tries to deduce correct tree if not specified in Analyzer
                 - Fix some bugs when reading custom trees.
